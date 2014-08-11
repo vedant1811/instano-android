@@ -64,9 +64,7 @@ public class PurchaseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        TextView textView = new TextView(getActivity());
-        textView.setText(R.string.hello_blank_fragment);
-        return textView;
+        return inflater.inflate(R.layout.fragment_purchase, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -91,6 +89,10 @@ public class PurchaseFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    void search_buttonClicked(){
+
     }
 
     /**

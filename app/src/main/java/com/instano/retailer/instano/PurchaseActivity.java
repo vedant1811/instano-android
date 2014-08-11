@@ -32,6 +32,8 @@ public class PurchaseActivity extends Activity
      */
     private CharSequence mTitle;
 
+    private PurchaseFragment mPurchaseFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +47,13 @@ public class PurchaseActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        mPurchaseFragment = (PurchaseFragment) getFragmentManager()
+                .findFragmentById(R.id.fragment_purchase);
+    }
+
+    public void search_buttonClicked(View button){
+        mPurchaseFragment.search_buttonClicked();
     }
 
     @Override
