@@ -63,8 +63,8 @@ public class PurchaseFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_purchase, container, false);
     }
 
-    void search_buttonClicked(){
+    String getSearchString(){
         EditText search_editText = (EditText) getActivity().findViewById(R.id.search_editText);
-        search_editText.getText();
+        return search_editText.getText().toString();
     }
 }

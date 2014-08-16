@@ -5,18 +5,11 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 
 public class PurchaseActivity extends Activity
@@ -40,7 +33,12 @@ public class PurchaseActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_purchase);
+
+        mPurchaseFragment = (PurchaseFragment) getFragmentManager()
+                .findFragmentById(R.id.fragment_purchase);
+        mCurrentFragment = mPurchaseFragment;
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -50,20 +48,26 @@ public class PurchaseActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
-        mPurchaseFragment = (PurchaseFragment) getFragmentManager()
-                .findFragmentById(R.id.fragment_purchase);
-
-        mCurrentFragment = mPurchaseFragment;
     }
 
-    public void search_buttonClicked(View button){
-        mPurchaseFragment.search_buttonClicked();
+    public void searchButtonClicked(View button) {
+        String searchString = mPurchaseFragment.getSearchString();
+
+        if (searchString == null)
+            return; // TODO: raise a toast as well
+
+        getFragmentManager().beginTransaction()
+                .replace(mPurchaseFragment.getId(), SearchingFragment.newInstance(searchString))
+                .commit();
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
+
+        if (mCurrentFragment == null)
+            return;
+
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.container, mCurrentFragment)
