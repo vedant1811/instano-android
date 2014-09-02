@@ -16,6 +16,22 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".QuotationListActivity"
+            android:label="@string/title_quotation_list"
+            android:parentActivityName=".PurchaseActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.instano.retailer.instano.PurchaseActivity" />
+        </activity>
+        <activity
+            android:name=".QuotationDetailActivity"
+            android:label="@string/title_quotation_detail"
+            android:parentActivityName=".QuotationListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.instano.retailer.instano.QuotationListActivity" />
+        </activity>
     </application>
 
 </manifest>

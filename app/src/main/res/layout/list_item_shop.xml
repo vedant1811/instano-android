@@ -4,8 +4,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
-    android:gravity="center"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:focusable="false">
 
     <CheckBox
         android:layout_width="wrap_content"
@@ -30,11 +30,11 @@
             android:layout_weight="0.8">
 
             <TextView
-                android:id="@+id/businessName"
+                android:id="@+id/shopTextViewInShop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:textAppearanceMedium"
-                android:text="Business name"
+                android:text="Shop name"
                 style="@android:style/TextAppearance.DeviceDefault.Large" />
         </LinearLayout>
 
@@ -42,8 +42,9 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal" >
-
+            android:orientation="horizontal"
+            android:id="@+id/addressLayoutInShop">
+            <!--TODO: fix bug- address and dist can overlap as of now-->
             <TextView
                 android:id="@+id/addressTextView"
                 android:layout_width="wrap_content"
@@ -58,12 +59,12 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="2.4km"
-                android:id="@+id/distanceTextView"
-                android:layout_alignParentEnd="true" />
+                android:id="@+id/distTextViewInShop"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true" />
         </RelativeLayout>
 
         <LinearLayout
-            android:id="@+id/emailImageButton"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
