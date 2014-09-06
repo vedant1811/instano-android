@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,6 +60,8 @@ public class PurchaseActivity extends Activity
         getFragmentManager().beginTransaction()
                 .replace(mPurchaseFragment.getId(), SearchingFragment.newInstance(searchString))
                 .commit();
+
+//        startActivity(new Intent(this, QuotationListActivity.class));
     }
 
     @Override

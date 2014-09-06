@@ -2,6 +2,7 @@ package com.instano.retailer.instano;
 
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import android.widget.TextView;
  *
  */
 public class SearchingFragment extends Fragment {
+
+    private FetchQuotations mFetchQuotations;
     /**
      * Factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -48,7 +51,12 @@ public class SearchingFragment extends Fragment {
         TextView searchingFor_TextView = (TextView) rootView.findViewById(R.id.searchingForTextView);
         searchingFor_TextView.append(searchString);
 
+        Log.d("SearchingFrament.onCreateView", "creating quotations");
+
+        mFetchQuotations = new FetchQuotations(getActivity());
+
+        mFetchQuotations.runQuery(searchString);
+
         return rootView;
     }
-
 }
