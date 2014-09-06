@@ -16,7 +16,7 @@ import com.instano.retailer.instano.R;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link QuotationDetailFragment}.
  */
-public class QuotationDetailActivity extends Activity {
+public class QuotationDetailActivity extends Activity implements FetchQuotations.Callback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +47,7 @@ public class QuotationDetailActivity extends Activity {
                     .add(R.id.quotation_detail_container, fragment)
                     .commit();
         }
+
     }
 
     @Override
@@ -64,5 +65,10 @@ public class QuotationDetailActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void quotationReceived() {
+
     }
 }

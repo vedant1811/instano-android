@@ -61,7 +61,6 @@ public class PurchaseActivity extends Activity
                 .replace(mPurchaseFragment.getId(), SearchingFragment.newInstance(searchString))
                 .commit();
 
-//        startActivity(new Intent(this, QuotationListActivity.class));
     }
 
     @Override

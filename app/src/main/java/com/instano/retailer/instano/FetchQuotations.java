@@ -3,6 +3,7 @@ package com.instano.retailer.instano;
 import android.content.Context;
 import android.util.Log;
 import android.util.Xml;
+import android.widget.ArrayAdapter;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -29,10 +30,15 @@ public class FetchQuotations implements Response.Listener<String>, Response.Erro
     private final static String TAG = "FetchQuotations";
     private final static String SERVER_URL = "";
 
-    private String mQuery;
+    private static FetchQuotations sInstance;
+
     private final Context mAppContext;
 
+    private String mQuery;
+    private Callback mCallback;
+
     private RequestQueue mRequestQueue;
+    private ArrayAdapter<Quotation> mQuotationArrayAdapter;
 
     /**
      * asynchronously sends the query request to server
@@ -50,11 +56,22 @@ public class FetchQuotations implements Response.Listener<String>, Response.Erro
         return "http://altj-db.hol.es/default.php?text1=abhinav&text2=yashkar";
     }
 
-    public FetchQuotations(Context mAppContext) {
-        this.mAppContext = mAppContext.getApplicationContext();
+    private FetchQuotations(Context appContext) {
+        mAppContext = appContext.getApplicationContext();
 
         mRequestQueue = Volley.newRequestQueue(mAppContext);
 
+        // TODO: initialize properly, i.e. with a meaningful layout ID
+        mQuotationArrayAdapter = new ArrayAdapter<Quotation>(mAppContext, android.R.layout.simple_list_item_1);
+
+    }
+
+    public static FetchQuotations getInstance(Context appContext) {
+
+        if(sInstance == null)
+            sInstance = new FetchQuotations(appContext);
+
+        return sInstance;
     }
 
     public void runQuery(String mQuery) {
@@ -83,6 +100,8 @@ public class FetchQuotations implements Response.Listener<String>, Response.Erro
     public void onResponse(String response) {
         Log.d(TAG + ".onResponse", response);
 
+
+
         XmlPullParser parser = Xml.newPullParser();
         try {
             parser.setInput(new StringReader(response));
@@ -91,6 +110,21 @@ public class FetchQuotations implements Response.Listener<String>, Response.Erro
         }
     }
 
+    public ArrayAdapter<Quotation> getQuotationArrayAdapter() {
+        return mQuotationArrayAdapter;
+    }
+
+    public void registerCallback(Callback callback) {
+
+        // Be sure not to override previous callback
+        assert mCallback == null;
+
+        this.mCallback = callback;
+    }
+
+    public interface Callback {
+        public void quotationReceived();
+    }
 
     /**
      * Represents a single immutable Quotation

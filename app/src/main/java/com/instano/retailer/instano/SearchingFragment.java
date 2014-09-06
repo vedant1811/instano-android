@@ -1,5 +1,6 @@
 package com.instano.retailer.instano;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
@@ -15,9 +16,7 @@ import android.widget.TextView;
  * create an instance of this fragment.
  *
  */
-public class SearchingFragment extends Fragment {
-
-    private FetchQuotations mFetchQuotations;
+public class SearchingFragment extends Fragment implements FetchQuotations.Callback {
     /**
      * Factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -53,10 +52,15 @@ public class SearchingFragment extends Fragment {
 
         Log.d("SearchingFrament.onCreateView", "creating quotations");
 
-        mFetchQuotations = new FetchQuotations(getActivity());
-
-        mFetchQuotations.runQuery(searchString);
+        FetchQuotations fetchQuotations = FetchQuotations.getInstance(getActivity());
+        fetchQuotations.registerCallback(this);
+        fetchQuotations.runQuery(searchString);
 
         return rootView;
+    }
+
+    @Override
+    public void quotationReceived() {
+        getActivity().startActivity(new Intent(getActivity(), QuotationListActivity.class));
     }
 }
