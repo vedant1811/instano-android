@@ -51,18 +51,6 @@ public class PurchaseActivity extends Activity
                 (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
-    public void searchButtonClicked(View button) {
-        String searchString = mPurchaseFragment.getSearchString();
-
-        if (searchString == null)
-            return; // TODO: raise a toast as well
-
-        getFragmentManager().beginTransaction()
-                .replace(mPurchaseFragment.getId(), SearchingFragment.newInstance(searchString))
-                .commit();
-
-    }
-
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments

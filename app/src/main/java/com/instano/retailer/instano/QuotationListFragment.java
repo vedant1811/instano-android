@@ -43,7 +43,7 @@ public class QuotationListFragment extends ListFragment {
      */
     public interface Callbacks {
         /**
-         * Callback for when an item has been selected.
+         * QuotationsCallback for when an item has been selected.
          */
         public void onItemSelected(String id);
     }
@@ -69,7 +69,7 @@ public class QuotationListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setListAdapter(
-                FetchQuotations.getInstance(getActivity())
+                ServicesSingleton.getInstance(getActivity())
                         .getQuotationArrayAdapter());
     }
 

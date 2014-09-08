@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
-import com.instano.retailer.instano.R;
 
 /**
  * An activity representing a single Quotation detail screen. This
@@ -16,7 +15,7 @@ import com.instano.retailer.instano.R;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link QuotationDetailFragment}.
  */
-public class QuotationDetailActivity extends Activity implements FetchQuotations.Callback {
+public class QuotationDetailActivity extends Activity implements ServicesSingleton.QuotationsCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

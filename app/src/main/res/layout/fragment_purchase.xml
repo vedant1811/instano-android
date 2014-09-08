@@ -28,21 +28,49 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:id="@+id/search_editText"
+            android:id="@+id/searchEditText"
             android:singleLine="true"
             android:hint="model name or category"
             android:layout_gravity="center"
             android:textAlignment="center" />
 
-        <Button
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="near"
+                android:layout_gravity="center"
+                android:layout_row="0"
+                android:layout_column="4" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="current location"
+                android:id="@+id/locationButton" />
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"
+                android:indeterminate="false" />
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Search"
             android:id="@+id/search_button"
-            android:layout_gravity="center"
-            android:onClick="searchButtonClicked" />
+            android:layout_gravity="center"/>
     </LinearLayout>
 
 </GridLayout>

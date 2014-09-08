@@ -74,7 +74,7 @@ public class QuotationListActivity extends Activity
     }
 
     /**
-     * Callback method from {@link QuotationListFragment.Callbacks}
+     * QuotationsCallback method from {@link QuotationListFragment.Callbacks}
      * indicating that the item with the given ID was selected.
      */
     @Override

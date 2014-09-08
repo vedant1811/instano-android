@@ -16,7 +16,7 @@ import android.widget.TextView;
  * create an instance of this fragment.
  *
  */
-public class SearchingFragment extends Fragment implements FetchQuotations.Callback {
+public class SearchingFragment extends Fragment implements ServicesSingleton.QuotationsCallback {
     /**
      * Factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -52,9 +52,9 @@ public class SearchingFragment extends Fragment implements FetchQuotations.Callb
 
         Log.d("SearchingFrament.onCreateView", "creating quotations");
 
-        FetchQuotations fetchQuotations = FetchQuotations.getInstance(getActivity());
-        fetchQuotations.registerCallback(this);
-        fetchQuotations.runQuery(searchString);
+        ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
+        servicesSingleton.registerCallback(this);
+        servicesSingleton.runQuery(searchString);
 
         return rootView;
     }
