@@ -1,8 +1,6 @@
 package com.instano.retailer.instano;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Address;
 import android.location.Geocoder;
@@ -13,7 +11,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -57,7 +54,7 @@ public class ServicesSingleton implements
 
     /* location variables */
     private LocationClient mLocationClient;
-    private String mLatestAddress;
+    private Address mLatestAddress;
     private String locationErrorString;
     private LocationCallbacks mLocationCallbacks;
 
@@ -86,6 +83,7 @@ public class ServicesSingleton implements
 
     private ServicesSingleton(Context appContext) {
         mAppContext = appContext.getApplicationContext();
+        mLatestAddress = null;
 
         /*
          * Create a new location client, using the enclosing class to
@@ -126,7 +124,7 @@ public class ServicesSingleton implements
         return true;
     }
 
-    public void getAddress(Location location) {
+    public void searchAddress(Location location) {
         // Ensure that a Geocoder services is available and a locationCallback is registered
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && Geocoder.isPresent()) {
             // Show the activity indicator
@@ -153,6 +151,10 @@ public class ServicesSingleton implements
 
     public String getLocationErrorString() {
         return locationErrorString;
+    }
+
+    public Address getLatestAddress() {
+        return mLatestAddress;
     }
 
     /**
@@ -233,6 +235,7 @@ public class ServicesSingleton implements
          */
         @Override
         protected void onPostExecute(Address address) {
+            mLatestAddress = address;
             if (getmLocationCallbacks() != null)
                 getmLocationCallbacks().addressFound(address);
         }
@@ -245,7 +248,9 @@ public class ServicesSingleton implements
      */
     @Override
     public void onConnected(Bundle dataBundle) {
-        getAddress(mLocationClient.getLastLocation());
+        Location lastLocation = mLocationClient.getLastLocation();
+        if (lastLocation != null)
+            searchAddress(lastLocation);
     }
 
     /*
@@ -343,7 +348,7 @@ public class ServicesSingleton implements
         // Be sure not to override previous quotationsCallback
         assert mLocationCallbacks == null;
 
-        this.mLocationCallbacks= locationCallbacks;
+        this.mLocationCallbacks = locationCallbacks;
 
     }
 

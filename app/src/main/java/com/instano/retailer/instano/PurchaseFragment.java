@@ -1,17 +1,11 @@
 package com.instano.retailer.instano;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.Fragment;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,13 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.LocationClient;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 
 /**
@@ -38,8 +26,8 @@ import java.util.Locale;
  */
 public class PurchaseFragment extends Fragment implements ServicesSingleton.LocationCallbacks {
 
-    private final static String currentLocation = "Current Location";
-    private final static String selectLocation = "Select Location";
+    private final static String CURRENT_LOCATION = "Current Location";
+    private final static String SELECT_LOCATION = "Select Location";
 
     private Button mSearchButton;
     private Button mLocationButton;
@@ -59,21 +47,6 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
     }
     public PurchaseFragment() {
         // Required empty public constructor
-    }
-
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case ServicesSingleton.REQUEST_CODE_RECOVER_PLAY_SERVICES:
-                if (resultCode == Activity.RESULT_CANCELED) {
-                    mToast.setText ("Google Play Services must be installed.");
-                    mToast.show();
-                }
-                return;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -115,6 +88,19 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
         ServicesSingleton.getInstance(getActivity()).registerCallback(this);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Address address = ServicesSingleton.getInstance(getActivity()).getLatestAddress();
+        if (address == null)
+            mLocationButton.setText(SELECT_LOCATION);
+        else
+            // display a readable address, street if available or city
+            mLocationButton.setText(address.getMaxAddressLineIndex() > 0 ?
+                    address.getAddressLine(0) : address.getLocality());
+    }
+
     /**
      * Called when mSearchButton has been clicked
      */
@@ -123,9 +109,10 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
 
         if (!servicesSingleton.checkPlayServices()){
             String error = servicesSingleton.getLocationErrorString();
-            if (error != null)
+            if (error != null) {
                 mToast.setText(error);
                 mToast.show();
+            }
             return;
         }
 
@@ -145,6 +132,7 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
      * Called when mLocationButton has been clicked
      */
     private void mLocationButtonClicked() {
+        getActivity().startActivity(new Intent(getActivity(), MapsActivity.class));
     }
 
     @Override
@@ -156,10 +144,11 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
     public void addressFound(Address address) {
         mProgressBar.setVisibility(View.GONE);
         if (address != null)
-            // TODO: display a readable address
-            mLocationButton.setText(address.toString());
+            // display a readable address, street if available or city
+            mLocationButton.setText(address.getMaxAddressLineIndex() > 0 ?
+                    address.getAddressLine(0) : address.getLocality());
         else
-            mLocationButton.setText(selectLocation);
+            mLocationButton.setText(SELECT_LOCATION);
     }
 
     @Override
@@ -172,5 +161,18 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
     public void showErrorDialog(int errorCode) {
         GooglePlayServicesUtil.getErrorDialog(errorCode, getActivity(),
                 ServicesSingleton.REQUEST_CODE_RECOVER_PLAY_SERVICES).show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case ServicesSingleton.REQUEST_CODE_RECOVER_PLAY_SERVICES:
+                if (resultCode == Activity.RESULT_CANCELED) {
+                    mToast.setText ("Google Play Services must be installed.");
+                    mToast.show();
+                }
+                return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
