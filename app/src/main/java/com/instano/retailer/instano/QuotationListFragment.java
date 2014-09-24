@@ -57,7 +57,7 @@ public class QuotationListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setListAdapter(ServicesSingleton.getInstance(getActivity()).getQuotationArrayAdapter());
-
+        ServicesSingleton.getInstance(getActivity()).getQuotationArrayAdapter().registerCallback(mCallbacks);
     }
 
     @Override

@@ -12,8 +12,15 @@ import android.widget.TextView;
  */
 public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quotation> {
 
+    private QuotationListFragment.Callbacks mCallbacks;
+
     public QuotationsArrayAdapter(Context context) {
         super(context, R.layout.list_item_quotation);
+        mCallbacks = null;
+    }
+
+    public void registerCallback (QuotationListFragment.Callbacks callbacks) {
+        mCallbacks = callbacks;
     }
 
     public void insertAtStart (ServicesSingleton.Quotation quotation) {
@@ -21,7 +28,7 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         // assign the view we are converting to a local variable
         View view = convertView;
 
@@ -55,6 +62,17 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
 
         shopTextView.setText(nameOfShop);
 
+        // TODO: fix hack
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mCallbacks != null)
+                    mCallbacks.onItemSelected(position);
+            }
+        });
+
+        view.setFocusable(false);
+
         return view;
     }
 
@@ -63,7 +81,7 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
             if ( getItem(i).id == quotationId )
                 return getItem(i);
         }
-        throw new IllegalArgumentException("no such quotation present");
+        throw new IllegalArgumentException("no such quotation present " + quotationId);
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.MenuItem;
 
 /**
@@ -86,13 +87,14 @@ public class QuotationListActivity extends Activity
     public void onItemSelected(int pos) {
 
         int quotationId = ServicesSingleton.getInstance(null).getQuotationArrayAdapter().getItem(pos).id;
+        Log.d(QuotationDetailFragment.ARG_QUOTATION_ID, quotationId + "");
 
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putLong(QuotationDetailFragment.ARG_QUOTATION_ID, quotationId);
+            arguments.putInt(QuotationDetailFragment.ARG_QUOTATION_ID, quotationId);
             QuotationDetailFragment fragment = new QuotationDetailFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()

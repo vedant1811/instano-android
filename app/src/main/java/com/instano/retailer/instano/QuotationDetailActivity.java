@@ -38,8 +38,8 @@ public class QuotationDetailActivity extends Activity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(QuotationDetailFragment.ARG_QUOTATION_ID,
-                    getIntent().getStringExtra(QuotationDetailFragment.ARG_QUOTATION_ID));
+            arguments.putInt(QuotationDetailFragment.ARG_QUOTATION_ID,
+                    getIntent().getIntExtra(QuotationDetailFragment.ARG_QUOTATION_ID, -1));
             QuotationDetailFragment fragment = new QuotationDetailFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()

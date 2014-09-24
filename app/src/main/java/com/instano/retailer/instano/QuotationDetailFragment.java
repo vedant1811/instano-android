@@ -50,7 +50,7 @@ public class QuotationDetailFragment extends Fragment {
 
         ServicesSingleton.Quotation quotation = mServicesSingleton.getQuotationArrayAdapter().getQuotation(mQuotationId);
 
-        TextView textView = (TextView) rootView.findViewById(R.id.chatText);
+        TextView textView = (TextView) rootView.findViewById(R.id.chatTextView);
         TextView header = (TextView) rootView.findViewById(R.id.headerTextView);
 
         String productInfo = quotation.toChatString();
@@ -58,8 +58,8 @@ public class QuotationDetailFragment extends Fragment {
         String title;
         try {
             ServicesSingleton.Seller seller = mServicesSingleton.getSellersArrayAdapter().getSeller(quotation.sellerId);
-            productInfo += "\n\n" + seller.phone + "\n" + seller.email;
-            title = seller.nameOfSeller + "from \"" + seller.nameOfShop +"\"";
+            productInfo += "\n\nSELLER INFO:" + seller.phone + "\n" + seller.email;
+            title = seller.nameOfSeller + " from \"" + seller.nameOfShop +"\"";
         } catch (IllegalArgumentException e) {
             title = "INVALID SELLER";
             e.printStackTrace();
