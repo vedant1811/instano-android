@@ -1,12 +1,10 @@
 package com.instano.retailer.instano;
 
 import android.app.Activity;
-import android.os.Bundle;
 import android.app.ListFragment;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
-
-import com.instano.retailer.instano.dummy.DummyContent;
 
 /**
  * A list fragment representing a list of Quotations. This fragment
@@ -29,7 +27,7 @@ public class QuotationListFragment extends ListFragment {
      * The fragment's current callback object, which is notified of list item
      * clicks.
      */
-    private Callbacks mCallbacks = sDummyCallbacks;
+    private Callbacks mCallbacks;
 
     /**
      * The current activated item position. Only used on tablets.
@@ -43,20 +41,10 @@ public class QuotationListFragment extends ListFragment {
      */
     public interface Callbacks {
         /**
-         * QuotationsCallback for when an item has been selected.
+         * BuyersCallbacks for when an item has been selected.
          */
-        public void onItemSelected(String id);
+        public void onItemSelected(int position);
     }
-
-    /**
-     * A dummy implementation of the {@link Callbacks} interface that does
-     * nothing. Used only when this fragment is not attached to an activity.
-     */
-    private static Callbacks sDummyCallbacks = new Callbacks() {
-        @Override
-        public void onItemSelected(String id) {
-        }
-    };
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -68,9 +56,8 @@ public class QuotationListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setListAdapter(
-                ServicesSingleton.getInstance(getActivity())
-                        .getQuotationArrayAdapter());
+        setListAdapter(ServicesSingleton.getInstance(getActivity()).getQuotationArrayAdapter());
+
     }
 
     @Override
@@ -97,20 +84,12 @@ public class QuotationListFragment extends ListFragment {
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-
-        // Reset the active callbacks interface to the dummy implementation.
-        mCallbacks = sDummyCallbacks;
-    }
-
-    @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+        mCallbacks.onItemSelected(position);
     }
 
     @Override

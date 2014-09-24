@@ -4,12 +4,45 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <ListView
-        android:id="@+id/listView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp">
-    </ListView>
+    <!--TODO: implement this-->
+    <!--<ListView-->
+        <!--android:id="@+id/listView1"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="80dp">-->
+    <!--</ListView>-->
+
+    <!--TODO: and remove this LinearLayout-->
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:clickable="false"
+        android:layout_below="@+id/headerTextView">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chatLinearLayout"
+            android:orientation="vertical"
+            android:background="@drawable/bubble_received">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/chatImageView"
+                android:src="@android:drawable/ic_menu_report_image" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Manufacturer\nModel\nRs. 5,600\nProduct Specs"
+                android:id="@+id/chatTextView"
+                android:textColor="@android:color/black"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
+        </LinearLayout>
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/form"
@@ -17,7 +50,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:layout_below="@+id/headerTextView">
 
         <EditText
             android:layout_width="wrap_content"
@@ -40,5 +74,16 @@
             android:layout_alignParentEnd="true"
             android:src="@android:drawable/ic_menu_send" />
     </RelativeLayout>
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text='Seller name of "Shop Name"'
+        android:id="@+id/headerTextView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/darker_gray"
+        android:padding="4dp" />
 
 </RelativeLayout>

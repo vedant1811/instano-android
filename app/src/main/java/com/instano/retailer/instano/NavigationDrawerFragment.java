@@ -266,7 +266,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     /**
-     * QuotationsCallback interface that all activities using this fragment must implement.
+     * BuyersCallbacks interface that all activities using this fragment must implement.
      */
     public static interface NavigationDrawerCallbacks {
         /**

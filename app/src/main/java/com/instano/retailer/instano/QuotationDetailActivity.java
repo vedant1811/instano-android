@@ -15,7 +15,7 @@ import android.view.MenuItem;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link QuotationDetailFragment}.
  */
-public class QuotationDetailActivity extends Activity implements ServicesSingleton.QuotationsCallback {
+public class QuotationDetailActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +38,8 @@ public class QuotationDetailActivity extends Activity implements ServicesSinglet
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(QuotationDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(QuotationDetailFragment.ARG_ITEM_ID));
+            arguments.putString(QuotationDetailFragment.ARG_QUOTATION_ID,
+                    getIntent().getStringExtra(QuotationDetailFragment.ARG_QUOTATION_ID));
             QuotationDetailFragment fragment = new QuotationDetailFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
@@ -64,10 +64,5 @@ public class QuotationDetailActivity extends Activity implements ServicesSinglet
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void quotationReceived() {
-
     }
 }

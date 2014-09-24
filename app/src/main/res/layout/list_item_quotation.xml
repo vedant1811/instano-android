@@ -2,7 +2,8 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:focusable="false">
 
     <LinearLayout
         android:orientation="vertical"
@@ -15,23 +16,35 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Model Name 1"
-            android:id="@+id/modelTextView" />
+            android:id="@+id/modelTextView"
+            android:textColor="@android:color/black" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Rs. 7000"
-            android:id="@+id/priceTextView" />
+            android:id="@+id/priceTextView"
+            android:textColor="@android:color/black" />
 
         <!--TODO: Add a custom rating widget only displaying rating and append to "shop name"-->
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Description"
+            android:id="@+id/descrptionTextView"
+            android:padding="2dp"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Shop name"
-            android:id="@+id/shopTextView" />
+            android:id="@+id/shopTextView"
+            android:textColor="@android:color/black" />
     </LinearLayout>
 
     <!--TODO: Make sure that siblings above and below never overlap-->

@@ -1,14 +1,11 @@
 package com.instano.retailer.instano;
 
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.instano.retailer.instano.R;
-
-import com.instano.retailer.instano.dummy.DummyContent;
 
 /**
  * A fragment representing a single Quotation detail screen.
@@ -17,16 +14,16 @@ import com.instano.retailer.instano.dummy.DummyContent;
  * on handsets.
  */
 public class QuotationDetailFragment extends Fragment {
+    
+    ServicesSingleton mServicesSingleton;
+    
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-    public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_QUOTATION_ID = "com.instano.retailer.instano.item_id"; // quotation ID
 
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private DummyContent.DummyItem mItem;
+    private int mQuotationId;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -39,12 +36,11 @@ public class QuotationDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+        if (getArguments().containsKey(ARG_QUOTATION_ID)) {
+            mQuotationId = getArguments().getInt(ARG_QUOTATION_ID);
         }
+        
+        mServicesSingleton = ServicesSingleton.getInstance(getActivity());
     }
 
     @Override
@@ -52,10 +48,25 @@ public class QuotationDetailFragment extends Fragment {
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_quotation_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-//            ((TextView) rootView.findViewById(R.id.quotation_detail)).setText(mItem.content);
+        ServicesSingleton.Quotation quotation = mServicesSingleton.getQuotationArrayAdapter().getQuotation(mQuotationId);
+
+        TextView textView = (TextView) rootView.findViewById(R.id.chatText);
+        TextView header = (TextView) rootView.findViewById(R.id.headerTextView);
+
+        String productInfo = quotation.toChatString();
+
+        String title;
+        try {
+            ServicesSingleton.Seller seller = mServicesSingleton.getSellersArrayAdapter().getSeller(quotation.sellerId);
+            productInfo += "\n\n" + seller.phone + "\n" + seller.email;
+            title = seller.nameOfSeller + "from \"" + seller.nameOfShop +"\"";
+        } catch (IllegalArgumentException e) {
+            title = "INVALID SELLER";
+            e.printStackTrace();
         }
+
+        textView.setText(productInfo);
+        header.setText(title);
 
         return rootView;
     }

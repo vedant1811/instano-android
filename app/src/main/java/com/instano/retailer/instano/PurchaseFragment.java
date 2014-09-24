@@ -73,9 +73,6 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
             }
         });
 
-        mToast = new Toast(getActivity());
-        mToast.setDuration(Toast.LENGTH_SHORT);
-
         return view;
     }
 

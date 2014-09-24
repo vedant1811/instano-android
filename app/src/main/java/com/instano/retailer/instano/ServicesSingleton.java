@@ -2,6 +2,7 @@ package com.instano.retailer.instano;
 
 import android.content.Context;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -10,12 +11,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Xml;
-import android.widget.ArrayAdapter;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
@@ -23,12 +23,14 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
@@ -43,13 +45,18 @@ public class ServicesSingleton implements
         Response.Listener<String>, Response.ErrorListener {
 
     private final static String TAG = "ServicesSingleton";
-    private final static String SERVER_URL = "";
+
+    //    private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
+    private final static String SERVER_URL = "http://10.42.0.1:3000/";
+    private final static String API_VERSION = "v1/";
+    private final static String KEY_BUYER_ID = "com.instano.retailer.instano.ServicesSingleton.buyer_id";
 
     public static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
 
     private static ServicesSingleton sInstance;
 
     private final Context mAppContext;
+    private SharedPreferences mSharedPreferences;
 
 
     /* location variables */
@@ -59,31 +66,145 @@ public class ServicesSingleton implements
     private LocationCallbacks mLocationCallbacks;
 
     /* network variables */
-    private String mQuery;
-    private QuotationsCallback mQuotationsCallback;
+    private Quote mQuote;
+    private BuyersCallbacks mBuyersCallbacks;
+    private int mBuyerId;
 
     private RequestQueue mRequestQueue;
-    private ArrayAdapter<Quotation> mQuotationArrayAdapter;
+    private QuotationsArrayAdapter mQuotationsArrayAdapter;
+    private SellersArrayAdapter mSellersArrayAdapter;
 
-    /**
-     * asynchronously sends the query request to server
-     */
-    private void sendServerRequest() {
-        if (mQuery == null || mQuery.equals(""))
-            return;
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, requestUrl(), this, this);
-
-        mRequestQueue.add(stringRequest);
+    public boolean signInRequest() {
+        mBuyerId = mSharedPreferences.getInt(KEY_BUYER_ID, -1);
+        if (mBuyerId != -1) {
+            getQuotationsRequest();
+            return true;
+        }
+        else
+            return false;
     }
 
-    private String requestUrl() {
-        return "http://altj-db.hol.es/default.php?text1=abhinav&text2=yashkar";
+    public void getQuotationsRequest () {
+        StringRequest request = new StringRequest(
+                getRequestUrl(RequestType.GET_QUOTATIONS),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.v(TAG, "Quotations response:" + response.toString());
+                        try {
+                            JSONArray quotesJsonArray = new JSONArray(response);
+                            // TODO: change creating a new list everytime
+                            mQuotationsArrayAdapter.clear();
+                            for (int i = 0; i < quotesJsonArray.length(); i++){
+                                JSONObject quotationJsonObject = quotesJsonArray.getJSONObject(i);
+                                mQuotationsArrayAdapter.insertAtStart(new Quotation(quotationJsonObject));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                this
+        );
+        mRequestQueue.add(request);
+
+        // also get sellers
+        getSellersRequest();
+    }
+
+    public void getSellersRequest() {
+        StringRequest request = new StringRequest(
+                getRequestUrl(RequestType.GET_SELLERS),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.v(TAG, "Sellers response:" + response.toString());
+                        try {
+                            JSONArray quotesJsonArray = new JSONArray(response);
+                            // TODO: change creating a new list everytime
+                            mSellersArrayAdapter.clear();
+                            for (int i = 0; i < quotesJsonArray.length(); i++){
+                                JSONObject quotationJsonObject = quotesJsonArray.getJSONObject(i);
+                                mSellersArrayAdapter.add(new Seller(quotationJsonObject));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                this
+        );
+        mRequestQueue.add(request);
+    }
+
+    public void sendQuoteRequest(String searchString, String brands, String priceRange) {
+        Quote quote =  new Quote(mBuyerId, searchString, brands, priceRange);
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                getRequestUrl(RequestType.SEND_QUOTE),
+                quote.toJsonObject(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.v (TAG, response.toString());
+//                        mBuyersCallbacks.quotationSent(true); TODO
+                    }
+                },
+                this
+        );
+        mRequestQueue.add(request);
+    }
+
+    public void sendSignInRequest() {
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                getRequestUrl(RequestType.SIGN_IN),
+                new JSONObject(), // sending an empty but valid JSON object
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            mBuyerId = response.getInt("id");
+
+                            getQuotationsRequest();
+
+                            SharedPreferences.Editor editor = mSharedPreferences.edit();
+                            editor.putInt(KEY_BUYER_ID, mBuyerId);
+                            editor.apply();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            mBuyerId = -1;
+                        }
+                    }
+                },
+                this
+        );
+    }
+
+    private String getRequestUrl(RequestType requestType) {
+        String url = SERVER_URL + API_VERSION;
+        switch (requestType) {
+//            case REGISTER:
+//                return url + "sellers";
+            case SIGN_IN:
+                return url + "buyers";
+            case GET_QUOTATIONS:
+                return url + "quotations";
+            case SEND_QUOTE:
+                return url + "quotations";
+            case GET_SELLERS:
+                return url + "sellers";
+        }
+
+        throw new IllegalArgumentException();
     }
 
     private ServicesSingleton(Context appContext) {
         mAppContext = appContext.getApplicationContext();
         mLatestAddress = null;
+        mBuyerId = -1;
 
         /*
          * Create a new location client, using the enclosing class to
@@ -98,9 +219,8 @@ public class ServicesSingleton implements
 
         mRequestQueue = Volley.newRequestQueue(mAppContext);
 
-        // TODO: initialize properly, i.e. with a meaningful layout ID
-        mQuotationArrayAdapter = new ArrayAdapter<Quotation>(mAppContext, android.R.layout.simple_list_item_1);
-
+        mQuotationsArrayAdapter = new QuotationsArrayAdapter(mAppContext);
+        mSellersArrayAdapter = new SellersArrayAdapter(mAppContext);
     }
 
     public static ServicesSingleton getInstance(Context appContext) {
@@ -145,16 +265,16 @@ public class ServicesSingleton implements
         return mLocationCallbacks;
     }
 
-    private QuotationsCallback getmQuotationsCallback() {
-        return mQuotationsCallback;
-    }
-
     public String getLocationErrorString() {
         return locationErrorString;
     }
 
     public Address getLatestAddress() {
         return mLatestAddress;
+    }
+
+    public SellersArrayAdapter getSellersArrayAdapter() {
+        return mSellersArrayAdapter;
     }
 
     /**
@@ -295,15 +415,10 @@ public class ServicesSingleton implements
         }
     }
 
-    public void runQuery(String mQuery) {
-        this.mQuery = mQuery;
-        sendServerRequest();
-    }
-
     /**
      * ** Volley **
      *
-     * QuotationsCallback method that an error has been occurred with the
+     * BuyersCallbacks method that an error has been occurred with the
      * provided error code and optional user-readable message.
      */
     @Override
@@ -331,28 +446,22 @@ public class ServicesSingleton implements
         }
     }
 
-    public ArrayAdapter<Quotation> getQuotationArrayAdapter() {
-        return mQuotationArrayAdapter;
+    public QuotationsArrayAdapter getQuotationArrayAdapter() {
+        return mQuotationsArrayAdapter;
     }
 
-    public void registerCallback (QuotationsCallback quotationsCallback) {
+    public void registerBuyer (BuyersCallbacks buyersCallbacks) {
 
-        // Be sure not to override previous quotationsCallback
-        assert mQuotationsCallback == null;
-
-        this.mQuotationsCallback = quotationsCallback;
+        this.mBuyersCallbacks = buyersCallbacks;
     }
 
     public void registerCallback (LocationCallbacks locationCallbacks) {
-
-        // Be sure not to override previous quotationsCallback
-        assert mLocationCallbacks == null;
 
         this.mLocationCallbacks = locationCallbacks;
 
     }
 
-    public interface QuotationsCallback {
+    public interface BuyersCallbacks {
         public void quotationReceived();
     }
 
@@ -372,18 +481,63 @@ public class ServicesSingleton implements
     public class Quotation {
         public final int id; // server generated
         public final String nameOfProduct; // TODO: in future probably make a generic `Product` class
-        public final int price; // price in paise. To display divide by 100
+        public final int price;
         public final String description;
-        public final Seller seller;
-        public final URL imageUrl; // can be null
+        public final int sellerId;
+        public final int quoteId; // the id of the quote being replied to
+//        public final URL imageUrl; // can be null
 
-        public Quotation(int id, String nameOfProduct, int price, String description, Seller seller, URL imageUrl) {
+        public Quotation(int id, String nameOfProduct, int price, String description, int sellerId, int quoteId) {
             this.id = id;
             this.nameOfProduct = nameOfProduct;
             this.price = price;
             this.description = description;
-            this.seller = seller;
-            this.imageUrl = imageUrl;
+            this.sellerId = sellerId;
+//            this.imageUrl = imageUrl;
+            this.quoteId = quoteId; // the id of the quote being replied to
+        }
+
+        public Quotation(String nameOfProduct, int price, String description, int sellerId, int quoteId) {
+            this(-1, nameOfProduct, price, description, sellerId, quoteId);
+        }
+
+        public Quotation(JSONObject quotationJsonObject) throws JSONException {
+            id = quotationJsonObject.getInt("id");
+            nameOfProduct = quotationJsonObject.getString("name_of_product");
+            price = quotationJsonObject.getInt("price");
+            String description = quotationJsonObject.getString("description");
+            if (description.equalsIgnoreCase("null"))
+                this.description = "";
+            else
+                this.description = description;
+            sellerId = quotationJsonObject.getInt("seller_id");
+            quoteId = quotationJsonObject.getInt("quote_id");
+        }
+
+        public String toChatString() {
+            return nameOfProduct + "\nRs. " + price + "\n" + description;
+        }
+
+        public JSONObject toJsonObject() {
+            try {
+                JSONObject quotationParamsJsonObject = new JSONObject()
+                        .put("name_of_product", nameOfProduct)
+                        .put("price", price)
+                        .put("description", description)
+                        .put("seller_id", sellerId)
+                        .put("quote_id", quoteId);
+
+                if (id != -1)
+                    quotationParamsJsonObject.put ("id", id);
+
+                JSONObject quotationJsonObject = new JSONObject()
+                        .put("quotation", quotationParamsJsonObject);
+
+                return quotationJsonObject;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 
@@ -391,18 +545,154 @@ public class ServicesSingleton implements
      * Represents a single immutable Seller
      */
     public class Seller {
+        public final static double INVALID_COORDINATE = -1000; // an invalid coordinate
+
         public final int id; // server generated
-        public final String address;
+        public final String nameOfShop;
+        public final String nameOfSeller;
+        public final String address; // newline separated
+        public final double latitude;
+        public final double longitude;
         public final String phone; // TODO: maybe make it a list of Strings
         public final int rating; // rating is out of 50, displayed out of 5.0
+        public final String email;
 
-        public Seller(int id, String address, String phone, int rating) {
+        public Seller(int id, String nameOfShop, String nameOfSeller, String address, double latitude, double longitude, String phone, int rating, String email) {
             this.id = id;
+            this.nameOfShop = nameOfShop;
+            this.nameOfSeller = nameOfSeller;
             this.address = address;
+            this.latitude = latitude;
+            this.longitude = longitude;
             this.phone = phone;
             this.rating = rating;
+            this.email = email;
+        }
+
+        /**
+         * if id and rating are not available, they are set to invalid i.e. -1
+         */
+        public Seller(String nameOfShop, String nameOfSeller, String address, double latitude, double longitude, String phone, String email) {
+            this.id = -1;
+            this.nameOfShop = nameOfShop;
+            this.nameOfSeller = nameOfSeller;
+            this.address = address;
+            this.latitude = latitude;
+            this.longitude = longitude;
+            this.phone = phone;
+            this.rating = -1;
+            this.email = email;
+        }
+
+        public Seller(JSONObject quotationJsonObject) throws JSONException {
+            id = quotationJsonObject.getInt("id");
+            nameOfShop = quotationJsonObject.getString("name_of_shop");
+            nameOfSeller = quotationJsonObject.getString("name_of_seller");
+            address = quotationJsonObject.getString("address");
+            latitude = quotationJsonObject.getDouble("latitude");
+            longitude = quotationJsonObject.getDouble("longitude");
+            phone = quotationJsonObject.getString("phone");
+            int rating;
+            try {
+                rating = Integer.parseInt(quotationJsonObject.getString("rating"));
+            } catch (NumberFormatException e) {
+                rating = -1;
+            }
+            this.rating = rating;
+            email = quotationJsonObject.getString("email");
+        }
+
+        public JSONObject toJsonObject() throws JSONException {
+            JSONObject retailerParamsJsonObject = new JSONObject();
+            retailerParamsJsonObject.put("name_of_shop", nameOfShop)
+                    .put("name_of_seller", nameOfSeller)
+                    .put("address", address)
+                    .put("latitude", latitude)
+                    .put("longitude", longitude)
+                    .put("email", email);
+
+            if (id != -1)
+                retailerParamsJsonObject.put("id", id);
+            if (rating != -1)
+                retailerParamsJsonObject.put("rating", rating);
+
+            JSONObject retailerJsonObject = new JSONObject();
+            retailerJsonObject.put("seller", retailerParamsJsonObject);
+
+            return retailerJsonObject;
         }
     }
 
+    /**
+     * Represents a single immutable quote request (that is received by the seller)
+     */
+    public class Quote {
+        public final int id;
+        public final int buyerId;
+        public final String searchString;
+
+        /**
+         * comma separated brands eg: "LG, Samsung"
+         * can be null
+         */
+        public final String brands;
+
+        /**
+         * human readable display for price
+         * can be null
+         */
+        public final String priceRange;
+
+        public Quote(int id, int buyerId, String searchString, String brands, String priceRange) {
+            this.id = id;
+            this.buyerId = buyerId;
+            this.searchString = searchString;
+            this.brands = brands;
+            this.priceRange = priceRange;
+        }
+
+        public Quote(int buyerId, String searchString, String brands, String priceRange) {
+            this.id = -1;
+            this.buyerId = buyerId;
+            this.searchString = searchString;
+            this.brands = brands;
+            this.priceRange = priceRange;
+        }
+
+        public Quote (JSONObject jsonObject) throws JSONException {
+            id = jsonObject.getInt("id");
+            buyerId = jsonObject.getInt("buyer_id");
+            searchString = jsonObject.getString("search_string");
+            brands = jsonObject.getString("brands");
+            priceRange = jsonObject.getString("price_range");
+        }
+
+        public JSONObject toJsonObject() {
+            try {
+                JSONObject quoteParamsJsonObject = new JSONObject()
+                        .put("buyer_id", buyerId)
+                        .put("search_string", searchString)
+                        .put("brands", brands)
+                        .put("price_range", priceRange);
+
+                if (id != -1)
+                    quoteParamsJsonObject.put ("id", id);
+
+                JSONObject quoteJsonObject = new JSONObject()
+                        .put("quote", quoteParamsJsonObject);
+                return quoteJsonObject;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+
+    private enum RequestType {
+        SIGN_IN,
+        GET_QUOTATIONS,
+        SEND_QUOTE,
+        GET_SELLERS
+    }
 
 }

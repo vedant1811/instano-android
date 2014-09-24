@@ -1,11 +1,10 @@
 package com.instano.retailer.instano;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
-import com.instano.retailer.instano.R;
 
 /**
  * An activity representing a list of Quotations. This activity
@@ -57,6 +56,12 @@ public class QuotationListActivity extends Activity
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        ServicesSingleton.getInstance(this).getQuotationsRequest();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
@@ -74,17 +79,20 @@ public class QuotationListActivity extends Activity
     }
 
     /**
-     * QuotationsCallback method from {@link QuotationListFragment.Callbacks}
+     * BuyersCallbacks method from {@link QuotationListFragment.Callbacks}
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(String id) {
+    public void onItemSelected(int pos) {
+
+        int quotationId = ServicesSingleton.getInstance(null).getQuotationArrayAdapter().getItem(pos).id;
+
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(QuotationDetailFragment.ARG_ITEM_ID, id);
+            arguments.putLong(QuotationDetailFragment.ARG_QUOTATION_ID, quotationId);
             QuotationDetailFragment fragment = new QuotationDetailFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
@@ -95,7 +103,7 @@ public class QuotationListActivity extends Activity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, QuotationDetailActivity.class);
-            detailIntent.putExtra(QuotationDetailFragment.ARG_ITEM_ID, id);
+            detailIntent.putExtra(QuotationDetailFragment.ARG_QUOTATION_ID, quotationId);
             startActivity(detailIntent);
         }
     }
