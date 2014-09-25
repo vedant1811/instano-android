@@ -17,6 +17,9 @@ import android.widget.TextView;
  *
  */
 public class SearchingFragment extends Fragment implements ServicesSingleton.BuyersCallbacks {
+
+    private static final String SEARCH_STRING = "SearchingFragment.search_string";
+
     /**
      * Factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -27,7 +30,7 @@ public class SearchingFragment extends Fragment implements ServicesSingleton.Buy
     public static SearchingFragment newInstance(String searchString) {
         SearchingFragment fragment = new SearchingFragment();
         Bundle args = new Bundle();
-        args.putString(PurchaseActivity.SEARCH_STRING, searchString);
+        args.putString(SEARCH_STRING, searchString);
         fragment.setArguments(args);
         return fragment;
     }
@@ -46,18 +49,22 @@ public class SearchingFragment extends Fragment implements ServicesSingleton.Buy
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_searching, container, false);
         // append the searchString
-        String searchString = getArguments().getString(PurchaseActivity.SEARCH_STRING);
+        String searchString = getArguments().getString(SEARCH_STRING);
         TextView searchingFor_TextView = (TextView) rootView.findViewById(R.id.searchingForTextView);
         searchingFor_TextView.append(searchString);
 
         Log.d("SearchingFrament.onCreateView", "creating quotations");
 
-        ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstance) {
+//        TODO: check for internet and then start activity
+//        ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
 //        servicesSingleton.registerCallback(this);
-        servicesSingleton.sendQuoteRequest(searchString, "", "");
         getActivity().startActivity(new Intent(getActivity(), QuotationListActivity.class));
 
-        return rootView;
     }
 
     @Override

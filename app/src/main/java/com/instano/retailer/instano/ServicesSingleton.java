@@ -46,8 +46,8 @@ public class ServicesSingleton implements
 
     private final static String TAG = "ServicesSingleton";
 
-    //    private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
-    private final static String SERVER_URL = "http://10.42.0.1:3000/";
+    private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
+//    private final static String SERVER_URL = "http://10.42.0.1:3000/";
     private final static String API_VERSION = "v1/";
     private final static String KEY_BUYER_ID = "com.instano.retailer.instano.ServicesSingleton.buyer_id";
 
@@ -80,8 +80,10 @@ public class ServicesSingleton implements
             getQuotationsRequest();
             return true;
         }
-        else
+        else {
+            sendSignInRequest();
             return false;
+        }
     }
 
     public void getQuotationsRequest () {
@@ -97,7 +99,11 @@ public class ServicesSingleton implements
                             mQuotationsArrayAdapter.clear();
                             for (int i = 0; i < quotesJsonArray.length(); i++){
                                 JSONObject quotationJsonObject = quotesJsonArray.getJSONObject(i);
-                                mQuotationsArrayAdapter.insertAtStart(new Quotation(quotationJsonObject));
+                                try {
+                                    mQuotationsArrayAdapter.insertAtStart(new Quotation(quotationJsonObject));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -126,7 +132,11 @@ public class ServicesSingleton implements
                             mSellersArrayAdapter.clear();
                             for (int i = 0; i < quotesJsonArray.length(); i++){
                                 JSONObject quotationJsonObject = quotesJsonArray.getJSONObject(i);
-                                mSellersArrayAdapter.add(new Seller(quotationJsonObject));
+                                try {
+                                    mSellersArrayAdapter.add(new Seller(quotationJsonObject));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -140,6 +150,12 @@ public class ServicesSingleton implements
     }
 
     public void sendQuoteRequest(String searchString, String brands, String priceRange) {
+
+        if (mBuyerId == -1) {
+            Log.e(TAG, ".sendQuoteRequest : mBuyerId is -1. Search string: " + searchString);
+            return;
+        }
+
         Quote quote =  new Quote(mBuyerId, searchString, brands, priceRange);
 
         JsonObjectRequest request = new JsonObjectRequest(
@@ -149,7 +165,7 @@ public class ServicesSingleton implements
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.v (TAG, response.toString());
-//                        mBuyersCallbacks.quotationSent(true); TODO
+//                        mBuyersCallbacks.quotationSent(true); TODO-
                     }
                 },
                 this
@@ -158,6 +174,8 @@ public class ServicesSingleton implements
     }
 
     public void sendSignInRequest() {
+
+        Log.d(TAG, "sign in request: " + new JSONObject().toString());
 
         JsonObjectRequest request = new JsonObjectRequest(
                 getRequestUrl(RequestType.SIGN_IN),
@@ -181,6 +199,7 @@ public class ServicesSingleton implements
                 },
                 this
         );
+        mRequestQueue.add(request);
     }
 
     private String getRequestUrl(RequestType requestType) {
@@ -193,7 +212,7 @@ public class ServicesSingleton implements
             case GET_QUOTATIONS:
                 return url + "quotations";
             case SEND_QUOTE:
-                return url + "quotations";
+                return url + "quotes";
             case GET_SELLERS:
                 return url + "sellers";
         }
@@ -203,6 +222,8 @@ public class ServicesSingleton implements
 
     private ServicesSingleton(Context appContext) {
         mAppContext = appContext.getApplicationContext();
+        mSharedPreferences = mAppContext.getSharedPreferences(
+                "com.instano.SHARED_PREFERENCES_FILE", Context.MODE_PRIVATE);
         mLatestAddress = null;
         mBuyerId = -1;
 
@@ -498,7 +519,7 @@ public class ServicesSingleton implements
         }
 
         public Quotation(String nameOfProduct, int price, String description, int sellerId, int quoteId) {
-            this(-1, nameOfProduct, price, description, sellerId, quoteId);
+            this(-1, nameOfProduct.trim(), price, description.trim(), sellerId, quoteId);
         }
 
         public Quotation(JSONObject quotationJsonObject) throws JSONException {
@@ -574,14 +595,14 @@ public class ServicesSingleton implements
          */
         public Seller(String nameOfShop, String nameOfSeller, String address, double latitude, double longitude, String phone, String email) {
             this.id = -1;
-            this.nameOfShop = nameOfShop;
-            this.nameOfSeller = nameOfSeller;
-            this.address = address;
+            this.nameOfShop = nameOfShop.trim();
+            this.nameOfSeller = nameOfSeller.trim();
+            this.address = address.trim();
             this.latitude = latitude;
             this.longitude = longitude;
-            this.phone = phone;
+            this.phone = phone.trim();
             this.rating = -1;
-            this.email = email;
+            this.email = email.trim();
         }
 
         public Seller(JSONObject quotationJsonObject) throws JSONException {
@@ -589,8 +610,19 @@ public class ServicesSingleton implements
             nameOfShop = quotationJsonObject.getString("name_of_shop");
             nameOfSeller = quotationJsonObject.getString("name_of_seller");
             address = quotationJsonObject.getString("address");
-            latitude = quotationJsonObject.getDouble("latitude");
-            longitude = quotationJsonObject.getDouble("longitude");
+
+            double latitude = INVALID_COORDINATE;
+            double longitude = INVALID_COORDINATE;
+            try {
+                latitude = quotationJsonObject.getDouble("latitude");
+                longitude = quotationJsonObject.getDouble("longitude");
+            } catch (JSONException e) {
+                latitude = INVALID_COORDINATE;
+                longitude = INVALID_COORDINATE;
+            } finally {
+                this.latitude = latitude;
+                this.longitude = longitude;
+            }
             phone = quotationJsonObject.getString("phone");
             int rating;
             try {
@@ -654,9 +686,9 @@ public class ServicesSingleton implements
         public Quote(int buyerId, String searchString, String brands, String priceRange) {
             this.id = -1;
             this.buyerId = buyerId;
-            this.searchString = searchString;
-            this.brands = brands;
-            this.priceRange = priceRange;
+            this.searchString = searchString.trim();
+            this.brands = brands.trim();
+            this.priceRange = priceRange.trim();
         }
 
         public Quote (JSONObject jsonObject) throws JSONException {

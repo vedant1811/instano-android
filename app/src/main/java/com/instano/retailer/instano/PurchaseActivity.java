@@ -1,22 +1,17 @@
 package com.instano.retailer.instano;
 
-import android.app.Activity;
-
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.support.v4.widget.DrawerLayout;
 
 
 public class PurchaseActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
-    static final String SEARCH_STRING = "search_string";
-
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
@@ -49,6 +44,8 @@ public class PurchaseActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        ServicesSingleton.getInstance(this).signInRequest();
     }
 
     @Override

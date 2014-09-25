@@ -58,7 +58,7 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mSearchButtonClicked();
+                searchButtonClicked();
             }
         });
 
@@ -101,7 +101,7 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
     /**
      * Called when mSearchButton has been clicked
      */
-    public void mSearchButtonClicked() {
+    public void searchButtonClicked() {
         ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
 
         if (!servicesSingleton.checkPlayServices()){
@@ -120,6 +120,7 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
             return;
         }
 
+        servicesSingleton.sendQuoteRequest(searchString, "", "");
         getFragmentManager().beginTransaction()
                 .replace(getId(), SearchingFragment.newInstance(searchString))
                 .commit();
