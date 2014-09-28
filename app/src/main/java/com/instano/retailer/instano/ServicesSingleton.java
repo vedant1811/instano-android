@@ -6,9 +6,12 @@ import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.Xml;
 
@@ -31,8 +34,15 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  *
@@ -46,8 +56,10 @@ public class ServicesSingleton implements
 
     private final static String TAG = "ServicesSingleton";
 
-    private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
-//    private final static String SERVER_URL = "http://10.42.0.1:3000/";
+
+        private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
+//        private final static String SERVER_URL = "http://10.42.0.1:3000/";
+//    private final static String SERVER_URL = "http://192.168.1.17:3000/";
     private final static String API_VERSION = "v1/";
     private final static String KEY_BUYER_ID = "com.instano.retailer.instano.ServicesSingleton.buyer_id";
 
@@ -63,7 +75,7 @@ public class ServicesSingleton implements
     private LocationClient mLocationClient;
     private Address mLatestAddress;
     private String locationErrorString;
-    private LocationCallbacks mLocationCallbacks;
+    private InitialDataCallbacks mInitialDataCallbacks;
 
     /* network variables */
     private Quote mQuote;
@@ -73,6 +85,7 @@ public class ServicesSingleton implements
     private RequestQueue mRequestQueue;
     private QuotationsArrayAdapter mQuotationsArrayAdapter;
     private SellersArrayAdapter mSellersArrayAdapter;
+    private ArrayList<String> mProductCategories;
 
     public boolean signInRequest() {
         mBuyerId = mSharedPreferences.getInt(KEY_BUYER_ID, -1);
@@ -149,14 +162,14 @@ public class ServicesSingleton implements
         mRequestQueue.add(request);
     }
 
-    public void sendQuoteRequest(String searchString, String brands, String priceRange) {
+    public void sendQuoteRequest(String searchString, String brands, String priceRange, int productCategory) {
 
         if (mBuyerId == -1) {
             Log.e(TAG, ".sendQuoteRequest : mBuyerId is -1. Search string: " + searchString);
             return;
         }
 
-        Quote quote =  new Quote(mBuyerId, searchString, brands, priceRange);
+        Quote quote =  new Quote(mBuyerId, searchString, brands, priceRange, productCategory);
 
         JsonObjectRequest request = new JsonObjectRequest(
                 getRequestUrl(RequestType.SEND_QUOTE),
@@ -202,6 +215,46 @@ public class ServicesSingleton implements
         mRequestQueue.add(request);
     }
 
+    public void getProductCategoriesRequest() {
+        Log.v(TAG, "get ProductCategories");
+        final JsonObjectRequest request = new JsonObjectRequest(
+                getRequestUrl(RequestType.GET_PRODUCT_CATEGORIES),
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.v(TAG, "ProductCategories response:" + response.toString());
+                        String[] strings = new String[response.length()];
+
+                        Iterator<String> stringIterator = response.keys();
+                        while (stringIterator.hasNext()) {
+                            try {
+                                String key = stringIterator.next();
+                                int value = response.getInt(key);
+                                strings [value] = key;
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        mProductCategories.clear();
+                        mProductCategories.addAll(Arrays.asList(strings));
+                        mInitialDataCallbacks.productCategoriesUpdated(mProductCategories);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, ".getProductCategoriesRequest error: ", error);
+                    }
+                }
+        );
+        mRequestQueue.add(request);
+    }
+
+    public ArrayList<String> getProductCategories() {
+        return mProductCategories;
+    }
+
     private String getRequestUrl(RequestType requestType) {
         String url = SERVER_URL + API_VERSION;
         switch (requestType) {
@@ -215,6 +268,8 @@ public class ServicesSingleton implements
                 return url + "quotes";
             case GET_SELLERS:
                 return url + "sellers";
+            case GET_PRODUCT_CATEGORIES:
+                return url + "product_categories";
         }
 
         throw new IllegalArgumentException();
@@ -226,6 +281,7 @@ public class ServicesSingleton implements
                 "com.instano.SHARED_PREFERENCES_FILE", Context.MODE_PRIVATE);
         mLatestAddress = null;
         mBuyerId = -1;
+        mProductCategories = new ArrayList<String>();
 
         /*
          * Create a new location client, using the enclosing class to
@@ -242,6 +298,8 @@ public class ServicesSingleton implements
 
         mQuotationsArrayAdapter = new QuotationsArrayAdapter(mAppContext);
         mSellersArrayAdapter = new SellersArrayAdapter(mAppContext);
+
+        getProductCategoriesRequest();
     }
 
     public static ServicesSingleton getInstance(Context appContext) {
@@ -255,8 +313,8 @@ public class ServicesSingleton implements
     public boolean checkPlayServices() {
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(mAppContext);
         if (status != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(status) && getmLocationCallbacks() != null) {
-                getmLocationCallbacks().showErrorDialog(status);
+            if (GooglePlayServicesUtil.isUserRecoverableError(status) && mInitialDataCallbacks != null) {
+                mInitialDataCallbacks.showErrorDialog(status);
             } else {
                 locationErrorString = "This device is not supported.";
             }
@@ -269,8 +327,8 @@ public class ServicesSingleton implements
         // Ensure that a Geocoder services is available and a locationCallback is registered
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && Geocoder.isPresent()) {
             // Show the activity indicator
-            if (getmLocationCallbacks() != null)
-                getmLocationCallbacks().searchingForAddress();
+            if (mInitialDataCallbacks != null)
+                mInitialDataCallbacks.searchingForAddress();
             /*
              * Reverse geocoding is long-running and synchronous.
              * Run it on a background thread.
@@ -280,10 +338,6 @@ public class ServicesSingleton implements
              */
             (new GetAddressTask(mAppContext)).execute(location);
         }
-    }
-
-    private LocationCallbacks getmLocationCallbacks() {
-        return mLocationCallbacks;
     }
 
     public String getLocationErrorString() {
@@ -377,8 +431,8 @@ public class ServicesSingleton implements
         @Override
         protected void onPostExecute(Address address) {
             mLatestAddress = address;
-            if (getmLocationCallbacks() != null)
-                getmLocationCallbacks().addressFound(address);
+            if (mInitialDataCallbacks != null)
+                mInitialDataCallbacks.addressFound(address);
         }
     }
 
@@ -409,7 +463,7 @@ public class ServicesSingleton implements
      */
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        if (getmLocationCallbacks() == null)
+        if (mInitialDataCallbacks == null)
             return;
         /*
          * Google Play services can resolve some errors it detects.
@@ -420,7 +474,7 @@ public class ServicesSingleton implements
         if (connectionResult.hasResolution()) {
             try {
                 // Start an Activity that tries to resolve the error
-                getmLocationCallbacks().resolvableConnectionResultError(connectionResult);
+                mInitialDataCallbacks.resolvableConnectionResultError(connectionResult);
                 /*
                  * Thrown if Google Play services canceled the original PendingIntent
                  */
@@ -432,7 +486,7 @@ public class ServicesSingleton implements
             /*
              * If no resolution is available, display a dialog to the user with the error.
              */
-            getmLocationCallbacks().showErrorDialog(connectionResult.getErrorCode());
+            mInitialDataCallbacks.showErrorDialog(connectionResult.getErrorCode());
         }
     }
 
@@ -476,9 +530,9 @@ public class ServicesSingleton implements
         this.mBuyersCallbacks = buyersCallbacks;
     }
 
-    public void registerCallback (LocationCallbacks locationCallbacks) {
+    public void registerCallback (InitialDataCallbacks initialDataCallbacks) {
 
-        this.mLocationCallbacks = locationCallbacks;
+        this.mInitialDataCallbacks = initialDataCallbacks;
 
     }
 
@@ -486,7 +540,8 @@ public class ServicesSingleton implements
         public void quotationReceived();
     }
 
-    public interface LocationCallbacks {
+    public interface InitialDataCallbacks {
+        public void productCategoriesUpdated(ArrayList<String> productCategories);
         public void searchingForAddress();
         public void addressFound(Address address);
         /*
@@ -494,6 +549,14 @@ public class ServicesSingleton implements
          */
         public void showErrorDialog(int errorCode);
         public void resolvableConnectionResultError(ConnectionResult connectionResult) throws IntentSender.SendIntentException;
+    }
+
+
+    private enum RequestType {
+        SIGN_IN,
+        GET_QUOTATIONS,
+        SEND_QUOTE,
+        GET_PRODUCT_CATEGORIES, GET_SELLERS
     }
 
     /**
@@ -577,8 +640,9 @@ public class ServicesSingleton implements
         public final String phone; // TODO: maybe make it a list of Strings
         public final int rating; // rating is out of 50, displayed out of 5.0
         public final String email;
+        public final ArrayList<Integer> productCategories;
 
-        public Seller(int id, String nameOfShop, String nameOfSeller, String address, double latitude, double longitude, String phone, int rating, String email) {
+        public Seller(int id, String nameOfShop, String nameOfSeller, String address, double latitude, double longitude, String phone, int rating, String email, ArrayList<Integer> productCategories) {
             this.id = id;
             this.nameOfShop = nameOfShop;
             this.nameOfSeller = nameOfSeller;
@@ -588,12 +652,13 @@ public class ServicesSingleton implements
             this.phone = phone;
             this.rating = rating;
             this.email = email;
+            this.productCategories = productCategories;
         }
 
         /**
          * if id and rating are not available, they are set to invalid i.e. -1
          */
-        public Seller(String nameOfShop, String nameOfSeller, String address, double latitude, double longitude, String phone, String email) {
+        public Seller(String nameOfShop, String nameOfSeller, String address, double latitude, double longitude, String phone, String email, ArrayList<Integer> productCategories) {
             this.id = -1;
             this.nameOfShop = nameOfShop.trim();
             this.nameOfSeller = nameOfSeller.trim();
@@ -603,19 +668,20 @@ public class ServicesSingleton implements
             this.phone = phone.trim();
             this.rating = -1;
             this.email = email.trim();
+            this.productCategories = productCategories;
         }
 
-        public Seller(JSONObject quotationJsonObject) throws JSONException {
-            id = quotationJsonObject.getInt("id");
-            nameOfShop = quotationJsonObject.getString("name_of_shop");
-            nameOfSeller = quotationJsonObject.getString("name_of_seller");
-            address = quotationJsonObject.getString("address");
+        public Seller(JSONObject sellerJsonObject) throws JSONException {
+            id = sellerJsonObject.getInt("id");
+            nameOfShop = sellerJsonObject.getString("name_of_shop");
+            nameOfSeller = sellerJsonObject.getString("name_of_seller");
+            address = sellerJsonObject.getString("address");
 
             double latitude = INVALID_COORDINATE;
             double longitude = INVALID_COORDINATE;
             try {
-                latitude = quotationJsonObject.getDouble("latitude");
-                longitude = quotationJsonObject.getDouble("longitude");
+                latitude = sellerJsonObject.getDouble("latitude");
+                longitude = sellerJsonObject.getDouble("longitude");
             } catch (JSONException e) {
                 latitude = INVALID_COORDINATE;
                 longitude = INVALID_COORDINATE;
@@ -623,15 +689,22 @@ public class ServicesSingleton implements
                 this.latitude = latitude;
                 this.longitude = longitude;
             }
-            phone = quotationJsonObject.getString("phone");
+            phone = sellerJsonObject.getString("phone");
             int rating;
             try {
-                rating = Integer.parseInt(quotationJsonObject.getString("rating"));
+                rating = Integer.parseInt(sellerJsonObject.getString("rating"));
             } catch (NumberFormatException e) {
                 rating = -1;
             }
             this.rating = rating;
-            email = quotationJsonObject.getString("email");
+            email = sellerJsonObject.getString("email");
+
+            // TODO:
+            productCategories = new ArrayList<Integer>();
+            JSONArray productCategoriesJsonArray = sellerJsonObject.getJSONArray("product_categories");
+            for (int i = 0; i < productCategoriesJsonArray.length(); i++) {
+                productCategories.add(productCategoriesJsonArray.getInt(i));
+            }
         }
 
         public JSONObject toJsonObject() throws JSONException {
@@ -641,12 +714,16 @@ public class ServicesSingleton implements
                     .put("address", address)
                     .put("latitude", latitude)
                     .put("longitude", longitude)
+                    .put("phone", phone)
                     .put("email", email);
 
             if (id != -1)
                 retailerParamsJsonObject.put("id", id);
             if (rating != -1)
                 retailerParamsJsonObject.put("rating", rating);
+
+            JSONArray productCategoriesJsonArray = new JSONArray(productCategories);
+            retailerParamsJsonObject.put("product_categories", productCategoriesJsonArray);
 
             JSONObject retailerJsonObject = new JSONObject();
             retailerJsonObject.put("seller", retailerParamsJsonObject);
@@ -674,29 +751,48 @@ public class ServicesSingleton implements
          * can be null
          */
         public final String priceRange;
+        public final int productCategory;
+        public final long updatedAt; // valid only when constructed from Quote(JSONObject jsonObject)
 
-        public Quote(int id, int buyerId, String searchString, String brands, String priceRange) {
+        public Quote(int id, int buyerId, String searchString, String brands, String priceRange, int productCategory) {
             this.id = id;
             this.buyerId = buyerId;
             this.searchString = searchString;
             this.brands = brands;
             this.priceRange = priceRange;
+            this.productCategory = productCategory;
+            updatedAt = 0;
         }
 
-        public Quote(int buyerId, String searchString, String brands, String priceRange) {
+        public Quote(int buyerId, String searchString, String brands, String priceRange, int productCategory) {
+            this.productCategory = productCategory;
             this.id = -1;
             this.buyerId = buyerId;
             this.searchString = searchString.trim();
             this.brands = brands.trim();
             this.priceRange = priceRange.trim();
+            updatedAt = 0;
         }
 
-        public Quote (JSONObject jsonObject) throws JSONException {
+        public Quote(JSONObject jsonObject) throws JSONException, ParseException {
+            String updatedAt = jsonObject.getString("updated_at");
+            this.updatedAt = dateFromString(updatedAt);
             id = jsonObject.getInt("id");
             buyerId = jsonObject.getInt("buyer_id");
             searchString = jsonObject.getString("search_string");
             brands = jsonObject.getString("brands");
             priceRange = jsonObject.getString("price_range");
+            productCategory = jsonObject.getInt("product_category");
+        }
+
+        /**
+         *
+         * @return Human readable time elapsed. Eg: "42 minutes ago"
+         */
+        public String getPrettyTimeElapsed() {
+            String dateTimeString = (String) DateUtils.getRelativeDateTimeString(mAppContext, updatedAt,
+                    DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
+            return dateTimeString.split(",")[0];
         }
 
         public JSONObject toJsonObject() {
@@ -705,7 +801,8 @@ public class ServicesSingleton implements
                         .put("buyer_id", buyerId)
                         .put("search_string", searchString)
                         .put("brands", brands)
-                        .put("price_range", priceRange);
+                        .put("price_range", priceRange)
+                        .put("product_category", productCategory);
 
                 if (id != -1)
                     quoteParamsJsonObject.put ("id", id);
@@ -720,11 +817,21 @@ public class ServicesSingleton implements
         }
     }
 
-    private enum RequestType {
-        SIGN_IN,
-        GET_QUOTATIONS,
-        SEND_QUOTE,
-        GET_SELLERS
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) mAppContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            return true;
+        }
+        return false;
+    }
+
+    private static long dateFromString(String sDate) throws ParseException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date date = simpleDateFormat.parse(sDate);
+        return date.getTime();
     }
 
 }

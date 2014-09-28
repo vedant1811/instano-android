@@ -9,13 +9,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+
+import java.util.ArrayList;
 
 
 /**
@@ -24,7 +29,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
  * create an instance of this fragment.
  *
  */
-public class PurchaseFragment extends Fragment implements ServicesSingleton.LocationCallbacks {
+public class PurchaseFragment extends Fragment implements ServicesSingleton.InitialDataCallbacks {
 
     private final static String CURRENT_LOCATION = "Current Location";
     private final static String SELECT_LOCATION = "Select Location";
@@ -33,6 +38,7 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
     private Button mLocationButton;
     private ProgressBar mProgressBar;
     private EditText mSearchEditText;
+    private Spinner mProductCategorySpinner;
 
     private Toast mToast;
 
@@ -73,6 +79,14 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
             }
         });
 
+        mProductCategorySpinner = (Spinner) view.findViewById(R.id.productCategorySpinner);
+
+        ArrayAdapter adapter = new ArrayAdapter(getActivity(),
+                android.R.layout.simple_spinner_item, new ArrayList());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        mProductCategorySpinner.setAdapter(adapter);
+
         return view;
     }
 
@@ -89,13 +103,16 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
     public void onResume() {
         super.onResume();
 
-        Address address = ServicesSingleton.getInstance(getActivity()).getLatestAddress();
+        ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
+        Address address = servicesSingleton.getLatestAddress();
         if (address == null)
             mLocationButton.setText(SELECT_LOCATION);
         else
             // display a readable address, street if available or city
             mLocationButton.setText(address.getMaxAddressLineIndex() > 0 ?
                     address.getAddressLine(0) : address.getLocality());
+        ArrayAdapter adapter = (ArrayAdapter) mProductCategorySpinner.getAdapter();
+        adapter.addAll(servicesSingleton.getProductCategories());
     }
 
     /**
@@ -120,7 +137,12 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
             return;
         }
 
-        servicesSingleton.sendQuoteRequest(searchString, "", "");
+        int pos = mProductCategorySpinner.getSelectedItemPosition();
+
+        if (pos == AdapterView.INVALID_POSITION)
+            pos = 0; // "unspecified"
+
+        servicesSingleton.sendQuoteRequest(searchString, "", "", pos);
         getFragmentManager().beginTransaction()
                 .replace(getId(), SearchingFragment.newInstance(searchString))
                 .commit();
@@ -131,6 +153,12 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Loca
      */
     private void mLocationButtonClicked() {
         getActivity().startActivity(new Intent(getActivity(), MapsActivity.class));
+    }
+
+    @Override
+    public void productCategoriesUpdated(ArrayList<String> productCategories) {
+        ArrayAdapter adapter = (ArrayAdapter) mProductCategorySpinner.getAdapter();
+        adapter.addAll(productCategories);
     }
 
     @Override
