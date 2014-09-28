@@ -87,6 +87,9 @@ public class ServicesSingleton implements
     }
 
     public void getQuotationsRequest () {
+
+        // first get sellers so that we enter only quotations with valid sellers
+        getSellersRequest();
         StringRequest request = new StringRequest(
                 getRequestUrl(RequestType.GET_QUOTATIONS),
                 new Response.Listener<String>() {
@@ -100,7 +103,7 @@ public class ServicesSingleton implements
                             for (int i = 0; i < quotesJsonArray.length(); i++){
                                 JSONObject quotationJsonObject = quotesJsonArray.getJSONObject(i);
                                 try {
-                                    mQuotationsArrayAdapter.insertAtStart(new Quotation(quotationJsonObject));
+                                    mQuotationsArrayAdapter.insertAtStartIfValid(new Quotation(quotationJsonObject));
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -114,9 +117,6 @@ public class ServicesSingleton implements
                 this
         );
         mRequestQueue.add(request);
-
-        // also get sellers
-        getSellersRequest();
     }
 
     public void getSellersRequest() {

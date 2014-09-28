@@ -23,8 +23,13 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
         mCallbacks = callbacks;
     }
 
-    public void insertAtStart (ServicesSingleton.Quotation quotation) {
-        insert(quotation, 0);
+    public void insertAtStartIfValid(ServicesSingleton.Quotation quotation) {
+        try {
+            ServicesSingleton.getInstance(null).getSellersArrayAdapter().getSeller(quotation.sellerId);
+            insert(quotation, 0);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
