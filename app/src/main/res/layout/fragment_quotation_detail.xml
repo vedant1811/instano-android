@@ -37,7 +37,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Manufacturer\nModel\nRs. 5,600\nProduct Specs"
+                android:text="Manufacturer\nModel\n₹ 5,600\nProduct Specs"
                 android:id="@+id/chatTextView"
                 android:textColor="@android:color/black"
                 android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />

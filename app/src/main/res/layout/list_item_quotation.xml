@@ -7,25 +7,25 @@
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/linearLayout">
+        android:id="@+id/linearLayout"
+        android:layout_toLeftOf="@+id/imageButton"
+        android:layout_toStartOf="@+id/imageButton">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Model Name 1"
-            android:id="@+id/modelTextView"
-            android:textColor="@android:color/black" />
+            android:id="@+id/modelTextView" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Rs. 7000"
-            android:id="@+id/priceTextView"
-            android:textColor="@android:color/black" />
+            android:text="₹ 7000"
+            android:id="@+id/priceTextView"/>
 
         <!--TODO: Add a custom rating widget only displaying rating and append to "shop name"-->
 
@@ -35,19 +35,28 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Description"
             android:id="@+id/descrptionTextView"
-            android:padding="2dp"
-            android:textColor="@android:color/black" />
+            android:padding="2dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Shop name"
-            android:id="@+id/shopTextView"
-            android:textColor="@android:color/black" />
+            android:id="@+id/shopTextView" />
     </LinearLayout>
 
     <!--TODO: Make sure that siblings above and below never overlap-->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="4.7 km"
+        android:id="@+id/distanceTextView"
+        android:layout_gravity="right"
+        android:layout_toStartOf="@+id/imageButton"
+        android:layout_alignBottom="@+id/linearLayout"
+        android:layout_toLeftOf="@+id/imageButton" />
 
     <ImageButton
         android:layout_width="wrap_content"

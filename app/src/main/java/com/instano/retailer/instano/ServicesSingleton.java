@@ -1,8 +1,10 @@
 package com.instano.retailer.instano;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.graphics.PointF;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -57,8 +59,8 @@ public class ServicesSingleton implements
     private final static String TAG = "ServicesSingleton";
 
 
-        private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
-//        private final static String SERVER_URL = "http://10.42.0.1:3000/";
+//    private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
+    private final static String SERVER_URL = "http://10.42.0.1:3000/";
 //    private final static String SERVER_URL = "http://192.168.1.17:3000/";
     private final static String API_VERSION = "v1/";
     private final static String KEY_BUYER_ID = "com.instano.retailer.instano.ServicesSingleton.buyer_id";
@@ -73,6 +75,7 @@ public class ServicesSingleton implements
 
     /* location variables */
     private LocationClient mLocationClient;
+    private Location mLastLocation;
     private Address mLatestAddress;
     private String locationErrorString;
     private InitialDataCallbacks mInitialDataCallbacks;
@@ -86,17 +89,23 @@ public class ServicesSingleton implements
     private QuotationsArrayAdapter mQuotationsArrayAdapter;
     private SellersArrayAdapter mSellersArrayAdapter;
     private ArrayList<String> mProductCategories;
+    private PeriodicWorker mPeriodicWorker;
 
     public boolean signInRequest() {
         mBuyerId = mSharedPreferences.getInt(KEY_BUYER_ID, -1);
         if (mBuyerId != -1) {
-            getQuotationsRequest();
+            postSignIn();
             return true;
         }
         else {
             sendSignInRequest();
             return false;
         }
+    }
+
+    private void postSignIn() {
+        mPeriodicWorker = new PeriodicWorker();
+        mPeriodicWorker.start();
     }
 
     public void getQuotationsRequest () {
@@ -111,12 +120,11 @@ public class ServicesSingleton implements
                         Log.v(TAG, "Quotations response:" + response.toString());
                         try {
                             JSONArray quotesJsonArray = new JSONArray(response);
-                            // TODO: change creating a new list everytime
-                            mQuotationsArrayAdapter.clear();
                             for (int i = 0; i < quotesJsonArray.length(); i++){
                                 JSONObject quotationJsonObject = quotesJsonArray.getJSONObject(i);
                                 try {
-                                    mQuotationsArrayAdapter.insertAtStartIfValid(new Quotation(quotationJsonObject));
+                                    // TODO: create a notification based on return value
+                                    mQuotationsArrayAdapter.insertIfNeeded(new Quotation(quotationJsonObject));
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -199,11 +207,11 @@ public class ServicesSingleton implements
                         try {
                             mBuyerId = response.getInt("id");
 
-                            getQuotationsRequest();
-
                             SharedPreferences.Editor editor = mSharedPreferences.edit();
                             editor.putInt(KEY_BUYER_ID, mBuyerId);
                             editor.apply();
+
+                            postSignIn();
                         } catch (JSONException e) {
                             e.printStackTrace();
                             mBuyerId = -1;
@@ -238,7 +246,7 @@ public class ServicesSingleton implements
                         }
                         mProductCategories.clear();
                         mProductCategories.addAll(Arrays.asList(strings));
-                        mInitialDataCallbacks.productCategoriesUpdated(mProductCategories);
+//                        mInitialDataCallbacks.productCategoriesUpdated(mProductCategories);
                     }
                 },
                 new Response.ErrorListener() {
@@ -275,11 +283,12 @@ public class ServicesSingleton implements
         throw new IllegalArgumentException();
     }
 
-    private ServicesSingleton(Context appContext) {
-        mAppContext = appContext.getApplicationContext();
+    private ServicesSingleton(Activity startingActivity) {
+        mAppContext = startingActivity.getApplicationContext();
         mSharedPreferences = mAppContext.getSharedPreferences(
                 "com.instano.SHARED_PREFERENCES_FILE", Context.MODE_PRIVATE);
         mLatestAddress = null;
+        mLastLocation = null;
         mBuyerId = -1;
         mProductCategories = new ArrayList<String>();
 
@@ -296,16 +305,16 @@ public class ServicesSingleton implements
 
         mRequestQueue = Volley.newRequestQueue(mAppContext);
 
-        mQuotationsArrayAdapter = new QuotationsArrayAdapter(mAppContext);
-        mSellersArrayAdapter = new SellersArrayAdapter(mAppContext);
+        mQuotationsArrayAdapter = new QuotationsArrayAdapter(startingActivity);
+        mSellersArrayAdapter = new SellersArrayAdapter(startingActivity);
 
         getProductCategoriesRequest();
     }
 
-    public static ServicesSingleton getInstance(Context appContext) {
+    public static ServicesSingleton getInstance(Activity startingActivity) {
 
         if(sInstance == null)
-            sInstance = new ServicesSingleton(appContext);
+            sInstance = new ServicesSingleton(startingActivity);
 
         return sInstance;
     }
@@ -443,9 +452,9 @@ public class ServicesSingleton implements
      */
     @Override
     public void onConnected(Bundle dataBundle) {
-        Location lastLocation = mLocationClient.getLastLocation();
-        if (lastLocation != null)
-            searchAddress(lastLocation);
+        mLastLocation = mLocationClient.getLastLocation();
+        if (mLastLocation != null)
+            searchAddress(mLastLocation);
     }
 
     /*
@@ -541,7 +550,7 @@ public class ServicesSingleton implements
     }
 
     public interface InitialDataCallbacks {
-        public void productCategoriesUpdated(ArrayList<String> productCategories);
+//        public void productCategoriesUpdated(ArrayList<String> productCategories);
         public void searchingForAddress();
         public void addressFound(Address address);
         /*
@@ -599,7 +608,7 @@ public class ServicesSingleton implements
         }
 
         public String toChatString() {
-            return nameOfProduct + "\nRs. " + price + "\n" + description;
+            return nameOfProduct + "\n₹ " + price + "\n" + description;
         }
 
         public JSONObject toJsonObject() {
@@ -729,6 +738,29 @@ public class ServicesSingleton implements
             retailerJsonObject.put("seller", retailerParamsJsonObject);
 
             return retailerJsonObject;
+        }
+
+        // get distance between to two points given as latitude and longitude or null on error
+        public String getDistanceFromLocation() {
+
+            if (mLastLocation == null)
+                return null;
+
+            PointF p1 = new PointF((float) mLastLocation.getLatitude(), (float) mLastLocation.getLongitude());
+            PointF p2 = new PointF((float) latitude, (float) longitude);
+
+            double R = 6371; // km
+            double dLat = Math.toRadians(p2.x - p1.x);
+            double dLon = Math.toRadians(p2.y - p1.y);
+            double lat1 = Math.toRadians(p1.x);
+            double lat2 = Math.toRadians(p2.x);
+
+            double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2)
+                    * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            double distance = R * c;
+
+            return String.format("%.2f", distance) + " km";
         }
     }
 

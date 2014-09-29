@@ -30,7 +30,7 @@
             android:layout_weight="0.8">
 
             <TextView
-                android:id="@+id/shopTextView"
+                android:id="@+id/shopNameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:textAppearanceMedium"
@@ -39,12 +39,12 @@
         </LinearLayout>
 
         <RelativeLayout
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:id="@+id/addressLayoutInShop">
-            <!--TODO: fix bug- address and dist can overlap as of now-->
+
             <TextView
                 android:id="@+id/addressTextView"
                 android:layout_width="wrap_content"
@@ -52,14 +52,18 @@
                 android:textAppearance="?android:textAppearanceSmall"
                 android:text="Address1\nAddress2"
                 android:lines="2"
-                android:layout_gravity="left" />
+                android:layout_gravity="left"
+                android:layout_toLeftOf="@+id/distanceTextView"
+                android:layout_toStartOf="@+id/distanceTextView"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="2.4km"
-                android:id="@+id/distTextViewInShop"
+                android:id="@+id/distanceTextView"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true" />
         </RelativeLayout>
@@ -71,13 +75,14 @@
             android:orientation="horizontal"
             android:focusable="false">
 
-            <RatingBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/ratingBar"
-                android:numStars="5"
-                android:clickable="true"
-                android:focusableInTouchMode="false" />
+            <!--TODO:-->
+            <!--<RatingBar-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/ratingBar"-->
+                <!--android:numStars="5"-->
+                <!--android:clickable="true"-->
+                <!--android:focusableInTouchMode="false" />-->
         </LinearLayout>
     </LinearLayout>
 

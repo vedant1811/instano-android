@@ -58,6 +58,9 @@ public class QuotationDetailFragment extends Fragment {
         String title;
         try {
             ServicesSingleton.Seller seller = mServicesSingleton.getSellersArrayAdapter().getSeller(quotation.sellerId);
+            String distanceFromLocation = seller.getDistanceFromLocation();
+            if (distanceFromLocation != null)
+                productInfo += distanceFromLocation + " away";
             productInfo += "\n\nSELLER INFO:" + seller.phone + "\n" + seller.email;
             title = seller.nameOfSeller + " from \"" + seller.nameOfShop +"\"";
         } catch (IllegalArgumentException e) {

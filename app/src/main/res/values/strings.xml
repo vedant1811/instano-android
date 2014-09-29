@@ -2,9 +2,6 @@
 <resources>
 
     <string name="app_name">Instano</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>
@@ -13,5 +10,7 @@
     <string name="title_quotation_list">Quotations</string>
     <string name="title_quotation_detail">Quotation Detail</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_search_tabs">Search</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

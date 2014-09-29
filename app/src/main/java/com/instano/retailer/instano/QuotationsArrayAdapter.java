@@ -23,12 +23,18 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
         mCallbacks = callbacks;
     }
 
-    public void insertAtStartIfValid(ServicesSingleton.Quotation quotation) {
+    public boolean insertIfNeeded(ServicesSingleton.Quotation quotation) {
+
+        if (getQuotation(quotation.id) != null)
+            return false;
+
         try {
             ServicesSingleton.getInstance(null).getSellersArrayAdapter().getSeller(quotation.sellerId);
             insert(quotation, 0);
+            return true;
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -47,22 +53,31 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
         TextView priceTextView = (TextView) view.findViewById(R.id.priceTextView);
         TextView descriptionTextView = (TextView) view.findViewById(R.id.descrptionTextView);
         TextView shopTextView = (TextView) view.findViewById(R.id.shopTextView);
+        TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
+
+        ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(null);
 
         ServicesSingleton.Quotation quotation = getItem(position);
 
         modelTextView.setText(quotation.nameOfProduct);
-        priceTextView.setText("Rs. " + quotation.price); // TODO change to rupee symbol
+        priceTextView.setText("₹ " + quotation.price); // TODO change to rupee symbol
         descriptionTextView.setText(quotation.description);
 
         String nameOfShop;
 
-
         // TODO: better handle error
         try {
-            nameOfShop = ServicesSingleton.getInstance(null).getSellersArrayAdapter()
-                                    .getSeller(quotation.sellerId).nameOfShop;
+            ServicesSingleton.Seller seller = servicesSingleton.getSellersArrayAdapter()
+                    .getSeller(quotation.sellerId);
+            nameOfShop = seller.nameOfShop;
+            String distance = seller.getDistanceFromLocation();
+            if (distance != null)
+                distanceTextView.setText(distance);
+            else
+                distanceTextView.setVisibility(View.INVISIBLE);
         } catch (IllegalArgumentException e) {
             nameOfShop = "INVALID SHOP";
+            distanceTextView.setVisibility(View.INVISIBLE);
         }
 
         shopTextView.setText(nameOfShop);
@@ -86,7 +101,7 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
             if ( getItem(i).id == quotationId )
                 return getItem(i);
         }
-        throw new IllegalArgumentException("no such quotation present " + quotationId);
+        return null;
     }
 
     @Override
