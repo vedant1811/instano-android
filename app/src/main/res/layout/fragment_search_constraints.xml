@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_gravity="left|center_vertical"
+        android:layout_gravity="center"
         android:id="@+id/parentRelativeLayout"
         android:padding="4dp"
         android:paddingTop="10dp">
@@ -78,9 +78,9 @@
             android:paddingTop="16dp"
             android:paddingRight="8dp"
             android:paddingBottom="8dp"
-            android:layout_below="@+id/withinTextView"
-            android:layout_alignLeft="@+id/withinTextView"
-            android:layout_alignStart="@+id/withinTextView" />
+            android:layout_below="@+id/searchButton"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
         <EditText
             android:layout_width="fill_parent"
@@ -137,11 +137,22 @@
             android:layout_below="@+id/searchStringEditText"
             android:layout_alignRight="@+id/frameLayout2"
             android:layout_alignEnd="@+id/frameLayout2"
-            android:paddingRight="8dp"
-            android:max="100"
+            android:paddingRight="16dp"
+            android:max="99"
             android:layout_toEndOf="@+id/withinTextView"
-            android:progress="10"
+            android:layout_toRightOf="@+id/withinTextView"
+            android:progress="9"
             android:indeterminate="false" />
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:id="@+id/searchButton"
+            android:layout_below="@+id/withinTextView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:onClick="searchButtonClicked" />
 
     </RelativeLayout>
 </FrameLayout>

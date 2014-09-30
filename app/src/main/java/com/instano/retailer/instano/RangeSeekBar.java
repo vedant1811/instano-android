@@ -106,7 +106,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     /**
-     * Should the widget notify the listener callback while the user is still dragging a thumb? Default is false.
+     * Should the widget notify the mListener callback while the user is still dragging a thumb? Default is false.
      *
      * @param flag
      */
@@ -183,17 +183,17 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     /**
-     * Registers given listener callback to notify about changed selected values.
+     * Registers given mListener callback to notify about changed selected values.
      *
      * @param listener
-     *            The listener to notify about changed selected values.
+     *            The mListener to notify about changed selected values.
      */
     public void setOnRangeSeekBarChangeListener(OnRangeSeekBarChangeListener<T> listener) {
         this.listener = listener;
     }
 
     /**
-     * Handles thumb selection and movement. Notifies listener callback on certain events.
+     * Handles thumb selection and movement. Notifies mListener callback on certain events.
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -540,7 +540,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     /**
-     * Callback listener interface to notify about changed range values.
+     * Callback mListener interface to notify about changed range values.
      *
      * @author Stephan Tittel (stephan.tittel@kom.tu-darmstadt.de)
      *

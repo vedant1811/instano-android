@@ -60,8 +60,8 @@ public class ServicesSingleton implements
 
 
 //    private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
-    private final static String SERVER_URL = "http://10.42.0.1:3000/";
-//    private final static String SERVER_URL = "http://192.168.1.17:3000/";
+//    private final static String SERVER_URL = "http://10.42.0.1:3000/";
+    private final static String SERVER_URL = "http://192.168.1.17:3000/";
     private final static String API_VERSION = "v1/";
     private final static String KEY_BUYER_ID = "com.instano.retailer.instano.ServicesSingleton.buyer_id";
 
@@ -170,14 +170,15 @@ public class ServicesSingleton implements
         mRequestQueue.add(request);
     }
 
-    public void sendQuoteRequest(String searchString, String brands, String priceRange, int productCategory) {
+    public void sendQuoteRequest(String searchString, String brands, String priceRange,
+                                 int productCategory, ArrayList<Integer> sellerIds) {
 
         if (mBuyerId == -1) {
             Log.e(TAG, ".sendQuoteRequest : mBuyerId is -1. Search string: " + searchString);
             return;
         }
 
-        Quote quote =  new Quote(mBuyerId, searchString, brands, priceRange, productCategory);
+        Quote quote =  new Quote(mBuyerId, searchString, brands, priceRange, productCategory, sellerIds);
 
         JsonObjectRequest request = new JsonObjectRequest(
                 getRequestUrl(RequestType.SEND_QUOTE),
@@ -741,15 +742,25 @@ public class ServicesSingleton implements
         }
 
         // get distance between to two points given as latitude and longitude or null on error
-        public String getDistanceFromLocation() {
+        public String getPrettyDistanceFromLocation() {
+            int distanceFromLocation = getDistanceFromLocation();
+            if (distanceFromLocation == -1)
+                return null;
+            else
+                return String.format("%.2f", distanceFromLocation /100.0) + " km";
+        }
+
+        // get distance between to two points in 10x meters or -1
+        public int getDistanceFromLocation() {
+            long startTime = System.nanoTime();
 
             if (mLastLocation == null)
-                return null;
+                return -1;
 
             PointF p1 = new PointF((float) mLastLocation.getLatitude(), (float) mLastLocation.getLongitude());
             PointF p2 = new PointF((float) latitude, (float) longitude);
 
-            double R = 6371; // km
+            double R = 637100; // 10x meters
             double dLat = Math.toRadians(p2.x - p1.x);
             double dLon = Math.toRadians(p2.y - p1.y);
             double lat1 = Math.toRadians(p1.x);
@@ -760,7 +771,9 @@ public class ServicesSingleton implements
             double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             double distance = R * c;
 
-            return String.format("%.2f", distance) + " km";
+            Log.v("getPrettyDistanceFromLocation time:", String.valueOf((System.nanoTime() - startTime)/1000000));
+
+            return (int) distance;
         }
     }
 
@@ -785,19 +798,22 @@ public class ServicesSingleton implements
         public final String priceRange;
         public final int productCategory;
         public final long updatedAt; // valid only when constructed from Quote(JSONObject jsonObject)
+        public final ArrayList<Integer> sellerIds;
 
-        public Quote(int id, int buyerId, String searchString, String brands, String priceRange, int productCategory) {
+        public Quote(int id, int buyerId, String searchString, String brands, String priceRange, int productCategory, ArrayList<Integer> sellerIds) {
             this.id = id;
             this.buyerId = buyerId;
             this.searchString = searchString;
             this.brands = brands;
             this.priceRange = priceRange;
             this.productCategory = productCategory;
+            this.sellerIds = sellerIds;
             updatedAt = 0;
         }
 
-        public Quote(int buyerId, String searchString, String brands, String priceRange, int productCategory) {
+        public Quote(int buyerId, String searchString, String brands, String priceRange, int productCategory, ArrayList<Integer> sellerIds) {
             this.productCategory = productCategory;
+            this.sellerIds = sellerIds;
             this.id = -1;
             this.buyerId = buyerId;
             this.searchString = searchString.trim();
@@ -815,6 +831,7 @@ public class ServicesSingleton implements
             brands = jsonObject.getString("brands");
             priceRange = jsonObject.getString("price_range");
             productCategory = jsonObject.getInt("product_category");
+            sellerIds = null;
         }
 
         /**
@@ -829,12 +846,15 @@ public class ServicesSingleton implements
 
         public JSONObject toJsonObject() {
             try {
+                JSONArray sellerIds = new JSONArray(this.sellerIds);
+
                 JSONObject quoteParamsJsonObject = new JSONObject()
                         .put("buyer_id", buyerId)
                         .put("search_string", searchString)
                         .put("brands", brands)
                         .put("price_range", priceRange)
-                        .put("product_category", productCategory);
+                        .put("product_category", productCategory)
+                        .put("seller_ids", sellerIds);
 
                 if (id != -1)
                     quoteParamsJsonObject.put ("id", id);

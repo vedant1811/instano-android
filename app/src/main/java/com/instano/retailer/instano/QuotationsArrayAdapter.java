@@ -70,7 +70,7 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
             ServicesSingleton.Seller seller = servicesSingleton.getSellersArrayAdapter()
                     .getSeller(quotation.sellerId);
             nameOfShop = seller.nameOfShop;
-            String distance = seller.getDistanceFromLocation();
+            String distance = seller.getPrettyDistanceFromLocation();
             if (distance != null)
                 distanceTextView.setText(distance);
             else

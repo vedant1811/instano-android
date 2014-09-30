@@ -58,7 +58,7 @@ public class QuotationDetailFragment extends Fragment {
         String title;
         try {
             ServicesSingleton.Seller seller = mServicesSingleton.getSellersArrayAdapter().getSeller(quotation.sellerId);
-            String distanceFromLocation = seller.getDistanceFromLocation();
+            String distanceFromLocation = seller.getPrettyDistanceFromLocation();
             if (distanceFromLocation != null)
                 productInfo += distanceFromLocation + " away";
             productInfo += "\n\nSELLER INFO:" + seller.phone + "\n" + seller.email;

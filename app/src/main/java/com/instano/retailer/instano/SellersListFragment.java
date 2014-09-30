@@ -1,18 +1,16 @@
 package com.instano.retailer.instano;
 
 import android.app.Activity;
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
-
-
-import com.instano.retailer.instano.dummy.DummyContent;
 
 /**
  * A fragment representing a list of Items.
@@ -20,23 +18,26 @@ import com.instano.retailer.instano.dummy.DummyContent;
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
  * <p />
- * Activities containing this fragment MUST implement the {@link Callbacks}
+ * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class SellersListFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class SellersListFragment extends Fragment implements AbsListView.OnItemClickListener,
+        SellersArrayAdapter.ItemCheckedStateChangedListener {
 
     private OnFragmentInteractionListener mListener;
 
     /**
-     * The fragment's ListView/GridView.
+     * The fragment's ListView
      */
-    private AbsListView mListView;
+    private ListView mListView;
 
     /**
      * The Adapter which will be used to populate the ListView/GridView with
      * Views.
      */
-    private ListAdapter mAdapter;
+    private SellersArrayAdapter mAdapter;
+    private View mHeader;
+    private Button mHeaderButton;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -57,9 +58,16 @@ public class SellersListFragment extends Fragment implements AbsListView.OnItemC
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sellers, container, false);
 
+        mHeader = inflater.inflate(R.layout.header_search, null, false);
+        mHeaderButton = (Button) mHeader.findViewById(R.id.searchButton);
+
         // Set the adapter
-        mListView = (AbsListView) view.findViewById(android.R.id.list);
-        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
+        mListView = (ListView) view.findViewById(R.id.listView);
+        mListView.addHeaderView(mHeader);
+        mListView.setAdapter(mAdapter);
+        mListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+        mAdapter.setListener(this);
+        mAdapter.getFilter().filter("1000"); // so that items are displayed
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
@@ -90,8 +98,12 @@ public class SellersListFragment extends Fragment implements AbsListView.OnItemC
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onSellersListFragmentInteraction(DummyContent.ITEMS.get(position).id);
+            mListener.onSellersListFragmentInteraction((int) id);
         }
+    }
+
+    public void searchButtonClicked(View view) {
+
     }
 
     /**
@@ -107,6 +119,27 @@ public class SellersListFragment extends Fragment implements AbsListView.OnItemC
         }
     }
 
+    @Override
+    public void itemStateChanged(int pos, boolean checkedState) {
+        if (pos > -1)
+            mListView.setItemChecked(pos, checkedState);
+
+        int checkedItemCount = mListView.getCheckedItemCount();
+        switch (checkedItemCount) {
+            case 0:
+                mHeaderButton.setText("Send to zero Sellers");
+                mHeaderButton.setEnabled(false);
+                break;
+            case 1:
+                mHeaderButton.setText("Send to 1 seller");
+                mHeaderButton.setEnabled(true);
+                break;
+            default:
+                mHeaderButton.setText(String.format("Send to %d sellers", checkedItemCount));
+                mHeaderButton.setEnabled(true);
+        }
+    }
+
     /**
     * This interface must be implemented by activities that contain this
     * fragment to allow an interaction in this fragment to be communicated
@@ -119,7 +152,6 @@ public class SellersListFragment extends Fragment implements AbsListView.OnItemC
     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onSellersListFragmentInteraction(String id);
+        public void onSellersListFragmentInteraction(int sellerId);
     }
-
 }

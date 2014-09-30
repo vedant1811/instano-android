@@ -72,7 +72,7 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
             // Create a tab with text corresponding to the page title defined by
             // the adapter. Also specify this Activity object, which implements
-            // the TabListener interface, as the callback (listener) for when
+            // the TabListener interface, as the callback (mListener) for when
             // this tab is selected.
             actionBar.addTab(
                     actionBar.newTab()
@@ -122,7 +122,7 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
     }
 
     @Override
-    public void onSellersListFragmentInteraction(String id) {
+    public void onSellersListFragmentInteraction(int sellerId) {
 
     }
 
