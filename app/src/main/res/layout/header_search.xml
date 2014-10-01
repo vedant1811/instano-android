@@ -9,9 +9,8 @@
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Send to 0 sellers"
+        android:text="Send to selected sellers"
         android:id="@+id/searchButton"
         android:layout_weight="0.7"
-        android:onClick="searchButtonClicked"
-        android:enabled="false" />
+        android:onClick="searchButtonClicked" />
 </LinearLayout>

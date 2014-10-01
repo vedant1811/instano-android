@@ -5,19 +5,18 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
-public class SearchTabsActivity extends Activity implements ActionBar.TabListener,
-        SellersListFragment.OnFragmentInteractionListener,
-        SearchConstraintsFragment.OnFragmentInteractionListener {
+public class SearchTabsActivity extends Activity implements ActionBar.TabListener {
 
-    private final static String[] TABS = { "Sellers list", "Constraints" }; // TODO: add a maps tab
+    private final static String[] TABS = {  "Constraints" , "Sellers list",}; // TODO: add a maps tab
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -34,16 +33,30 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
      */
     ViewPager mViewPager;
 
-    SellersListFragment mFragment1;
-    SearchConstraintsFragment mFragment2;
+    SellersListFragment mSellersListFragment;
+    SearchConstraintsFragment mSearchConstraintsFragment;
+
+
+    public void searchButtonClicked(View view) {
+        ServicesSingleton.getInstance(this).sendQuoteRequest(
+                mSearchConstraintsFragment.getSearchString(),
+                mSearchConstraintsFragment.getBrands(),
+                mSearchConstraintsFragment.getPriceRange(),
+                mSearchConstraintsFragment.getProductCategory(),
+                mSellersListFragment.getSellerIds()
+        );
+        startActivity(new Intent(this, QuotationListActivity.class));
+
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_tabs);
 
-        mFragment1 = new SellersListFragment();
-        mFragment2 = SearchConstraintsFragment.newInstance(getIntent()
+        mSellersListFragment = new SellersListFragment();
+        mSearchConstraintsFragment = SearchConstraintsFragment.newInstance(getIntent()
                 .getStringExtra(SearchConstraintsFragment.ARG_SEARCH_STRING));
 
         // Set up the action bar.
@@ -116,16 +129,6 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
-    @Override
-    public void onSearchConstraintsFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
-    public void onSellersListFragmentInteraction(int sellerId) {
-
-    }
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -140,9 +143,9 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return mFragment1;
+                    return mSearchConstraintsFragment;
                 case 1:
-                    return mFragment2;
+                    return mSellersListFragment;
             }
 
             throw new IllegalArgumentException("Invalid parameter position: " + position);

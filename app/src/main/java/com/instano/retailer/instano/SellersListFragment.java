@@ -1,16 +1,16 @@
 package com.instano.retailer.instano;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 /**
  * A fragment representing a list of Items.
@@ -18,13 +18,8 @@ import android.widget.TextView;
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
  * <p />
- * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
- * interface.
  */
-public class SellersListFragment extends Fragment implements AbsListView.OnItemClickListener,
-        SellersArrayAdapter.ItemCheckedStateChangedListener {
-
-    private OnFragmentInteractionListener mListener;
+public class SellersListFragment extends Fragment {
 
     /**
      * The fragment's ListView
@@ -66,44 +61,10 @@ public class SellersListFragment extends Fragment implements AbsListView.OnItemC
         mListView.addHeaderView(mHeader);
         mListView.setAdapter(mAdapter);
         mListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-        mAdapter.setListener(this);
-        mAdapter.getFilter().filter("1000"); // so that items are displayed
-
-        // Set OnItemClickListener so we can be notified on item clicks
-        mListView.setOnItemClickListener(this);
+//        mAdapter.setListener(this);
+        mAdapter.getFilter().filter("1000,0"); // so that items are displayed
 
         return view;
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (null != mListener) {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
-            mListener.onSellersListFragmentInteraction((int) id);
-        }
-    }
-
-    public void searchButtonClicked(View view) {
-
     }
 
     /**
@@ -119,39 +80,29 @@ public class SellersListFragment extends Fragment implements AbsListView.OnItemC
         }
     }
 
-    @Override
-    public void itemStateChanged(int pos, boolean checkedState) {
-        if (pos > -1)
-            mListView.setItemChecked(pos, checkedState);
+    // TODO: implement
+//    @Override
+//    public void itemStateChanged(int pos, boolean checkedState) {
+//        if (pos > -1)
+//            mListView.setItemChecked(pos, checkedState);
+//
+//        int checkedItemCount = mListView.getCheckedItemCount();
+//        switch (checkedItemCount) {
+//            case 0:
+//                mHeaderButton.setText("Send to zero Sellers");
+//                mHeaderButton.setEnabled(false);
+//                break;
+//            case 1:
+//                mHeaderButton.setText("Send to 1 seller");
+//                mHeaderButton.setEnabled(true);
+//                break;
+//            default:
+//                mHeaderButton.setText(String.format("Send to %d sellers", checkedItemCount));
+//                mHeaderButton.setEnabled(true);
+//        }
+//    }
 
-        int checkedItemCount = mListView.getCheckedItemCount();
-        switch (checkedItemCount) {
-            case 0:
-                mHeaderButton.setText("Send to zero Sellers");
-                mHeaderButton.setEnabled(false);
-                break;
-            case 1:
-                mHeaderButton.setText("Send to 1 seller");
-                mHeaderButton.setEnabled(true);
-                break;
-            default:
-                mHeaderButton.setText(String.format("Send to %d sellers", checkedItemCount));
-                mHeaderButton.setEnabled(true);
-        }
-    }
-
-    /**
-    * This interface must be implemented by activities that contain this
-    * fragment to allow an interaction in this fragment to be communicated
-    * to the activity and potentially other fragments contained in that
-    * activity.
-    * <p>
-    * See the Android Training lesson <a href=
-    * "http://developer.android.com/training/basics/fragments/communicating.html"
-    * >Communicating with Other Fragments</a> for more information.
-    */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onSellersListFragmentInteraction(int sellerId);
+    public ArrayList<Integer> getSellerIds() {
+        return mAdapter.getSelectedSellerIds();
     }
 }

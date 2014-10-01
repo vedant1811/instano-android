@@ -122,7 +122,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="₹ 5,000 to 50,000"
+            android:text="₹5,000 to ₹50,000"
             android:id="@+id/priceRangeTextView"
             android:layout_below="@+id/textView5"
             android:layout_centerHorizontal="true"

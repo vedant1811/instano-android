@@ -1,12 +1,11 @@
 package com.instano.retailer.instano;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -17,9 +16,6 @@ import android.widget.TextView;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SearchConstraintsFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link SearchConstraintsFragment#newInstance} factory method to
  * create an instance of this fragment.
  *
@@ -36,9 +32,6 @@ public class SearchConstraintsFragment extends Fragment {
     private EditText mAdditionalInfoEditText;
     private Spinner mProductCategorySpinner;
     private TextView mPriceRangeTextView;
-
-    private SearchTabsActivity mParentActivity;
-    private OnFragmentInteractionListener mListener;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -86,7 +79,7 @@ public class SearchConstraintsFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mWithinTextView.setText(String.format("Within %dkm:", progress + 1));
                 servicesSingleton.getSellersArrayAdapter().getFilter().filter(
-                        String.valueOf((progress + 1) * 100));
+                        ((progress + 1) * 100) + "," + getProductCategory());
             }
 
             @Override
@@ -101,11 +94,25 @@ public class SearchConstraintsFragment extends Fragment {
         });
 
         // TODO: guess product category from search string
+        // TODO: update spinner if ProductCategory is updated (make a separate class <extends Spinner>)
 
-        ArrayAdapter adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item);
+        ArrayAdapter adapter = new ArrayAdapter(getActivity(),
+                android.R.layout.simple_spinner_item, servicesSingleton.getProductCategories());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adapter.addAll(servicesSingleton.getProductCategories());
         mProductCategorySpinner.setAdapter(adapter);
+        mProductCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                servicesSingleton.getSellersArrayAdapter().getFilter().filter(
+                        ((mWithinSeekBar.getProgress() + 1) * 100) + "," + position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                servicesSingleton.getSellersArrayAdapter().getFilter().filter(
+                        ((mWithinSeekBar.getProgress() + 1) * 100) + "," + 0);
+            }
+        });
 
         // setup range seek bar:
         {
@@ -117,7 +124,7 @@ public class SearchConstraintsFragment extends Fragment {
                 public void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, Integer minValue, Integer maxValue) {
                     minValue *= 5000;
                     maxValue *= 5000;
-                    mPriceRangeTextView.setText(String.format("₹ %,d to ₹ %,d", minValue, maxValue));
+                    mPriceRangeTextView.setText(String.format("₹%,d to ₹%,d", minValue, maxValue));
                 }
             });
             RelativeLayout parent = (RelativeLayout) view.findViewById(R.id.parentRelativeLayout);
@@ -135,44 +142,24 @@ public class SearchConstraintsFragment extends Fragment {
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onSearchConstraintsFragmentInteraction(uri);
-        }
+    public String getSearchString() {
+        return mSearchStringEditText.getText().toString();
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-            mParentActivity = (SearchTabsActivity) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+    public String getBrands() {
+        return mAdditionalInfoEditText.getText().toString();
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public int getProductCategory() {
+        int position = mProductCategorySpinner.getSelectedItemPosition();
+        if (position != AdapterView.INVALID_POSITION)
+            return position;
+        else
+            return 0;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onSearchConstraintsFragmentInteraction(Uri uri);
+    public String getPriceRange() {
+        return mPriceRangeTextView.getText().toString();
     }
 
 }

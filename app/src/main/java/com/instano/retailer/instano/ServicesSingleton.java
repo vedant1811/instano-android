@@ -119,12 +119,13 @@ public class ServicesSingleton implements
                     public void onResponse(String response) {
                         Log.v(TAG, "Quotations response:" + response.toString());
                         try {
+                            boolean dataChanged = false;
                             JSONArray quotesJsonArray = new JSONArray(response);
                             for (int i = 0; i < quotesJsonArray.length(); i++){
                                 JSONObject quotationJsonObject = quotesJsonArray.getJSONObject(i);
                                 try {
                                     // TODO: create a notification based on return value
-                                    mQuotationsArrayAdapter.insertIfNeeded(new Quotation(quotationJsonObject));
+                                    dataChanged |= mQuotationsArrayAdapter.insertIfNeeded(new Quotation(quotationJsonObject));
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -159,6 +160,7 @@ public class ServicesSingleton implements
                                     e.printStackTrace();
                                 }
                             }
+                            mSellersArrayAdapter.filer();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -752,8 +754,6 @@ public class ServicesSingleton implements
 
         // get distance between to two points in 10x meters or -1
         public int getDistanceFromLocation() {
-            long startTime = System.nanoTime();
-
             if (mLastLocation == null)
                 return -1;
 
@@ -770,9 +770,6 @@ public class ServicesSingleton implements
                     * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
             double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
             double distance = R * c;
-
-            Log.v("getPrettyDistanceFromLocation time:", String.valueOf((System.nanoTime() - startTime)/1000000));
-
             return (int) distance;
         }
     }

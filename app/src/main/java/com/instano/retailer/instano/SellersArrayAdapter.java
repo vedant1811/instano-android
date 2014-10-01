@@ -1,6 +1,7 @@
 package com.instano.retailer.instano;
 
 import android.content.Context;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +19,10 @@ import java.util.ArrayList;
  * Created by vedant on 24/9/14.
  */
 public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller> {
+
     private ArrayList<ServicesSingleton.Seller> mFilteredList;
-    private Filter mFilter;
+    private DistanceFilter mFilter;
+    private SparseBooleanArray mCheckedItems;
 
     private ItemCheckedStateChangedListener mListener;
 
@@ -27,10 +30,19 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
         super(context, android.R.layout.simple_list_item_2);
         mFilteredList = new ArrayList<ServicesSingleton.Seller>();
         mFilter = new DistanceFilter();
+        mCheckedItems = new SparseBooleanArray();
     }
 
     public void setListener (ItemCheckedStateChangedListener listener) {
         this.mListener = listener;
+    }
+
+    public ArrayList<Integer> getSelectedSellerIds() {
+        ArrayList<Integer> ids = new ArrayList<Integer>();
+        for (ServicesSingleton.Seller seller : mFilteredList)
+            if (mCheckedItems.get(seller.id))
+                ids.add(seller.id);
+        return ids;
     }
 
     @Override
@@ -65,18 +77,21 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox);
 
+        final ServicesSingleton.Seller seller = getItem(position);
+
         checkBox.setOnCheckedChangeListener (new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 if (mListener != null)
                     mListener.itemStateChanged(position, isChecked);
+                mCheckedItems.put(seller.id, isChecked);
             }
         });
         // initially setting all to checked
-        mListener.itemStateChanged(position, true);
-
-        ServicesSingleton.Seller seller = getItem(position);
+        mCheckedItems.put(seller.id, true);
+        if (mListener != null)
+            mListener.itemStateChanged(position, true);
 
         shopNameTextView.setText(seller.nameOfShop);
         addressTextView.setText(seller.address);
@@ -90,9 +105,9 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
     }
 
     public ServicesSingleton.Seller getSeller (int sellerId) throws IllegalArgumentException {
-        for (int i = 0; i < getCount(); i++) {
-            if (getItem(i).id == sellerId)
-                return getItem(i);
+        for (int i = 0; i < super.getCount(); i++) {
+            if (super.getItem(i).id == sellerId)
+                return super.getItem(i);
         }
 
         throw new IllegalArgumentException("no seller with id " + sellerId);
@@ -108,6 +123,10 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
         return true;
     }
 
+    public void filer() {
+        mFilter.runOldFilter();
+    }
+
     public interface ItemCheckedStateChangedListener {
         /**
          *
@@ -117,25 +136,44 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
         public void itemStateChanged(int pos, boolean checkedState);
     }
 
-    private ServicesSingleton.Seller[] getUnderlyingArray() {
-        ServicesSingleton.Seller[] sellers = new ServicesSingleton.Seller[super.getCount()];
+    private ArrayList<ServicesSingleton.Seller> getUnderlyingArray() {
+        ArrayList<ServicesSingleton.Seller> sellers = new ArrayList<ServicesSingleton.Seller>();
         for (int i = 0; i < super.getCount(); i++) {
-            sellers[i] = super.getItem(i);
+            sellers.add(super.getItem(i));
         }
         return sellers;
     }
 
     private class DistanceFilter extends Filter {
 
+        private CharSequence constraint;
+
+        void runOldFilter() {
+            filter(constraint);
+        }
+
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            int minDist = Integer.parseInt(String.valueOf(constraint));
+            this.constraint = constraint;
+            ArrayList<ServicesSingleton.Seller> filteredList;
+            ArrayList<ServicesSingleton.Seller> underlyingArray = getUnderlyingArray();
 
-            ArrayList<ServicesSingleton.Seller> filteredList = new ArrayList<ServicesSingleton.Seller>();
+            try {
+                String[] constraints = String.valueOf(this.constraint).split(",");
 
-            for (ServicesSingleton.Seller item : getUnderlyingArray())
-                if (item.getDistanceFromLocation() <= minDist)
-                    filteredList.add(item);
+                filteredList = new ArrayList<ServicesSingleton.Seller>();
+
+                int minDist = Integer.parseInt(constraints[0]);
+                int productCategory = Integer.parseInt(constraints[1]);
+                for (ServicesSingleton.Seller seller : underlyingArray) {
+                    if (seller.getDistanceFromLocation() <= minDist && // match product category as well:
+                            (productCategory == 0 || seller.productCategories.contains(productCategory)))
+                        filteredList.add(seller);
+                }
+            } catch (NumberFormatException e) {
+                // add all in that case
+                filteredList = underlyingArray;
+            }
 
             FilterResults filterResults = new FilterResults();
             filterResults.count = filteredList.size();
@@ -150,7 +188,8 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
                 notifyDataSetInvalidated();
             else
                 notifyDataSetChanged();
-            mListener.itemStateChanged(-1, false);
+            if (mListener != null)
+                mListener.itemStateChanged(-1, false);
         }
     }
 }
