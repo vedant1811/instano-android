@@ -1,7 +1,9 @@
 package com.instano.retailer.instano;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.graphics.PointF;
@@ -13,6 +15,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.Xml;
@@ -108,21 +111,51 @@ public class ServicesSingleton implements
         mPeriodicWorker.start();
     }
 
+    public void createNotification() {
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mAppContext)
+                .setSmallIcon(R.drawable.instano_launcher)
+                .setContentTitle("New Quotations")
+                .setContentText("Click to view your new quotations");
+
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(
+                mAppContext,
+                0,
+                new Intent(mAppContext, QuotationListActivity.class),
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        mBuilder.setContentIntent(resultPendingIntent);
+
+    }
+
     public void getQuotationsRequest () {
+        if (mBuyerId == -1){
+            Log.e(TAG, "getQuotationsRequest: buyer id == -1");
+            return;
+        }
+
+        JSONObject postData;
+        try {
+             postData = new JSONObject()
+                    .put("id", mBuyerId);
+        } catch (JSONException e) {
+            Log.e(TAG, "getQuotationsRequest", e);
+            return;
+        }
 
         // first get sellers so that we enter only quotations with valid sellers
         getSellersRequest();
-        StringRequest request = new StringRequest(
+        JsonArrayRequest request = new JsonArrayRequest(
                 getRequestUrl(RequestType.GET_QUOTATIONS),
-                new Response.Listener<String>() {
+                postData,
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONArray response) {
                         Log.v(TAG, "Quotations response:" + response.toString());
                         try {
                             boolean dataChanged = false;
-                            JSONArray quotesJsonArray = new JSONArray(response);
-                            for (int i = 0; i < quotesJsonArray.length(); i++){
-                                JSONObject quotationJsonObject = quotesJsonArray.getJSONObject(i);
+                            for (int i = 0; i < response.length(); i++){
+                                JSONObject quotationJsonObject = response.getJSONObject(i);
                                 try {
                                     // TODO: create a notification based on return value
                                     dataChanged |= mQuotationsArrayAdapter.insertIfNeeded(new Quotation(quotationJsonObject));
@@ -130,6 +163,8 @@ public class ServicesSingleton implements
                                     e.printStackTrace();
                                 }
                             }
+                            if (dataChanged)
+                                Log.d(TAG, "new quotations received");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -274,7 +309,7 @@ public class ServicesSingleton implements
             case SIGN_IN:
                 return url + "buyers";
             case GET_QUOTATIONS:
-                return url + "quotations";
+                return url + "quotations/for_buyer";
             case SEND_QUOTE:
                 return url + "quotes";
             case GET_SELLERS:
@@ -568,7 +603,8 @@ public class ServicesSingleton implements
         SIGN_IN,
         GET_QUOTATIONS,
         SEND_QUOTE,
-        GET_PRODUCT_CATEGORIES, GET_SELLERS
+        GET_PRODUCT_CATEGORIES,
+        GET_SELLERS
     }
 
     /**
