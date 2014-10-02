@@ -12,9 +12,11 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 
-public class SearchTabsActivity extends Activity implements ActionBar.TabListener {
+public class SearchTabsActivity extends Activity implements ActionBar.TabListener,
+        ServicesSingleton.QuoteCallbacks {
 
     private final static String[] TABS = {  "Constraints" , "Sellers list",}; // TODO: add a maps tab
 
@@ -45,8 +47,6 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
                 mSearchConstraintsFragment.getProductCategory(),
                 mSellersListFragment.getSellerIds()
         );
-        startActivity(new Intent(this, QuotationListActivity.class));
-
     }
 
 
@@ -92,6 +92,9 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+
+        ServicesSingleton.getInstance(this).registerCallback(this);
+
     }
 
 
@@ -127,6 +130,16 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    @Override
+    public void quoteSent(boolean success) {
+        if (success) {
+            startActivity(new Intent(this, QuotationListActivity.class));
+            Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT);
+        } else {
+            Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG);
+        }
     }
 
     /**

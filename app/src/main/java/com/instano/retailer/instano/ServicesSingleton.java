@@ -62,9 +62,10 @@ public class ServicesSingleton implements
     private final static String TAG = "ServicesSingleton";
 
 
-//    private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
+    private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
 //    private final static String SERVER_URL = "http://10.42.0.1:3000/";
-    private final static String SERVER_URL = "http://192.168.1.17:3000/";
+//    private final static String SERVER_URL = "http://192.168.1.17:3000/";
+//    private final static String SERVER_URL = "http://192.168.0.24:3000/";
     private final static String API_VERSION = "v1/";
     private final static String KEY_BUYER_ID = "com.instano.retailer.instano.ServicesSingleton.buyer_id";
 
@@ -85,7 +86,7 @@ public class ServicesSingleton implements
 
     /* network variables */
     private Quote mQuote;
-    private BuyersCallbacks mBuyersCallbacks;
+    private QuoteCallbacks mQuoteCallbacks;
     private int mBuyerId;
 
     private RequestQueue mRequestQueue;
@@ -107,6 +108,7 @@ public class ServicesSingleton implements
     }
 
     private void postSignIn() {
+        Log.d(TAG, "buyer ID: " + mBuyerId);
         mPeriodicWorker = new PeriodicWorker();
         mPeriodicWorker.start();
     }
@@ -216,6 +218,7 @@ public class ServicesSingleton implements
         }
 
         Quote quote =  new Quote(mBuyerId, searchString, brands, priceRange, productCategory, sellerIds);
+        Log.d(TAG, "sendQuoteRequest request: " + quote.toJsonObject());
 
         JsonObjectRequest request = new JsonObjectRequest(
                 getRequestUrl(RequestType.SEND_QUOTE),
@@ -224,10 +227,17 @@ public class ServicesSingleton implements
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.v (TAG, response.toString());
-//                        mBuyersCallbacks.quotationSent(true); TODO-
+                        if (mQuoteCallbacks != null)
+                            mQuoteCallbacks.quoteSent(true);
                     }
                 },
-                this
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (mQuoteCallbacks != null)
+                            mQuoteCallbacks.quoteSent(false);
+                    }
+                }
         );
         mRequestQueue.add(request);
     }
@@ -572,19 +582,16 @@ public class ServicesSingleton implements
         return mQuotationsArrayAdapter;
     }
 
-    public void registerBuyer (BuyersCallbacks buyersCallbacks) {
-
-        this.mBuyersCallbacks = buyersCallbacks;
-    }
-
     public void registerCallback (InitialDataCallbacks initialDataCallbacks) {
-
         this.mInitialDataCallbacks = initialDataCallbacks;
-
     }
 
-    public interface BuyersCallbacks {
-        public void quotationReceived();
+    public void registerCallback (QuoteCallbacks quoteCallbacks) {
+        mQuoteCallbacks = quoteCallbacks;
+    }
+
+    public interface QuoteCallbacks {
+        public void quoteSent(boolean success);
     }
 
     public interface InitialDataCallbacks {
