@@ -24,6 +24,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text='42 min ago for query "fridge"'
+            android:id="@+id/queryInfoTextView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="₹ 7000"
             android:id="@+id/priceTextView"/>
 

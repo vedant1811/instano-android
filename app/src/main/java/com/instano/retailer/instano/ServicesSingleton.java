@@ -19,6 +19,7 @@ import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.Xml;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -109,6 +110,8 @@ public class ServicesSingleton implements
 
     private void postSignIn() {
         Log.d(TAG, "buyer ID: " + mBuyerId);
+        Toast.makeText(mAppContext, String.format("you are %d user to sign in", mBuyerId), Toast.LENGTH_SHORT).show();
+        mQuotationsArrayAdapter.clear();
         mPeriodicWorker = new PeriodicWorker();
         mPeriodicWorker.start();
     }
@@ -624,21 +627,8 @@ public class ServicesSingleton implements
         public final String description;
         public final int sellerId;
         public final int quoteId; // the id of the quote being replied to
+        public final long updatedAt;
 //        public final URL imageUrl; // can be null
-
-        public Quotation(int id, String nameOfProduct, int price, String description, int sellerId, int quoteId) {
-            this.id = id;
-            this.nameOfProduct = nameOfProduct;
-            this.price = price;
-            this.description = description;
-            this.sellerId = sellerId;
-//            this.imageUrl = imageUrl;
-            this.quoteId = quoteId; // the id of the quote being replied to
-        }
-
-        public Quotation(String nameOfProduct, int price, String description, int sellerId, int quoteId) {
-            this(-1, nameOfProduct.trim(), price, description.trim(), sellerId, quoteId);
-        }
 
         public Quotation(JSONObject quotationJsonObject) throws JSONException {
             id = quotationJsonObject.getInt("id");
@@ -651,6 +641,8 @@ public class ServicesSingleton implements
                 this.description = description;
             sellerId = quotationJsonObject.getInt("seller_id");
             quoteId = quotationJsonObject.getInt("quote_id");
+            String updatedAt = quotationJsonObject.getString("updated_at");
+            this.updatedAt = dateFromString(updatedAt);
         }
 
         public String toChatString() {
@@ -677,6 +669,16 @@ public class ServicesSingleton implements
                 e.printStackTrace();
                 return null;
             }
+        }
+
+        /**
+         *
+         * @return Human readable time elapsed. Eg: "42 minutes ago"
+         */
+        public String getPrettyTimeElapsed() {
+            String dateTimeString = (String) DateUtils.getRelativeDateTimeString(mAppContext, updatedAt,
+                    DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
+            return dateTimeString.split(",")[0];
         }
     }
 
@@ -919,10 +921,15 @@ public class ServicesSingleton implements
         return false;
     }
 
-    private static long dateFromString(String sDate) throws ParseException {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date date = simpleDateFormat.parse(sDate);
+    private static long dateFromString(String sDate) {
+        Date date = null;
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            date = simpleDateFormat.parse(sDate);
+        } catch (ParseException e) {
+            return 0;
+        }
         return date.getTime();
     }
 

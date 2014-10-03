@@ -13,7 +13,6 @@ import android.widget.TextView;
 public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quotation> {
 
     private QuotationListFragment.Callbacks mCallbacks;
-
     public QuotationsArrayAdapter(Context context) {
         super(context, R.layout.list_item_quotation);
         mCallbacks = null;
@@ -50,6 +49,7 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
         }
 
         TextView modelTextView = (TextView) view.findViewById(R.id.modelTextView);
+        TextView queryInfoTextView = (TextView) view.findViewById(R.id.queryInfoTextView);
         TextView priceTextView = (TextView) view.findViewById(R.id.priceTextView);
         TextView descriptionTextView = (TextView) view.findViewById(R.id.descrptionTextView);
         TextView shopTextView = (TextView) view.findViewById(R.id.shopTextView);
@@ -58,9 +58,12 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
         ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(null);
 
         ServicesSingleton.Quotation quotation = getItem(position);
+        String timeElapsed = quotation.getPrettyTimeElapsed();
 
         modelTextView.setText(quotation.nameOfProduct);
-        priceTextView.setText("₹ " + quotation.price); // TODO change to rupee symbol
+        // TODO: queryInfoTextView.setText(String.format("%s for query \"%s\"",timeElapsed, );
+        queryInfoTextView.setText(String.format("%s",timeElapsed));
+        priceTextView.setText("₹" + quotation.price);
         descriptionTextView.setText(quotation.description);
 
         String nameOfShop;

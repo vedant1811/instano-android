@@ -143,7 +143,12 @@ public class SearchConstraintsFragment extends Fragment {
     }
 
     public String getSearchString() {
-        return mSearchStringEditText.getText().toString();
+        String string = mSearchStringEditText.getText().toString();
+        if (string.equals("")) {
+            mSearchStringEditText.setError("enter something");
+            return null;
+        }
+        return string;
     }
 
     public String getBrands() {

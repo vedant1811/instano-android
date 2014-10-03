@@ -40,8 +40,11 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
 
 
     public void searchButtonClicked(View view) {
+        String searchString = mSearchConstraintsFragment.getSearchString();
+        if (searchString == null)
+            return;
         ServicesSingleton.getInstance(this).sendQuoteRequest(
-                mSearchConstraintsFragment.getSearchString(),
+                searchString,
                 mSearchConstraintsFragment.getBrands(),
                 mSearchConstraintsFragment.getPriceRange(),
                 mSearchConstraintsFragment.getProductCategory(),
@@ -136,9 +139,9 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
     public void quoteSent(boolean success) {
         if (success) {
             startActivity(new Intent(this, QuotationListActivity.class));
-            Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT);
+            Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG);
+            Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG).show();
         }
     }
 

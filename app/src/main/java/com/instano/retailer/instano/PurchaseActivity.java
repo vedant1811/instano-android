@@ -28,6 +28,11 @@ public class PurchaseActivity extends Activity
 
     private Fragment mCurrentFragment;
 
+    public void newBuyerButtonClicked(View view) {
+
+        ServicesSingleton.getInstance(this).sendSignInRequest();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
