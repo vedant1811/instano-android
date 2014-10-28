@@ -7,10 +7,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.instano.retailer.instano.buyerDashboard.QuotationListFragment;
+import com.instano.retailer.instano.utilities.Quotation;
+import com.instano.retailer.instano.utilities.Seller;
+
 /**
  * Created by vedant on 23/9/14.
  */
-public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quotation> {
+public class QuotationsArrayAdapter extends ArrayAdapter<Quotation> {
 
     private QuotationListFragment.Callbacks mCallbacks;
     public QuotationsArrayAdapter(Context context) {
@@ -22,7 +26,7 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
         mCallbacks = callbacks;
     }
 
-    public boolean insertIfNeeded(ServicesSingleton.Quotation quotation) {
+    public boolean insertIfNeeded(Quotation quotation) {
 
         if (getQuotation(quotation.id) != null)
             return false;
@@ -57,7 +61,7 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
 
         ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(null);
 
-        ServicesSingleton.Quotation quotation = getItem(position);
+        Quotation quotation = getItem(position);
         String timeElapsed = quotation.getPrettyTimeElapsed();
 
         modelTextView.setText(quotation.nameOfProduct);
@@ -70,7 +74,7 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
 
         // TODO: better handle error
         try {
-            ServicesSingleton.Seller seller = servicesSingleton.getSellersArrayAdapter()
+            Seller seller = servicesSingleton.getSellersArrayAdapter()
                     .getSeller(quotation.sellerId);
             nameOfShop = seller.nameOfShop;
             String distance = seller.getPrettyDistanceFromLocation();
@@ -99,7 +103,7 @@ public class QuotationsArrayAdapter extends ArrayAdapter<ServicesSingleton.Quota
         return view;
     }
 
-    public ServicesSingleton.Quotation getQuotation (int quotationId) {
+    public Quotation getQuotation (int quotationId) {
         for (int i = 0; i < getCount(); i++) {
             if ( getItem(i).id == quotationId )
                 return getItem(i);

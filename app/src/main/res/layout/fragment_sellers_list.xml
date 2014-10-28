@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.instano.retailer.instano.SellersListFragment">
+    tools:context="com.instano.retailer.instano.search.SellersListFragment">
 
     <ListView
         android:id="@+id/listView"

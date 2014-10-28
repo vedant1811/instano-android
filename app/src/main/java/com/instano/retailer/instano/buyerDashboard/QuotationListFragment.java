@@ -1,10 +1,12 @@
-package com.instano.retailer.instano;
+package com.instano.retailer.instano.buyerDashboard;
 
 import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+
+import com.instano.retailer.instano.ServicesSingleton;
 
 /**
  * A list fragment representing a list of Quotations. This fragment

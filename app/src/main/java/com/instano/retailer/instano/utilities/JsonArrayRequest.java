@@ -1,4 +1,4 @@
-package com.instano.retailer.instano;
+package com.instano.retailer.instano.utilities;
 
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;

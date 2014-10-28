@@ -1,4 +1,4 @@
-package com.instano.retailer.instano;
+package com.instano.retailer.instano.activities;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -16,6 +16,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.ServicesSingleton;
+import com.instano.retailer.instano.search.SearchConstraintsFragment;
+import com.instano.retailer.instano.search.SearchTabsActivity;
 
 
 /**

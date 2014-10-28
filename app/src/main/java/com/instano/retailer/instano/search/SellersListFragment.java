@@ -1,4 +1,4 @@
-package com.instano.retailer.instano;
+package com.instano.retailer.instano.search;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -9,6 +9,10 @@ import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.SellersArrayAdapter;
+import com.instano.retailer.instano.ServicesSingleton;
 
 import java.util.ArrayList;
 
@@ -62,7 +66,7 @@ public class SellersListFragment extends Fragment {
         mListView.setAdapter(mAdapter);
         mListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 //        mAdapter.setListener(this);
-        mAdapter.getFilter().filter("1000,0"); // so that items are displayed
+        mAdapter.filer(); // so that items are displayed
 
         return view;
     }

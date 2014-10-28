@@ -1,10 +1,12 @@
-package com.instano.retailer.instano;
+package com.instano.retailer.instano.buyerDashboard;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+
+import com.instano.retailer.instano.R;
 
 /**
  * An activity representing a single Quotation detail screen. This

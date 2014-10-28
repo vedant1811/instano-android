@@ -3,5 +3,5 @@
     android:id="@+id/quotation_detail_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.instano.retailer.instano.QuotationDetailActivity"
+    tools:context="com.instano.retailer.instano.buyerDashboard.QuotationDetailActivity"
     tools:ignore="MergeRootFrame" />

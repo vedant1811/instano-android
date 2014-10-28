@@ -1,4 +1,4 @@
-package com.instano.retailer.instano;
+package com.instano.retailer.instano.search;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -12,6 +12,11 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.utilities.ProductCategories;
+import com.instano.retailer.instano.utilities.RangeSeekBar;
+import com.instano.retailer.instano.ServicesSingleton;
 
 
 /**
@@ -51,13 +56,6 @@ public class SearchConstraintsFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
@@ -73,6 +71,29 @@ public class SearchConstraintsFragment extends Fragment {
         mProductCategorySpinner = (Spinner) view.findViewById(R.id.productCategorySpinner);
 
         mSearchStringEditText.setText(getArguments().getString(ARG_SEARCH_STRING));
+
+        // TODO: guess product category from search string
+        // TODO: update spinner if ProductCategory is updated (make a separate class <extends Spinner>)
+
+        final ArrayAdapter<ProductCategories.Category> adapter =
+                new ArrayAdapter<ProductCategories.Category> (getActivity(),
+                android.R.layout.simple_spinner_item, servicesSingleton.getProductCategories());
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mProductCategorySpinner.setAdapter(adapter);
+        mProductCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                servicesSingleton.getSellersArrayAdapter().getFilter().filter(
+                        ((mWithinSeekBar.getProgress() + 1) * 100) + "," + adapter.getItem(position).name);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                servicesSingleton.getSellersArrayAdapter().getFilter().filter(
+                        ((mWithinSeekBar.getProgress() + 1) * 100) + "," + 0);
+            }
+        });
 
         mWithinSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -90,27 +111,6 @@ public class SearchConstraintsFragment extends Fragment {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
-            }
-        });
-
-        // TODO: guess product category from search string
-        // TODO: update spinner if ProductCategory is updated (make a separate class <extends Spinner>)
-
-        ArrayAdapter adapter = new ArrayAdapter(getActivity(),
-                android.R.layout.simple_spinner_item, servicesSingleton.getProductCategories());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mProductCategorySpinner.setAdapter(adapter);
-        mProductCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                servicesSingleton.getSellersArrayAdapter().getFilter().filter(
-                        ((mWithinSeekBar.getProgress() + 1) * 100) + "," + position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                servicesSingleton.getSellersArrayAdapter().getFilter().filter(
-                        ((mWithinSeekBar.getProgress() + 1) * 100) + "," + 0);
             }
         });
 
@@ -155,12 +155,14 @@ public class SearchConstraintsFragment extends Fragment {
         return mAdditionalInfoEditText.getText().toString();
     }
 
-    public int getProductCategory() {
+    public String getProductCategory() {
         int position = mProductCategorySpinner.getSelectedItemPosition();
-        if (position != AdapterView.INVALID_POSITION)
-            return position;
+        if (position != AdapterView.INVALID_POSITION) {
+            ProductCategories.Category category = (ProductCategories.Category) mProductCategorySpinner.getSelectedItem();
+            return category.name;
+        }
         else
-            return 0;
+            return ProductCategories.UNDEFINED;
     }
 
     public String getPriceRange() {

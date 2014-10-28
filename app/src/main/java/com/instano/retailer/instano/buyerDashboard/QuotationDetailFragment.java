@@ -1,4 +1,4 @@
-package com.instano.retailer.instano;
+package com.instano.retailer.instano.buyerDashboard;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -6,6 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.ServicesSingleton;
+import com.instano.retailer.instano.utilities.Quotation;
+import com.instano.retailer.instano.utilities.Seller;
 
 /**
  * A fragment representing a single Quotation detail screen.
@@ -48,7 +53,7 @@ public class QuotationDetailFragment extends Fragment {
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_quotation_detail, container, false);
 
-        ServicesSingleton.Quotation quotation = mServicesSingleton.getQuotationArrayAdapter().getQuotation(mQuotationId);
+        Quotation quotation = mServicesSingleton.getQuotationArrayAdapter().getQuotation(mQuotationId);
 
         TextView textView = (TextView) rootView.findViewById(R.id.chatTextView);
         TextView header = (TextView) rootView.findViewById(R.id.headerTextView);
@@ -57,7 +62,7 @@ public class QuotationDetailFragment extends Fragment {
 
         String title;
         try {
-            ServicesSingleton.Seller seller = mServicesSingleton.getSellersArrayAdapter().getSeller(quotation.sellerId);
+            Seller seller = mServicesSingleton.getSellersArrayAdapter().getSeller(quotation.sellerId);
             String distanceFromLocation = seller.getPrettyDistanceFromLocation();
             if (distanceFromLocation != null)
                 productInfo += distanceFromLocation + " away";

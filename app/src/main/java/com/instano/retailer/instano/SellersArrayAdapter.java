@@ -11,6 +11,9 @@ import android.widget.CompoundButton;
 import android.widget.Filter;
 import android.widget.TextView;
 
+import com.instano.retailer.instano.utilities.ProductCategories;
+import com.instano.retailer.instano.utilities.Seller;
+
 import java.util.ArrayList;
 
 /**
@@ -18,9 +21,9 @@ import java.util.ArrayList;
  * displays a list of sellers sorted by Seller.id
  * Created by vedant on 24/9/14.
  */
-public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller> {
+public class SellersArrayAdapter extends ArrayAdapter <Seller> {
 
-    private ArrayList<ServicesSingleton.Seller> mFilteredList;
+    private ArrayList<Seller> mFilteredList;
     private DistanceFilter mFilter;
     private SparseBooleanArray mCheckedItems;
 
@@ -28,7 +31,7 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
 
     public SellersArrayAdapter(Context context) {
         super(context, android.R.layout.simple_list_item_2);
-        mFilteredList = new ArrayList<ServicesSingleton.Seller>();
+        mFilteredList = new ArrayList<Seller>();
         mFilter = new DistanceFilter();
         mCheckedItems = new SparseBooleanArray();
     }
@@ -39,7 +42,7 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
 
     public ArrayList<Integer> getSelectedSellerIds() {
         ArrayList<Integer> ids = new ArrayList<Integer>();
-        for (ServicesSingleton.Seller seller : mFilteredList)
+        for (Seller seller : mFilteredList)
             if (mCheckedItems.get(seller.id))
                 ids.add(seller.id);
         return ids;
@@ -51,7 +54,7 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
     }
 
     @Override
-    public ServicesSingleton.Seller getItem (int index) {
+    public Seller getItem (int index) {
         return mFilteredList.get(index);
     }
 
@@ -77,7 +80,7 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox);
 
-        final ServicesSingleton.Seller seller = getItem(position);
+        final Seller seller = getItem(position);
 
         checkBox.setOnCheckedChangeListener (new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -104,7 +107,7 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
         return view;
     }
 
-    public ServicesSingleton.Seller getSeller (int sellerId) throws IllegalArgumentException {
+    public Seller getSeller (int sellerId) throws IllegalArgumentException {
         for (int i = 0; i < super.getCount(); i++) {
             if (super.getItem(i).id == sellerId)
                 return super.getItem(i);
@@ -136,8 +139,8 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
         public void itemStateChanged(int pos, boolean checkedState);
     }
 
-    private ArrayList<ServicesSingleton.Seller> getUnderlyingArray() {
-        ArrayList<ServicesSingleton.Seller> sellers = new ArrayList<ServicesSingleton.Seller>();
+    private ArrayList<Seller> getUnderlyingArray() {
+        ArrayList<Seller> sellers = new ArrayList<Seller>();
         for (int i = 0; i < super.getCount(); i++) {
             sellers.add(super.getItem(i));
         }
@@ -146,7 +149,7 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
 
     private class DistanceFilter extends Filter {
 
-        private CharSequence constraint;
+        private CharSequence constraint = "1000," + ProductCategories.UNDEFINED;
 
         void runOldFilter() {
             filter(constraint);
@@ -155,19 +158,19 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             this.constraint = constraint;
-            ArrayList<ServicesSingleton.Seller> filteredList;
-            ArrayList<ServicesSingleton.Seller> underlyingArray = getUnderlyingArray();
+            ArrayList<Seller> filteredList;
+            ArrayList<Seller> underlyingArray = getUnderlyingArray();
 
             try {
                 String[] constraints = String.valueOf(this.constraint).split(",");
 
-                filteredList = new ArrayList<ServicesSingleton.Seller>();
+                filteredList = new ArrayList<Seller>();
 
                 int minDist = Integer.parseInt(constraints[0]);
-                int productCategory = Integer.parseInt(constraints[1]);
-                for (ServicesSingleton.Seller seller : underlyingArray) {
-                    if (seller.getDistanceFromLocation() <= minDist && // match product category as well:
-                            (productCategory == 0 || seller.productCategories.contains(productCategory)))
+                String productCategory = constraints[1];
+                for (Seller seller : underlyingArray) {
+//                    if (seller.getDistanceFromLocation() <= minDist && // match product category as well:
+                            if(seller.productCategories.contains(productCategory))
                         filteredList.add(seller);
                 }
             } catch (NumberFormatException e) {
@@ -183,7 +186,7 @@ public class SellersArrayAdapter extends ArrayAdapter <ServicesSingleton.Seller>
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            mFilteredList = (ArrayList<ServicesSingleton.Seller>) results.values;
+            mFilteredList = (ArrayList<Seller>) results.values;
             if (results.count == 0)
                 notifyDataSetInvalidated();
             else

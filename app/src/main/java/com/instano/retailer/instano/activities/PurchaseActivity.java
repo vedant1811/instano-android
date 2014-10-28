@@ -1,4 +1,4 @@
-package com.instano.retailer.instano;
+package com.instano.retailer.instano.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -10,6 +10,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.instano.retailer.instano.NavigationDrawerFragment;
+import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.ServicesSingleton;
+import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 
 
 public class PurchaseActivity extends Activity
@@ -30,7 +35,7 @@ public class PurchaseActivity extends Activity
 
     public void newBuyerButtonClicked(View view) {
 
-        ServicesSingleton.getInstance(this).sendSignInRequest();
+        ServicesSingleton.getInstance(this).signInRequest(true);
     }
 
     @Override
@@ -52,7 +57,7 @@ public class PurchaseActivity extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        ServicesSingleton.getInstance(this).signInRequest();
+        ServicesSingleton.getInstance(this).signInRequest(false);
     }
 
     @Override

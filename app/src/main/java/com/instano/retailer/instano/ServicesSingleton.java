@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.graphics.PointF;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -31,6 +30,13 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
+import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
+import com.instano.retailer.instano.utilities.JsonArrayRequest;
+import com.instano.retailer.instano.utilities.PeriodicWorker;
+import com.instano.retailer.instano.utilities.ProductCategories;
+import com.instano.retailer.instano.utilities.Quotation;
+import com.instano.retailer.instano.utilities.Quote;
+import com.instano.retailer.instano.utilities.Seller;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,9 +49,7 @@ import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -62,13 +66,7 @@ public class ServicesSingleton implements
 
     private final static String TAG = "ServicesSingleton";
 
-
-    private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
-//    private final static String SERVER_URL = "http://10.42.0.1:3000/";
-//    private final static String SERVER_URL = "http://192.168.1.17:3000/";
-//    private final static String SERVER_URL = "http://192.168.0.24:3000/";
-    private final static String API_VERSION = "v1/";
-    private final static String KEY_BUYER_ID = "com.instano.retailer.instano.ServicesSingleton.buyer_id";
+    private final static String KEY_BUYER_API_KEY = "com.instano.retailer.instano.ServicesSingleton.buyer_api_key";
 
     public static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
 
@@ -93,19 +91,14 @@ public class ServicesSingleton implements
     private RequestQueue mRequestQueue;
     private QuotationsArrayAdapter mQuotationsArrayAdapter;
     private SellersArrayAdapter mSellersArrayAdapter;
-    private ArrayList<String> mProductCategories;
+    private ProductCategories mProductCategories;
     private PeriodicWorker mPeriodicWorker;
 
-    public boolean signInRequest() {
-        mBuyerId = mSharedPreferences.getInt(KEY_BUYER_ID, -1);
-        if (mBuyerId != -1) {
-            postSignIn();
-            return true;
-        }
-        else {
-            sendSignInRequest();
-            return false;
-        }
+    public void signInRequest(boolean newBuyer) {
+        if (newBuyer)
+            sendSignInRequest("create");
+        else
+            sendSignInRequest(mSharedPreferences.getString(KEY_BUYER_API_KEY, "create"));
     }
 
     private void postSignIn() {
@@ -213,14 +206,14 @@ public class ServicesSingleton implements
     }
 
     public void sendQuoteRequest(String searchString, String brands, String priceRange,
-                                 int productCategory, ArrayList<Integer> sellerIds) {
+                                 String productCategory, ArrayList<Integer> sellerIds) {
 
         if (mBuyerId == -1) {
             Log.e(TAG, ".sendQuoteRequest : mBuyerId is -1. Search string: " + searchString);
             return;
         }
 
-        Quote quote =  new Quote(mBuyerId, searchString, brands, priceRange, productCategory, sellerIds);
+        Quote quote =  new Quote(this, mBuyerId, searchString, brands, priceRange, productCategory, sellerIds);
         Log.d(TAG, "sendQuoteRequest request: " + quote.toJsonObject());
 
         JsonObjectRequest request = new JsonObjectRequest(
@@ -245,37 +238,42 @@ public class ServicesSingleton implements
         mRequestQueue.add(request);
     }
 
-    public void sendSignInRequest() {
+    public void sendSignInRequest(String apiKey) {
 
-        Log.d(TAG, "sign in request: " + new JSONObject().toString());
+        JsonObjectRequest request = null;
+        try {
+            Log.d(TAG, "sign in request: " + new JSONObject().toString());
+            JSONObject apiKeyJson = new JSONObject().put("api_key", apiKey);
+            JSONObject postData = new JSONObject().put("buyer", apiKeyJson);
+            request = new JsonObjectRequest(
+                    getRequestUrl(RequestType.SIGN_IN),
+                    postData,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                mBuyerId = response.getInt("id");
 
-        JsonObjectRequest request = new JsonObjectRequest(
-                getRequestUrl(RequestType.SIGN_IN),
-                new JSONObject(), // sending an empty but valid JSON object
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            mBuyerId = response.getInt("id");
+                                SharedPreferences.Editor editor = mSharedPreferences.edit();
+                                editor.putString(KEY_BUYER_API_KEY, response.getString("api_key"));
+                                editor.apply();
 
-                            SharedPreferences.Editor editor = mSharedPreferences.edit();
-                            editor.putInt(KEY_BUYER_ID, mBuyerId);
-                            editor.apply();
-
-                            postSignIn();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            mBuyerId = -1;
+                                postSignIn();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                mBuyerId = -1;
+                            }
                         }
-                    }
-                },
-                this
-        );
+                    },
+                    this
+            );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         mRequestQueue.add(request);
     }
 
     public void getProductCategoriesRequest() {
-        Log.v(TAG, "get ProductCategories");
         final JsonObjectRequest request = new JsonObjectRequest(
                 getRequestUrl(RequestType.GET_PRODUCT_CATEGORIES),
                 null,
@@ -283,21 +281,7 @@ public class ServicesSingleton implements
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.v(TAG, "ProductCategories response:" + response.toString());
-                        String[] strings = new String[response.length()];
-
-                        Iterator<String> stringIterator = response.keys();
-                        while (stringIterator.hasNext()) {
-                            try {
-                                String key = stringIterator.next();
-                                int value = response.getInt(key);
-                                strings [value] = key;
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        mProductCategories.clear();
-                        mProductCategories.addAll(Arrays.asList(strings));
-//                        mInitialDataCallbacks.productCategoriesUpdated(mProductCategories);
+                        mProductCategories = new ProductCategories(response, true);
                     }
                 },
                 new Response.ErrorListener() {
@@ -310,11 +294,19 @@ public class ServicesSingleton implements
         mRequestQueue.add(request);
     }
 
-    public ArrayList<String> getProductCategories() {
-        return mProductCategories;
+    public ArrayList<ProductCategories.Category> getProductCategories() {
+        if (mProductCategories != null)
+            return mProductCategories.getProductCategories();
+        else
+            return null;
     }
 
     private String getRequestUrl(RequestType requestType) {
+
+//    private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
+        final String SERVER_URL = "http://10.42.0.1:3000/";
+//        final String SERVER_URL = "http://192.168.1.2:3000/";
+        final String API_VERSION = "v1/";
         String url = SERVER_URL + API_VERSION;
         switch (requestType) {
 //            case REGISTER:
@@ -328,7 +320,7 @@ public class ServicesSingleton implements
             case GET_SELLERS:
                 return url + "sellers";
             case GET_PRODUCT_CATEGORIES:
-                return url + "product_categories";
+                return url + "brands_categories";
         }
 
         throw new IllegalArgumentException();
@@ -341,7 +333,7 @@ public class ServicesSingleton implements
         mLatestAddress = null;
         mLastLocation = null;
         mBuyerId = -1;
-        mProductCategories = new ArrayList<String>();
+        mProductCategories = null;
 
         /*
          * Create a new location client, using the enclosing class to
@@ -410,6 +402,10 @@ public class ServicesSingleton implements
 
     public SellersArrayAdapter getSellersArrayAdapter() {
         return mSellersArrayAdapter;
+    }
+
+    public Location getLastLocation() {
+        return mLastLocation;
     }
 
     /**
@@ -617,300 +613,6 @@ public class ServicesSingleton implements
         GET_SELLERS
     }
 
-    /**
-     * Represents a single immutable Quotation
-     */
-    public class Quotation {
-        public final int id; // server generated
-        public final String nameOfProduct; // TODO: in future probably make a generic `Product` class
-        public final int price;
-        public final String description;
-        public final int sellerId;
-        public final int quoteId; // the id of the quote being replied to
-        public final long updatedAt;
-//        public final URL imageUrl; // can be null
-
-        public Quotation(JSONObject quotationJsonObject) throws JSONException {
-            id = quotationJsonObject.getInt("id");
-            nameOfProduct = quotationJsonObject.getString("name_of_product");
-            price = quotationJsonObject.getInt("price");
-            String description = quotationJsonObject.getString("description");
-            if (description.equalsIgnoreCase("null"))
-                this.description = "";
-            else
-                this.description = description;
-            sellerId = quotationJsonObject.getInt("seller_id");
-            quoteId = quotationJsonObject.getInt("quote_id");
-            String updatedAt = quotationJsonObject.getString("updated_at");
-            this.updatedAt = dateFromString(updatedAt);
-        }
-
-        public String toChatString() {
-            return nameOfProduct + "\n₹ " + price + "\n" + description;
-        }
-
-        public JSONObject toJsonObject() {
-            try {
-                JSONObject quotationParamsJsonObject = new JSONObject()
-                        .put("name_of_product", nameOfProduct)
-                        .put("price", price)
-                        .put("description", description)
-                        .put("seller_id", sellerId)
-                        .put("quote_id", quoteId);
-
-                if (id != -1)
-                    quotationParamsJsonObject.put ("id", id);
-
-                JSONObject quotationJsonObject = new JSONObject()
-                        .put("quotation", quotationParamsJsonObject);
-
-                return quotationJsonObject;
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        /**
-         *
-         * @return Human readable time elapsed. Eg: "42 minutes ago"
-         */
-        public String getPrettyTimeElapsed() {
-            String dateTimeString = (String) DateUtils.getRelativeDateTimeString(mAppContext, updatedAt,
-                    DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
-            return dateTimeString.split(",")[0];
-        }
-    }
-
-    /**
-     * Represents a single immutable Seller
-     */
-    public class Seller {
-        public final static double INVALID_COORDINATE = -1000; // an invalid coordinate
-
-        public final int id; // server generated
-        public final String nameOfShop;
-        public final String nameOfSeller;
-        public final String address; // newline separated
-        public final double latitude;
-        public final double longitude;
-        public final String phone; // TODO: maybe make it a list of Strings
-        public final int rating; // rating is out of 50, displayed out of 5.0
-        public final String email;
-        public final ArrayList<Integer> productCategories;
-
-        public Seller(int id, String nameOfShop, String nameOfSeller, String address, double latitude, double longitude, String phone, int rating, String email, ArrayList<Integer> productCategories) {
-            this.id = id;
-            this.nameOfShop = nameOfShop;
-            this.nameOfSeller = nameOfSeller;
-            this.address = address;
-            this.latitude = latitude;
-            this.longitude = longitude;
-            this.phone = phone;
-            this.rating = rating;
-            this.email = email;
-            this.productCategories = productCategories;
-        }
-
-        /**
-         * if id and rating are not available, they are set to invalid i.e. -1
-         */
-        public Seller(String nameOfShop, String nameOfSeller, String address, double latitude, double longitude, String phone, String email, ArrayList<Integer> productCategories) {
-            this.id = -1;
-            this.nameOfShop = nameOfShop.trim();
-            this.nameOfSeller = nameOfSeller.trim();
-            this.address = address.trim();
-            this.latitude = latitude;
-            this.longitude = longitude;
-            this.phone = phone.trim();
-            this.rating = -1;
-            this.email = email.trim();
-            this.productCategories = productCategories;
-        }
-
-        public Seller(JSONObject sellerJsonObject) throws JSONException {
-            id = sellerJsonObject.getInt("id");
-            nameOfShop = sellerJsonObject.getString("name_of_shop");
-            nameOfSeller = sellerJsonObject.getString("name_of_seller");
-            address = sellerJsonObject.getString("address");
-
-            double latitude = INVALID_COORDINATE;
-            double longitude = INVALID_COORDINATE;
-            try {
-                latitude = sellerJsonObject.getDouble("latitude");
-                longitude = sellerJsonObject.getDouble("longitude");
-            } catch (JSONException e) {
-                latitude = INVALID_COORDINATE;
-                longitude = INVALID_COORDINATE;
-            } finally {
-                this.latitude = latitude;
-                this.longitude = longitude;
-            }
-            phone = sellerJsonObject.getString("phone");
-            int rating;
-            try {
-                rating = Integer.parseInt(sellerJsonObject.getString("rating"));
-            } catch (NumberFormatException e) {
-                rating = -1;
-            }
-            this.rating = rating;
-            email = sellerJsonObject.getString("email");
-
-            // TODO:
-            productCategories = new ArrayList<Integer>();
-            JSONArray productCategoriesJsonArray = sellerJsonObject.getJSONArray("product_categories");
-            for (int i = 0; i < productCategoriesJsonArray.length(); i++) {
-                productCategories.add(productCategoriesJsonArray.getInt(i));
-            }
-        }
-
-        public JSONObject toJsonObject() throws JSONException {
-            JSONObject retailerParamsJsonObject = new JSONObject();
-            retailerParamsJsonObject.put("name_of_shop", nameOfShop)
-                    .put("name_of_seller", nameOfSeller)
-                    .put("address", address)
-                    .put("latitude", latitude)
-                    .put("longitude", longitude)
-                    .put("phone", phone)
-                    .put("email", email);
-
-            if (id != -1)
-                retailerParamsJsonObject.put("id", id);
-            if (rating != -1)
-                retailerParamsJsonObject.put("rating", rating);
-
-            JSONArray productCategoriesJsonArray = new JSONArray(productCategories);
-            retailerParamsJsonObject.put("product_categories", productCategoriesJsonArray);
-
-            JSONObject retailerJsonObject = new JSONObject();
-            retailerJsonObject.put("seller", retailerParamsJsonObject);
-
-            return retailerJsonObject;
-        }
-
-        // get distance between to two points given as latitude and longitude or null on error
-        public String getPrettyDistanceFromLocation() {
-            int distanceFromLocation = getDistanceFromLocation();
-            if (distanceFromLocation == -1)
-                return null;
-            else
-                return String.format("%.2f", distanceFromLocation /100.0) + " km";
-        }
-
-        // get distance between to two points in 10x meters or -1
-        public int getDistanceFromLocation() {
-            if (mLastLocation == null)
-                return -1;
-
-            PointF p1 = new PointF((float) mLastLocation.getLatitude(), (float) mLastLocation.getLongitude());
-            PointF p2 = new PointF((float) latitude, (float) longitude);
-
-            double R = 637100; // 10x meters
-            double dLat = Math.toRadians(p2.x - p1.x);
-            double dLon = Math.toRadians(p2.y - p1.y);
-            double lat1 = Math.toRadians(p1.x);
-            double lat2 = Math.toRadians(p2.x);
-
-            double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2)
-                    * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
-            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            double distance = R * c;
-            return (int) distance;
-        }
-    }
-
-    /**
-     * Represents a single immutable quote request (that is received by the seller)
-     */
-    public class Quote {
-        public final int id;
-        public final int buyerId;
-        public final String searchString;
-
-        /**
-         * comma separated brands eg: "LG, Samsung"
-         * can be null
-         */
-        public final String brands;
-
-        /**
-         * human readable display for price
-         * can be null
-         */
-        public final String priceRange;
-        public final int productCategory;
-        public final long updatedAt; // valid only when constructed from Quote(JSONObject jsonObject)
-        public final ArrayList<Integer> sellerIds;
-
-        public Quote(int id, int buyerId, String searchString, String brands, String priceRange, int productCategory, ArrayList<Integer> sellerIds) {
-            this.id = id;
-            this.buyerId = buyerId;
-            this.searchString = searchString;
-            this.brands = brands;
-            this.priceRange = priceRange;
-            this.productCategory = productCategory;
-            this.sellerIds = sellerIds;
-            updatedAt = 0;
-        }
-
-        public Quote(int buyerId, String searchString, String brands, String priceRange, int productCategory, ArrayList<Integer> sellerIds) {
-            this.productCategory = productCategory;
-            this.sellerIds = sellerIds;
-            this.id = -1;
-            this.buyerId = buyerId;
-            this.searchString = searchString.trim();
-            this.brands = brands.trim();
-            this.priceRange = priceRange.trim();
-            updatedAt = 0;
-        }
-
-        public Quote(JSONObject jsonObject) throws JSONException, ParseException {
-            String updatedAt = jsonObject.getString("updated_at");
-            this.updatedAt = dateFromString(updatedAt);
-            id = jsonObject.getInt("id");
-            buyerId = jsonObject.getInt("buyer_id");
-            searchString = jsonObject.getString("search_string");
-            brands = jsonObject.getString("brands");
-            priceRange = jsonObject.getString("price_range");
-            productCategory = jsonObject.getInt("product_category");
-            sellerIds = null;
-        }
-
-        /**
-         *
-         * @return Human readable time elapsed. Eg: "42 minutes ago"
-         */
-        public String getPrettyTimeElapsed() {
-            String dateTimeString = (String) DateUtils.getRelativeDateTimeString(mAppContext, updatedAt,
-                    DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
-            return dateTimeString.split(",")[0];
-        }
-
-        public JSONObject toJsonObject() {
-            try {
-                JSONArray sellerIds = new JSONArray(this.sellerIds);
-
-                JSONObject quoteParamsJsonObject = new JSONObject()
-                        .put("buyer_id", buyerId)
-                        .put("search_string", searchString)
-                        .put("brands", brands)
-                        .put("price_range", priceRange)
-                        .put("product_category", productCategory)
-                        .put("seller_ids", sellerIds);
-
-                if (id != -1)
-                    quoteParamsJsonObject.put ("id", id);
-
-                JSONObject quoteJsonObject = new JSONObject()
-                        .put("quote", quoteParamsJsonObject);
-                return quoteJsonObject;
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
-
     public boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) mAppContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -921,7 +623,17 @@ public class ServicesSingleton implements
         return false;
     }
 
-    private static long dateFromString(String sDate) {
+    /**
+     *
+     * @return Human readable time elapsed. Eg: "42 minutes ago"
+     */
+    public String getPrettyTimeElapsed(long updatedAt) {
+        String dateTimeString = (String) DateUtils.getRelativeDateTimeString(mAppContext, updatedAt,
+                DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
+        return dateTimeString.split(",")[0];
+    }
+
+    public static long dateFromString(String sDate) {
         Date date = null;
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");

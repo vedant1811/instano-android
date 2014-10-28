@@ -1,4 +1,4 @@
-package com.instano.retailer.instano;
+package com.instano.retailer.instano.search;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -13,6 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.ServicesSingleton;
+import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 
 
 public class SearchTabsActivity extends Activity implements ActionBar.TabListener,

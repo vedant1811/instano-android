@@ -8,8 +8,10 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".PurchaseActivity"
-            android:label="@string/app_name" >
+            android:name=".activities.LauncherActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar"
+            android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -17,23 +19,27 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".QuotationListActivity"
+            android:name=".activities.PurchaseActivity"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".buyerDashboard.QuotationListActivity"
             android:label="@string/title_quotation_list"
-            android:parentActivityName=".PurchaseActivity" >
+            android:parentActivityName=".activities.PurchaseActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.instano.retailer.instano.PurchaseActivity" />
         </activity>
         <activity
-            android:name=".QuotationDetailActivity"
+            android:name=".buyerDashboard.QuotationDetailActivity"
             android:label="@string/title_quotation_detail"
-            android:parentActivityName=".QuotationListActivity" >
+            android:parentActivityName=".buyerDashboard.QuotationListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.instano.retailer.instano.QuotationListActivity" />
         </activity>
         <activity
-            android:name=".MapsActivity"
+            android:name=".activities.MapsActivity"
             android:label="@string/title_activity_maps" >
         </activity>
 
@@ -45,9 +51,9 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".SearchTabsActivity"
+            android:name=".search.SearchTabsActivity"
             android:label="@string/title_activity_search_tabs"
-            android:parentActivityName=".PurchaseActivity" >
+            android:parentActivityName=".activities.PurchaseActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.instano.retailer.instano.PurchaseActivity" />
