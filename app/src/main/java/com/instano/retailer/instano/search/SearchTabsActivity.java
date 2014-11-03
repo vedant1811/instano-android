@@ -17,6 +17,9 @@ import android.widget.Toast;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
+import com.instano.retailer.instano.utilities.ProductCategories;
+
+import java.util.ArrayList;
 
 
 public class SearchTabsActivity extends Activity implements ActionBar.TabListener,
@@ -137,6 +140,11 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    @Override
+    public void productCategoriesUpdated(ArrayList<ProductCategories.Category> productCategories) {
+        mSearchConstraintsFragment.updateProductCategories(productCategories);
     }
 
     @Override

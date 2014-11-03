@@ -2,6 +2,7 @@ package com.instano.retailer.instano.search;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.utilities.ProductCategories;
 import com.instano.retailer.instano.utilities.RangeSeekBar;
 import com.instano.retailer.instano.ServicesSingleton;
+
+import java.util.ArrayList;
 
 
 /**
@@ -37,6 +40,8 @@ public class SearchConstraintsFragment extends Fragment {
     private EditText mAdditionalInfoEditText;
     private Spinner mProductCategorySpinner;
     private TextView mPriceRangeTextView;
+    private ArrayAdapter<ProductCategories.Category> mCategoryAdapter;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -72,20 +77,19 @@ public class SearchConstraintsFragment extends Fragment {
 
         mSearchStringEditText.setText(getArguments().getString(ARG_SEARCH_STRING));
 
-        // TODO: guess product category from search string
-        // TODO: update spinner if ProductCategory is updated (make a separate class <extends Spinner>)
-
-        final ArrayAdapter<ProductCategories.Category> adapter =
-                new ArrayAdapter<ProductCategories.Category> (getActivity(),
-                android.R.layout.simple_spinner_item, servicesSingleton.getProductCategories());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mProductCategorySpinner.setAdapter(adapter);
+        mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
+        android.R.layout.simple_spinner_item);
+        ArrayList<ProductCategories.Category> categories = servicesSingleton.getProductCategories();
+        if (categories != null)
+            mCategoryAdapter.addAll(categories);
+        mCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mProductCategorySpinner.setAdapter(mCategoryAdapter);
         mProductCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
                 servicesSingleton.getSellersArrayAdapter().getFilter().filter(
-                        ((mWithinSeekBar.getProgress() + 1) * 100) + "," + adapter.getItem(position).name);
+                        ((mWithinSeekBar.getProgress() + 1) * 100) + "," + mCategoryAdapter.getItem(position).name);
             }
 
             @Override
@@ -95,7 +99,17 @@ public class SearchConstraintsFragment extends Fragment {
             }
         });
 
+        mSearchStringEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus)
+                    guessCategory();
+            }
+        });
+        guessCategory();
+
         mWithinSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mWithinTextView.setText(String.format("Within %dkm:", progress + 1));
@@ -142,6 +156,24 @@ public class SearchConstraintsFragment extends Fragment {
         return view;
     }
 
+    /* package private */ void updateProductCategories(ArrayList<ProductCategories.Category> categories) {
+        mCategoryAdapter.clear();
+        mCategoryAdapter.addAll(categories);
+    }
+
+    private void guessCategory() {
+        long start = System.nanoTime();
+        String search = mSearchStringEditText.getText().toString().toLowerCase();
+        for (int i = 0; i < mCategoryAdapter.getCount(); i++) {
+            if (mCategoryAdapter.getItem(i).matches(search)) {
+                mProductCategorySpinner.setSelection(i);
+                break;
+            }
+        }
+        long time = (System.nanoTime() - start)/1000000;
+        Log.v("guessCategory", "time = " + time);
+    }
+
     public String getSearchString() {
         String string = mSearchStringEditText.getText().toString();
         if (string.equals("")) {
@@ -156,11 +188,9 @@ public class SearchConstraintsFragment extends Fragment {
     }
 
     public String getProductCategory() {
-        int position = mProductCategorySpinner.getSelectedItemPosition();
-        if (position != AdapterView.INVALID_POSITION) {
-            ProductCategories.Category category = (ProductCategories.Category) mProductCategorySpinner.getSelectedItem();
+        ProductCategories.Category category = (ProductCategories.Category) mProductCategorySpinner.getSelectedItem();
+        if (category != null)
             return category.name;
-        }
         else
             return ProductCategories.UNDEFINED;
     }

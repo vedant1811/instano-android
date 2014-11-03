@@ -54,17 +54,23 @@ public class ProductCategories {
     }
 
     public static class Category implements Comparable<Category> {
-        public String name;
-        public ArrayList<String> brands;
-        /**
-         * represents the selected brands. If it is null, the category itself is not selected.
-         * In case the Product Categories is part of a seller, this is always null
-         */
-        public boolean[] selected;
+        public final String name;
+        public final ArrayList<String> brands;
+        private boolean[] selected;
+
+        private final ArrayList<String> nameVariants;
+
+        public boolean matches(String lowerCaseString) {
+            for (String variant : nameVariants)
+                if(lowerCaseString.contains(variant))
+                    return true;
+            return false;
+        }
 
         Category(JSONObject params) {
             selected = null;
             brands = new ArrayList<String>();
+            String name = null;
             try {
                 name = params.getString("category");
                 JSONArray brandsJsonArray = params.getJSONArray("brands");
@@ -74,17 +80,21 @@ public class ProductCategories {
             } catch (JSONException e){
                 Log.e(TAG, "", e);
             }
+            this.name = name;
             Collections.sort(brands);
+            nameVariants = new ArrayList<String>();
+            nameVariants.add(name.toLowerCase());
         }
 
-        private Category() {
-
+        private Category(String name) {
+            this.name = name;
+            brands = null;
+            nameVariants = new ArrayList<String>();
+            nameVariants.add(name.toLowerCase());
         }
 
         private static Category undefinedCategory() {
-            Category category = new Category();
-            category.name = UNDEFINED;
-            return category;
+            return new Category(UNDEFINED);
         }
 
         @Override
@@ -95,6 +105,18 @@ public class ProductCategories {
         @Override
         public int compareTo(Category another) {
             return name.compareTo(another.name);
+        }
+
+        /**
+         * represents the selected brands. If it is null, the category itself is not selected.
+         * In case the Product Categories is part of a seller, this is always null
+         */
+        public boolean[] getSelected() {
+            return selected;
+        }
+
+        public void setSelected(boolean[] selected) {
+            this.selected = selected;
         }
     }
 }

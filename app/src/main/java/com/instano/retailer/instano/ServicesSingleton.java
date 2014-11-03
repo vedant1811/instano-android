@@ -282,6 +282,8 @@ public class ServicesSingleton implements
                     public void onResponse(JSONObject response) {
                         Log.v(TAG, "ProductCategories response:" + response.toString());
                         mProductCategories = new ProductCategories(response, true);
+                        if (mQuoteCallbacks != null)
+                            mQuoteCallbacks.productCategoriesUpdated(getProductCategories());
                     }
                 },
                 new Response.ErrorListener() {
@@ -303,9 +305,9 @@ public class ServicesSingleton implements
 
     private String getRequestUrl(RequestType requestType) {
 
-//    private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
-        final String SERVER_URL = "http://10.42.0.1:3000/";
-//        final String SERVER_URL = "http://192.168.1.2:3000/";
+//        final String SERVER_URL = "http://instano.in/";
+//        final String SERVER_URL = "http://10.42.0.1:3000/";
+        final String SERVER_URL = "http://192.168.43.81:3000/";
         final String API_VERSION = "v1/";
         String url = SERVER_URL + API_VERSION;
         switch (requestType) {
@@ -590,11 +592,11 @@ public class ServicesSingleton implements
     }
 
     public interface QuoteCallbacks {
+        public void productCategoriesUpdated(ArrayList<ProductCategories.Category> productCategories);
         public void quoteSent(boolean success);
     }
 
     public interface InitialDataCallbacks {
-//        public void productCategoriesUpdated(ArrayList<String> productCategories);
         public void searchingForAddress();
         public void addressFound(Address address);
         /*

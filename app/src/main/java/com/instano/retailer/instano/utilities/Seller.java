@@ -105,7 +105,7 @@ public class Seller {
         JSONArray productCategoriesJsonArray = new JSONArray();
 
         for (ProductCategories.Category category : productCategories.getProductCategories()) {
-            if (category.selected == null)
+            if (category.getSelected() == null)
                 continue;
 
             // create the json object to be added to the json array
@@ -114,8 +114,8 @@ public class Seller {
 
             JSONArray brandsJsonArray = new JSONArray();
 
-            for (int i = 0; i < category.selected.length; i++) {
-                if(category.selected[i])
+            for (int i = 0; i < category.getSelected().length; i++) {
+                if(category.getSelected()[i])
                     brandsJsonArray.put(category.brands.get(i));
             }
 
