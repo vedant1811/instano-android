@@ -94,10 +94,10 @@ public class ServicesSingleton implements
     private ProductCategories mProductCategories;
     private PeriodicWorker mPeriodicWorker;
 
-    public void signInRequest(boolean newBuyer) {
-        if (newBuyer)
-            sendSignInRequest("create");
-        else
+    public void signInRequest() {
+//        if (newBuyer)
+//            sendSignInRequest("create");
+//        else
             sendSignInRequest(mSharedPreferences.getString(KEY_BUYER_API_KEY, "create"));
     }
 
@@ -105,8 +105,17 @@ public class ServicesSingleton implements
         Log.d(TAG, "buyer ID: " + mBuyerId);
         Toast.makeText(mAppContext, String.format("you are %d user to sign in", mBuyerId), Toast.LENGTH_SHORT).show();
         mQuotationsArrayAdapter.clear();
-        mPeriodicWorker = new PeriodicWorker();
-        mPeriodicWorker.start();
+    }
+
+    public void runPeriodicTasks() {
+        if (mBuyerId != -1) // i.e. if user is signed in
+            getQuotationsRequest();
+//        else
+//            signInRequest(false);
+
+        if (getProductCategories() == null)
+            getProductCategoriesRequest();
+
     }
 
     public void createNotification() {
@@ -262,6 +271,8 @@ public class ServicesSingleton implements
                             } catch (JSONException e) {
                                 e.printStackTrace();
                                 mBuyerId = -1;
+                                // try again
+                                signInRequest();
                             }
                         }
                     },
@@ -305,9 +316,9 @@ public class ServicesSingleton implements
 
     private String getRequestUrl(RequestType requestType) {
 
-//        final String SERVER_URL = "http://instano.in/";
+        final String SERVER_URL = "http://instano.in/";
 //        final String SERVER_URL = "http://10.42.0.1:3000/";
-        final String SERVER_URL = "http://192.168.43.81:3000/";
+//        final String SERVER_URL = "http://192.168.43.81:3000/";
         final String API_VERSION = "v1/";
         String url = SERVER_URL + API_VERSION;
         switch (requestType) {
@@ -353,7 +364,8 @@ public class ServicesSingleton implements
         mQuotationsArrayAdapter = new QuotationsArrayAdapter(startingActivity);
         mSellersArrayAdapter = new SellersArrayAdapter(startingActivity);
 
-        getProductCategoriesRequest();
+        mPeriodicWorker = new PeriodicWorker(this);
+        mPeriodicWorker.start();
     }
 
     public static ServicesSingleton getInstance(Activity startingActivity) {

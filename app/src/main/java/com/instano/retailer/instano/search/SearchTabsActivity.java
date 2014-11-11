@@ -152,6 +152,7 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
         if (success) {
             startActivity(new Intent(this, QuotationListActivity.class));
             Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT).show();
+            finish();
         } else {
             Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG).show();
         }

@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Filter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.utilities.ProductCategories;
@@ -27,7 +28,7 @@ public class SellersArrayAdapter extends ArrayAdapter <Seller> {
     private DistanceFilter mFilter;
     private SparseBooleanArray mCheckedItems;
 
-    private ItemCheckedStateChangedListener mListener;
+    private ItemInteractionListener mListener;
 
     public SellersArrayAdapter(Context context) {
         super(context, android.R.layout.simple_list_item_2);
@@ -36,7 +37,7 @@ public class SellersArrayAdapter extends ArrayAdapter <Seller> {
         mCheckedItems = new SparseBooleanArray();
     }
 
-    public void setListener (ItemCheckedStateChangedListener listener) {
+    public void setListener (ItemInteractionListener listener) {
         this.mListener = listener;
     }
 
@@ -79,6 +80,7 @@ public class SellersArrayAdapter extends ArrayAdapter <Seller> {
         TextView addressTextView = (TextView) view.findViewById(R.id.addressTextView);
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox);
+        ImageButton callImageButton = (ImageButton) view.findViewById(R.id.callImageButton);
 
         final Seller seller = getItem(position);
 
@@ -87,14 +89,14 @@ public class SellersArrayAdapter extends ArrayAdapter <Seller> {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 if (mListener != null)
-                    mListener.itemStateChanged(position, isChecked);
+                    mListener.itemCheckedStateChanged(position, isChecked);
                 mCheckedItems.put(seller.id, isChecked);
             }
         });
         // initially setting all to checked
         mCheckedItems.put(seller.id, true);
         if (mListener != null)
-            mListener.itemStateChanged(position, true);
+            mListener.itemCheckedStateChanged(position, true);
 
         shopNameTextView.setText(seller.nameOfShop);
         addressTextView.setText(seller.address);
@@ -103,6 +105,14 @@ public class SellersArrayAdapter extends ArrayAdapter <Seller> {
             distanceTextView.setText(distanceFromLocation);
         else
             distanceTextView.setVisibility(View.INVISIBLE);
+
+        callImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null)
+                    mListener.callButtonClicked(seller.phone);
+            }
+        });
 
         return view;
     }
@@ -130,13 +140,14 @@ public class SellersArrayAdapter extends ArrayAdapter <Seller> {
         mFilter.runOldFilter();
     }
 
-    public interface ItemCheckedStateChangedListener {
+    public interface ItemInteractionListener {
         /**
          *
          * @param pos position whose checkedState has changed, or -1 if listItems changed
          * @param checkedState
          */
-        public void itemStateChanged(int pos, boolean checkedState);
+        public void itemCheckedStateChanged(int pos, boolean checkedState);
+        public void callButtonClicked(String number);
     }
 
     private ArrayList<Seller> getUnderlyingArray() {
@@ -192,7 +203,7 @@ public class SellersArrayAdapter extends ArrayAdapter <Seller> {
             else
                 notifyDataSetChanged();
             if (mListener != null)
-                mListener.itemStateChanged(-1, false);
+                mListener.itemCheckedStateChanged(-1, false);
         }
     }
 }

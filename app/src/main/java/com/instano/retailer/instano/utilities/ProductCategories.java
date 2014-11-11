@@ -47,7 +47,7 @@ public class ProductCategories {
             return true; // undefined is contained in every category
 
         // TODO: make it a check via hash
-        for (Category category : mCategories )
+        for (Category category : mCategories)
             if (category.name.equals(categoryName))
                 return true;
         return false;
@@ -86,15 +86,19 @@ public class ProductCategories {
             nameVariants.add(name.toLowerCase());
         }
 
-        private Category(String name) {
-            this.name = name;
-            brands = null;
+        /**
+         * dummy category
+         */
+        private Category() {
+            this.name = UNDEFINED;
+            brands = new ArrayList<String>();
+            brands.add("brands");
             nameVariants = new ArrayList<String>();
             nameVariants.add(name.toLowerCase());
         }
 
         private static Category undefinedCategory() {
-            return new Category(UNDEFINED);
+            return new Category();
         }
 
         @Override

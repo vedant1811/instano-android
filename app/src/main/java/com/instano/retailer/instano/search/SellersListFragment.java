@@ -1,6 +1,8 @@
 package com.instano.retailer.instano.search;
 
 import android.app.Fragment;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +25,7 @@ import java.util.ArrayList;
  * with a GridView.
  * <p />
  */
-public class SellersListFragment extends Fragment {
+public class SellersListFragment extends Fragment implements SellersArrayAdapter.ItemInteractionListener {
 
     /**
      * The fragment's ListView
@@ -65,7 +67,7 @@ public class SellersListFragment extends Fragment {
         mListView.addHeaderView(mHeader);
         mListView.setAdapter(mAdapter);
         mListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-//        mAdapter.setListener(this);
+        mAdapter.setListener(this);
         mAdapter.filer(); // so that items are displayed
 
         return view;
@@ -85,8 +87,8 @@ public class SellersListFragment extends Fragment {
     }
 
     // TODO: implement
-//    @Override
-//    public void itemStateChanged(int pos, boolean checkedState) {
+    @Override
+    public void itemCheckedStateChanged(int pos, boolean checkedState) {
 //        if (pos > -1)
 //            mListView.setItemChecked(pos, checkedState);
 //
@@ -104,7 +106,13 @@ public class SellersListFragment extends Fragment {
 //                mHeaderButton.setText(String.format("Send to %d sellers", checkedItemCount));
 //                mHeaderButton.setEnabled(true);
 //        }
-//    }
+    }
+
+    @Override
+    public void callButtonClicked(String number) {
+        Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
+        startActivity(callIntent);
+    }
 
     public ArrayList<Integer> getSellerIds() {
         return mAdapter.getSelectedSellerIds();

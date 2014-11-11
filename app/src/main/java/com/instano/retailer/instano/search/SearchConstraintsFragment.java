@@ -2,6 +2,8 @@ package com.instano.retailer.instano.search;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,15 +11,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.ServicesSingleton;
+import com.instano.retailer.instano.utilities.MultiSpinner;
 import com.instano.retailer.instano.utilities.ProductCategories;
 import com.instano.retailer.instano.utilities.RangeSeekBar;
-import com.instano.retailer.instano.ServicesSingleton;
 
 import java.util.ArrayList;
 
@@ -39,6 +42,7 @@ public class SearchConstraintsFragment extends Fragment {
     private SeekBar mWithinSeekBar;
     private EditText mAdditionalInfoEditText;
     private Spinner mProductCategorySpinner;
+    private MultiSpinner mBrandsMultiSpinner;
     private TextView mPriceRangeTextView;
     private ArrayAdapter<ProductCategories.Category> mCategoryAdapter;
 
@@ -72,8 +76,8 @@ public class SearchConstraintsFragment extends Fragment {
         mWithinSeekBar = (SeekBar) view.findViewById(R.id.withinSeekBar);
         mAdditionalInfoEditText = (EditText) view.findViewById(R.id.additionalInfoEditText);
         mProductCategorySpinner = (Spinner) view.findViewById(R.id.productCategorySpinner);
+        mBrandsMultiSpinner = (MultiSpinner) view.findViewById(R.id.brandsMultiSpinner);
         mPriceRangeTextView = (TextView) view.findViewById(R.id.priceRangeTextView);
-        mProductCategorySpinner = (Spinner) view.findViewById(R.id.productCategorySpinner);
 
         mSearchStringEditText.setText(getArguments().getString(ARG_SEARCH_STRING));
 
@@ -88,6 +92,19 @@ public class SearchConstraintsFragment extends Fragment {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                final ProductCategories.Category category = mCategoryAdapter.getItem(position);
+                if (category.name.equals(ProductCategories.UNDEFINED)) {
+                    mBrandsMultiSpinner.setEnabled(false);
+                } else {
+                    mBrandsMultiSpinner.setEnabled(true);
+                }
+                mBrandsMultiSpinner.setItems(category.brands, category.getSelected(), "Select brands", new MultiSpinner.MultiSpinnerListener() {
+                    @Override
+                    public void onItemsSelected(boolean[] selected) {
+                        category.setSelected(selected);
+                    }
+                });
+
                 servicesSingleton.getSellersArrayAdapter().getFilter().filter(
                         ((mWithinSeekBar.getProgress() + 1) * 100) + "," + mCategoryAdapter.getItem(position).name);
             }
@@ -99,14 +116,23 @@ public class SearchConstraintsFragment extends Fragment {
             }
         });
 
-        mSearchStringEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        mSearchStringEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus)
-                    guessCategory();
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                guessCategory();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
-        guessCategory();
+        guessCategory(); // also triggers a mProductCategorySpinner...onItemSelected
 
         mWithinSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -141,17 +167,17 @@ public class SearchConstraintsFragment extends Fragment {
                     mPriceRangeTextView.setText(String.format("₹%,d to ₹%,d", minValue, maxValue));
                 }
             });
-            RelativeLayout parent = (RelativeLayout) view.findViewById(R.id.parentRelativeLayout);
+            LinearLayout parent = (LinearLayout) view.findViewById(R.id.parentLayout);
 
-            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            layoutParams.addRule(RelativeLayout.BELOW, mPriceRangeTextView.getId());
+//            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+//                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//            layoutParams.addRule(RelativeLayout.BELOW, mPriceRangeTextView.getId());
 
             float scale = getResources().getDisplayMetrics().density;
             int dpAsPixels = (int) (16 * scale + 0.5f); // for 16dp padding
             seekBar.setPadding(dpAsPixels, dpAsPixels/2, dpAsPixels, dpAsPixels);
 
-            parent.addView(seekBar, layoutParams);
+            parent.addView(seekBar);
         }
         return view;
     }
@@ -161,16 +187,18 @@ public class SearchConstraintsFragment extends Fragment {
         mCategoryAdapter.addAll(categories);
     }
 
+    // TODO: animate in case category is guessed
     private void guessCategory() {
         long start = System.nanoTime();
         String search = mSearchStringEditText.getText().toString().toLowerCase();
         for (int i = 0; i < mCategoryAdapter.getCount(); i++) {
             if (mCategoryAdapter.getItem(i).matches(search)) {
                 mProductCategorySpinner.setSelection(i);
-                break;
+                return;
             }
         }
-        long time = (System.nanoTime() - start)/1000000;
+        mProductCategorySpinner.setSelection(0); // setting to undefined
+        double time = (System.nanoTime() - start)/1000;
         Log.v("guessCategory", "time = " + time);
     }
 

@@ -35,7 +35,7 @@ public class PurchaseActivity extends Activity
 
     public void newBuyerButtonClicked(View view) {
 
-        ServicesSingleton.getInstance(this).signInRequest(true);
+        ServicesSingleton.getInstance(this).signInRequest();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class PurchaseActivity extends Activity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        ServicesSingleton.getInstance(this).signInRequest(false);
+        ServicesSingleton.getInstance(this);
     }
 
     @Override

@@ -16,14 +16,13 @@ public class PeriodicWorker {
     private Handler mHandler;
     private Runnable mRunnable;
 
-    public PeriodicWorker() {
-        final ServicesSingleton services = ServicesSingleton.getInstance(null);
+    public PeriodicWorker(final ServicesSingleton services) {
         mHandler = new Handler();
         mRunnable = new Runnable() {
             @Override
             public void run() {
                 Log.d(TAG, "running");
-                services.getQuotationsRequest();
+                services.runPeriodicTasks();
                 mHandler.postDelayed(this, REPEAT_INTERVAL);
             }
         };
