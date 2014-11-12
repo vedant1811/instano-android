@@ -2,12 +2,15 @@ package com.instano.retailer.instano.utilities;
 
 import android.graphics.PointF;
 import android.location.Location;
+import android.support.annotation.NonNull;
 
 import com.instano.retailer.instano.ServicesSingleton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Comparator;
 
 /**
  * Represents a single immutable Seller
@@ -142,6 +145,41 @@ public class Seller {
             return String.format("%.2f", distanceFromLocation /100.0) + " km";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Seller seller = (Seller) o;
+
+        if (id != seller.id) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    public static class DistanceComparator implements Comparator<Seller> {
+
+        @Override
+        public int compare(@NonNull Seller lhs, @NonNull Seller rhs) {
+
+            if (lhs.equals(rhs))
+                return 0;
+
+            return lhs.getDistanceFromLocation() - rhs.getDistanceFromLocation();
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            return object instanceof DistanceComparator;
+        }
+    }
+
+    // TODO: cache this value
     // get distance between to two points in 10x meters or -1
     public int getDistanceFromLocation() {
 

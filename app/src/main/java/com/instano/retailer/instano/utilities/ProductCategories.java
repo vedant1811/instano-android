@@ -1,5 +1,6 @@
 package com.instano.retailer.instano.utilities;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -53,6 +54,18 @@ public class ProductCategories {
         return false;
     }
 
+    public boolean containsCategoryAndOneBrand(ProductCategories.Category category) {
+
+        if (category.name.equals(UNDEFINED))
+            return true;
+
+        for (Category c : mCategories)
+            if (c.name.equals(category.name)) {
+                return !Collections.disjoint(c.brands, category.brands); // true if atleast one brand is common
+            }
+        return false;
+    }
+
     public static class Category implements Comparable<Category> {
         public final String name;
         public final ArrayList<String> brands;
@@ -67,7 +80,7 @@ public class ProductCategories {
             return false;
         }
 
-        Category(JSONObject params) {
+        public Category(JSONObject params) {
             selected = null;
             brands = new ArrayList<String>();
             String name = null;
@@ -84,6 +97,25 @@ public class ProductCategories {
             Collections.sort(brands);
             nameVariants = new ArrayList<String>();
             nameVariants.add(name.toLowerCase());
+        }
+
+        public JSONObject toJsonObject() {
+            try {
+                JSONArray jsonArray = new JSONArray();
+                if (selected != null) {
+                    for (int i = 0; i < selected.length; i++) {
+                        if (selected[i])
+                            jsonArray.put(brands.get(i));
+                    }
+                } // TODO: else when selected is null
+                JSONObject jsonObject = new JSONObject()
+                        .put("category", name)
+                        .put("brands", jsonArray);
+                return jsonObject;
+            } catch (JSONException e) {
+                Log.e(TAG, "", e);
+                return null;
+            }
         }
 
         /**
@@ -107,7 +139,7 @@ public class ProductCategories {
         }
 
         @Override
-        public int compareTo(Category another) {
+        public int compareTo(@NonNull Category another) {
             return name.compareTo(another.name);
         }
 

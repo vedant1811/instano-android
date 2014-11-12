@@ -82,7 +82,7 @@ public class SearchConstraintsFragment extends Fragment {
         mSearchStringEditText.setText(getArguments().getString(ARG_SEARCH_STRING));
 
         mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
-        android.R.layout.simple_spinner_item);
+                android.R.layout.simple_spinner_item);
         ArrayList<ProductCategories.Category> categories = servicesSingleton.getProductCategories();
         if (categories != null)
             mCategoryAdapter.addAll(categories);
@@ -102,17 +102,16 @@ public class SearchConstraintsFragment extends Fragment {
                     @Override
                     public void onItemsSelected(boolean[] selected) {
                         category.setSelected(selected);
+                        filter(category);
                     }
                 });
 
-                servicesSingleton.getSellersArrayAdapter().getFilter().filter(
-                        ((mWithinSeekBar.getProgress() + 1) * 100) + "," + mCategoryAdapter.getItem(position).name);
+                filter(category);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                servicesSingleton.getSellersArrayAdapter().getFilter().filter(
-                        ((mWithinSeekBar.getProgress() + 1) * 100) + "," + 0);
+                // TODO: do something
             }
         });
 
@@ -139,8 +138,7 @@ public class SearchConstraintsFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 mWithinTextView.setText(String.format("Within %dkm:", progress + 1));
-                servicesSingleton.getSellersArrayAdapter().getFilter().filter(
-                        ((progress + 1) * 100) + "," + getProductCategory());
+                filter((progress + 1) * 100);
             }
 
             @Override
@@ -169,10 +167,6 @@ public class SearchConstraintsFragment extends Fragment {
             });
             LinearLayout parent = (LinearLayout) view.findViewById(R.id.parentLayout);
 
-//            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-//                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//            layoutParams.addRule(RelativeLayout.BELOW, mPriceRangeTextView.getId());
-
             float scale = getResources().getDisplayMetrics().density;
             int dpAsPixels = (int) (16 * scale + 0.5f); // for 16dp padding
             seekBar.setPadding(dpAsPixels, dpAsPixels/2, dpAsPixels, dpAsPixels);
@@ -180,6 +174,14 @@ public class SearchConstraintsFragment extends Fragment {
             parent.addView(seekBar);
         }
         return view;
+    }
+
+    private void filter(ProductCategories.Category category) {
+        ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(category);
+    }
+
+    private void filter(int minDist) {
+        ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(minDist);
     }
 
     /* package private */ void updateProductCategories(ArrayList<ProductCategories.Category> categories) {

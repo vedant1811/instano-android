@@ -68,7 +68,6 @@ public class SellersListFragment extends Fragment implements SellersArrayAdapter
         mListView.setAdapter(mAdapter);
         mListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         mAdapter.setListener(this);
-        mAdapter.filer(); // so that items are displayed
 
         return view;
     }

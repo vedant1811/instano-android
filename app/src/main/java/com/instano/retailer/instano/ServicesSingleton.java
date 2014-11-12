@@ -36,7 +36,6 @@ import com.instano.retailer.instano.utilities.PeriodicWorker;
 import com.instano.retailer.instano.utilities.ProductCategories;
 import com.instano.retailer.instano.utilities.Quotation;
 import com.instano.retailer.instano.utilities.Quote;
-import com.instano.retailer.instano.utilities.Seller;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -98,7 +97,7 @@ public class ServicesSingleton implements
 //        if (newBuyer)
 //            sendSignInRequest("create");
 //        else
-            sendSignInRequest(mSharedPreferences.getString(KEY_BUYER_API_KEY, "create"));
+        sendSignInRequest(mSharedPreferences.getString(KEY_BUYER_API_KEY, "create"));
     }
 
     private void postSignIn() {
@@ -192,17 +191,7 @@ public class ServicesSingleton implements
                         Log.v(TAG, "Sellers response:" + response.toString());
                         try {
                             JSONArray quotesJsonArray = new JSONArray(response);
-                            // TODO: change creating a new list everytime
-                            mSellersArrayAdapter.clear();
-                            for (int i = 0; i < quotesJsonArray.length(); i++){
-                                JSONObject quotationJsonObject = quotesJsonArray.getJSONObject(i);
-                                try {
-                                    mSellersArrayAdapter.add(new Seller(quotationJsonObject));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            mSellersArrayAdapter.filer();
+                            mSellersArrayAdapter.addAll(quotesJsonArray);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -366,6 +355,7 @@ public class ServicesSingleton implements
 
         mPeriodicWorker = new PeriodicWorker(this);
         mPeriodicWorker.start();
+        signInRequest();
     }
 
     public static ServicesSingleton getInstance(Activity startingActivity) {
