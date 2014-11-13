@@ -1,6 +1,7 @@
 package com.instano.retailer.instano;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
@@ -130,6 +131,7 @@ public class SellersArrayAdapter extends BaseAdapter {
      * @param sellerId of the seller to be returned
      * @return the seller, or null if no such seller exists
      */
+    @Nullable
     public Seller getSeller (int sellerId) {
         return mCompleteSet.get(sellerId);
     }

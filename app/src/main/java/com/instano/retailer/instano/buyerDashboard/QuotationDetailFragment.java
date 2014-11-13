@@ -61,16 +61,15 @@ public class QuotationDetailFragment extends Fragment {
         String productInfo = quotation.toChatString();
 
         String title;
-        try {
-            Seller seller = mServicesSingleton.getSellersArrayAdapter().getSeller(quotation.sellerId);
+        Seller seller = mServicesSingleton.getSellersArrayAdapter().getSeller(quotation.sellerId);
+        if (seller != null) {
             String distanceFromLocation = seller.getPrettyDistanceFromLocation();
             if (distanceFromLocation != null)
                 productInfo += distanceFromLocation + " away";
             productInfo += "\n\nSELLER INFO:" + seller.phone + "\n" + seller.email;
             title = seller.nameOfSeller + " from \"" + seller.nameOfShop +"\"";
-        } catch (IllegalArgumentException e) {
+        } else {
             title = "INVALID SELLER";
-            e.printStackTrace();
         }
 
         textView.setText(productInfo);

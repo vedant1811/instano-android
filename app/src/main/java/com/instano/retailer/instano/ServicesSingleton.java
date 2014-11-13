@@ -465,19 +465,6 @@ public class ServicesSingleton implements
             if (addresses != null && addresses.size() > 0) {
                 // Get the first address
                 return addresses.get(0);
-                /*
-                 * Format the first line of address (if available),
-                 * city, and country name.
-                 */
-//                String addressText = String.format( "%s, %s, %s",
-//                        // If there's a street address, add it
-//                        address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
-//                        // Locality is usually a city
-//                        address.getLocality(),
-//                        // The country of the address
-//                        address.getCountryName());
-//                // Return the text
-//                return addressText;
             } else {
                 return null;
             }
@@ -627,6 +614,7 @@ public class ServicesSingleton implements
         return false;
     }
 
+    // TODO: fix bug of showing a future time
     /**
      *
      * @return Human readable time elapsed. Eg: "42 minutes ago"
