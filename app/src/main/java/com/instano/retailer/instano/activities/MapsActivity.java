@@ -1,15 +1,15 @@
 package com.instano.retailer.instano.activities;
 
-import android.support.v4.app.FragmentActivity;
+import android.app.Activity;
 import android.os.Bundle;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.instano.retailer.instano.R;
 
-public class MapsActivity extends FragmentActivity {
+public class MapsActivity extends Activity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
@@ -31,7 +31,7 @@ public class MapsActivity extends FragmentActivity {
      * installed) and the map has not already been instantiated.. This will ensure that we only ever
      * call {@link #setUpMap()} once when {@link #mMap} is not null.
      * <p>
-     * If it isn't installed {@link SupportMapFragment} (and
+     * If it isn't installed {@link MapFragment} (and
      * {@link com.google.android.gms.maps.MapView MapView}) will show a prompt for the user to
      * install/update the Google Play services APK on their device.
      * <p>
@@ -45,7 +45,7 @@ public class MapsActivity extends FragmentActivity {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
-            mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
+            mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {

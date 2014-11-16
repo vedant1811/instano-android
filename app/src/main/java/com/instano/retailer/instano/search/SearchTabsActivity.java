@@ -17,6 +17,9 @@ import android.widget.Toast;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
+import com.instano.retailer.instano.utilities.ProductCategories;
+
+import java.util.ArrayList;
 
 
 public class SearchTabsActivity extends Activity implements ActionBar.TabListener,
@@ -140,10 +143,16 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
     }
 
     @Override
+    public void productCategoriesUpdated(ArrayList<ProductCategories.Category> productCategories) {
+        mSearchConstraintsFragment.updateProductCategories(productCategories);
+    }
+
+    @Override
     public void quoteSent(boolean success) {
         if (success) {
             startActivity(new Intent(this, QuotationListActivity.class));
             Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT).show();
+            finish();
         } else {
             Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG).show();
         }

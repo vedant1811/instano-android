@@ -36,7 +36,6 @@ import com.instano.retailer.instano.utilities.PeriodicWorker;
 import com.instano.retailer.instano.utilities.ProductCategories;
 import com.instano.retailer.instano.utilities.Quotation;
 import com.instano.retailer.instano.utilities.Quote;
-import com.instano.retailer.instano.utilities.Seller;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -94,19 +93,28 @@ public class ServicesSingleton implements
     private ProductCategories mProductCategories;
     private PeriodicWorker mPeriodicWorker;
 
-    public void signInRequest(boolean newBuyer) {
-        if (newBuyer)
-            sendSignInRequest("create");
-        else
-            sendSignInRequest(mSharedPreferences.getString(KEY_BUYER_API_KEY, "create"));
+    public void signInRequest() {
+//        if (newBuyer)
+//            sendSignInRequest("create");
+//        else
+        sendSignInRequest(mSharedPreferences.getString(KEY_BUYER_API_KEY, "create"));
     }
 
     private void postSignIn() {
         Log.d(TAG, "buyer ID: " + mBuyerId);
         Toast.makeText(mAppContext, String.format("you are %d user to sign in", mBuyerId), Toast.LENGTH_SHORT).show();
         mQuotationsArrayAdapter.clear();
-        mPeriodicWorker = new PeriodicWorker();
-        mPeriodicWorker.start();
+    }
+
+    public void runPeriodicTasks() {
+        if (mBuyerId != -1) // i.e. if user is signed in
+            getQuotationsRequest();
+//        else
+//            signInRequest(false);
+
+        if (getProductCategories() == null)
+            getProductCategoriesRequest();
+
     }
 
     public void createNotification() {
@@ -183,17 +191,7 @@ public class ServicesSingleton implements
                         Log.v(TAG, "Sellers response:" + response.toString());
                         try {
                             JSONArray quotesJsonArray = new JSONArray(response);
-                            // TODO: change creating a new list everytime
-                            mSellersArrayAdapter.clear();
-                            for (int i = 0; i < quotesJsonArray.length(); i++){
-                                JSONObject quotationJsonObject = quotesJsonArray.getJSONObject(i);
-                                try {
-                                    mSellersArrayAdapter.add(new Seller(quotationJsonObject));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            mSellersArrayAdapter.filer();
+                            mSellersArrayAdapter.addAll(quotesJsonArray);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -262,6 +260,8 @@ public class ServicesSingleton implements
                             } catch (JSONException e) {
                                 e.printStackTrace();
                                 mBuyerId = -1;
+                                // try again
+                                signInRequest();
                             }
                         }
                     },
@@ -282,6 +282,8 @@ public class ServicesSingleton implements
                     public void onResponse(JSONObject response) {
                         Log.v(TAG, "ProductCategories response:" + response.toString());
                         mProductCategories = new ProductCategories(response, true);
+                        if (mQuoteCallbacks != null)
+                            mQuoteCallbacks.productCategoriesUpdated(getProductCategories());
                     }
                 },
                 new Response.ErrorListener() {
@@ -303,9 +305,9 @@ public class ServicesSingleton implements
 
     private String getRequestUrl(RequestType requestType) {
 
-//    private final static String SERVER_URL = "http://ec2-54-68-27-25.us-west-2.compute.amazonaws.com/";
-        final String SERVER_URL = "http://10.42.0.1:3000/";
-//        final String SERVER_URL = "http://192.168.1.2:3000/";
+        final String SERVER_URL = "http://instano.in/";
+//        final String SERVER_URL = "http://10.42.0.1:3000/";
+//        final String SERVER_URL = "http://192.168.43.81:3000/";
         final String API_VERSION = "v1/";
         String url = SERVER_URL + API_VERSION;
         switch (requestType) {
@@ -351,7 +353,9 @@ public class ServicesSingleton implements
         mQuotationsArrayAdapter = new QuotationsArrayAdapter(startingActivity);
         mSellersArrayAdapter = new SellersArrayAdapter(startingActivity);
 
-        getProductCategoriesRequest();
+        mPeriodicWorker = new PeriodicWorker(this);
+        mPeriodicWorker.start();
+        signInRequest();
     }
 
     public static ServicesSingleton getInstance(Activity startingActivity) {
@@ -461,19 +465,6 @@ public class ServicesSingleton implements
             if (addresses != null && addresses.size() > 0) {
                 // Get the first address
                 return addresses.get(0);
-                /*
-                 * Format the first line of address (if available),
-                 * city, and country name.
-                 */
-//                String addressText = String.format( "%s, %s, %s",
-//                        // If there's a street address, add it
-//                        address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
-//                        // Locality is usually a city
-//                        address.getLocality(),
-//                        // The country of the address
-//                        address.getCountryName());
-//                // Return the text
-//                return addressText;
             } else {
                 return null;
             }
@@ -590,11 +581,11 @@ public class ServicesSingleton implements
     }
 
     public interface QuoteCallbacks {
+        public void productCategoriesUpdated(ArrayList<ProductCategories.Category> productCategories);
         public void quoteSent(boolean success);
     }
 
     public interface InitialDataCallbacks {
-//        public void productCategoriesUpdated(ArrayList<String> productCategories);
         public void searchingForAddress();
         public void addressFound(Address address);
         /*
@@ -623,6 +614,7 @@ public class ServicesSingleton implements
         return false;
     }
 
+    // TODO: fix bug of showing a future time
     /**
      *
      * @return Human readable time elapsed. Eg: "42 minutes ago"

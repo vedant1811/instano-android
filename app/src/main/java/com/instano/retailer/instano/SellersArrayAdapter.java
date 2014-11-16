@@ -1,18 +1,26 @@
 package com.instano.retailer.instano;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
+import android.util.Log;
+import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Filter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.utilities.ProductCategories;
 import com.instano.retailer.instano.utilities.Seller;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -21,22 +29,29 @@ import java.util.ArrayList;
  * displays a list of sellers sorted by Seller.id
  * Created by vedant on 24/9/14.
  */
-public class SellersArrayAdapter extends ArrayAdapter <Seller> {
+public class SellersArrayAdapter extends BaseAdapter {
 
+    private static final String TAG = "sellers array adapter";
+    private SparseArray<Seller> mCompleteSet;
     private ArrayList<Seller> mFilteredList;
-    private DistanceFilter mFilter;
+    private DistanceFilter mDistanceFilter;
+    private BrandsCategoryFilter mBrandsCategoryFilter;
     private SparseBooleanArray mCheckedItems;
+    private Context mContext;
 
-    private ItemCheckedStateChangedListener mListener;
+    private ItemInteractionListener mListener;
 
     public SellersArrayAdapter(Context context) {
-        super(context, android.R.layout.simple_list_item_2);
+        mContext = context;
+
+        mCompleteSet = new SparseArray<Seller>();
         mFilteredList = new ArrayList<Seller>();
-        mFilter = new DistanceFilter();
+        mDistanceFilter = new DistanceFilter();
+        mBrandsCategoryFilter = new BrandsCategoryFilter();
         mCheckedItems = new SparseBooleanArray();
     }
 
-    public void setListener (ItemCheckedStateChangedListener listener) {
+    public void setListener (ItemInteractionListener listener) {
         this.mListener = listener;
     }
 
@@ -59,17 +74,12 @@ public class SellersArrayAdapter extends ArrayAdapter <Seller> {
     }
 
     @Override
-    public Filter getFilter() {
-        return mFilter;
-    }
-
-    @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         final View view;
 
         // first check to see if the view is null. if so, we have to inflate it.
         if (convertView == null) {
-            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.list_item_shop, parent, false);
         }
         else
@@ -79,6 +89,7 @@ public class SellersArrayAdapter extends ArrayAdapter <Seller> {
         TextView addressTextView = (TextView) view.findViewById(R.id.addressTextView);
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox);
+        ImageButton callImageButton = (ImageButton) view.findViewById(R.id.callImageButton);
 
         final Seller seller = getItem(position);
 
@@ -87,14 +98,14 @@ public class SellersArrayAdapter extends ArrayAdapter <Seller> {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 if (mListener != null)
-                    mListener.itemStateChanged(position, isChecked);
+                    mListener.itemCheckedStateChanged(position, isChecked);
                 mCheckedItems.put(seller.id, isChecked);
             }
         });
         // initially setting all to checked
         mCheckedItems.put(seller.id, true);
         if (mListener != null)
-            mListener.itemStateChanged(position, true);
+            mListener.itemCheckedStateChanged(position, true);
 
         shopNameTextView.setText(seller.nameOfShop);
         addressTextView.setText(seller.address);
@@ -104,21 +115,30 @@ public class SellersArrayAdapter extends ArrayAdapter <Seller> {
         else
             distanceTextView.setVisibility(View.INVISIBLE);
 
+        callImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null)
+                    mListener.callButtonClicked(seller.phone);
+            }
+        });
+
         return view;
     }
 
-    public Seller getSeller (int sellerId) throws IllegalArgumentException {
-        for (int i = 0; i < super.getCount(); i++) {
-            if (super.getItem(i).id == sellerId)
-                return super.getItem(i);
-        }
-
-        throw new IllegalArgumentException("no seller with id " + sellerId);
+    /**
+     * returns a seller from this adpater
+     * @param sellerId of the seller to be returned
+     * @return the seller, or null if no such seller exists
+     */
+    @Nullable
+    public Seller getSeller (int sellerId) {
+        return mCompleteSet.get(sellerId);
     }
 
     @Override
     public long getItemId (int pos){
-        return getItem(pos).id;
+        return getItem(pos).hashCode();
     }
 
     @Override
@@ -126,56 +146,93 @@ public class SellersArrayAdapter extends ArrayAdapter <Seller> {
         return true;
     }
 
-    public void filer() {
-        mFilter.runOldFilter();
+    // TODO: equality of sellers is checked based on seller ID (i.e.seller.hashCode() ). In case a seller has updated details
+    // the seller will be skipped. Fix this.
+    /**
+     * Add a seller to this adapter if it does not already exist
+     * @param seller to be added
+     * @return true if the seller was successfully added, false if it already existed
+     */
+    private boolean add(Seller seller) {
+        int hash = seller.hashCode();
+        if (mCompleteSet.get(hash) == null) {
+            mCompleteSet.put(hash, seller);
+            return true;
+        } else
+            return false;
+
     }
 
-    public interface ItemCheckedStateChangedListener {
+    public boolean addAll(JSONArray quotesJsonArray) throws JSONException {
+
+        boolean newAdded = false;
+
+        for (int i = 0; i < quotesJsonArray.length(); i++){
+            JSONObject quotationJsonObject = quotesJsonArray.getJSONObject(i);
+            try {
+                newAdded |= add(new Seller(quotationJsonObject));
+            } catch (JSONException e) {
+                Log.d(TAG, "", e);
+            }
+        }
+
+        Log.d(TAG, "newAdded = " + newAdded);
+
+        if (newAdded) {
+            filter();
+        }
+        return newAdded;
+    }
+
+    public void filter() {
+        mDistanceFilter.runOldFilter();
+        mBrandsCategoryFilter.runOldFilter();
+    }
+
+    public void filter(int minDist) {
+        mDistanceFilter.filter(String.valueOf(minDist));
+    }
+
+    public void filter(ProductCategories.Category category) {
+        mBrandsCategoryFilter.filter(category.toJsonObject().toString());
+    }
+
+    public interface ItemInteractionListener {
         /**
          *
          * @param pos position whose checkedState has changed, or -1 if listItems changed
          * @param checkedState
          */
-        public void itemStateChanged(int pos, boolean checkedState);
-    }
-
-    private ArrayList<Seller> getUnderlyingArray() {
-        ArrayList<Seller> sellers = new ArrayList<Seller>();
-        for (int i = 0; i < super.getCount(); i++) {
-            sellers.add(super.getItem(i));
-        }
-        return sellers;
+        public void itemCheckedStateChanged(int pos, boolean checkedState);
+        public void callButtonClicked(String number);
     }
 
     private class DistanceFilter extends Filter {
 
-        private CharSequence constraint = "1000," + ProductCategories.UNDEFINED;
+        private CharSequence mLastConstraint = "1000";
 
-        void runOldFilter() {
-            filter(constraint);
+        private void runOldFilter() {
+            filter(mLastConstraint);
         }
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            this.constraint = constraint;
-            ArrayList<Seller> filteredList;
-            ArrayList<Seller> underlyingArray = getUnderlyingArray();
+            this.mLastConstraint = constraint;
+            ArrayList<Seller> filteredList = new ArrayList<Seller>();
 
             try {
-                String[] constraints = String.valueOf(this.constraint).split(",");
-
-                filteredList = new ArrayList<Seller>();
-
-                int minDist = Integer.parseInt(constraints[0]);
-                String productCategory = constraints[1];
-                for (Seller seller : underlyingArray) {
-//                    if (seller.getDistanceFromLocation() <= minDist && // match product category as well:
-                            if(seller.productCategories.contains(productCategory))
+                int minDist = Integer.parseInt(String.valueOf(constraint));
+                for (int i = 0; i < mCompleteSet.size(); i++) {
+                    Seller seller = mCompleteSet.valueAt(i);
+                    if (seller.getDistanceFromLocation() <= minDist)
                         filteredList.add(seller);
                 }
             } catch (NumberFormatException e) {
                 // add all in that case
-                filteredList = underlyingArray;
+                for (int i = 0; i < mCompleteSet.size(); i++) {
+                    Seller seller = mCompleteSet.valueAt(i);
+                    filteredList.add(seller);
+                }
             }
 
             FilterResults filterResults = new FilterResults();
@@ -192,7 +249,85 @@ public class SellersArrayAdapter extends ArrayAdapter <Seller> {
             else
                 notifyDataSetChanged();
             if (mListener != null)
-                mListener.itemStateChanged(-1, false);
+                mListener.itemCheckedStateChanged(-1, false);
+        }
+    }
+
+    private class BrandsCategoryFilter extends Filter {
+
+        private CharSequence mLastConstraint = null;
+
+        private void runOldFilter() {
+            filter(mLastConstraint);
+        }
+
+        /**
+         * <p>Invoked in a worker thread to filter the data according to the
+         * constraint. Subclasses must implement this method to perform the
+         * filtering operation. Results computed by the filtering operation
+         * must be returned as a {@link android.widget.Filter.FilterResults} that
+         * will then be published in the UI thread through
+         * {@link #publishResults(CharSequence,
+         * android.widget.Filter.FilterResults)}.</p>
+         * <p/>
+         * <p><strong>Contract:</strong> When the constraint is null, the original
+         * data must be restored.</p>
+         *
+         * @param constraint the constraint used to filter the data
+         * @return the results of the filtering operation
+         * @see #filter(CharSequence, android.widget.Filter.FilterListener)
+         * @see #publishResults(CharSequence, android.widget.Filter.FilterResults)
+         * @see android.widget.Filter.FilterResults
+         */
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+
+            this.mLastConstraint = constraint;
+            ArrayList<Seller> filteredList = new ArrayList<Seller>();
+
+
+            try {
+                ProductCategories.Category category = new ProductCategories.Category(
+                        new JSONObject(String.valueOf(constraint)));
+                for (int i = 0; i < mCompleteSet.size(); i++) {
+                    Seller seller = mCompleteSet.valueAt(i);
+                    if (seller.productCategories.containsCategoryAndOneBrand(category))
+                        filteredList.add(seller);
+                }
+            } catch (JSONException e) {
+                // add all in that case
+                for (int i = 0; i < mCompleteSet.size(); i++) {
+                    Seller seller = mCompleteSet.valueAt(i);
+                    filteredList.add(seller);
+                }
+            }
+
+            FilterResults filterResults = new FilterResults();
+            filterResults.count = filteredList.size();
+            filterResults.values = filteredList;
+            return filterResults;
+        }
+
+        /**
+         * <p>Invoked in the UI thread to publish the filtering results in the
+         * user interface. Subclasses must implement this method to display the
+         * results computed in {@link #performFiltering}.</p>
+         *
+         * @param constraint the constraint used to filter the data
+         * @param results    the results of the filtering operation
+         * @see #filter(CharSequence, android.widget.Filter.FilterListener)
+         * @see #performFiltering(CharSequence)
+         * @see android.widget.Filter.FilterResults
+         */
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            mFilteredList = (ArrayList<Seller>) results.values;
+            if (results.count == 0)
+                notifyDataSetInvalidated();
+            else
+                notifyDataSetChanged();
+            if (mListener != null)
+                mListener.itemCheckedStateChanged(-1, false);
         }
     }
 }

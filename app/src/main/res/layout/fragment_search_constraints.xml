@@ -5,69 +5,35 @@
     tools:context="com.instano.retailer.instano.search.SearchConstraintsFragment">
 
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_gravity="center"
-        android:id="@+id/parentRelativeLayout"
+        android:id="@+id/parentLayout"
         android:padding="4dp"
-        android:paddingTop="10dp">
+        android:paddingTop="10dp"
+        android:orientation="vertical">
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/searchStringEditText"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:minWidth="120dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Search for"
-            android:id="@+id/textView2"
-            android:layout_toStartOf="@+id/searchStringEditText"
-            android:layout_toLeftOf="@+id/searchStringEditText"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignBottom="@+id/searchStringEditText"
-            android:gravity="center_vertical" />
-
-        <Spinner
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/productCategorySpinner"
-            android:layout_toEndOf="@+id/textView4"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/additionalInfoEditText"
-            android:layout_toRightOf="@+id/textView4"
-            android:layout_alignBottom="@+id/textView4" />
+            android:layout_height="wrap_content">
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/productCategorySpinner"
-            android:layout_toEndOf="@+id/productCategorySpinner"
-            android:id="@+id/frameLayout2">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Search for"
+                android:id="@+id/textView2"
+                android:gravity="center_vertical" />
 
-        </FrameLayout>
-
-        <TextView
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:id="@+id/withinTextView"
-            android:layout_below="@+id/searchStringEditText"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignBottom="@+id/withinSeekBar"
-            android:gravity="center_vertical"
-            android:minWidth="100dp"
-            android:text="Within 10km:" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:id="@+id/searchStringEditText"
+                android:minWidth="120dp" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -77,34 +43,78 @@
             android:id="@+id/textView3"
             android:paddingTop="16dp"
             android:paddingRight="8dp"
-            android:paddingBottom="8dp"
-            android:layout_below="@+id/searchButton"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:paddingBottom="8dp"/>
 
-        <EditText
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/additionalInfoEditText"
-            android:layout_below="@+id/textView3"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:hint="additional info (like specific brands)" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Product Category"
-            android:id="@+id/textView4"
-            android:layout_below="@+id/additionalInfoEditText"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:paddingTop="10dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:paddingBottom="10dp" />
+            <TextView
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:id="@+id/withinTextView"
+                android:gravity="center_vertical"
+                android:minWidth="100dp"
+                android:text="Within 10km:" />
 
+            <SeekBar
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/withinSeekBar"
+                android:paddingRight="16dp"
+                android:max="99"
+                android:progress="9"
+                android:indeterminate="false" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Product Category:"
+                android:id="@+id/textView4"
+                android:paddingTop="10dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:paddingBottom="10dp" />
+
+            <Spinner
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/productCategorySpinner"
+                android:spinnerMode="dialog" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Brand:"
+                android:id="@+id/textView6"
+                android:paddingTop="10dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:paddingBottom="10dp" />
+
+            <view
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                class="com.instano.retailer.instano.utilities.MultiSpinner"
+                android:id="@+id/brandsMultiSpinner" />
+
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -112,47 +122,46 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Price Range"
             android:id="@+id/textView5"
-            android:layout_below="@+id/textView4"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:paddingLeft="4dp"
             android:paddingTop="10dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="₹5,000 to ₹50,000"
-            android:id="@+id/priceRangeTextView"
-            android:layout_below="@+id/textView5"
-            android:layout_centerHorizontal="true"
-            android:paddingLeft="4dp"
-            android:paddingTop="4dp"
-            android:paddingRight="4dp" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
 
-        <SeekBar
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/frameLayout2">
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="₹5,000 to ₹50,000"
+                android:id="@+id/priceRangeTextView"
+                android:paddingLeft="4dp"
+                android:paddingTop="4dp"
+                android:paddingRight="4dp" />
+
+        </LinearLayout>
+
+
+        <EditText
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/withinSeekBar"
-            android:layout_below="@+id/searchStringEditText"
-            android:layout_alignRight="@+id/frameLayout2"
-            android:layout_alignEnd="@+id/frameLayout2"
-            android:paddingRight="16dp"
-            android:max="99"
-            android:layout_toEndOf="@+id/withinTextView"
-            android:layout_toRightOf="@+id/withinTextView"
-            android:progress="9"
-            android:indeterminate="false" />
+            android:id="@+id/additionalInfoEditText"
+            android:hint="additional info (if any)" />
 
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Search"
             android:id="@+id/searchButton"
-            android:layout_below="@+id/withinTextView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
             android:onClick="searchButtonClicked" />
 
-    </RelativeLayout>
+    </LinearLayout>
 </FrameLayout>

@@ -1,6 +1,7 @@
 package com.instano.retailer.instano;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,14 +32,12 @@ public class QuotationsArrayAdapter extends ArrayAdapter<Quotation> {
         if (getQuotation(quotation.id) != null)
             return false;
 
-        try {
-            ServicesSingleton.getInstance(null).getSellersArrayAdapter().getSeller(quotation.sellerId);
+        Seller seller = ServicesSingleton.getInstance(null).getSellersArrayAdapter().getSeller(quotation.sellerId);
+        if (seller != null) {
             insert(quotation, 0);
             return true;
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+        } else
             return false;
-        }
     }
 
     @Override
@@ -72,17 +71,16 @@ public class QuotationsArrayAdapter extends ArrayAdapter<Quotation> {
 
         String nameOfShop;
 
+        Seller seller = servicesSingleton.getSellersArrayAdapter().getSeller(quotation.sellerId);
         // TODO: better handle error
-        try {
-            Seller seller = servicesSingleton.getSellersArrayAdapter()
-                    .getSeller(quotation.sellerId);
+        if (seller != null) {
             nameOfShop = seller.nameOfShop;
             String distance = seller.getPrettyDistanceFromLocation();
             if (distance != null)
                 distanceTextView.setText(distance);
             else
                 distanceTextView.setVisibility(View.INVISIBLE);
-        } catch (IllegalArgumentException e) {
+        } else {
             nameOfShop = "INVALID SHOP";
             distanceTextView.setVisibility(View.INVISIBLE);
         }
@@ -103,9 +101,10 @@ public class QuotationsArrayAdapter extends ArrayAdapter<Quotation> {
         return view;
     }
 
+    @Nullable
     public Quotation getQuotation (int quotationId) {
         for (int i = 0; i < getCount(); i++) {
-            if ( getItem(i).id == quotationId )
+            if (getItem(i).id == quotationId)
                 return getItem(i);
         }
         return null;

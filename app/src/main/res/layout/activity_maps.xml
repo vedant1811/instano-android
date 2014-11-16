@@ -4,4 +4,5 @@
     android:layout_height="match_parent"
     android:id="@+id/map"
     tools:context="com.instano.retailer.instano.activities.MapsActivity"
-    android:name="com.google.android.gms.maps.SupportMapFragment"/>
+    android:name="com.google.android.gms.maps.MapFragment"
+    tools:layout="@layout/activity_maps" />

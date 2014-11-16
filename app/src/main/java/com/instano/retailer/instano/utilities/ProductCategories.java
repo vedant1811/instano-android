@@ -1,5 +1,6 @@
 package com.instano.retailer.instano.utilities;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -47,24 +48,42 @@ public class ProductCategories {
             return true; // undefined is contained in every category
 
         // TODO: make it a check via hash
-        for (Category category : mCategories )
+        for (Category category : mCategories)
             if (category.name.equals(categoryName))
                 return true;
         return false;
     }
 
-    public static class Category implements Comparable<Category> {
-        public String name;
-        public ArrayList<String> brands;
-        /**
-         * represents the selected brands. If it is null, the category itself is not selected.
-         * In case the Product Categories is part of a seller, this is always null
-         */
-        public boolean[] selected;
+    public boolean containsCategoryAndOneBrand(ProductCategories.Category category) {
 
-        Category(JSONObject params) {
+        if (category.name.equals(UNDEFINED))
+            return true;
+
+        for (Category c : mCategories)
+            if (c.name.equals(category.name)) {
+                return !Collections.disjoint(c.brands, category.brands); // true if atleast one brand is common
+            }
+        return false;
+    }
+
+    public static class Category implements Comparable<Category> {
+        public final String name;
+        public final ArrayList<String> brands;
+        private boolean[] selected;
+
+        private final ArrayList<String> nameVariants;
+
+        public boolean matches(String lowerCaseString) {
+            for (String variant : nameVariants)
+                if(lowerCaseString.contains(variant))
+                    return true;
+            return false;
+        }
+
+        public Category(JSONObject params) {
             selected = null;
             brands = new ArrayList<String>();
+            String name = null;
             try {
                 name = params.getString("category");
                 JSONArray brandsJsonArray = params.getJSONArray("brands");
@@ -74,17 +93,44 @@ public class ProductCategories {
             } catch (JSONException e){
                 Log.e(TAG, "", e);
             }
+            this.name = name;
             Collections.sort(brands);
+            nameVariants = new ArrayList<String>();
+            nameVariants.add(name.toLowerCase());
         }
 
-        private Category() {
+        public JSONObject toJsonObject() {
+            try {
+                JSONArray jsonArray = new JSONArray();
+                if (selected != null) {
+                    for (int i = 0; i < selected.length; i++) {
+                        if (selected[i])
+                            jsonArray.put(brands.get(i));
+                    }
+                } // TODO: else when selected is null
+                JSONObject jsonObject = new JSONObject()
+                        .put("category", name)
+                        .put("brands", jsonArray);
+                return jsonObject;
+            } catch (JSONException e) {
+                Log.e(TAG, "", e);
+                return null;
+            }
+        }
 
+        /**
+         * dummy category
+         */
+        private Category() {
+            this.name = UNDEFINED;
+            brands = new ArrayList<String>();
+            brands.add("brands");
+            nameVariants = new ArrayList<String>();
+            nameVariants.add(name.toLowerCase());
         }
 
         private static Category undefinedCategory() {
-            Category category = new Category();
-            category.name = UNDEFINED;
-            return category;
+            return new Category();
         }
 
         @Override
@@ -93,8 +139,20 @@ public class ProductCategories {
         }
 
         @Override
-        public int compareTo(Category another) {
+        public int compareTo(@NonNull Category another) {
             return name.compareTo(another.name);
+        }
+
+        /**
+         * represents the selected brands. If it is null, the category itself is not selected.
+         * In case the Product Categories is part of a seller, this is always null
+         */
+        public boolean[] getSelected() {
+            return selected;
+        }
+
+        public void setSelected(boolean[] selected) {
+            this.selected = selected;
         }
     }
 }
