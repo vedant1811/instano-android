@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
@@ -45,6 +46,7 @@ public class SearchConstraintsFragment extends Fragment {
     private MultiSpinner mBrandsMultiSpinner;
     private TextView mPriceRangeTextView;
     private ArrayAdapter<ProductCategories.Category> mCategoryAdapter;
+    private ViewFlipper mSearchButtonViewFlipper;
 
     /**
      * Use this factory method to create a new instance of
@@ -64,6 +66,13 @@ public class SearchConstraintsFragment extends Fragment {
         // Required empty public constructor
     }
 
+    /* package private */ void sendingQuote(boolean isSending) {
+        if (isSending)
+            mSearchButtonViewFlipper.setDisplayedChild(1);
+        else
+            mSearchButtonViewFlipper.setDisplayedChild(0);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -78,6 +87,7 @@ public class SearchConstraintsFragment extends Fragment {
         mProductCategorySpinner = (Spinner) view.findViewById(R.id.productCategorySpinner);
         mBrandsMultiSpinner = (MultiSpinner) view.findViewById(R.id.brandsMultiSpinner);
         mPriceRangeTextView = (TextView) view.findViewById(R.id.priceRangeTextView);
+        mSearchButtonViewFlipper = (ViewFlipper) view.findViewById(R.id.searchButtonViewFlipper);
 
         mSearchStringEditText.setText(getArguments().getString(ARG_SEARCH_STRING));
 

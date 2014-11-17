@@ -57,7 +57,6 @@ public class PurchaseActivity extends Activity {
 //                R.id.navigation_drawer,
 //                (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        ServicesSingleton.getInstance(this);
     }
 
 //    @Override

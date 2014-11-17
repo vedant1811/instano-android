@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.ServicesSingleton;
 
 
 public class LauncherActivity extends Activity {
@@ -37,6 +38,9 @@ public class LauncherActivity extends Activity {
                 finish();
             }
         }, SPLASH_TIME_OUT);
+
+        // initialize:
+        ServicesSingleton.getInstance(this);
     }
 
     @Override

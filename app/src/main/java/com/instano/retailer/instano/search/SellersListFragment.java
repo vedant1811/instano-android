@@ -11,6 +11,7 @@ import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.SellersArrayAdapter;
@@ -39,6 +40,7 @@ public class SellersListFragment extends Fragment implements SellersArrayAdapter
     private SellersArrayAdapter mAdapter;
     private View mHeader;
     private Button mHeaderButton;
+    private ViewFlipper mSearchButtonViewFlipper;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -54,6 +56,13 @@ public class SellersListFragment extends Fragment implements SellersArrayAdapter
         mAdapter = ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter();
     }
 
+    /* package private */ void sendingQuote(boolean isSending) {
+        if (isSending)
+            mSearchButtonViewFlipper.setDisplayedChild(1);
+        else
+            mSearchButtonViewFlipper.setDisplayedChild(0);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -61,6 +70,7 @@ public class SellersListFragment extends Fragment implements SellersArrayAdapter
 
         mHeader = inflater.inflate(R.layout.header_search, null, false);
         mHeaderButton = (Button) mHeader.findViewById(R.id.searchButton);
+        mSearchButtonViewFlipper = (ViewFlipper) mHeader.findViewById(R.id.searchButtonViewFlipper);
 
         // Set the adapter
         mListView = (ListView) view.findViewById(R.id.listView);
