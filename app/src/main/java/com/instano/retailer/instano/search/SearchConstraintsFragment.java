@@ -47,6 +47,7 @@ public class SearchConstraintsFragment extends Fragment {
     private TextView mPriceRangeTextView;
     private ArrayAdapter<ProductCategories.Category> mCategoryAdapter;
     private ViewFlipper mSearchButtonViewFlipper;
+    private ProductCategories.Category mSelectedCategory;
 
     /**
      * Use this factory method to create a new instance of
@@ -102,21 +103,21 @@ public class SearchConstraintsFragment extends Fragment {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                final ProductCategories.Category category = mCategoryAdapter.getItem(position);
-                if (category.name.equals(ProductCategories.UNDEFINED)) {
+                mSelectedCategory = mCategoryAdapter.getItem(position);
+                if (mSelectedCategory.name.equals(ProductCategories.UNDEFINED)) {
                     mBrandsMultiSpinner.setEnabled(false);
                 } else {
                     mBrandsMultiSpinner.setEnabled(true);
                 }
-                mBrandsMultiSpinner.setItems(category.brands, category.getSelected(), "Select brands", new MultiSpinner.MultiSpinnerListener() {
+                mBrandsMultiSpinner.setItems(mSelectedCategory.brands, mSelectedCategory.getSelected(), "Select brands", new MultiSpinner.MultiSpinnerListener() {
                     @Override
                     public void onItemsSelected(boolean[] selected) {
-                        category.setSelected(selected);
-                        filter(category);
+                        mSelectedCategory.setSelected(selected);
+                        filter(mSelectedCategory);
                     }
                 });
 
-                filter(category);
+                filter(mSelectedCategory);
             }
 
             @Override
@@ -227,12 +228,12 @@ public class SearchConstraintsFragment extends Fragment {
         return mAdditionalInfoEditText.getText().toString();
     }
 
-    public String getProductCategory() {
-        ProductCategories.Category category = (ProductCategories.Category) mProductCategorySpinner.getSelectedItem();
-        if (category != null)
-            return category.name;
-        else
-            return ProductCategories.UNDEFINED;
+    public String getAdditionalInfo() {
+        return mAdditionalInfoEditText.getText().toString();
+    }
+
+    public ProductCategories.Category getProductCategory() {
+        return mSelectedCategory;
     }
 
     public String getPriceRange() {

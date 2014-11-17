@@ -13,60 +13,72 @@ import java.util.ArrayList;
  * Represents a single immutable quote request (that is received by the seller)
  */
 public class Quote {
-    private ServicesSingleton servicesSingleton;
     public final int id;
     public final int buyerId;
     public final String searchString;
-
-    /**
-     * comma separated brands eg: "LG, Samsung"
-     * can be null
-     */
-    public final String brands;
 
     /**
      * human readable display for price
      * can be null
      */
     public final String priceRange;
-    public final String productCategory;
+    public final ProductCategories.Category productCategory;
+    public final String additionalInfo;
     public final long updatedAt; // valid only when constructed from Quote(JSONObject jsonObject)
     public final ArrayList<Integer> sellerIds;
 
-    public Quote(ServicesSingleton servicesSingleton, int id, int buyerId, String searchString, String brands, String priceRange, String productCategory, ArrayList<Integer> sellerIds) {
-        this.servicesSingleton = servicesSingleton;
+    public Quote(int id, int buyerId, String searchString,
+                 String priceRange, ProductCategories.Category productCategory, String additionalInfo,
+                 ArrayList<Integer> sellerIds) {
         this.id = id;
         this.buyerId = buyerId;
         this.searchString = searchString;
-        this.brands = brands;
         this.priceRange = priceRange;
         this.productCategory = productCategory;
+        this.additionalInfo = additionalInfo;
         this.sellerIds = sellerIds;
         updatedAt = 0;
     }
 
-    public Quote(ServicesSingleton servicesSingleton, int buyerId, String searchString, String brands, String priceRange, String productCategory, ArrayList<Integer> sellerIds) {
-        this.servicesSingleton = servicesSingleton;
+    public Quote(int buyerId, String searchString,
+                 String priceRange, ProductCategories.Category productCategory, String additionalInfo,
+                 ArrayList<Integer> sellerIds) {
         this.productCategory = productCategory;
         this.sellerIds = sellerIds;
         this.id = -1;
         this.buyerId = buyerId;
         this.searchString = searchString.trim();
-        this.brands = brands.trim();
         this.priceRange = priceRange.trim();
+        this.additionalInfo = additionalInfo.trim();
         updatedAt = 0;
     }
 
-    public Quote(ServicesSingleton servicesSingleton, JSONObject jsonObject) throws JSONException, ParseException {
-        this.servicesSingleton = servicesSingleton;
+    public Quote(JSONObject jsonObject) throws JSONException, ParseException {ProductCategories.Category productCategory1;
         String updatedAt = jsonObject.getString("updated_at");
         this.updatedAt = ServicesSingleton.dateFromString(updatedAt);
         id = jsonObject.getInt("id");
         buyerId = jsonObject.getInt("buyer_id");
         searchString = jsonObject.getString("search_string");
-        brands = jsonObject.getString("brands");
         priceRange = jsonObject.getString("price_range");
-        productCategory = jsonObject.getString("product_category");
+        ProductCategories.Category productCategory;
+
+
+        try {
+            productCategory = new ProductCategories.Category(jsonObject.getJSONObject("product_category"));
+        } catch (JSONException e) {
+            productCategory = ProductCategories.Category.undefinedCategory();
+        }
+        this.productCategory = productCategory;
+
+        String additionalInfo;
+
+        try {
+            additionalInfo = jsonObject.getString("additional_info");
+        } catch (JSONException e) {
+            additionalInfo = "";
+        }
+        this.additionalInfo = additionalInfo;
+
         sellerIds = null;
     }
 
@@ -85,9 +97,9 @@ public class Quote {
             JSONObject quoteParamsJsonObject = new JSONObject()
                     .put("buyer_id", buyerId)
                     .put("search_string", searchString)
-                    .put("brands", brands)
+                    .put("additional_info", additionalInfo)
                     .put("price_range", priceRange)
-                    .put("product_category", productCategory)
+                    .put("product_category", productCategory.toJsonObject())
                     .put("seller_ids", sellerIds);
 
             if (id != -1)

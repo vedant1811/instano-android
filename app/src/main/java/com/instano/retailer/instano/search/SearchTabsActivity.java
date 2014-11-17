@@ -52,9 +52,9 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
             return;
         ServicesSingleton.getInstance(this).sendQuoteRequest(
                 searchString,
-                mSearchConstraintsFragment.getBrands(),
                 mSearchConstraintsFragment.getPriceRange(),
                 mSearchConstraintsFragment.getProductCategory(),
+                mSearchConstraintsFragment.getAdditionalInfo(),
                 mSellersListFragment.getSellerIds()
         );
         sendingQuote(true);

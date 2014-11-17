@@ -203,15 +203,15 @@ public class ServicesSingleton implements
         mRequestQueue.add(request);
     }
 
-    public void sendQuoteRequest(String searchString, String brands, String priceRange,
-                                 String productCategory, ArrayList<Integer> sellerIds) {
+    public void sendQuoteRequest(String searchString, String priceRange,
+                                 ProductCategories.Category productCategory, String additionalInfo, ArrayList<Integer> sellerIds) {
 
         if (mBuyerId == -1) {
             Log.e(TAG, ".sendQuoteRequest : mBuyerId is -1. Search string: " + searchString);
             return;
         }
 
-        Quote quote =  new Quote(this, mBuyerId, searchString, brands, priceRange, productCategory, sellerIds);
+        Quote quote =  new Quote(this, mBuyerId, searchString, priceRange, productCategory, additionalInfo, sellerIds);
         Log.d(TAG, "sendQuoteRequest request: " + quote.toJsonObject());
 
         JsonObjectRequest request = new JsonObjectRequest(
