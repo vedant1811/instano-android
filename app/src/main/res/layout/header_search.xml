@@ -6,11 +6,24 @@
     android:padding="4dp"
     android:paddingRight="8dp">
 
-    <Button
-        android:layout_width="fill_parent"
+    <ViewFlipper
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Send to selected sellers"
-        android:id="@+id/searchButton"
-        android:layout_weight="0.7"
-        android:onClick="searchButtonClicked" />
+        android:id="@+id/searchButtonViewFlipper"
+        android:layout_gravity="center">
+
+        <!--TODO: bring progressbar to center-->
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Send to selected sellers"
+            android:id="@+id/searchButton"
+            android:onClick="searchButtonClicked" />
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar2" />
+
+    </ViewFlipper>
 </LinearLayout>

@@ -57,6 +57,7 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
                 mSearchConstraintsFragment.getProductCategory(),
                 mSellersListFragment.getSellerIds()
         );
+        sendingQuote(true);
     }
 
 
@@ -155,8 +156,15 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
             finish();
         } else {
             Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG).show();
+            sendingQuote(false);
         }
     }
+
+    private void sendingQuote(boolean isSending) {
+        mSearchConstraintsFragment.sendingQuote(isSending);
+        mSellersListFragment.sendingQuote(isSending);
+    }
+
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
