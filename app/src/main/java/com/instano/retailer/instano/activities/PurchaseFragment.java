@@ -70,12 +70,6 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Init
         mSearchEditText = (EditText) view.findViewById(R.id.searchEditText);
 
         mLocationButton = (Button) view.findViewById(R.id.locationButton);
-        mLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mLocationButtonClicked();
-            }
-        });
 
         return view;
     }
@@ -94,7 +88,7 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Init
         super.onResume();
 
         ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
-        Address address = servicesSingleton.getLatestAddress();
+        Address address = servicesSingleton.getUserAddress();
         if (address == null)
             mLocationButton.setText(SELECT_LOCATION);
         else
@@ -129,25 +123,20 @@ public class PurchaseFragment extends Fragment implements ServicesSingleton.Init
                 .putExtra(SearchConstraintsFragment.ARG_SEARCH_STRING, searchString));
     }
 
-    /**
-     * Called when mLocationButton has been clicked
-     */
-    private void mLocationButtonClicked() {
-        getActivity().startActivity(new Intent(getActivity(), MapsActivity.class));
-    }
-
     @Override
     public void searchingForAddress() {
         mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
-    public void addressFound(Address address) {
+    public void addressFound(Address address, boolean userSelected) {
         mProgressBar.setVisibility(View.GONE);
         if (address != null)
             // display a readable address, street if available or city
             mLocationButton.setText(address.getMaxAddressLineIndex() > 0 ?
                     address.getAddressLine(0) : address.getLocality());
+        else if (userSelected)
+            mLocationButton.setText(CURRENT_LOCATION);
         else
             mLocationButton.setText(SELECT_LOCATION);
     }

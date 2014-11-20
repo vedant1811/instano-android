@@ -53,9 +53,9 @@ public class SearchTabsActivity extends ActionBarActivity implements ActionBar.T
             return;
         ServicesSingleton.getInstance(this).sendQuoteRequest(
                 searchString,
-                mSearchConstraintsFragment.getBrands(),
                 mSearchConstraintsFragment.getPriceRange(),
                 mSearchConstraintsFragment.getProductCategory(),
+                mSearchConstraintsFragment.getAdditionalInfo(),
                 mSellersListFragment.getSellerIds()
         );
         sendingQuote(true);

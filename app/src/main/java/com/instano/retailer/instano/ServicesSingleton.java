@@ -11,9 +11,9 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -30,7 +30,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
+import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.JsonArrayRequest;
 import com.instano.retailer.instano.utilities.PeriodicWorker;
 import com.instano.retailer.instano.utilities.ProductCategories;
@@ -43,14 +45,11 @@ import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -78,7 +77,8 @@ public class ServicesSingleton implements
     /* location variables */
     private LocationClient mLocationClient;
     private Location mLastLocation;
-    private Address mLatestAddress;
+    private Location mUserSelectedLocation;
+    private Address mUserAddress;
     private String locationErrorString;
     private InitialDataCallbacks mInitialDataCallbacks;
 
@@ -203,15 +203,15 @@ public class ServicesSingleton implements
         mRequestQueue.add(request);
     }
 
-    public void sendQuoteRequest(String searchString, String brands, String priceRange,
-                                 String productCategory, ArrayList<Integer> sellerIds) {
+    public void sendQuoteRequest(String searchString, String priceRange,
+                                 ProductCategories.Category productCategory, String additionalInfo, ArrayList<Integer> sellerIds) {
 
         if (mBuyerId == -1) {
             Log.e(TAG, ".sendQuoteRequest : mBuyerId is -1. Search string: " + searchString);
             return;
         }
 
-        Quote quote =  new Quote(this, mBuyerId, searchString, brands, priceRange, productCategory, sellerIds);
+        Quote quote =  new Quote(mBuyerId, searchString, priceRange, productCategory, additionalInfo, sellerIds);
         Log.d(TAG, "sendQuoteRequest request: " + quote.toJsonObject());
 
         JsonObjectRequest request = new JsonObjectRequest(
@@ -332,7 +332,7 @@ public class ServicesSingleton implements
         mAppContext = startingActivity.getApplicationContext();
         mSharedPreferences = mAppContext.getSharedPreferences(
                 "com.instano.SHARED_PREFERENCES_FILE", Context.MODE_PRIVATE);
-        mLatestAddress = null;
+        mUserAddress = null;
         mLastLocation = null;
         mBuyerId = -1;
         mProductCategories = null;
@@ -379,108 +379,34 @@ public class ServicesSingleton implements
         return true;
     }
 
-    public void searchAddress(Location location) {
-        // Ensure that a Geocoder services is available and a locationCallback is registered
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && Geocoder.isPresent()) {
-            // Show the activity indicator
-            if (mInitialDataCallbacks != null)
-                mInitialDataCallbacks.searchingForAddress();
-            /*
-             * Reverse geocoding is long-running and synchronous.
-             * Run it on a background thread.
-             * Pass the current location to the background task.
-             * When the task finishes,
-             * onPostExecute() displays the address.
-             */
-            (new GetAddressTask(mAppContext)).execute(location);
-        }
-    }
-
     public String getLocationErrorString() {
         return locationErrorString;
     }
 
-    public Address getLatestAddress() {
-        return mLatestAddress;
+    public Address getUserAddress() {
+        return mUserAddress;
     }
 
     public SellersArrayAdapter getSellersArrayAdapter() {
         return mSellersArrayAdapter;
     }
 
-    public Location getLastLocation() {
-        return mLastLocation;
+    public Location getUserLocation() {
+        if (mUserSelectedLocation == null)
+            return mLastLocation;
+        else
+            return mUserSelectedLocation;
     }
 
-    /**
-     * A subclass of AsyncTask that calls getFromLocation() in the
-     * background. The class definition has these generic types:
-     * Location - A Location object containing
-     * the current location.
-     * Void     - indicates that progress units are not used
-     * String   - An address passed to onPostExecute()
-     */
-    private class GetAddressTask extends
-            AsyncTask<Location, Void, Address> {
-        Context mContext;
-        public GetAddressTask(Context context) {
-            super();
-            mContext = context;
-        }
+    public void userSelectsLocation(LatLng location, Address address) {
+        mUserSelectedLocation = new Location("Services Singleton Generated");
+        mUserSelectedLocation.setLatitude(location.latitude);
+        mUserSelectedLocation.setLongitude(location.longitude);
 
-        /**
-         * Get a Geocoder instance, get the latitude and longitude
-         * look up the address, and return it
-         *
-         * @params params One or more Location objects
-         * @return A string containing the address of the current
-         * location, or an empty string if no address can be found,
-         * or an error message
-         */
-        @Override
-        protected Address doInBackground(Location... params) {
-            Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
-            // Get the current location from the input parameter list
-            Location loc = params[0];
-            // Create a list to contain the result address
-            List<Address> addresses = null;
-            try {
-                /*
-                 * Return 1 address.
-                 */
-                addresses = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
-            } catch (IOException e1) {
-                Log.e("LocationSampleActivity", "IO Exception in getFromLocation()");
-                e1.printStackTrace();
-                return null;
-            } catch (IllegalArgumentException e2) {
-                // Error message to post in the log
-                String errorString = "Illegal arguments " + Double.toString(loc.getLatitude()) +
-                        " , " + Double.toString(loc.getLongitude()) + " passed to address service";
-                Log.e("LocationSampleActivity", errorString);
-                e2.printStackTrace();
-                return null;
-            }
-            // If the reverse geocode returned an address
-            if (addresses != null && addresses.size() > 0) {
-                // Get the first address
-                return addresses.get(0);
-            } else {
-                return null;
-            }
-        }
-        /**
-         * A method that's called once doInBackground() completes. Turn
-         * off the indeterminate activity indicator and set
-         * the text of the UI element that shows the address. If the
-         * lookup failed, display the error message.
-         */
-        @Override
-        protected void onPostExecute(Address address) {
-            mLatestAddress = address;
-            if (mInitialDataCallbacks != null)
-                mInitialDataCallbacks.addressFound(address);
-        }
+        mUserAddress = address;
+
+        if (mInitialDataCallbacks != null)
+            mInitialDataCallbacks.addressFound(null, true);
     }
 
     /*
@@ -492,7 +418,29 @@ public class ServicesSingleton implements
     public void onConnected(Bundle dataBundle) {
         mLastLocation = mLocationClient.getLastLocation();
         if (mLastLocation != null)
-            searchAddress(mLastLocation);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && Geocoder.isPresent()) {
+                // Show the activity indicator
+                if (mInitialDataCallbacks != null)
+                    mInitialDataCallbacks.searchingForAddress();
+                /*
+                 * Reverse geocoding is long-running and synchronous.
+                 * Run it on a background thread.
+                 * Pass the current location to the background task.
+                 * When the task finishes,
+                 * callback displays the address.
+                 */
+                (new GetAddressTask(mAppContext, new GetAddressTask.AddressCallback() {
+                    @Override
+                    public void addressFetched(@Nullable Address address) {
+                        Log.d("Address", address != null ? address.toString() : "not found");
+                        if (mUserAddress != null)
+                            return; // user has already set a location. No need for this address.
+                        mUserAddress = address;
+                        if (mInitialDataCallbacks != null)
+                            mInitialDataCallbacks.addressFound(address, false);
+                    }
+                })).execute(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            }
     }
 
     /*
@@ -587,7 +535,7 @@ public class ServicesSingleton implements
 
     public interface InitialDataCallbacks {
         public void searchingForAddress();
-        public void addressFound(Address address);
+        public void addressFound(Address address, boolean userSelected);
         /*
          * Implementation activities need to listen for result of the errorDialog in Activity.onActivityResult
          */

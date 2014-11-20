@@ -7,12 +7,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.instano.retailer.instano.NavigationDrawerFragment;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 
 
 public class PurchaseActivity extends ActionBarActivity {
+public class PurchaseActivity extends Activity {
+
+    private static final int PURCHASE_ACTIVITY_REQUEST_CODE = 1010;
+
 //        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -31,6 +37,10 @@ public class PurchaseActivity extends ActionBarActivity {
     public void newBuyerButtonClicked(View view) {
 
         ServicesSingleton.getInstance(this).signInRequest();
+    }
+
+    public void locationButtonClicked(View view) {
+        startActivityForResult(new Intent(this, MapsActivity.class), PURCHASE_ACTIVITY_REQUEST_CODE);
     }
 
     @Override
@@ -81,7 +91,7 @@ public class PurchaseActivity extends ActionBarActivity {
     }
 
     public void gotoQuotationsButtonClicked(View view) {
-        startActivity(new Intent(this, QuotationListActivity.class));
+        startActivityForResult(new Intent(this, QuotationListActivity.class), PURCHASE_ACTIVITY_REQUEST_CODE);
     }
 
     @Override

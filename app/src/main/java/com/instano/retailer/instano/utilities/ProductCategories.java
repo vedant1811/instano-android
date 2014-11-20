@@ -129,7 +129,7 @@ public class ProductCategories {
             nameVariants.add(name.toLowerCase());
         }
 
-        private static Category undefinedCategory() {
+        public static Category undefinedCategory() {
             return new Category();
         }
 
