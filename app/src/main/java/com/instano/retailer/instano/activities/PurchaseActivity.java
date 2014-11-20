@@ -7,15 +7,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import com.instano.retailer.instano.NavigationDrawerFragment;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 
 
 public class PurchaseActivity extends ActionBarActivity {
-public class PurchaseActivity extends Activity {
 
     private static final int PURCHASE_ACTIVITY_REQUEST_CODE = 1010;
 
