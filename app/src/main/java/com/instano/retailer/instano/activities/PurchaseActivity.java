@@ -1,23 +1,18 @@
 package com.instano.retailer.instano.activities;
 
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import com.instano.retailer.instano.NavigationDrawerFragment;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 
 
-public class PurchaseActivity extends Activity {
+public class PurchaseActivity extends ActionBarActivity {
 //        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -46,11 +41,14 @@ public class PurchaseActivity extends Activity {
 
         mPurchaseFragment = (PurchaseFragment) getFragmentManager()
                 .findFragmentById(R.id.fragment_purchase);
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 //        mCurrentFragment = mPurchaseFragment;
 //
 //        mNavigationDrawerFragment = (NavigationDrawerFragment)
 //                getFragmentManager().findFragmentById(R.id.navigation_drawer);
-//        mTitle = getTitle();
+        mTitle = getTitle();
 //
 //        // Set up the drawer.
 //        mNavigationDrawerFragment.setUp(
@@ -76,39 +74,32 @@ public class PurchaseActivity extends Activity {
 //        mTitle = number + "";
 //    }
 //
-//    public void restoreActionBar() {
-//        ActionBar actionBar = getActionBar();
-//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-//        actionBar.setDisplayShowTitleEnabled(true);
-//        actionBar.setTitle(mTitle);
-//    }
+    public void restoreActionBar() {
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setTitle(mTitle);
+    }
 
     public void gotoQuotationsButtonClicked(View view) {
         startActivity(new Intent(this, QuotationListActivity.class));
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-//            // Only show items in the action bar relevant to this screen
-//            // if the drawer is not showing. Otherwise, let the drawer
-//            // decide what to show in the action bar.
-//            getMenuInflater().inflate(R.menu.purchase, menu);
-//            restoreActionBar();
-//            return true;
-//        }
-//        return super.onCreateOptionsMenu(menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+            getMenuInflater().inflate(R.menu.purchase, menu);
+            restoreActionBar();
+            return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

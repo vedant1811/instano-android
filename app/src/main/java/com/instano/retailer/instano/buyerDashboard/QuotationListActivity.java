@@ -1,12 +1,12 @@
 package com.instano.retailer.instano.buyerDashboard;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 
@@ -26,7 +26,7 @@ import com.instano.retailer.instano.ServicesSingleton;
  * {@link QuotationListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class QuotationListActivity extends Activity
+public class QuotationListActivity extends ActionBarActivity
         implements QuotationListFragment.Callbacks {
 
     /**
@@ -40,7 +40,11 @@ public class QuotationListActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quotation_list);
         // Show the Up button in the action bar.
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+//        getActionBar().setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.abc_btn_check_material));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         if (findViewById(R.id.quotation_detail_container) != null) {
             // The detail container view will be present only in the

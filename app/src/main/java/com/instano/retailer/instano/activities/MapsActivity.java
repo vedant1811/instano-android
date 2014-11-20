@@ -2,7 +2,6 @@ package com.instano.retailer.instano.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
-
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.instano.retailer.instano.R;

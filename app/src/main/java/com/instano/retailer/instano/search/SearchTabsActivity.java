@@ -1,7 +1,6 @@
 package com.instano.retailer.instano.search;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -9,11 +8,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
+import com.astuetz.PagerSlidingTabStrip;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
@@ -22,7 +23,7 @@ import com.instano.retailer.instano.utilities.ProductCategories;
 import java.util.ArrayList;
 
 
-public class SearchTabsActivity extends Activity implements ActionBar.TabListener,
+public class SearchTabsActivity extends ActionBarActivity implements ActionBar.TabListener,
         ServicesSingleton.QuoteCallbacks {
 
     private final static String[] TABS = {  "Constraints" , "Sellers list",}; // TODO: add a maps tab
@@ -66,13 +67,19 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_tabs);
 
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.abc_btn_check_material));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Search");
+
         mSellersListFragment = new SellersListFragment();
         mSearchConstraintsFragment = SearchConstraintsFragment.newInstance(getIntent()
                 .getStringExtra(SearchConstraintsFragment.ARG_SEARCH_STRING));
 
         // Set up the action bar.
-        final ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+//        final ActionBar actionBar = getActionBar();
+//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -82,15 +89,18 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        tabs.setViewPager(mViewPager);
+
         // When swiping between different sections, select the corresponding
         // tab. We can also use ActionBar.Tab#select() to do this if we have
         // a reference to the Tab.
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });
+//        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+//            @Override
+//            public void onPageSelected(int position) {
+////                actionBar.setSelectedNavigationItem(position);
+//            }
+//        });
 
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
@@ -98,10 +108,10 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
             // the adapter. Also specify this Activity object, which implements
             // the TabListener interface, as the callback (mListener) for when
             // this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
-                            .setTabListener(this));
+//            actionBar.addTab(
+//                    actionBar.newTab()
+//                            .setText(mSectionsPagerAdapter.getPageTitle(i))
+//                            .setTabListener(this));
         }
 
         ServicesSingleton.getInstance(this).registerCallback(this);

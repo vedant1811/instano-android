@@ -9,18 +9,36 @@
 
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <fragment
-            android:id="@+id/fragment_purchase"
+    <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.instano.retailer.instano.activities.PurchaseFragment"
-            tools:layout="@layout/fragment_purchase" />
-    </FrameLayout>
+            android:layout_height="match_parent">
+
+        <include
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar"/>
+        <FrameLayout
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="4dp"
+                android:clipToPadding="false"
+                android:columnWidth="@dimen/item_width"
+                android:numColumns="auto_fit"
+                android:horizontalSpacing="4dp"
+                android:verticalSpacing="4dp"
+                android:stretchMode="columnWidth"
+                >
+
+            <fragment
+                    android:id="@+id/fragment_purchase"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:name="com.instano.retailer.instano.activities.PurchaseFragment"
+                    tools:layout="@layout/fragment_purchase" />
+        </FrameLayout>
+    </LinearLayout>
+
 
     <!--&lt;!&ndash; android:layout_gravity="start" tells DrawerLayout to treat-->
          <!--this as a sliding drawer on the left side for left-to-right-->
