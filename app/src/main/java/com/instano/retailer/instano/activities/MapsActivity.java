@@ -117,7 +117,7 @@ public class MapsActivity extends Activity implements GoogleMap.OnMapLongClickLi
         mSelectedLocationMarker = mMap.addMarker(new MarkerOptions()
                 .position(BANGALORE_LOCATION)
                 .title(SELECT_LOCATION)
-                .snippet("drag this marker or long click on map\nto select new location")
+                .snippet("drag this marker or long click on map to select new location")
                 .draggable(true));
         mSelectedLocationMarker.showInfoWindow();
         mMap.setOnMarkerDragListener(this);
