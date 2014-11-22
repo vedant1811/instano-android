@@ -25,7 +25,7 @@ import java.util.ArrayList;
 public class SearchTabsActivity extends Activity implements ActionBar.TabListener,
         ServicesSingleton.QuoteCallbacks {
 
-    private final static String[] TABS = {  "Constraints" , "Sellers list",}; // TODO: add a maps tab
+    private final static String[] TABS = {  "Constraints" , "Sellers list", "Sellers Map"}; // TODO: add a maps tab
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -44,7 +44,7 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
 
     SellersListFragment mSellersListFragment;
     SearchConstraintsFragment mSearchConstraintsFragment;
-
+    SellersMapFragment mSellersMapFragment;
 
     public void searchButtonClicked(View view) {
         String searchString = mSearchConstraintsFragment.getSearchString();
@@ -69,6 +69,8 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
         mSellersListFragment = new SellersListFragment();
         mSearchConstraintsFragment = SearchConstraintsFragment.newInstance(getIntent()
                 .getStringExtra(SearchConstraintsFragment.ARG_SEARCH_STRING));
+
+        mSellersMapFragment = new SellersMapFragment();
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
@@ -183,6 +185,8 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
                     return mSearchConstraintsFragment;
                 case 1:
                     return mSellersListFragment;
+                case 2:
+                    return mSellersMapFragment;
             }
 
             throw new IllegalArgumentException("Invalid parameter position: " + position);
@@ -190,7 +194,7 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
