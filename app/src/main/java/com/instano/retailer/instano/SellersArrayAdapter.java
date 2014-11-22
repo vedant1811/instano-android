@@ -32,14 +32,17 @@ import java.util.ArrayList;
 public class SellersArrayAdapter extends BaseAdapter {
 
     private static final String TAG = "sellers array adapter";
+
     private SparseArray<Seller> mCompleteSet;
+
     private ArrayList<Seller> mFilteredList;
     private DistanceFilter mDistanceFilter;
     private BrandsCategoryFilter mBrandsCategoryFilter;
     private SparseBooleanArray mCheckedItems;
     private Context mContext;
 
-    private ItemInteractionListener mListener;
+    private ItemInteractionListener mItemInteractionListener;
+    private SellersListener mSellersListener;
 
     public SellersArrayAdapter(Context context) {
         mContext = context;
@@ -51,8 +54,20 @@ public class SellersArrayAdapter extends BaseAdapter {
         mCheckedItems = new SparseBooleanArray();
     }
 
-    public void setListener (ItemInteractionListener listener) {
-        this.mListener = listener;
+    public void setListener(ItemInteractionListener listener) {
+        this.mItemInteractionListener = listener;
+    }
+
+    public void setListener(SellersListener sellersListener) {
+        mSellersListener = sellersListener;
+    }
+
+    public SparseArray<Seller> getAllSellers() {
+        return mCompleteSet;
+    }
+
+    public ArrayList<Seller> getFilteredSellers() {
+        return mFilteredList;
     }
 
     public ArrayList<Integer> getSelectedSellerIds() {
@@ -97,15 +112,15 @@ public class SellersArrayAdapter extends BaseAdapter {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if (mListener != null)
-                    mListener.itemCheckedStateChanged(position, isChecked);
+                if (mItemInteractionListener != null)
+                    mItemInteractionListener.itemCheckedStateChanged(position, isChecked);
                 mCheckedItems.put(seller.id, isChecked);
             }
         });
         // initially setting all to checked
         mCheckedItems.put(seller.id, true);
-        if (mListener != null)
-            mListener.itemCheckedStateChanged(position, true);
+        if (mItemInteractionListener != null)
+            mItemInteractionListener.itemCheckedStateChanged(position, true);
 
         shopNameTextView.setText(seller.nameOfShop);
         addressTextView.setText(seller.address);
@@ -118,8 +133,8 @@ public class SellersArrayAdapter extends BaseAdapter {
         callImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mListener != null)
-                    mListener.callButtonClicked(seller.phone);
+                if (mItemInteractionListener != null)
+                    mItemInteractionListener.callButtonClicked(seller.phone);
             }
         });
 
@@ -157,6 +172,8 @@ public class SellersArrayAdapter extends BaseAdapter {
         int hash = seller.hashCode();
         if (mCompleteSet.get(hash) == null) {
             mCompleteSet.put(hash, seller);
+            if (mSellersListener != null)
+                mSellersListener.sellerAdded(seller);
             return true;
         } else
             return false;
@@ -207,6 +224,11 @@ public class SellersArrayAdapter extends BaseAdapter {
         public void callButtonClicked(String number);
     }
 
+    public interface SellersListener {
+
+        public void sellerAdded(Seller seller);
+    }
+
     private class DistanceFilter extends Filter {
 
         private CharSequence mLastConstraint = "1000";
@@ -248,8 +270,8 @@ public class SellersArrayAdapter extends BaseAdapter {
                 notifyDataSetInvalidated();
             else
                 notifyDataSetChanged();
-            if (mListener != null)
-                mListener.itemCheckedStateChanged(-1, false);
+            if (mItemInteractionListener != null)
+                mItemInteractionListener.itemCheckedStateChanged(-1, false);
         }
     }
 
@@ -326,8 +348,8 @@ public class SellersArrayAdapter extends BaseAdapter {
                 notifyDataSetInvalidated();
             else
                 notifyDataSetChanged();
-            if (mListener != null)
-                mListener.itemCheckedStateChanged(-1, false);
+            if (mItemInteractionListener != null)
+                mItemInteractionListener.itemCheckedStateChanged(-1, false);
         }
     }
 }

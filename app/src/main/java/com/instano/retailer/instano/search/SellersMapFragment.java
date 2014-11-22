@@ -3,24 +3,31 @@ package com.instano.retailer.instano.search;
 
 import android.app.Fragment;
 import android.location.Address;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.SparseArray;
 import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.instano.retailer.instano.SellersArrayAdapter;
+import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GetAddressTask;
+import com.instano.retailer.instano.utilities.Seller;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class SellersMapFragment extends MapFragment implements GoogleMap.OnMapLongClickListener,
-        GetAddressTask.AddressCallback, GoogleMap.OnMarkerDragListener {
+        GetAddressTask.AddressCallback, GoogleMap.OnMarkerDragListener,
+        SellersArrayAdapter.SellersListener {
 
     private static final LatLng BANGALORE_LOCATION = new LatLng(12.9539974, 77.6309395);
     private static final String SELECT_LOCATION = "Select Location";
@@ -28,49 +35,75 @@ public class SellersMapFragment extends MapFragment implements GoogleMap.OnMapLo
     private Marker mSelectedLocationMarker;
     private GetAddressTask mAddressTask;
 
-    public SellersMapFragment() {
-        // Required empty public constructor
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
-        if (mMap != null)
-            setUpMap();
-
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null)
-                setUpMap();
-        }
-    }
+    private SparseArray<Marker> mSellerMarkers;
 
     /**
+     * This is the where all initialization of the class (or map) must take place.
+     * It is analogous to activity.onCreate
      * This is where we can add markers or lines, add listeners or move the camera.
      * <p>
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
 
+        mSellerMarkers = new SparseArray<Marker>();
+
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
+        LatLng startLatLng;
+        Location userLocation = ServicesSingleton.getInstance(getActivity()).getUserLocation();
+        if (userLocation != null)
+            startLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+        else
+            startLatLng = BANGALORE_LOCATION;
         CameraPosition bangalore = new CameraPosition.Builder().target(
-                BANGALORE_LOCATION)
+                startLatLng)
                 .zoom(11)
                 .build();
 
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(bangalore));
         mMap.setOnMapLongClickListener(this);
         mSelectedLocationMarker = mMap.addMarker(new MarkerOptions()
-                .position(BANGALORE_LOCATION)
+                .position(startLatLng)
                 .title(SELECT_LOCATION)
                 .snippet("drag this marker or long click on map to select new location")
                 .draggable(true));
         mSelectedLocationMarker.showInfoWindow();
         mMap.setOnMarkerDragListener(this);
+
+        SellersArrayAdapter sellersArrayAdapter = ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter();
+        sellersArrayAdapter.setListener(this);
+        SparseArray<Seller> sellers = sellersArrayAdapter.getAllSellers();
+        for (int i = 0; i < sellers.size(); i++)
+            sellerAdded(sellers.valueAt(i));
+        updateMarkers();
+
+    }
+
+    private void updateMarkers() {
+        SellersArrayAdapter sellersArrayAdapter = ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter();
+
+        for (int i = 0; i < mSellerMarkers.size(); i++) {
+            Marker marker = mSellerMarkers.valueAt(i);
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+        }
+
+        for (Seller seller : sellersArrayAdapter.getFilteredSellers()) {
+            Marker marker = mSellerMarkers.get(seller.hashCode());
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        }
+    }
+
+    @Override
+    public void sellerAdded(Seller seller) {
+        Marker newMarker = mMap.addMarker(
+                new MarkerOptions()
+                .position(new LatLng(seller.latitude, seller.longitude))
+                .title(seller.nameOfShop)
+                .snippet(seller.address)
+        );
+        mSellerMarkers.put(seller.hashCode(), newMarker);
     }
 
     @Override
@@ -121,4 +154,31 @@ public class SellersMapFragment extends MapFragment implements GoogleMap.OnMapLo
         mSelectedLocationMarker.showInfoWindow();
     }
 
+    public SellersMapFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        setUpMapIfNeeded();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setUpMapIfNeeded();
+        updateMarkers();
+    }
+
+    private void setUpMapIfNeeded() {
+        // Do a null check to confirm that we have not already instantiated the map.
+        if (mMap == null) {
+            // Try to obtain the map from the SupportMapFragment.
+            mMap = getMap();
+            // Check if we were successful in obtaining the map.
+            if (mMap != null) {
+                setUpMap();
+            }
+        }
+    }
 }

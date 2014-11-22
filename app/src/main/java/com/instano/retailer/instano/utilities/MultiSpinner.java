@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -70,8 +69,6 @@ public class MultiSpinner extends Spinner implements
                 android.R.layout.simple_spinner_item,
                 new String[] { spinnerText });
         setAdapter(adapter);
-
-        Log.d("Multispinner", "setting text to " + spinnerText);
     }
 
     @Override
