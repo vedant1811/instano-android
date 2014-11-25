@@ -42,6 +42,13 @@
                 android:textColor="@android:color/black"
                 android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
         </LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Accept Deal"
+            android:id="@+id/button" />
+
     </LinearLayout>
 
     <Button
@@ -66,7 +73,9 @@
         android:hint="enter text to chat"
         android:layout_toLeftOf="@+id/buttonSend"
         android:layout_toStartOf="@+id/buttonSend"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true"
+        android:text="we will very soon add a chat feature"
+        android:enabled="false" />
 
     <ImageButton
         android:layout_width="wrap_content"

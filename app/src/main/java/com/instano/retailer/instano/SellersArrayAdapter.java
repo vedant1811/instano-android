@@ -231,7 +231,7 @@ public class SellersArrayAdapter extends BaseAdapter {
 
     private class DistanceFilter extends Filter {
 
-        private CharSequence mLastConstraint = "1000";
+        private CharSequence mLastConstraint = "100000";
 
         private void runOldFilter() {
             filter(mLastConstraint);

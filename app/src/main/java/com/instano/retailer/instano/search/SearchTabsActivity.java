@@ -1,10 +1,8 @@
 package com.instano.retailer.instano.search;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
@@ -13,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
@@ -22,10 +21,10 @@ import com.instano.retailer.instano.utilities.ProductCategories;
 import java.util.ArrayList;
 
 
-public class SearchTabsActivity extends Activity implements ActionBar.TabListener,
+public class SearchTabsActivity extends Activity implements
         ServicesSingleton.QuoteCallbacks {
 
-    private final static String[] TABS = {  "Constraints" , "Sellers list", "Sellers Map"}; // TODO: add a maps tab
+    private final static String[] TABS = {"Search", "Constraints", "Sellers list"};
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -42,24 +41,38 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
      */
     ViewPager mViewPager;
 
-    SellersListFragment mSellersListFragment;
+    SearchFragment mSearchFragment;
     SearchConstraintsFragment mSearchConstraintsFragment;
+    SellersListFragment mSellersListFragment;
     SellersMapFragment mSellersMapFragment;
 
+    ViewFlipper mSearchButtonViewFlipper;
+
     public void searchButtonClicked(View view) {
-        String searchString = mSearchConstraintsFragment.getSearchString();
-        if (searchString == null)
-            return;
-        ServicesSingleton.getInstance(this).sendQuoteRequest(
-                searchString,
-                mSearchConstraintsFragment.getPriceRange(),
-                mSearchConstraintsFragment.getProductCategory(),
-                mSearchConstraintsFragment.getAdditionalInfo(),
-                mSellersListFragment.getSellerIds()
-        );
-        sendingQuote(true);
+//        String searchString = mSearchFragment.getSearchString();
+//        if (searchString == null)
+//            return;
+//        ServicesSingleton.getInstance(this).sendQuoteRequest(
+//                searchString,
+//                mSearchFragment.getPriceRange(),
+//                mSearchFragment.getProductCategory(),
+//                mSearchFragment.getAdditionalInfo(),
+//                mSellersListFragment.getSellerIds()
+//        );
+//        sendingQuote(true);
     }
 
+    public void nextButtonClicked(View view) {
+//        FragmentManager fragmentManager = getFragmentManager();
+//        fragmentManager.beginTransaction()
+//                .replace(R.id.container, mSearchConstraintsFragment)
+//                .commit();
+        mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
+    }
+
+    public void specifyConstraintsClicked(View view) {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,44 +80,48 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
         setContentView(R.layout.activity_search_tabs);
 
         mSellersListFragment = new SellersListFragment();
-        mSearchConstraintsFragment = SearchConstraintsFragment.newInstance(getIntent()
-                .getStringExtra(SearchConstraintsFragment.ARG_SEARCH_STRING));
+        mSearchFragment = SearchFragment.newInstance();
+        mSearchConstraintsFragment = SearchConstraintsFragment.newInstance("");
+//                getIntent()
+//                .getStringExtra(SearchConstraintsFragment.ARG_SEARCH_STRING));
 
         mSellersMapFragment = new SellersMapFragment();
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mSearchButtonViewFlipper = (ViewFlipper) findViewById(R.id.searchButtonViewFlipper);
 
         // Set up the action bar.
-        final ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+//        final ActionBar actionBar = getActionBar();
+//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        // When swiping between different sections, select the corresponding
-        // tab. We can also use ActionBar.Tab#select() to do this if we have
-        // a reference to the Tab.
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });
-
-        // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by
-            // the adapter. Also specify this Activity object, which implements
-            // the TabListener interface, as the callback (mListener) for when
-            // this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
-                            .setTabListener(this));
-        }
+//        // When swiping between different sections, select the corresponding
+//        // tab. We can also use ActionBar.Tab#select() to do this if we have
+//        // a reference to the Tab.
+//        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+//            @Override
+//            public void onPageSelected(int position) {
+//                actionBar.setSelectedNavigationItem(position);
+//            }
+//        });
+//
+//        // For each of the sections in the app, add a tab to the action bar.
+//        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+//            // Create a tab with text corresponding to the page title defined by
+//            // the adapter. Also specify this Activity object, which implements
+//            // the TabListener interface, as the callback (mListener) for when
+//            // this tab is selected.
+//            actionBar.addTab(
+//                    actionBar.newTab()
+//                            .setText(mSectionsPagerAdapter.getPageTitle(i))
+//                            .setTabListener(this));
+//        }
 
         ServicesSingleton.getInstance(this).registerCallback(this);
 
@@ -130,24 +147,29 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in
-        // the ViewPager.
-        mViewPager.setCurrentItem(tab.getPosition());
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
+//    @Override
+//    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+//        // When the given tab is selected, switch to the corresponding page in
+//        // the ViewPager.
+//        int tabPosition = tab.getPosition();
+//        mViewPager.setCurrentItem(tabPosition);
+//        Log.d("timer", tab.getText() + " tab selected");
+////        if (tabPosition != 0)
+////            mSearchButtonViewFlipper.setVisibility(View.VISIBLE);
+//    }
+//
+//    @Override
+//    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+//        Log.d("timer", tab.getText() + " tab unselected");
+//    }
+//
+//    @Override
+//    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+//    }
 
     @Override
     public void productCategoriesUpdated(ArrayList<ProductCategories.Category> productCategories) {
-        mSearchConstraintsFragment.updateProductCategories(productCategories);
+//        mSearchFragment.updateProductCategories(productCategories);
     }
 
     @Override
@@ -163,7 +185,7 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
     }
 
     private void sendingQuote(boolean isSending) {
-        mSearchConstraintsFragment.sendingQuote(isSending);
+//        mSearchFragment.sendingQuote(isSending);
         mSellersListFragment.sendingQuote(isSending);
     }
 
@@ -182,11 +204,11 @@ public class SearchTabsActivity extends Activity implements ActionBar.TabListene
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return mSearchConstraintsFragment;
+                    return mSearchFragment;
                 case 1:
-                    return mSellersListFragment;
+                    return mSearchConstraintsFragment;
                 case 2:
-                    return mSellersMapFragment;
+                    return mSellersListFragment;
             }
 
             throw new IllegalArgumentException("Invalid parameter position: " + position);

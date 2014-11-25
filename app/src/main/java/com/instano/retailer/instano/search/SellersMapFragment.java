@@ -7,16 +7,19 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.SellersArrayAdapter;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GetAddressTask;
@@ -25,10 +28,13 @@ import com.instano.retailer.instano.utilities.Seller;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SellersMapFragment extends MapFragment implements GoogleMap.OnMapLongClickListener,
+public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongClickListener,
         GetAddressTask.AddressCallback, GoogleMap.OnMarkerDragListener,
         SellersArrayAdapter.SellersListener {
 
+    private MapView mMapView;
+
+    /* mMap variables */
     private static final LatLng BANGALORE_LOCATION = new LatLng(12.9539974, 77.6309395);
     private static final String SELECT_LOCATION = "Select Location";
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -38,7 +44,7 @@ public class SellersMapFragment extends MapFragment implements GoogleMap.OnMapLo
     private SparseArray<Marker> mSellerMarkers;
 
     /**
-     * This is the where all initialization of the class (or map) must take place.
+     * This is the where all initialization of the class (or mMap) must take place.
      * It is analogous to activity.onCreate
      * This is where we can add markers or lines, add listeners or move the camera.
      * <p>
@@ -68,6 +74,7 @@ public class SellersMapFragment extends MapFragment implements GoogleMap.OnMapLo
                 .position(startLatLng)
                 .title(SELECT_LOCATION)
                 .snippet("drag this marker or long click on map to select new location")
+//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.instano_logo))
                 .draggable(true));
         mSelectedLocationMarker.showInfoWindow();
         mMap.setOnMarkerDragListener(this);
@@ -86,12 +93,12 @@ public class SellersMapFragment extends MapFragment implements GoogleMap.OnMapLo
 
         for (int i = 0; i < mSellerMarkers.size(); i++) {
             Marker marker = mSellerMarkers.valueAt(i);
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+//            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
         }
 
         for (Seller seller : sellersArrayAdapter.getFilteredSellers()) {
             Marker marker = mSellerMarkers.get(seller.hashCode());
-            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+//            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         }
     }
 
@@ -159,26 +166,51 @@ public class SellersMapFragment extends MapFragment implements GoogleMap.OnMapLo
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        setUpMapIfNeeded();
+    public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_sellers_map, container, false);
+
+        // Gets the MapView from the XML layout and creates it
+        mMapView = (MapView) view.findViewById(R.id.map);
+        mMapView.onCreate(savedInstanceState);
+
+        // Gets to GoogleMap from the MapView and does initialization stuff
+        mMap = mMapView.getMap();
+
+        // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
+        MapsInitializer.initialize(this.getActivity());
+
+        setUpMap();
+
+        return view;
     }
 
     @Override
     public void onResume() {
+        mMapView.onResume();
         super.onResume();
-        setUpMapIfNeeded();
-        updateMarkers();
     }
 
-    private void setUpMapIfNeeded() {
-        // Do a null check to confirm that we have not already instantiated the map.
-        if (mMap == null) {
-            // Try to obtain the map from the SupportMapFragment.
-            mMap = getMap();
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                setUpMap();
-            }
-        }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mMapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
+    }
+
+    @Override
+    public void onSaveInstanceState (Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mMapView.onSaveInstanceState(outState);
     }
 }

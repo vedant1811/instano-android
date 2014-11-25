@@ -31,7 +31,7 @@ public class LauncherActivity extends Activity {
             public void run() {
                 // This method will be executed once the timer is over
                 // Start your app main activity
-                Intent i = new Intent(LauncherActivity.this, PurchaseActivity.class);
+                Intent i = new Intent(LauncherActivity.this, HomeActivity.class);
                 startActivity(i);
 
                 // close this activity

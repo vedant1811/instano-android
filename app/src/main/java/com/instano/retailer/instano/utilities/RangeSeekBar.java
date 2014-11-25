@@ -10,6 +10,7 @@ import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.widget.ImageView;
@@ -40,9 +41,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     private final float thumbHalfHeight = 0.5f * thumbImage.getHeight();
     private final float lineHeight = 0.3f * thumbHalfHeight;
     private final float padding = thumbHalfWidth;
-    private final T absoluteMinValue, absoluteMaxValue;
-    private final NumberType numberType;
-    private final double absoluteMinValuePrim, absoluteMaxValuePrim;
+    private T absoluteMinValue, absoluteMaxValue;
+    private NumberType numberType;
+    private double absoluteMinValuePrim, absoluteMaxValuePrim;
     private double normalizedMinValue = 0d;
     private double normalizedMaxValue = 1d;
     private Thumb pressedThumb = null;
@@ -73,6 +74,16 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     private int mScaledTouchSlop;
     private boolean mIsDragging;
+
+    public RangeSeekBar(Context context) {
+        super(context);
+    }
+    public RangeSeekBar(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+    public RangeSeekBar(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
 
     /**
      * Creates a new RangeSeekBar.

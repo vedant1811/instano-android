@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:id="@+id/searchButtonViewFlipper"
+android:layout_gravity="center"
+    android:layout_alignParentEnd="true"
+android:layout_alignParentRight="true"
+android:layout_alignParentBottom="true">
+
+<!--TODO: bring progressbar to center-->
+
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Send to %d sellers"
+            android:id="@+id/searchButton"
+            android:onClick="searchButtonClicked"
+            style="@android:style/Widget.DeviceDefault.Light.Button.Small" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="near"
+            android:id="@+id/textView7"
+            android:layout_weight="0.5"
+            android:textAlignment="center"
+            android:layout_marginLeft="8dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Address"
+            android:id="@+id/button2"
+            style="@android:style/Widget.DeviceDefault.Light.Button.Borderless.Small"
+            android:layout_weight="0.5" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/withinTextView"
+            android:gravity="center_vertical"
+            android:minWidth="100dp"
+            android:text="Within 10km:" />
+
+        <SeekBar
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/withinSeekBar"
+            android:paddingRight="16dp"
+            android:max="99"
+            android:progress="9"
+            android:indeterminate="false" />
+    </LinearLayout>
+</LinearLayout>
+
+<LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center">
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar" />
+</LinearLayout>
+
+</ViewFlipper>

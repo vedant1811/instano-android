@@ -38,7 +38,7 @@ public class SellersListFragment extends Fragment implements SellersArrayAdapter
      * Views.
      */
     private SellersArrayAdapter mAdapter;
-    private View mHeader;
+//    private View mHeader;
     private Button mHeaderButton;
     private ViewFlipper mSearchButtonViewFlipper;
 
@@ -68,13 +68,13 @@ public class SellersListFragment extends Fragment implements SellersArrayAdapter
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sellers, container, false);
 
-        mHeader = inflater.inflate(R.layout.header_search, null, false);
-        mHeaderButton = (Button) mHeader.findViewById(R.id.searchButton);
-        mSearchButtonViewFlipper = (ViewFlipper) mHeader.findViewById(R.id.searchButtonViewFlipper);
+//        mHeader = inflater.inflate(R.layout.layout_select_sellers, null, false);
+//        mHeaderButton = (Button) mHeader.findViewById(R.id.searchButton);
+//        mSearchButtonViewFlipper = (ViewFlipper) mHeader.findViewById(R.id.searchButtonViewFlipper);
 
         // Set the adapter
         mListView = (ListView) view.findViewById(R.id.listView);
-        mListView.addHeaderView(mHeader);
+//        mListView.addHeaderView(mHeader);
         mListView.setAdapter(mAdapter);
         mListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         mAdapter.setListener(this);
