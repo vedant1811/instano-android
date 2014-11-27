@@ -6,7 +6,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 
 /**
@@ -26,6 +25,14 @@ public class Quote {
     public final String additionalInfo;
     public final long updatedAt; // valid only when constructed from Quote(JSONObject jsonObject)
     public final ArrayList<Integer> sellerIds;
+
+    public static int getIdFrom (JSONObject quoteJsonObject) {
+        try {
+            return quoteJsonObject.getInt("id");
+        } catch (JSONException e) {
+            return -1;
+        }
+    }
 
     public Quote(int id, int buyerId, String searchString,
                  String priceRange, ProductCategories.Category productCategory, String additionalInfo,
@@ -53,7 +60,7 @@ public class Quote {
         updatedAt = 0;
     }
 
-    public Quote(JSONObject jsonObject) throws JSONException, ParseException {ProductCategories.Category productCategory1;
+    public Quote(JSONObject jsonObject) throws JSONException {
         String updatedAt = jsonObject.getString("updated_at");
         this.updatedAt = ServicesSingleton.dateFromString(updatedAt);
         id = jsonObject.getInt("id");
@@ -80,6 +87,11 @@ public class Quote {
         this.additionalInfo = additionalInfo;
 
         sellerIds = null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 
     /**

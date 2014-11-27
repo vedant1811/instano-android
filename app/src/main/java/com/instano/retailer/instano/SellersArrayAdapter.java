@@ -180,14 +180,14 @@ public class SellersArrayAdapter extends BaseAdapter {
 
     }
 
-    public boolean addAll(JSONArray quotesJsonArray) throws JSONException {
+    public boolean addAll(JSONArray sellersJsonArray) throws JSONException {
 
         boolean newAdded = false;
 
-        for (int i = 0; i < quotesJsonArray.length(); i++){
-            JSONObject quotationJsonObject = quotesJsonArray.getJSONObject(i);
+        for (int i = 0; i < sellersJsonArray.length(); i++){
+            JSONObject sellerJsonObject = sellersJsonArray.getJSONObject(i);
             try {
-                newAdded |= add(new Seller(quotationJsonObject));
+                newAdded |= add(new Seller(sellerJsonObject));
             } catch (JSONException e) {
                 Log.d(TAG, "", e);
             }
