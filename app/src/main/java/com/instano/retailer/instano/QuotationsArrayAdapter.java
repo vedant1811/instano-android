@@ -5,22 +5,29 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.buyerDashboard.QuotationListFragment;
 import com.instano.retailer.instano.utilities.Quotation;
+import com.instano.retailer.instano.utilities.Quote;
 import com.instano.retailer.instano.utilities.Seller;
+
+import java.util.ArrayList;
 
 /**
  * Created by vedant on 23/9/14.
  */
-public class QuotationsArrayAdapter extends ArrayAdapter<Quotation> {
+public class QuotationsArrayAdapter extends BaseAdapter {
 
+    private ArrayList<QuotationsGroup> mGroupsOfQuotations;
     private QuotationListFragment.Callbacks mCallbacks;
+    private LayoutInflater mInflater;
+
     public QuotationsArrayAdapter(Context context) {
-        super(context, R.layout.list_item_quotation);
         mCallbacks = null;
+        mGroupsOfQuotations = new ArrayList<QuotationsGroup>();
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     public void registerCallback (QuotationListFragment.Callbacks callbacks) {
@@ -29,43 +36,77 @@ public class QuotationsArrayAdapter extends ArrayAdapter<Quotation> {
 
     public boolean insertIfNeeded(Quotation quotation) {
 
-        if (getQuotation(quotation.id) != null)
-            return false;
-
+        QuotationsGroup group = getGroup(quotation.quoteId);
         Seller seller = ServicesSingleton.getInstance(null).getSellersArrayAdapter().getSeller(quotation.sellerId);
-        if (seller != null) {
-            insert(quotation, 0);
+
+        if (group == null || seller == null)
+            return false; // group is not yet created. will be created next time
+
+        if (!group.quotations.contains(quotation)) {
+            group.quotations.add(0, quotation);
+            // TODO: sort if needed
+            newData();
             return true;
         } else
             return false;
     }
 
+    public void insertAtStart(Quote quote) {
+
+        for (QuotationsGroup group : mGroupsOfQuotations) {
+            if (group.quote.equals(quote))
+                return;
+        }
+        // no such quotation group exists, so add a new one:
+        QuotationsGroup group = new QuotationsGroup(quote);
+        mGroupsOfQuotations.add(0, group);
+        // we will add quotations when they arrive (or even if they have arrived, they will be fetched again)
+        newData();
+    }
+
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
         // assign the view we are converting to a local variable
         View view = convertView;
 
+        Object object = getItem(position);
+
         // first check to see if the view is null. if so, we have to inflate it.
-        if (view == null) {
-            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.list_item_quotation, parent, false);
+        if (object instanceof Quotation) {
+            if (view == null)
+                view = mInflater.inflate(R.layout.list_item_quotation, parent, false);
+            getQuotationView((Quotation) object, view);
+        } else {
+            if (view == null)
+                view = mInflater.inflate(R.layout.list_item_separator, parent, false);
+            getSeparatorView((Quote) object, view);
         }
 
+        return view;
+    }
+
+    private void getSeparatorView(Quote quote, View view) {
+        TextView primaryTextView = (TextView) view.findViewById(R.id.primaryTextView);
+        TextView secondaryTextView = (TextView) view.findViewById(R.id.secondaryTextView);
+
+        primaryTextView.setText(quote.searchString + ":");
+        secondaryTextView.setText(quote.getPrettyTimeElapsed());
+    }
+
+    private void getQuotationView(final Quotation quotation, View view) {
+
         TextView modelTextView = (TextView) view.findViewById(R.id.modelTextView);
-        TextView queryInfoTextView = (TextView) view.findViewById(R.id.queryInfoTextView);
+        TextView timeElapsedTextView = (TextView) view.findViewById(R.id.timeElapsedTextView);
         TextView priceTextView = (TextView) view.findViewById(R.id.priceTextView);
         TextView descriptionTextView = (TextView) view.findViewById(R.id.descrptionTextView);
         TextView shopTextView = (TextView) view.findViewById(R.id.shopTextView);
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
 
         ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(null);
-
-        Quotation quotation = getItem(position);
         String timeElapsed = quotation.getPrettyTimeElapsed();
 
         modelTextView.setText(quotation.nameOfProduct);
-        // TODO: queryInfoTextView.setText(String.format("%s for query \"%s\"",timeElapsed, );
-        queryInfoTextView.setText(String.format("%s",timeElapsed));
+        timeElapsedTextView.setText(timeElapsed);
         priceTextView.setText("₹" + quotation.price);
         descriptionTextView.setText(quotation.description);
 
@@ -92,26 +133,99 @@ public class QuotationsArrayAdapter extends ArrayAdapter<Quotation> {
             @Override
             public void onClick(View v) {
                 if (mCallbacks != null)
-                    mCallbacks.onItemSelected(position);
+                    mCallbacks.onItemSelected(quotation.id);
             }
         });
 
         view.setFocusable(false);
-
-        return view;
     }
 
     @Nullable
-    public Quotation getQuotation (int quotationId) {
-        for (int i = 0; i < getCount(); i++) {
-            if (getItem(i).id == quotationId)
-                return getItem(i);
+    public QuotationsGroup getGroup (int quoteId) {
+        for (QuotationsGroup group : mGroupsOfQuotations) {
+            if (group.quote.id == quoteId)
+                return group;
         }
         return null;
     }
 
+    /**
+     * How many items are in the data set represented by this Adapter.
+     *
+     * @return Count of items.
+     */
+    @Override
+    public int getCount() {
+        int count = mGroupsOfQuotations.size();
+        for (QuotationsGroup group : mGroupsOfQuotations){
+            count += group.quotations.size();
+        }
+        return count;
+    }
+
+    /**
+     * Get the data item associated with the specified position in the data set.
+     *
+     * @param position Position of the item whose data we want within the adapter's
+     *                 data set.
+     * @return The data at the specified position.
+     */
+    @Override
+    public Object getItem(int position) {
+        int count = position;
+        // TODO: check if caching is required
+        for (QuotationsGroup group : mGroupsOfQuotations) {
+            if (count == 0)
+                return group.quote;
+            else
+                count--;
+            for (Quotation quotation : group.quotations) {
+                if (count == 0)
+                    return quotation;
+                else
+                    count--;
+            }
+        }
+        throw new IndexOutOfBoundsException("Invalid position:" + position);
+    }
+
     @Override
     public long getItemId (int pos){
-        return getItem(pos).id;
+        return pos;
+    }
+
+    private void newData() {
+        if (mGroupsOfQuotations.size() > 0)
+            notifyDataSetChanged();
+        else
+            notifyDataSetInvalidated();
+    }
+
+    public void clear() {
+        mGroupsOfQuotations.clear();
+        newData();
+    }
+
+    @Override
+    public boolean areAllItemsEnabled() {
+        return false;
+    }
+
+    public Quotation getQuotation(int quotationId) {
+        for (QuotationsGroup group : mGroupsOfQuotations)
+            for (Quotation quotation : group.quotations)
+                if (quotation.id == quotationId)
+                    return quotation;
+        return null;
+    }
+
+    private class QuotationsGroup {
+        private Quote quote;
+        private ArrayList<Quotation> quotations;
+
+        private QuotationsGroup(Quote quote) {
+            this.quote = quote;
+            quotations = new ArrayList<Quotation>();
+        }
     }
 }

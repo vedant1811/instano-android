@@ -45,7 +45,7 @@ public class QuotationListFragment extends ListFragment {
         /**
          * BuyersCallbacks for when an item has been selected.
          */
-        public void onItemSelected(int position);
+        public void onItemSelected(int quotationId);
     }
 
     /**

@@ -6,7 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Represents a single immutable Quotation
+ * Represents a single immutable Quotation uniquely identifiable by its @field id
  */
 public class Quotation {
     public final int id; // server generated
@@ -65,5 +65,22 @@ public class Quotation {
      */
     public String getPrettyTimeElapsed() {
         return ServicesSingleton.getInstance(null).getPrettyTimeElapsed(updatedAt);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Quotation quotation = (Quotation) o;
+
+        if (id != quotation.id) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

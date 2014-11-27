@@ -24,8 +24,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text='42 min ago for query "fridge"'
-            android:id="@+id/queryInfoTextView" />
+            android:text="42 min ago"
+            android:id="@+id/timeElapsedTextView" />
 
         <TextView
             android:layout_width="wrap_content"

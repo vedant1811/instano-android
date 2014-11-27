@@ -108,7 +108,7 @@ public class ServicesSingleton implements
 
     public void runPeriodicTasks() {
         if (mBuyerId != -1) // i.e. if user is signed in
-            getQuotationsRequest();
+            getQuotesRequest(); // also fetches quotations once quotes are fetched
 //        else
 //            signInRequest(false);
 
@@ -296,6 +296,56 @@ public class ServicesSingleton implements
         mRequestQueue.add(request);
     }
 
+    public void getQuotesRequest () {
+
+        if (mBuyerId == -1) {
+            Log.e(TAG, "getQuotesRequest mSellerId == -1");
+            return;
+        }
+//        JSONObject requestData;
+//        try {
+//            requestData = new JSONObject()
+//                    .put("id", mBuyerId);
+//        } catch (JSONException e) {
+//            Log.e(TAG, "getQuotesRequest exception", e);
+//            return;
+//        }
+//        Log.e(TAG, "getQuotesRequest requestData" + requestData);
+
+        JsonArrayRequest request = new JsonArrayRequest(
+                getRequestUrl(RequestType.GET_QUOTES),
+//                requestData,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.v(TAG, "Quotes response:" + response.toString());
+                        // TODO: change just inserting new items now
+                        for (int i = 0; i < response.length(); i++){
+                            try {
+                                JSONObject quoteJsonObject = response.getJSONObject(i);
+                                Quote quote = new Quote(quoteJsonObject);
+                                if (quote.buyerId == mBuyerId)
+                                    mQuotationsArrayAdapter.insertAtStart(quote);
+                            } catch (JSONException e) {
+                                Log.e(TAG, ".getQuotesRequest JSONException: ", e);
+                            }
+                        }
+
+                        // fetch quotations once quotes are fetched:
+                        getQuotationsRequest();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, ".getQuotesRequest networkResponse: " + error.networkResponse, error);
+                    }
+                }
+        );
+        mRequestQueue.add(request);
+    }
+
     public ArrayList<ProductCategories.Category> getProductCategories() {
         if (mProductCategories != null)
             return mProductCategories.getProductCategories();
@@ -315,6 +365,8 @@ public class ServicesSingleton implements
 //                return url + "sellers";
             case SIGN_IN:
                 return url + "buyers";
+            case GET_QUOTES:
+                return url + "quotes";
             case GET_QUOTATIONS:
                 return url + "quotations/for_buyer";
             case SEND_QUOTE:
@@ -546,6 +598,7 @@ public class ServicesSingleton implements
 
     private enum RequestType {
         SIGN_IN,
+        GET_QUOTES,
         GET_QUOTATIONS,
         SEND_QUOTE,
         GET_PRODUCT_CATEGORIES,

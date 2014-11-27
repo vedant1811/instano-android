@@ -87,9 +87,8 @@ public class QuotationListActivity extends Activity
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(int pos) {
+    public void onItemSelected(int quotationId) {
 
-        int quotationId = ServicesSingleton.getInstance(null).getQuotationArrayAdapter().getItem(pos).id;
         Log.d(QuotationDetailFragment.ARG_QUOTATION_ID, quotationId + "");
 
         if (mTwoPane) {
