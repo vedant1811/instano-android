@@ -34,7 +34,6 @@
             android:name="com.instano.retailer.instano.activities.HomeActivity"
             android:label="@string/title_activity_home" >
         </activity>
-
         <activity
             android:name="com.instano.retailer.instano.search.SearchTabsActivity"
             android:label="@string/title_activity_search_tabs"
@@ -66,6 +65,14 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_maps_key" />
+
+        <activity
+            android:name="com.instano.retailer.instano.buyerDashboard.QueriesMapActivity"
+            android:label="@string/title_activity_queries_map" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.instano.retailer.instano.activities.HomeActivity" />
+        </activity>
     </application>
 
 </manifest>
