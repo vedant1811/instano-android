@@ -17,11 +17,11 @@ import java.util.List;
 public class MultiSpinner extends Spinner implements
         DialogInterface.OnMultiChoiceClickListener, DialogInterface.OnCancelListener {
 
-    private List<String> items;
+    private List<String> mItems;
 
-    private boolean[] selected;
-    private String defaultText;
-    private MultiSpinnerListener listener;
+    private boolean[] mSelected;
+    private String mDefaultText;
+    private MultiSpinnerListener mListener;
 
     public MultiSpinner(Context context) {
         super(context);
@@ -37,22 +37,22 @@ public class MultiSpinner extends Spinner implements
 
     @Override
     public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-        selected[which] = isChecked;
+        mSelected[which] = isChecked;
     }
 
     @Override
     public void onCancel(DialogInterface dialog) {
         refreshView();
-        listener.onItemsSelected(selected);
+        mListener.onItemsSelected(mSelected);
     }
 
     private void refreshView() {
         // refresh text on spinner
-        StringBuffer spinnerBuffer = new StringBuffer();
+        StringBuilder spinnerBuffer = new StringBuilder();
         boolean noneSelected = true;
-        for (int i = 0; i < items.size(); i++) {
-            if (selected[i]) {
-                spinnerBuffer.append(items.get(i));
+        for (int i = 0; i < mItems.size(); i++) {
+            if (mSelected[i]) {
+                spinnerBuffer.append(mItems.get(i));
                 spinnerBuffer.append(", ");
                 noneSelected = false;
             }
@@ -63,7 +63,7 @@ public class MultiSpinner extends Spinner implements
             if (spinnerText.length() > 2)
                 spinnerText = spinnerText.substring(0, spinnerText.length() - 2);
         } else {
-            spinnerText = defaultText;
+            spinnerText = mDefaultText;
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_spinner_item,
@@ -73,11 +73,11 @@ public class MultiSpinner extends Spinner implements
 
     @Override
     public boolean performClick() {
-        if (items == null)
+        if (mItems == null)
             return false;
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMultiChoiceItems(
-                items.toArray(new CharSequence[items.size()]), selected, this);
+                mItems.toArray(new CharSequence[mItems.size()]), mSelected, this);
         builder.setPositiveButton(android.R.string.ok,
                 new DialogInterface.OnClickListener() {
 
@@ -93,18 +93,24 @@ public class MultiSpinner extends Spinner implements
 
     public void setItems(List<String> items, boolean[] selected, String defaultText,
                          MultiSpinnerListener listener) {
-        this.items = items;
-        this.defaultText = defaultText;
-        this.listener = listener;
+        mItems = items;
+        mDefaultText = defaultText;
+        mListener = listener;
 
         if (selected == null) {
             // all selected by default
-            this.selected = new boolean[items.size()];
-            Arrays.fill(this.selected, true);
+            mSelected = new boolean[items.size()];
+            Arrays.fill(mSelected, true);
         } else {
-            this.selected = selected;
+            mSelected = selected;
         }
         refreshView();
+    }
+
+    public void setItems(List<String> mItems, boolean[] selected) {
+        if (mDefaultText == null || mListener == null)
+            throw new IllegalStateException("mDefaultText == null || mListener == null");
+        setItems(mItems, selected, mDefaultText, mListener);
     }
 
     public interface MultiSpinnerListener {
@@ -113,13 +119,13 @@ public class MultiSpinner extends Spinner implements
 
     public ArrayList<String> getListOfSelected() {
         ArrayList<String> strings = new ArrayList<String>();
-        for (int i = 0; i < selected.length; i++)
-            if(selected[i])
-                strings.add(items.get(i));
+        for (int i = 0; i < mSelected.length; i++)
+            if(mSelected[i])
+                strings.add(mItems.get(i));
         return strings;
     }
 
     public boolean[] getSelected() {
-        return selected;
+        return mSelected;
     }
 }

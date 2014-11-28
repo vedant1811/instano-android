@@ -106,9 +106,9 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
     public void sellerAdded(Seller seller) {
         Marker newMarker = mMap.addMarker(
                 new MarkerOptions()
-                .position(new LatLng(seller.latitude, seller.longitude))
-                .title(seller.nameOfShop)
-                .snippet(seller.address)
+                        .position(new LatLng(seller.latitude, seller.longitude))
+                        .title(seller.nameOfShop)
+                        .snippet(seller.address)
         );
         mSellerMarkers.put(seller.hashCode(), newMarker);
     }
@@ -171,6 +171,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
 
         // Gets the MapView from the XML layout and creates it
         mMapView = (MapView) view.findViewById(R.id.map);
+
         mMapView.onCreate(savedInstanceState);
 
         // Gets to GoogleMap from the MapView and does initialization stuff

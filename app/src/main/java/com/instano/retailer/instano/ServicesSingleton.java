@@ -54,13 +54,13 @@ import java.util.TimeZone;
 
 /**
  *
- *
  * Created by vedant on 3/9/14.
  */
 public class ServicesSingleton implements
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener,
-        Response.Listener<String>, Response.ErrorListener {
+        Response.Listener<String>,
+        Response.ErrorListener {
 
     private final static String TAG = "ServicesSingleton";
 
@@ -80,11 +80,13 @@ public class ServicesSingleton implements
     private Location mUserSelectedLocation;
     private Address mUserAddress;
     private String locationErrorString;
+
     private InitialDataCallbacks mInitialDataCallbacks;
+    private AddressCallbacks mAddressCallbacks;
+    private QuoteCallbacks mQuoteCallbacks;
 
     /* network variables */
     private Quote mQuote;
-    private QuoteCallbacks mQuoteCallbacks;
     private int mBuyerId;
 
     private RequestQueue mRequestQueue;
@@ -108,7 +110,10 @@ public class ServicesSingleton implements
 
     public void runPeriodicTasks() {
         if (mBuyerId != -1) // i.e. if user is signed in
+        {
             getQuotesRequest(); // also fetches quotations once quotes are fetched
+            getSellersRequest();
+        }
 //        else
 //            signInRequest(false);
 
@@ -149,8 +154,6 @@ public class ServicesSingleton implements
             return;
         }
 
-        // first get sellers so that we enter only quotations with valid sellers
-        getSellersRequest();
         JsonArrayRequest request = new JsonArrayRequest(
                 getRequestUrl(RequestType.GET_QUOTATIONS),
                 postData,
@@ -204,7 +207,9 @@ public class ServicesSingleton implements
     }
 
     public void sendQuoteRequest(String searchString, String priceRange,
-                                 ProductCategories.Category productCategory, String additionalInfo, ArrayList<Integer> sellerIds) {
+                                 ProductCategories.Category productCategory,
+                                 String additionalInfo,
+                                 ArrayList<Integer> sellerIds) {
 
         if (mBuyerId == -1) {
             Log.e(TAG, ".sendQuoteRequest : mBuyerId is -1. Search string: " + searchString);
@@ -289,7 +294,7 @@ public class ServicesSingleton implements
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, ".getProductCategoriesRequest error: ", error);
+                        Log.e(TAG, ".getProductCategoriesRequest network response: " + error.networkResponse, error);
                     }
                 }
         );
@@ -302,24 +307,23 @@ public class ServicesSingleton implements
             Log.e(TAG, "getQuotesRequest mSellerId == -1");
             return;
         }
-//        JSONObject requestData;
-//        try {
-//            requestData = new JSONObject()
-//                    .put("id", mBuyerId);
-//        } catch (JSONException e) {
-//            Log.e(TAG, "getQuotesRequest exception", e);
-//            return;
-//        }
-//        Log.e(TAG, "getQuotesRequest requestData" + requestData);
+        JSONObject requestData;
+        try {
+            requestData = new JSONObject()
+                    .put("id", mBuyerId);
+        } catch (JSONException e) {
+            Log.e(TAG, "getQuotesRequest exception", e);
+            return;
+        }
+        Log.e(TAG, "getQuotesRequest requestData" + requestData);
 
         JsonArrayRequest request = new JsonArrayRequest(
                 getRequestUrl(RequestType.GET_QUOTES),
-//                requestData,
+                requestData,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
                         Log.v(TAG, "Quotes response:" + response.toString());
-                        // TODO: change just inserting new items now
                         for (int i = 0; i < response.length(); i++){
                             try {
                                 JSONObject quoteJsonObject = response.getJSONObject(i);
@@ -366,7 +370,7 @@ public class ServicesSingleton implements
             case SIGN_IN:
                 return url + "buyers";
             case GET_QUOTES:
-                return url + "quotes";
+                return url + "quotes/for_buyer";
             case GET_QUOTATIONS:
                 return url + "quotations/for_buyer";
             case SEND_QUOTE:
@@ -397,8 +401,6 @@ public class ServicesSingleton implements
         mLocationClient.connect();
         checkPlayServices(); // not performing checkUserAccount
         // see http://www.androiddesignpatterns.com/2013/01/google-play-services-setup.html
-
-
 
         mRequestQueue = Volley.newRequestQueue(mAppContext);
 
@@ -457,8 +459,8 @@ public class ServicesSingleton implements
 
         mUserAddress = address;
 
-        if (mInitialDataCallbacks != null)
-            mInitialDataCallbacks.addressFound(null, true);
+        if (mAddressCallbacks != null)
+            mAddressCallbacks.addressFound(null, true);
     }
 
     /*
@@ -472,8 +474,8 @@ public class ServicesSingleton implements
         if (mLastLocation != null)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && Geocoder.isPresent()) {
                 // Show the activity indicator
-                if (mInitialDataCallbacks != null)
-                    mInitialDataCallbacks.searchingForAddress();
+                if (mAddressCallbacks != null)
+                    mAddressCallbacks.searchingForAddress();
                 /*
                  * Reverse geocoding is long-running and synchronous.
                  * Run it on a background thread.
@@ -488,8 +490,8 @@ public class ServicesSingleton implements
                         if (mUserAddress != null)
                             return; // user has already set a location. No need for this address.
                         mUserAddress = address;
-                        if (mInitialDataCallbacks != null)
-                            mInitialDataCallbacks.addressFound(address, false);
+                        if (mAddressCallbacks != null)
+                            mAddressCallbacks.addressFound(address, false);
                     }
                 })).execute(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             }
@@ -580,19 +582,26 @@ public class ServicesSingleton implements
         mQuoteCallbacks = quoteCallbacks;
     }
 
+    public void registerCallback (AddressCallbacks addressCallbacks) {
+        mAddressCallbacks = addressCallbacks;
+    }
+
     public interface QuoteCallbacks {
         public void productCategoriesUpdated(ArrayList<ProductCategories.Category> productCategories);
         public void quoteSent(boolean success);
     }
 
     public interface InitialDataCallbacks {
-        public void searchingForAddress();
-        public void addressFound(Address address, boolean userSelected);
         /*
          * Implementation activities need to listen for result of the errorDialog in Activity.onActivityResult
          */
         public void showErrorDialog(int errorCode);
         public void resolvableConnectionResultError(ConnectionResult connectionResult) throws IntentSender.SendIntentException;
+    }
+
+    public interface AddressCallbacks {
+        public void searchingForAddress();
+        public void addressFound(Address address, boolean userSelected);
     }
 
 

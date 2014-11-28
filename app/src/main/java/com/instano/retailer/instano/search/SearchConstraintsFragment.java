@@ -23,15 +23,14 @@ import com.instano.retailer.instano.utilities.RangeSeekBar;
  * create an instance of this fragment.
  *
  */
-public class SearchConstraintsFragment extends Fragment {
+public class SearchConstraintsFragment extends Fragment implements MultiSpinner.MultiSpinnerListener {
 
     public final static String ARG_SEARCH_STRING = "arg_search_string";
     private final int MIN_OF_RANGE_SEEK_BAR = 1;
     private final int MAX_OF_RANGE_SEEK_BAR = 10;
 
-    private TextView mWithinTextView;
-//    private SeekBar mWithinSeekBar;
     private EditText mAdditionalInfoEditText;
+
     private MultiSpinner mBrandsMultiSpinner;
     private TextView mPriceRangeTextView;
 
@@ -41,7 +40,6 @@ public class SearchConstraintsFragment extends Fragment {
      *
      * @return A new instance of fragment SearchConstraintsFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static SearchConstraintsFragment newInstance(String searchString) {
         SearchConstraintsFragment fragment = new SearchConstraintsFragment();
         Bundle args = new Bundle();
@@ -54,35 +52,30 @@ public class SearchConstraintsFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        onCategorySelected(((SearchTabsActivity) getActivity()).getSelectedCategory());
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search_constraints, container, false);
 
-        mWithinTextView = (TextView) view.findViewById(R.id.withinTextView);
-//        mWithinSeekBar = (SeekBar) view.findViewById(R.id.withinSeekBar);
         mAdditionalInfoEditText = (EditText) view.findViewById(R.id.additionalInfoEditText);
         mBrandsMultiSpinner = (MultiSpinner) view.findViewById(R.id.brandsMultiSpinner);
         mPriceRangeTextView = (TextView) view.findViewById(R.id.priceRangeTextView);
 
-//        mWithinSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                mWithinTextView.setText(String.format("Within %dkm:", progress + 1));
-//                filter((progress + 1) * 100);
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//
-//            }
-//        });
+        // setup brands multi spinner:
+        final ProductCategories.Category selectedCategory = ((SearchTabsActivity)getActivity()).getSelectedCategory();
+        mBrandsMultiSpinner.setItems(selectedCategory.brands, selectedCategory.getSelected(),
+                "Select brands", this);
+        if (selectedCategory.name.equals(ProductCategories.UNDEFINED)) {
+            mBrandsMultiSpinner.setEnabled(false);
+        } else {
+            mBrandsMultiSpinner.setEnabled(true);
+        }
 
         // setup range seek bar:
         {
@@ -109,12 +102,22 @@ public class SearchConstraintsFragment extends Fragment {
         return view;
     }
 
-    private void filter(ProductCategories.Category category) {
-        ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(category);
+    @Override
+    public void onItemsSelected(boolean[] selected) {
+        ProductCategories.Category selectedCategory = ((SearchTabsActivity)getActivity()).getSelectedCategory();
+        selectedCategory.setSelected(selected);
+        ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(selectedCategory);
     }
 
-    private void filter(int minDist) {
-        ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(minDist);
+    public void onCategorySelected(ProductCategories.Category selectedCategory) {
+        if (mBrandsMultiSpinner == null)
+            return;
+        mBrandsMultiSpinner.setItems(selectedCategory.brands, selectedCategory.getSelected());
+        if (selectedCategory.name.equals(ProductCategories.UNDEFINED)) {
+            mBrandsMultiSpinner.setEnabled(false);
+        } else {
+            mBrandsMultiSpinner.setEnabled(true);
+        }
     }
 
     public String getBrands() {
@@ -129,5 +132,4 @@ public class SearchConstraintsFragment extends Fragment {
     public String getPriceRange() {
         return mPriceRangeTextView.getText().toString();
     }
-
 }

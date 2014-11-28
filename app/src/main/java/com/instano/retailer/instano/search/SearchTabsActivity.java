@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
@@ -39,14 +38,14 @@ public class SearchTabsActivity extends Activity implements
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    ViewPager mViewPager;
+    private ViewPager mViewPager;
 
-    SearchFragment mSearchFragment;
-    SearchConstraintsFragment mSearchConstraintsFragment;
-    SellersListFragment mSellersListFragment;
-    SellersMapFragment mSellersMapFragment;
+    private SearchFragment mSearchFragment;
+    private SearchConstraintsFragment mSearchConstraintsFragment;
+    private SellersListFragment mSellersListFragment;
+    private SellersMapFragment mSellersMapFragment;
 
-    ViewFlipper mSearchButtonViewFlipper;
+    private ProductCategories.Category mSelectedCategory;
 
     public void searchButtonClicked(View view) {
 //        String searchString = mSearchFragment.getSearchString();
@@ -70,10 +69,6 @@ public class SearchTabsActivity extends Activity implements
         mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
     }
 
-    public void specifyConstraintsClicked(View view) {
-
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +82,6 @@ public class SearchTabsActivity extends Activity implements
 
         mSellersMapFragment = new SellersMapFragment();
         mViewPager = (ViewPager) findViewById(R.id.pager);
-        mSearchButtonViewFlipper = (ViewFlipper) findViewById(R.id.searchButtonViewFlipper);
 
         // Set up the action bar.
 //        final ActionBar actionBar = getActionBar();
@@ -169,7 +163,7 @@ public class SearchTabsActivity extends Activity implements
 
     @Override
     public void productCategoriesUpdated(ArrayList<ProductCategories.Category> productCategories) {
-//        mSearchFragment.updateProductCategories(productCategories);
+        mSearchFragment.updateProductCategories(productCategories);
     }
 
     @Override
@@ -189,6 +183,19 @@ public class SearchTabsActivity extends Activity implements
         mSellersListFragment.sendingQuote(isSending);
     }
 
+    public void onCategorySelected(ProductCategories.Category selectedCategory) {
+
+        mSelectedCategory = selectedCategory;
+
+        ServicesSingleton.getInstance(this).getSellersArrayAdapter().filter(mSelectedCategory);
+        mSearchConstraintsFragment.onCategorySelected(selectedCategory);
+    }
+
+    public ProductCategories.Category getSelectedCategory() {
+        if (mSelectedCategory == null)
+            return ProductCategories.Category.undefinedCategory();
+        return mSelectedCategory;
+    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.location.Address;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,10 +11,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -39,13 +37,12 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
     private final static String CURRENT_LOCATION = "Current Location";
     private final static String SELECT_LOCATION = "Select Location";
 
-    private Button mSearchButton;
-    private Button mLocationButton;
-    private ProgressBar mProgressBar;
     private EditText mSearchEditText;
     private Spinner mProductCategorySpinner;
-    private ProductCategories.Category mSelectedCategory;
+
     private ArrayAdapter<ProductCategories.Category> mCategoryAdapter;
+
+    private CharSequence mSearchString;
 
     private Toast mToast;
 
@@ -67,20 +64,9 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
                              Bundle savedInstanceState) {
         final ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-        // mSearchButton is not enabled in XML
-//        mSearchButton = (Button) view.findViewById(R.id.search_button);
-//        mSearchButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                searchButtonClicked();
-//            }
-//        });
-//
-//        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+
         mSearchEditText = (EditText) view.findViewById(R.id.searchEditText);
         mProductCategorySpinner = (Spinner) view.findViewById(R.id.productCategorySpinner);
-//
-//        mLocationButton = (Button) view.findViewById(R.id.locationButton);
 
         mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
                 android.R.layout.simple_spinner_item);
@@ -106,34 +92,18 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
             }
         });
 
-
         mProductCategorySpinner.setAdapter(mCategoryAdapter);
-//        mProductCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                mSelectedCategory = mCategoryAdapter.getItem(position);
-//                if (mSelectedCategory.name.equals(ProductCategories.UNDEFINED)) {
-//                    mBrandsMultiSpinner.setEnabled(false);
-//                } else {
-//                    mBrandsMultiSpinner.setEnabled(true);
-//                }
-//                mBrandsMultiSpinner.setItems(mSelectedCategory.brands, mSelectedCategory.getSelected(), "Select brands", new MultiSpinner.MultiSpinnerListener() {
-//                    @Override
-//                    public void onItemsSelected(boolean[] selected) {
-//                        mSelectedCategory.setSelected(selected);
-//                        filter(mSelectedCategory);
-//                    }
-//                });
-//
-//                filter(mSelectedCategory);
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//                // TODO: do something
-//            }
-//        });
+        mProductCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((SearchTabsActivity)getActivity()).onCategorySelected(mCategoryAdapter.getItem(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
         guessCategory(); // also triggers a mProductCategorySpinner...onItemSelected
 
         return view;
@@ -172,22 +142,8 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
         ServicesSingleton.getInstance(getActivity()).registerCallback(this);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-//        ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
-//        Address address = servicesSingleton.getUserAddress();
-//        if (address == null)
-//            mLocationButton.setText(SELECT_LOCATION);
-//        else
-//            // display a readable address, street if available or city
-//            mLocationButton.setText(address.getMaxAddressLineIndex() > 0 ?
-//                    address.getAddressLine(0) : address.getLocality());
-    }
-
     /**
-     * Called when mSearchButton has been clicked
+     * Called when searchButton has been clicked
      */
     public void searchButtonClicked() {
         ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
@@ -212,22 +168,26 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
                 .putExtra(SearchConstraintsFragment.ARG_SEARCH_STRING, searchString));
     }
 
-    @Override
-    public void searchingForAddress() {
-//        mProgressBar.setVisibility(View.VISIBLE);
+    /* package private */ void updateProductCategories(ArrayList<ProductCategories.Category> categories) {
+        if (mCategoryAdapter != null) {
+            mCategoryAdapter.clear();
+            mCategoryAdapter.addAll(categories);
+        }
     }
 
     @Override
-    public void addressFound(Address address, boolean userSelected) {
-//        mProgressBar.setVisibility(View.GONE);
-//        if (address != null)
-//            // display a readable address, street if available or city
-//            mLocationButton.setText(address.getMaxAddressLineIndex() > 0 ?
-//                    address.getAddressLine(0) : address.getLocality());
-//        else if (userSelected)
-//            mLocationButton.setText(CURRENT_LOCATION);
-//        else
-//            mLocationButton.setText(SELECT_LOCATION);
+    public void onPause() {
+        super.onPause();
+        mSearchString = mSearchEditText.getText();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mSearchEditText.setText(mSearchString);
+        int position = mCategoryAdapter.getPosition(
+                ((SearchTabsActivity)getActivity()).getSelectedCategory());
+        mProductCategorySpinner.setSelection(position);
     }
 
     @Override
@@ -255,12 +215,4 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    /* package private */ void updateProductCategories(ArrayList<ProductCategories.Category> categories) {
-        mCategoryAdapter.clear();
-        mCategoryAdapter.addAll(categories);
-    }
-
-    public ProductCategories.Category getProductCategory() {
-        return mSelectedCategory;
-    }
 }

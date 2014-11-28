@@ -12,6 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -29,15 +30,14 @@ import java.util.ArrayList;
  * displays a list of sellers sorted by Seller.id
  * Created by vedant on 24/9/14.
  */
-public class SellersArrayAdapter extends BaseAdapter {
+public class SellersArrayAdapter extends BaseAdapter implements Filterable {
 
     private static final String TAG = "sellers array adapter";
 
     private SparseArray<Seller> mCompleteSet;
 
     private ArrayList<Seller> mFilteredList;
-    private DistanceFilter mDistanceFilter;
-    private BrandsCategoryFilter mBrandsCategoryFilter;
+    private DistanceAndCategoryFilter mDistanceAndCategoryFilter;
     private SparseBooleanArray mCheckedItems;
     private Context mContext;
 
@@ -49,8 +49,7 @@ public class SellersArrayAdapter extends BaseAdapter {
 
         mCompleteSet = new SparseArray<Seller>();
         mFilteredList = new ArrayList<Seller>();
-        mDistanceFilter = new DistanceFilter();
-        mBrandsCategoryFilter = new BrandsCategoryFilter();
+        mDistanceAndCategoryFilter = new DistanceAndCategoryFilter();
         mCheckedItems = new SparseBooleanArray();
     }
 
@@ -71,10 +70,15 @@ public class SellersArrayAdapter extends BaseAdapter {
     }
 
     public ArrayList<Integer> getSelectedSellerIds() {
+        long start = System.nanoTime();
         ArrayList<Integer> ids = new ArrayList<Integer>();
         for (Seller seller : mFilteredList)
-            if (mCheckedItems.get(seller.id))
-                ids.add(seller.id);
+            if (mCheckedItems.get(seller.hashCode())) {
+                ids.add(seller.hashCode());
+                Log.d("mCheckedItems", String.format("getSelectedSellerIds %s (%d,%b)",seller.nameOfShop,seller.hashCode(),true));
+            }
+        double timeTaken = (System.nanoTime() - start)/1000;
+        Log.d("Timing", "getSelectedSellerIds took " + timeTaken + "μs");
         return ids;
     }
 
@@ -108,19 +112,19 @@ public class SellersArrayAdapter extends BaseAdapter {
 
         final Seller seller = getItem(position);
 
+        boolean checked = mCheckedItems.get(seller.hashCode(), true);
+        checkBox.setChecked(checked);
+        Log.d("mCheckedItems", String.format("initialized %s (%d,%b)", seller.nameOfShop, seller.hashCode(), checked));
+
         checkBox.setOnCheckedChangeListener (new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
+                mCheckedItems.put(seller.hashCode(), isChecked);
                 if (mItemInteractionListener != null)
-                    mItemInteractionListener.itemCheckedStateChanged(position, isChecked);
-                mCheckedItems.put(seller.id, isChecked);
+                    mItemInteractionListener.itemCheckedStateChanged(getSelectedSellerIds().size());
+                Log.d("mCheckedItems", String.format("changed %s (%d,%b)",seller.nameOfShop,seller.hashCode(),isChecked));
             }
         });
-        // initially setting all to checked
-        mCheckedItems.put(seller.id, true);
-        if (mItemInteractionListener != null)
-            mItemInteractionListener.itemCheckedStateChanged(position, true);
 
         shopNameTextView.setText(seller.nameOfShop);
         addressTextView.setText(seller.address);
@@ -174,6 +178,9 @@ public class SellersArrayAdapter extends BaseAdapter {
             mCompleteSet.put(hash, seller);
             if (mSellersListener != null)
                 mSellersListener.sellerAdded(seller);
+            // initially setting all sellers to checked
+            mCheckedItems.put(hash, true);
+            Log.d("mCheckedItems", String.format("added %s (%d,%b)",seller.nameOfShop,hash,true));
             return true;
         } else
             return false;
@@ -202,25 +209,46 @@ public class SellersArrayAdapter extends BaseAdapter {
     }
 
     public void filter() {
-        mDistanceFilter.runOldFilter();
-        mBrandsCategoryFilter.runOldFilter();
+        mDistanceAndCategoryFilter.runOldFilter();
     }
 
     public void filter(int minDist) {
-        mDistanceFilter.filter(String.valueOf(minDist));
+        mDistanceAndCategoryFilter.filter(minDist);
     }
 
     public void filter(ProductCategories.Category category) {
-        mBrandsCategoryFilter.filter(category.toJsonObject().toString());
+        mDistanceAndCategoryFilter.filter(category);
+    }
+
+    private void newData() {
+        if (mFilteredList.size() == 0)
+            notifyDataSetInvalidated();
+        else
+            notifyDataSetChanged();
+        if (mItemInteractionListener != null)
+            mItemInteractionListener.itemCheckedStateChanged(getSelectedSellerIds().size());
+    }
+
+    /**
+     * <p>Returns a filter that can be used to constrain data with a filtering
+     * pattern.</p>
+     * <p/>
+     * <p>This method is usually implemented by {@link android.widget.Adapter}
+     * classes.</p>
+     *
+     * @return a filter used to constrain data
+     */
+    @Override
+    public Filter getFilter() {
+        return mDistanceAndCategoryFilter;
     }
 
     public interface ItemInteractionListener {
         /**
          *
-         * @param pos position whose checkedState has changed, or -1 if listItems changed
-         * @param checkedState
+         * @param selected number of selected items
          */
-        public void itemCheckedStateChanged(int pos, boolean checkedState);
+        public void itemCheckedStateChanged(int selected);
         public void callButtonClicked(String number);
     }
 
@@ -229,95 +257,63 @@ public class SellersArrayAdapter extends BaseAdapter {
         public void sellerAdded(Seller seller);
     }
 
-    private class DistanceFilter extends Filter {
+    private class DistanceAndCategoryFilter extends Filter {
 
-        private CharSequence mLastConstraint = "100000";
+        private static final String PRODUCT_CATEGORY = "product_category";
+        private static final String MIN_DIST = "min_dist";
+        private static final int INITIAL_MIN_DIST = 1000;
 
-        private void runOldFilter() {
-            filter(mLastConstraint);
-        }
-
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            this.mLastConstraint = constraint;
-            ArrayList<Seller> filteredList = new ArrayList<Seller>();
-
-            try {
-                int minDist = Integer.parseInt(String.valueOf(constraint));
-                for (int i = 0; i < mCompleteSet.size(); i++) {
-                    Seller seller = mCompleteSet.valueAt(i);
-                    if (seller.getDistanceFromLocation() <= minDist)
-                        filteredList.add(seller);
-                }
-            } catch (NumberFormatException e) {
-                // add all in that case
-                for (int i = 0; i < mCompleteSet.size(); i++) {
-                    Seller seller = mCompleteSet.valueAt(i);
-                    filteredList.add(seller);
-                }
-            }
-
-            FilterResults filterResults = new FilterResults();
-            filterResults.count = filteredList.size();
-            filterResults.values = filteredList;
-            return filterResults;
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            mFilteredList = (ArrayList<Seller>) results.values;
-            if (results.count == 0)
-                notifyDataSetInvalidated();
-            else
-                notifyDataSetChanged();
-            if (mItemInteractionListener != null)
-                mItemInteractionListener.itemCheckedStateChanged(-1, false);
-        }
-    }
-
-    private class BrandsCategoryFilter extends Filter {
-
-        private CharSequence mLastConstraint = null;
+        private CharSequence mLastConstraint =
+                getConstraint(INITIAL_MIN_DIST, ProductCategories.Category.undefinedCategory());
 
         private void runOldFilter() {
             filter(mLastConstraint);
+            Log.d("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint);
         }
 
-        /**
-         * <p>Invoked in a worker thread to filter the data according to the
-         * constraint. Subclasses must implement this method to perform the
-         * filtering operation. Results computed by the filtering operation
-         * must be returned as a {@link android.widget.Filter.FilterResults} that
-         * will then be published in the UI thread through
-         * {@link #publishResults(CharSequence,
-         * android.widget.Filter.FilterResults)}.</p>
-         * <p/>
-         * <p><strong>Contract:</strong> When the constraint is null, the original
-         * data must be restored.</p>
-         *
-         * @param constraint the constraint used to filter the data
-         * @return the results of the filtering operation
-         * @see #filter(CharSequence, android.widget.Filter.FilterListener)
-         * @see #publishResults(CharSequence, android.widget.Filter.FilterResults)
-         * @see android.widget.Filter.FilterResults
-         */
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-
-            this.mLastConstraint = constraint;
-            ArrayList<Seller> filteredList = new ArrayList<Seller>();
-
-
+        private void filter(int minDist) {
             try {
-                ProductCategories.Category category = new ProductCategories.Category(
-                        new JSONObject(String.valueOf(constraint)));
-                for (int i = 0; i < mCompleteSet.size(); i++) {
-                    Seller seller = mCompleteSet.valueAt(i);
-                    if (seller.productCategories.containsCategoryAndOneBrand(category))
-                        filteredList.add(seller);
-                }
+                mLastConstraint = (new JSONObject(mLastConstraint.toString())
+                        .put(MIN_DIST, minDist)).toString();
             } catch (JSONException e) {
-                // add all in that case
+                e.printStackTrace();
+                mLastConstraint = getConstraint(minDist, ProductCategories.Category.undefinedCategory());
+            }
+            filter(mLastConstraint);
+            Log.d("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint);
+        }
+
+        private void filter(ProductCategories.Category category) {
+            try {
+                mLastConstraint = (new JSONObject(mLastConstraint.toString())
+                        .put(PRODUCT_CATEGORY, category.toJsonObject())).toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                mLastConstraint = getConstraint(INITIAL_MIN_DIST, category);
+            }
+            filter(mLastConstraint);
+            Log.d("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint);
+        }
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            this.mLastConstraint = constraint;
+            ArrayList<Seller> filteredList = new ArrayList<Seller>();
+
+            try {
+                // first filter distance
+                int minDist = getMinDist(constraint);
+                // filter category
+                ProductCategories.Category category = getProductCategory(constraint);
+                for (int i = 0; i < mCompleteSet.size(); i++) {
+                    Seller seller = mCompleteSet.valueAt(i);
+                    if (seller.getDistanceFromLocation() <= minDist &&
+                            seller.productCategories.containsCategoryAndOneBrand(category))
+                        filteredList.add(seller);
+                }
+            } catch (Exception e) {
+                // add all in case of an Exception (NumberFormatException, JSONException, etc.)
+                Log.e("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint, e);
                 for (int i = 0; i < mCompleteSet.size(); i++) {
                     Seller seller = mCompleteSet.valueAt(i);
                     filteredList.add(seller);
@@ -330,26 +326,35 @@ public class SellersArrayAdapter extends BaseAdapter {
             return filterResults;
         }
 
-        /**
-         * <p>Invoked in the UI thread to publish the filtering results in the
-         * user interface. Subclasses must implement this method to display the
-         * results computed in {@link #performFiltering}.</p>
-         *
-         * @param constraint the constraint used to filter the data
-         * @param results    the results of the filtering operation
-         * @see #filter(CharSequence, android.widget.Filter.FilterListener)
-         * @see #performFiltering(CharSequence)
-         * @see android.widget.Filter.FilterResults
-         */
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             mFilteredList = (ArrayList<Seller>) results.values;
-            if (results.count == 0)
-                notifyDataSetInvalidated();
-            else
-                notifyDataSetChanged();
-            if (mItemInteractionListener != null)
-                mItemInteractionListener.itemCheckedStateChanged(-1, false);
+            newData();
         }
+
+        private ProductCategories.Category getProductCategory(CharSequence constraint) throws JSONException {
+            JSONObject jsonObject = new JSONObject(constraint.toString());
+            return new ProductCategories.Category(jsonObject.getJSONObject(PRODUCT_CATEGORY));
+        }
+
+        private int getMinDist(CharSequence constraint) throws JSONException {
+            JSONObject jsonObject = new JSONObject(constraint.toString());
+            return jsonObject.getInt(MIN_DIST);
+        }
+
+        private CharSequence getConstraint(int minDist, ProductCategories.Category category) {
+            String constraint;
+            try {
+                JSONObject jsonObject = new JSONObject()
+                        .put(MIN_DIST, minDist)
+                        .put(PRODUCT_CATEGORY, category.toJsonObject());
+                constraint = jsonObject.toString();
+            } catch (JSONException e) {
+                e.printStackTrace();
+                constraint = null;
+            }
+            return constraint;
+        }
+
     }
 }
