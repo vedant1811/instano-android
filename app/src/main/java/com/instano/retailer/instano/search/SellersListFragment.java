@@ -73,9 +73,12 @@ public class SellersListFragment extends Fragment implements
         ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
         Address address = servicesSingleton.getUserAddress();
         addressFound(address, false);
+
+        itemCheckedStateChanged(mAdapter.getSelectedSellerIds().size());
     }
 
-    /* package private */ void sendingQuote(boolean isSending) {
+    /* package private */
+    void sendingQuote(boolean isSending) {
         if (isSending)
             mSearchButtonViewFlipper.setDisplayedChild(1);
         else
@@ -144,7 +147,6 @@ public class SellersListFragment extends Fragment implements
         }
     }
 
-    // TODO: implement
     @Override
     public void itemCheckedStateChanged(int selected) {
         switch (selected) {

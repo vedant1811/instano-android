@@ -22,11 +22,14 @@ public class QuotationsArrayAdapter extends BaseAdapter {
 
     private ArrayList<QuotationsGroup> mGroupsOfQuotations;
     private QuotationListFragment.Callbacks mCallbacks;
+
+    private ArrayList<Object> mObjects;
     private LayoutInflater mInflater;
 
     public QuotationsArrayAdapter(Context context) {
         mCallbacks = null;
         mGroupsOfQuotations = new ArrayList<QuotationsGroup>();
+        mObjects = new ArrayList<Object>();
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -70,7 +73,6 @@ public class QuotationsArrayAdapter extends BaseAdapter {
         View view = convertView;
 
         Object object = getItem(position);
-
         // first check to see if the view is null. if so, we have to inflate it.
         if (object instanceof Quotation) {
             if (view == null)
@@ -88,13 +90,11 @@ public class QuotationsArrayAdapter extends BaseAdapter {
     private void getSeparatorView(Quote quote, View view) {
         TextView primaryTextView = (TextView) view.findViewById(R.id.primaryTextView);
         TextView secondaryTextView = (TextView) view.findViewById(R.id.secondaryTextView);
-
         primaryTextView.setText(quote.searchString + ":");
         secondaryTextView.setText(quote.getPrettyTimeElapsed());
     }
 
     private void getQuotationView(final Quotation quotation, View view) {
-
         TextView modelTextView = (TextView) view.findViewById(R.id.modelTextView);
         TextView timeElapsedTextView = (TextView) view.findViewById(R.id.timeElapsedTextView);
         TextView priceTextView = (TextView) view.findViewById(R.id.priceTextView);
@@ -156,11 +156,7 @@ public class QuotationsArrayAdapter extends BaseAdapter {
      */
     @Override
     public int getCount() {
-        int count = mGroupsOfQuotations.size();
-        for (QuotationsGroup group : mGroupsOfQuotations){
-            count += group.quotations.size();
-        }
-        return count;
+        return mObjects.size();
     }
 
     /**
@@ -172,21 +168,7 @@ public class QuotationsArrayAdapter extends BaseAdapter {
      */
     @Override
     public Object getItem(int position) {
-        int count = position;
-        // TODO: check if caching is required
-        for (QuotationsGroup group : mGroupsOfQuotations) {
-            if (count == 0)
-                return group.quote;
-            else
-                count--;
-            for (Quotation quotation : group.quotations) {
-                if (count == 0)
-                    return quotation;
-                else
-                    count--;
-            }
-        }
-        throw new IndexOutOfBoundsException("Invalid position:" + position);
+        return mObjects.get(position);
     }
 
     @Override
@@ -194,8 +176,33 @@ public class QuotationsArrayAdapter extends BaseAdapter {
         return pos;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if (getItem(position) instanceof Quote)
+            return 1; // separator
+        else
+            return 0;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
     private void newData() {
-        if (mGroupsOfQuotations.size() > 0)
+        mObjects.clear();
+        for (QuotationsGroup group : mGroupsOfQuotations) {
+
+            mObjects.add(group.quote);
+
+            for (Quotation quotation : group.quotations) {
+
+                mObjects.add(quotation);
+
+            }
+        }
+
+        if (mObjects.size() > 0)
             notifyDataSetChanged();
         else
             notifyDataSetInvalidated();

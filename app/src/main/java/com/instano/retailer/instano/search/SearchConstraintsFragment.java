@@ -25,7 +25,6 @@ import com.instano.retailer.instano.utilities.RangeSeekBar;
  */
 public class SearchConstraintsFragment extends Fragment implements MultiSpinner.MultiSpinnerListener {
 
-    public final static String ARG_SEARCH_STRING = "arg_search_string";
     private final int MIN_OF_RANGE_SEEK_BAR = 1;
     private final int MAX_OF_RANGE_SEEK_BAR = 10;
 
@@ -40,12 +39,8 @@ public class SearchConstraintsFragment extends Fragment implements MultiSpinner.
      *
      * @return A new instance of fragment SearchConstraintsFragment.
      */
-    public static SearchConstraintsFragment newInstance(String searchString) {
-        SearchConstraintsFragment fragment = new SearchConstraintsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_SEARCH_STRING, searchString);
-        fragment.setArguments(args);
-        return fragment;
+    public static SearchConstraintsFragment newInstance() {
+        return new SearchConstraintsFragment();
     }
     public SearchConstraintsFragment() {
         // Required empty public constructor
@@ -118,10 +113,6 @@ public class SearchConstraintsFragment extends Fragment implements MultiSpinner.
         } else {
             mBrandsMultiSpinner.setEnabled(true);
         }
-    }
-
-    public String getBrands() {
-        return mAdditionalInfoEditText.getText().toString();
     }
 
     public String getAdditionalInfo() {

@@ -34,9 +34,6 @@ import java.util.ArrayList;
  */
 public class SearchFragment extends Fragment implements ServicesSingleton.InitialDataCallbacks {
 
-    private final static String CURRENT_LOCATION = "Current Location";
-    private final static String SELECT_LOCATION = "Select Location";
-
     private EditText mSearchEditText;
     private Spinner mProductCategorySpinner;
 
@@ -104,18 +101,15 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        guessCategory(); // also triggers a mProductCategorySpinner...onItemSelected
 
         return view;
     }
 
     public String getSearchString() {
-        String string = mSearchEditText.getText().toString();
-        if (string.equals("")) {
-            mSearchEditText.setError("enter something");
+        if (mSearchString == null || mSearchString.toString().equals("")) {
             return null;
         }
-        return string;
+        return mSearchString.toString();
     }
 
     // TODO: animate in case category is guessed
@@ -145,30 +139,33 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
     /**
      * Called when searchButton has been clicked
      */
-    public void searchButtonClicked() {
-        ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
+//    public void searchButtonClicked() {
+//        ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
+//
+//        if (!servicesSingleton.checkPlayServices()){
+//            String error = servicesSingleton.getLocationErrorString();
+//            if (error != null) {
+//                mToast.setText(error);
+//                mToast.show();
+//            }
+//            return;
+//        }
+//
+//        String searchString = mSearchEditText.getText().toString();
+//        if (searchString == null) {
+//            mToast.setText("Enter something to search");
+//            mToast.show();
+//            return;
+//        }
+//    }
 
-        if (!servicesSingleton.checkPlayServices()){
-            String error = servicesSingleton.getLocationErrorString();
-            if (error != null) {
-                mToast.setText(error);
-                mToast.show();
-            }
-            return;
-        }
-
-        String searchString = mSearchEditText.getText().toString();
-        if (searchString == null) {
-            mToast.setText("Enter something to search");
-            mToast.show();
-            return;
-        }
-
-        getActivity().startActivity(new Intent(getActivity(), SearchTabsActivity.class)
-                .putExtra(SearchConstraintsFragment.ARG_SEARCH_STRING, searchString));
+    /* package private */
+    void showSearchEmptyError() {
+        mSearchEditText.setError("enter something");
     }
 
-    /* package private */ void updateProductCategories(ArrayList<ProductCategories.Category> categories) {
+    /* package private */
+    void updateProductCategories(ArrayList<ProductCategories.Category> categories) {
         if (mCategoryAdapter != null) {
             mCategoryAdapter.clear();
             mCategoryAdapter.addAll(categories);

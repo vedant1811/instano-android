@@ -48,17 +48,20 @@ public class SearchTabsActivity extends Activity implements
     private ProductCategories.Category mSelectedCategory;
 
     public void searchButtonClicked(View view) {
-//        String searchString = mSearchFragment.getSearchString();
-//        if (searchString == null)
-//            return;
-//        ServicesSingleton.getInstance(this).sendQuoteRequest(
-//                searchString,
-//                mSearchFragment.getPriceRange(),
-//                mSearchFragment.getProductCategory(),
-//                mSearchFragment.getAdditionalInfo(),
-//                mSellersListFragment.getSellerIds()
-//        );
-//        sendingQuote(true);
+        String searchString = mSearchFragment.getSearchString();
+        if (searchString == null) {
+            mViewPager.setCurrentItem(0);
+            mSearchFragment.showSearchEmptyError();
+            return;
+        }
+        ServicesSingleton.getInstance(this).sendQuoteRequest(
+                searchString,
+                mSearchConstraintsFragment.getPriceRange(),
+                mSelectedCategory,
+                mSearchConstraintsFragment.getAdditionalInfo(),
+                mSellersListFragment.getSellerIds()
+        );
+        sendingQuote(true);
     }
 
     public void nextButtonClicked(View view) {
@@ -76,9 +79,7 @@ public class SearchTabsActivity extends Activity implements
 
         mSellersListFragment = new SellersListFragment();
         mSearchFragment = SearchFragment.newInstance();
-        mSearchConstraintsFragment = SearchConstraintsFragment.newInstance("");
-//                getIntent()
-//                .getStringExtra(SearchConstraintsFragment.ARG_SEARCH_STRING));
+        mSearchConstraintsFragment = SearchConstraintsFragment.newInstance();
 
         mSellersMapFragment = new SellersMapFragment();
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -179,7 +180,6 @@ public class SearchTabsActivity extends Activity implements
     }
 
     private void sendingQuote(boolean isSending) {
-//        mSearchFragment.sendingQuote(isSending);
         mSellersListFragment.sendingQuote(isSending);
     }
 
