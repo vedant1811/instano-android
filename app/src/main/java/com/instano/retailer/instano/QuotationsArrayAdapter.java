@@ -128,7 +128,6 @@ public class QuotationsArrayAdapter extends BaseAdapter {
 
         shopTextView.setText(nameOfShop);
 
-        // TODO: fix hack
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,14 +191,9 @@ public class QuotationsArrayAdapter extends BaseAdapter {
     private void newData() {
         mObjects.clear();
         for (QuotationsGroup group : mGroupsOfQuotations) {
-
             mObjects.add(group.quote);
-
-            for (Quotation quotation : group.quotations) {
-
+            for (Quotation quotation : group.quotations)
                 mObjects.add(quotation);
-
-            }
         }
 
         if (mObjects.size() > 0)

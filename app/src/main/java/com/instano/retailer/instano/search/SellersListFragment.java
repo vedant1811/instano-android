@@ -20,7 +20,7 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.SellersArrayAdapter;
 import com.instano.retailer.instano.ServicesSingleton;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * A fragment representing a list of Items.
@@ -72,7 +72,7 @@ public class SellersListFragment extends Fragment implements
 
         ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
         Address address = servicesSingleton.getUserAddress();
-        addressFound(address, false);
+        addressUpdated(address, false);
 
         itemCheckedStateChanged(mAdapter.getSelectedSellerIds().size());
     }
@@ -173,7 +173,7 @@ public class SellersListFragment extends Fragment implements
         startActivity(callIntent);
     }
 
-    public ArrayList<Integer> getSellerIds() {
+    public HashSet<Integer> getSellerIds() {
         return mAdapter.getSelectedSellerIds();
     }
 
@@ -183,10 +183,15 @@ public class SellersListFragment extends Fragment implements
     }
 
     @Override
-    public void addressFound(Address address, boolean userSelected) {
+    public void addressUpdated(Address address, boolean userSelected) {
         if (address == null) {
-            mAddressTextView.setText(PLEASE_SELECT_LOCATION);
-            mSearchButton.setEnabled(false);
+            if (userSelected) // rare case if user selects location but no address was fetched
+                mAddressTextView.setText("near selected location");
+            else
+            {
+                mAddressTextView.setText(PLEASE_SELECT_LOCATION);
+                mSearchButton.setEnabled(false);
+            }
         }
         else
         {

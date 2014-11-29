@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * TODO: do more
@@ -37,8 +38,9 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
     private SparseArray<Seller> mCompleteSet;
 
     private ArrayList<Seller> mFilteredList;
-    private DistanceAndCategoryFilter mDistanceAndCategoryFilter;
     private SparseBooleanArray mCheckedItems;
+    private HashSet<Integer> mSelectedSellerIDs;
+    private DistanceAndCategoryFilter mDistanceAndCategoryFilter;
     private Context mContext;
 
     private ItemInteractionListener mItemInteractionListener;
@@ -69,17 +71,22 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         return mFilteredList;
     }
 
-    public ArrayList<Integer> getSelectedSellerIds() {
+    public HashSet<Integer> getSelectedSellerIds() {
+        if (mSelectedSellerIDs == null)
+            updateSelectedSellers();
+        return mSelectedSellerIDs;
+    }
+
+    private void updateSelectedSellers() {
         long start = System.nanoTime();
-        ArrayList<Integer> ids = new ArrayList<Integer>();
+        mSelectedSellerIDs = new HashSet<Integer>();
         for (Seller seller : mFilteredList)
             if (mCheckedItems.get(seller.hashCode())) {
-                ids.add(seller.hashCode());
+                mSelectedSellerIDs.add(seller.hashCode());
                 Log.d("mCheckedItems", String.format("getSelectedSellerIds %s (%d,%b)",seller.nameOfShop,seller.hashCode(),true));
             }
         double timeTaken = (System.nanoTime() - start)/1000;
-        Log.d("Timing", "getSelectedSellerIds took " + timeTaken + "μs");
-        return ids;
+        Log.d("Timing", "updateSelectedSellers took " + timeTaken + "μs");
     }
 
     @Override
@@ -120,6 +127,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mCheckedItems.put(seller.hashCode(), isChecked);
+                mSelectedSellerIDs = null;
                 if (mItemInteractionListener != null)
                     mItemInteractionListener.itemCheckedStateChanged(getSelectedSellerIds().size());
                 Log.d("mCheckedItems", String.format("changed %s (%d,%b)",seller.nameOfShop,seller.hashCode(),isChecked));
@@ -221,6 +229,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
     }
 
     private void newData() {
+        mSelectedSellerIDs = null;
         if (mFilteredList.size() == 0)
             notifyDataSetInvalidated();
         else

@@ -124,7 +124,7 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
         }
         mProductCategorySpinner.setSelection(0); // setting to undefined
         double time = (System.nanoTime() - start)/1000;
-        Log.v("guessCategory", "time = " + time);
+        Log.v("Timing", "time = " + time + "μs");
     }
 
     @Override

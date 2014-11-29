@@ -50,6 +50,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.TimeZone;
 
 /**
@@ -209,7 +210,7 @@ public class ServicesSingleton implements
     public void sendQuoteRequest(String searchString, String priceRange,
                                  ProductCategories.Category productCategory,
                                  String additionalInfo,
-                                 ArrayList<Integer> sellerIds) {
+                                 HashSet<Integer> sellerIds) {
 
         if (mBuyerId == -1) {
             Log.e(TAG, ".sendQuoteRequest : mBuyerId is -1. Search string: " + searchString);
@@ -460,7 +461,7 @@ public class ServicesSingleton implements
         mUserAddress = address;
 
         if (mAddressCallbacks != null)
-            mAddressCallbacks.addressFound(null, true);
+            mAddressCallbacks.addressUpdated(address, true);
     }
 
     /*
@@ -491,7 +492,7 @@ public class ServicesSingleton implements
                             return; // user has already set a location. No need for this address.
                         mUserAddress = address;
                         if (mAddressCallbacks != null)
-                            mAddressCallbacks.addressFound(address, false);
+                            mAddressCallbacks.addressUpdated(address, false);
                     }
                 })).execute(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             }
@@ -601,7 +602,7 @@ public class ServicesSingleton implements
 
     public interface AddressCallbacks {
         public void searchingForAddress();
-        public void addressFound(Address address, boolean userSelected);
+        public void addressUpdated(Address address, boolean userSelected);
     }
 
 

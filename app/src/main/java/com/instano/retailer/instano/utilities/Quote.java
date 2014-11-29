@@ -6,7 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Represents a single immutable quote request (that is received by the seller)
@@ -24,7 +24,7 @@ public class Quote {
     public final ProductCategories.Category productCategory;
     public final String additionalInfo;
     public final long updatedAt; // valid only when constructed from Quote(JSONObject jsonObject)
-    public final ArrayList<Integer> sellerIds;
+    public final HashSet<Integer> sellerIds;
 
     public static int getIdFrom (JSONObject quoteJsonObject) {
         try {
@@ -36,7 +36,7 @@ public class Quote {
 
     public Quote(int id, int buyerId, String searchString,
                  String priceRange, ProductCategories.Category productCategory, String additionalInfo,
-                 ArrayList<Integer> sellerIds) {
+                 HashSet<Integer> sellerIds) {
         this.id = id;
         this.buyerId = buyerId;
         this.searchString = searchString;
@@ -49,7 +49,7 @@ public class Quote {
 
     public Quote(int buyerId, String searchString,
                  String priceRange, ProductCategories.Category productCategory, String additionalInfo,
-                 ArrayList<Integer> sellerIds) {
+                 HashSet<Integer> sellerIds) {
         this.productCategory = productCategory;
         this.sellerIds = sellerIds;
         this.id = -1;

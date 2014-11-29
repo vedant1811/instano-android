@@ -3,13 +3,16 @@ package com.instano.retailer.instano.search;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
@@ -23,7 +26,7 @@ import java.util.ArrayList;
 public class SearchTabsActivity extends Activity implements
         ServicesSingleton.QuoteCallbacks {
 
-    private final static String[] TABS = {"Search", "Constraints", "Sellers list"};
+    private final static String[] TABS = {"Search", "Constraints", "Sellers list", "Sellers Map"};
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -65,11 +68,11 @@ public class SearchTabsActivity extends Activity implements
     }
 
     public void nextButtonClicked(View view) {
-//        FragmentManager fragmentManager = getFragmentManager();
-//        fragmentManager.beginTransaction()
-//                .replace(R.id.container, mSearchConstraintsFragment)
-//                .commit();
-        mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
+        mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1, true);
+    }
+
+    public void mapButtonClicked(View view) {
+        mViewPager.setCurrentItem(3, true);
     }
 
     @Override
@@ -95,6 +98,30 @@ public class SearchTabsActivity extends Activity implements
         // Set up the ViewPager with the sections adapter.
 
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setOffscreenPageLimit(2);
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i2) {
+
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                long start = System.nanoTime();
+                View focusedView = getCurrentFocus();
+                if (focusedView != null){
+                    InputMethodManager keyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    keyboard.hideSoftInputFromWindow(focusedView.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
+                }
+                double timeTaken = (System.nanoTime() - start)/1000000;
+                Log.d("Timing", "onPageSelected took " + timeTaken + "ms");
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
 
 //        // When swiping between different sections, select the corresponding
 //        // tab. We can also use ActionBar.Tab#select() to do this if we have
@@ -136,10 +163,28 @@ public class SearchTabsActivity extends Activity implements
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            case android.R.id.home:
+                int currentItem = mViewPager.getCurrentItem();
+                if (currentItem > 0) {
+                    mViewPager.setCurrentItem(currentItem - 1, true);
+                    return true;
+                }
+                else
+                    return super.onOptionsItemSelected(item);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        int currentItem = mViewPager.getCurrentItem();
+        if (currentItem > 0)
+            mViewPager.setCurrentItem(currentItem - 1, true);
+        else
+            super.onBackPressed();
     }
 
 //    @Override
@@ -216,6 +261,8 @@ public class SearchTabsActivity extends Activity implements
                     return mSearchConstraintsFragment;
                 case 2:
                     return mSellersListFragment;
+                case 3:
+                    return mSellersMapFragment;
             }
 
             throw new IllegalArgumentException("Invalid parameter position: " + position);
@@ -223,7 +270,7 @@ public class SearchTabsActivity extends Activity implements
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Override
