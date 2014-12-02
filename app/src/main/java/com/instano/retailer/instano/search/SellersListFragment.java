@@ -64,6 +64,8 @@ public class SellersListFragment extends Fragment implements
 
         mAdapter = ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter();
         mAdapter.filter();
+
+        ServicesSingleton.getInstance(getActivity()).registerCallback(this);
     }
 
     @Override
@@ -106,8 +108,6 @@ public class SellersListFragment extends Fragment implements
         mListView.setAdapter(mAdapter);
         mListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         mAdapter.setListener(this);
-
-        ServicesSingleton.getInstance(getActivity()).registerCallback(this);
 
         mWithinSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
@@ -184,13 +184,16 @@ public class SellersListFragment extends Fragment implements
 
     @Override
     public void addressUpdated(Address address, boolean userSelected) {
+        Log.d("address", "SellersListFragment.address updated " + address);
         if (address == null) {
-            if (userSelected) // rare case if user selects location but no address was fetched
+            if (userSelected) { // rare case if user selects location but no address was fetched
                 mAddressTextView.setText("near selected location");
+            }
             else
             {
                 mAddressTextView.setText(PLEASE_SELECT_LOCATION);
                 mSearchButton.setEnabled(false);
+                return; // do not filter
             }
         }
         else
@@ -200,8 +203,9 @@ public class SellersListFragment extends Fragment implements
                             address.getMaxAddressLineIndex() > 0 ?
                                     address.getAddressLine(0) : address.getLocality())
             );
-            if (mAdapter.getSelectedSellerIds().size() > 0)
-                mSearchButton.setEnabled(true);
         }
+        if (mAdapter.getSelectedSellerIds().size() > 0)
+            mSearchButton.setEnabled(true);
+        mAdapter.filter();
     }
 }

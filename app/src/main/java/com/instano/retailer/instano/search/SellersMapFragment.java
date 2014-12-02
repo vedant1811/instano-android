@@ -44,7 +44,6 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
     private static final String SELECT_LOCATION = "Select Location";
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Marker mSelectedLocationMarker;
-    private Address mSelectedLocationAddress;
     private GetAddressTask mAddressTask;
 
     private HashMap<Marker, Seller> mSellerMarkers;
@@ -148,7 +147,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         mAddressTask.execute(latLng.latitude, latLng.longitude);
 
         mSelectedLocationMarker.setTitle("Selected Location");
-        mSelectedLocationMarker.setSnippet(null);
+        mSelectedLocationMarker.setSnippet("");
         resetInfoWindow();
     }
 
@@ -156,8 +155,8 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
     public void addressFetched(@Nullable Address address) {
         if (address != null && address.getMaxAddressLineIndex() > 0)
             mSelectedLocationMarker.setSnippet(address.getAddressLine(0));
-        mSelectedLocationAddress = address;
         resetInfoWindow();
+        sendLocation(address);
     }
 
     @Override
@@ -209,9 +208,14 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
     public void onPause() {
         super.onPause();
         mMapView.onPause();
-        if (!SELECT_LOCATION.equals(mSelectedLocationMarker.getTitle())) // i.e. if location has been updated
+    }
+
+    private void sendLocation(Address address) {
+        if (!SELECT_LOCATION.equals(mSelectedLocationMarker.getTitle())) {// i.e. if location has been updated
             ServicesSingleton.getInstance(getActivity()).userSelectsLocation(
-                    mSelectedLocationMarker.getPosition(), mSelectedLocationAddress);
+                    mSelectedLocationMarker.getPosition(), address);
+            Log.d("address", "address updated by SellersMapFragment:" + address);
+        }
     }
 
     @Override
