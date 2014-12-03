@@ -106,10 +106,11 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
     }
 
     public String getSearchString() {
-        if (mSearchString == null || mSearchString.toString().equals("")) {
+        String s = mSearchEditText.getText().toString();
+        if (s.equals("")) {
             return null;
         }
-        return mSearchString.toString();
+        return s;
     }
 
     // TODO: animate in case category is guessed
