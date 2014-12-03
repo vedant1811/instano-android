@@ -22,8 +22,7 @@
         <activity
             android:name="com.instano.retailer.instano.activities.LauncherActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
+            android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
