@@ -21,7 +21,8 @@ import java.math.BigDecimal;
 
 /**
  * pirated from https://code.google.com/p/range-seek-bar/
- * Widget that lets users select a minimum and maximum value on a given numerical range. The range value types can be one of Long, Double, Integer, Float, Short, Byte or BigDecimal.<br />
+ * Widget that lets users select a minimum and maximum value on a given numerical range. The range value
+ * types can be one of Long, Double, Integer, Float, Short, Byte or BigDecimal.<br />
  * <br />
  * Improved {@link MotionEvent} handling for smoother use, anti-aliased painting for improved aesthetics.
  *
@@ -74,6 +75,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     private int mScaledTouchSlop;
     private boolean mIsDragging;
+    private RectF rectF;
 
     public RangeSeekBar(Context context) {
         super(context);
@@ -104,7 +106,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         absoluteMaxValuePrim = absoluteMaxValue.doubleValue();
         numberType = NumberType.fromNumber(absoluteMinValue);
 
-        // make RangeSeekBar focusable. This solves focus handling issues in case EditText widgets are being used along with the RangeSeekBar within ScollViews.
+        // make RangeSeekBar focusable. This solves focus handling issues in case EditText widgets
+        // are being used along with the RangeSeekBar within ScollViews.
         setFocusable(true);
         setFocusableInTouchMode(true);
         init();
@@ -112,6 +115,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
 
     private final void init() {
         mScaledTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+        rectF = new RectF();
     }
 
     public boolean isNotifyWhileDragging() {
@@ -320,7 +324,7 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         }
     }
 
-    private final void trackTouchEvent(MotionEvent event) {
+    private void trackTouchEvent(MotionEvent event) {
         final int pointerIndex = event.findPointerIndex(mActivePointerId);
         final float x = event.getX(pointerIndex);
 
@@ -379,19 +383,22 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         super.onDraw(canvas);
 
         // draw seek bar background line
-        final RectF rect = new RectF(padding, 0.5f * (getHeight() - lineHeight), getWidth() - padding, 0.5f * (getHeight() + lineHeight));
+        rectF.left = padding;
+        rectF.top = 0.5f * (getHeight() - lineHeight);
+        rectF.right = getWidth() - padding;
+        rectF.bottom = 0.5f * (getHeight() + lineHeight);
         paint.setStyle(Style.FILL);
         paint.setColor(Color.GRAY);
         paint.setAntiAlias(true);
-        canvas.drawRect(rect, paint);
+        canvas.drawRect(rectF, paint);
 
         // draw seek bar active range line
-        rect.left = normalizedToScreen(normalizedMinValue);
-        rect.right = normalizedToScreen(normalizedMaxValue);
+        rectF.left = normalizedToScreen(normalizedMinValue);
+        rectF.right = normalizedToScreen(normalizedMaxValue);
 
         // orange color
         paint.setColor(DEFAULT_COLOR);
-        canvas.drawRect(rect, paint);
+        canvas.drawRect(rectF, paint);
 
         // draw minimum thumb
         drawThumb(normalizedToScreen(normalizedMinValue), Thumb.MIN.equals(pressedThumb), canvas);
@@ -401,7 +408,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     /**
-     * Overridden to save instance state when device orientation changes. This method is called automatically if you assign an id to the RangeSeekBar widget using the {@link #setId(int)} method. Other members of this class than the normalized min and max values don't need to be saved.
+     * Overridden to save instance state when device orientation changes. This method is called
+     * automatically if you assign an id to the RangeSeekBar widget using the {@link #setId(int)} method.
+     * Other members of this class than the normalized min and max values don't need to be saved.
      */
     @Override
     protected Parcelable onSaveInstanceState() {
@@ -413,7 +422,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     /**
-     * Overridden to restore instance state when device orientation changes. This method is called automatically if you assign an id to the RangeSeekBar widget using the {@link #setId(int)} method.
+     * Overridden to restore instance state when device orientation changes. This method is called
+     * automatically if you assign an id to the RangeSeekBar widget using the {@link #setId(int)} method.
      */
     @Override
     protected void onRestoreInstanceState(Parcelable parcel) {
@@ -434,7 +444,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
      *            The canvas to draw upon.
      */
     private void drawThumb(float screenCoord, boolean pressed, Canvas canvas) {
-        canvas.drawBitmap(pressed ? thumbPressedImage : thumbImage, screenCoord - thumbHalfWidth, (float) ((0.5f * getHeight()) - thumbHalfHeight), paint);
+        canvas.drawBitmap(pressed ? thumbPressedImage : thumbImage, screenCoord - thumbHalfWidth,
+                (float) ((0.5f * getHeight()) - thumbHalfHeight), paint);
     }
 
     /**
@@ -449,7 +460,9 @@ public class RangeSeekBar<T extends Number> extends ImageView {
         boolean minThumbPressed = isInThumbRange(touchX, normalizedMinValue);
         boolean maxThumbPressed = isInThumbRange(touchX, normalizedMaxValue);
         if (minThumbPressed && maxThumbPressed) {
-            // if both thumbs are pressed (they lie on top of each other), choose the one with more room to drag. this avoids "stalling" the thumbs in a corner, not being able to drag them apart anymore.
+            // if both thumbs are pressed (they lie on top of each other), choose the one with
+            // more room to drag. this avoids "stalling" the thumbs in a corner,
+            // not being able to drag them apart anymore.
             result = (touchX / getWidth() > 0.5f) ? Thumb.MIN : Thumb.MAX;
         }
         else if (minThumbPressed) {
@@ -475,7 +488,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     /**
-     * Sets normalized min value to value so that 0 <= value <= normalized max value <= 1. The View will get invalidated when calling this method.
+     * Sets normalized min value to value so that 0 <= value <= normalized max value <= 1.
+     * The View will get invalidated when calling this method.
      *
      * @param value
      *            The new normalized min value to set.
@@ -486,7 +500,8 @@ public class RangeSeekBar<T extends Number> extends ImageView {
     }
 
     /**
-     * Sets normalized max value to value so that 0 <= normalized min value <= value <= 1. The View will get invalidated when calling this method.
+     * Sets normalized max value to value so that 0 <= normalized min value <= value <= 1.
+     * The View will get invalidated when calling this method.
      *
      * @param value
      *            The new normalized max value to set.

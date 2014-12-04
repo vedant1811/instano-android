@@ -19,6 +19,7 @@ import android.widget.ViewFlipper;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.SellersArrayAdapter;
 import com.instano.retailer.instano.ServicesSingleton;
+import com.instano.retailer.instano.utilities.TextualSeekBar;
 
 import java.util.HashSet;
 
@@ -49,7 +50,7 @@ public class SellersListFragment extends Fragment implements
     private TextView mAddressTextView;
     private Button mSearchButton;
     private TextView mWithinTextView;
-    private SeekBar mWithinSeekBar;
+    private TextualSeekBar mWithinSeekBar;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -97,7 +98,7 @@ public class SellersListFragment extends Fragment implements
         mSearchButtonViewFlipper = (ViewFlipper) view.findViewById(R.id.searchButtonViewFlipper);
         mAddressTextView = (TextView) view.findViewById(R.id.addressTextView);
         mSearchButton = (Button) view.findViewById(R.id.searchButton);
-        mWithinSeekBar = (SeekBar) view.findViewById(R.id.withinSeekBar);
+        mWithinSeekBar = new TextualSeekBar(view.findViewById(R.id.parentSeekBarWithText), getActivity());
         mWithinTextView = (TextView) view.findViewById(R.id.withinTextView);
 
 //        setEmptyText("No sellers nearby. Try relaxing location/categories/brands constraints");

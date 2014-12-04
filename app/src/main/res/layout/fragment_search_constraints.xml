@@ -33,12 +33,12 @@
         android:layout_below="@+id/textView3" />
 
     <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/linearLayout2"
-        android:layout_alignBottom="@+id/textView6"
-        android:layout_centerHorizontal="true">
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/brandsMultiSpinnerContainer"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/textView6">
 
             <view
                 android:layout_width="wrap_content"
@@ -48,18 +48,18 @@
 
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Price Range"
-            android:id="@+id/textView5"
-            android:paddingTop="10dp"
-            style="@style/TextAppearanceMedium"
-            android:layout_below="@+id/linearLayout2"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:paddingBottom="10dp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Price Range"
+        android:id="@+id/textView5"
+        android:paddingTop="10dp"
+        style="@style/TextAppearanceMedium"
+        android:layout_below="@+id/brandsMultiSpinnerContainer"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:paddingBottom="10dp" />
 
 
     <TextView
@@ -112,8 +112,8 @@
         android:layout_above="@+id/nextButton"
         android:textAlignment="gravity"
         android:gravity="start"
-        android:padding="8dp"
-        android:layout_margin="8dp" />
+        android:layout_margin="8dp"
+        android:minLines="2" />
 
     <Button
         android:layout_width="fill_parent"

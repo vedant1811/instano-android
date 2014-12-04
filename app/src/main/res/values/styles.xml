@@ -5,7 +5,7 @@
         <item name="android:buttonStyle">@style/YellowButton</item>
         <item name="android:actionBarStyle">@style/ActionBar</item>
         <item name="android:windowBackground">@color/background</item>
-        <item name="android:editTextBackground">@android:color/white</item>
+        <item name="android:editTextStyle">@style/WhiteEditText</item>
     </style>
 
     <style name="ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">
@@ -13,8 +13,9 @@
         <item name="android:background">@color/instano_red</item>
     </style>
 
-    <style name="TextView" parent="android:Widget.Holo.Light.TextView">
-
+    <style name="WhiteEditText" parent="android:Widget.Holo.Light.EditText">
+        <item name="android:background">@android:color/white</item>
+        <item name="android:padding">8dp</item>
     </style>
 
     <style name="RedButton" parent="android:style/Widget.Holo.Light.Button">
@@ -34,7 +35,7 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextAppearanceMedium" parent="android:TextAppearanceMedium">
+    <style name="TextAppearanceMedium" parent="android:TextAppearance.Medium">
         <item name="android:textColor">@android:color/black</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">16sp</item>

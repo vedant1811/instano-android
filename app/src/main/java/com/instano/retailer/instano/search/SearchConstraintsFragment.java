@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
@@ -63,13 +62,15 @@ public class SearchConstraintsFragment extends Fragment implements MultiSpinner.
         mPriceRangeTextView = (TextView) view.findViewById(R.id.priceRangeTextView);
 
         // setup brands multi spinner:
-        final ProductCategories.Category selectedCategory = ((SearchTabsActivity)getActivity()).getSelectedCategory();
-        mBrandsMultiSpinner.setItems(selectedCategory.brands, selectedCategory.getSelected(),
-                "Select brands", this);
-        if (selectedCategory.name.equals(ProductCategories.UNDEFINED)) {
-            mBrandsMultiSpinner.setEnabled(false);
-        } else {
-            mBrandsMultiSpinner.setEnabled(true);
+        {
+            final ProductCategories.Category selectedCategory = ((SearchTabsActivity) getActivity()).getSelectedCategory();
+            mBrandsMultiSpinner.setItems(selectedCategory.brands, selectedCategory.getSelected(),
+                    "Select brands", this);
+            if (selectedCategory.name.equals(ProductCategories.UNDEFINED)) {
+                mBrandsMultiSpinner.setEnabled(false);
+            } else {
+                mBrandsMultiSpinner.setEnabled(true);
+            }
         }
 
         // setup range seek bar:
@@ -85,7 +86,7 @@ public class SearchConstraintsFragment extends Fragment implements MultiSpinner.
                     mPriceRangeTextView.setText(String.format("₹%,d to ₹%,d", minValue, maxValue));
                 }
             });
-            LinearLayout parent = (LinearLayout) view.findViewById(R.id.priceRangeLinearLayout);
+            FrameLayout parent = (FrameLayout) view.findViewById(R.id.priceRangeSeekBarContainer);
 
 //            float scale = getResources().getDisplayMetrics().density;
 //            int dpAsPixels = (int) (132 * scale + 0.5f); // for 16dp padding
