@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.instano.retailer.instano.search.SellersListFragment">
+    tools:context="com.instano.retailer.instano.search.SellersListFragment"
+    android:padding="4dp">
 
     <ListView
         android:id="@+id/listView"
@@ -34,34 +35,53 @@
             android:layout_height="fill_parent"
             android:showDividers="beginning">
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:id="@+id/seekBarContainer">
 
                 <TextView
-                    android:layout_width="120dp"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:id="@+id/withinTextView"
-                    android:gravity="center_vertical"
-                    android:minWidth="100dp"
-                    android:text="Within 10km:" />
-
-                <include
                     android:layout_width="wrap_content"
-                    android:layout_height="62dp"
-                    layout="@layout/layout_seekbar_with_text" />
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearanceMedium"
+                    android:gravity="center_vertical"
+                    android:text="Within"
+                    android:layout_gravity="bottom"
+                    android:layout_alignBottom="@+id/seekBar"
+                    android:id="@+id/textView7"
+                    android:layout_alignTop="@+id/seekBar"
+                    android:layout_marginLeft="8dp" />
 
-                <!--<SeekBar-->
-                    <!--android:layout_width="fill_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:id="@+id/withinSeekBar"-->
-                    <!--android:paddingRight="16dp"-->
-                    <!--android:max="99"-->
-                    <!--android:progress="9"-->
-                    <!--android:indeterminate="false" />-->
-            </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearanceMedium"
+                    android:text="8km"
+                    android:id="@+id/distTextView"
+                    android:lines="1"
+                    android:background="@drawable/seek_bar_text_view"
+                    android:gravity="center_horizontal"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignLeft="@+id/seekBar"
+                    android:layout_alignStart="@+id/seekBar" />
+
+                <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/seekBar"
+                    android:indeterminate="false"
+                    android:progressDrawable="@drawable/bg_seek_progress"
+                    android:thumb="@drawable/seek_thumb_white"
+                    android:layout_below="@+id/distTextView"
+                    android:layout_toRightOf="@+id/textView7"
+                    android:layout_toEndOf="@+id/textView7"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:max="9999"
+                    android:progress="799" />
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -74,7 +94,6 @@
                     android:text="Send to 0 sellers"
                     android:id="@+id/searchButton"
                     android:onClick="searchButtonClicked"
-                    style="@android:style/Widget.DeviceDefault.Light.Button.Small"
                     android:enabled="false" />
 
                 <TextView
@@ -93,7 +112,6 @@
                     android:layout_height="wrap_content"
                     android:text="Map"
                     android:id="@+id/mapButton"
-                    style="@android:style/Widget.DeviceDefault.Light.Button.Small"
                     android:onClick="mapButtonClicked" />
 
             </LinearLayout>

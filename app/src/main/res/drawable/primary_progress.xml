@@ -4,6 +4,6 @@
 
     <stroke
         android:width="4dp"
-        android:color="#dedede" />
+        android:color="@color/instano_red" />
 
 </shape>

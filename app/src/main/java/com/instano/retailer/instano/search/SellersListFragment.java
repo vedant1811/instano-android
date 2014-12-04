@@ -2,6 +2,7 @@ package com.instano.retailer.instano.search;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.location.Address;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -19,7 +21,6 @@ import android.widget.ViewFlipper;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.SellersArrayAdapter;
 import com.instano.retailer.instano.ServicesSingleton;
-import com.instano.retailer.instano.utilities.TextualSeekBar;
 
 import java.util.HashSet;
 
@@ -49,8 +50,11 @@ public class SellersListFragment extends Fragment implements
     private ViewFlipper mSearchButtonViewFlipper;
     private TextView mAddressTextView;
     private Button mSearchButton;
-    private TextView mWithinTextView;
-    private TextualSeekBar mWithinSeekBar;
+    private TextView mDistTextView;
+    private SeekBar mWithinSeekBar;
+
+    private RelativeLayout.LayoutParams mDistTextLayoutParams;
+//    private Animation mAnimationFadeOut;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -93,31 +97,27 @@ public class SellersListFragment extends Fragment implements
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sellers, container, false);
 
-//        mHeader = inflater.inflate(R.layout.layout_select_sellers, null, false);
-//        mHeaderButton = (Button) mHeader.findViewById(R.id.searchButton);
         mSearchButtonViewFlipper = (ViewFlipper) view.findViewById(R.id.searchButtonViewFlipper);
         mAddressTextView = (TextView) view.findViewById(R.id.addressTextView);
         mSearchButton = (Button) view.findViewById(R.id.searchButton);
-        mWithinSeekBar = new TextualSeekBar(view.findViewById(R.id.parentSeekBarWithText), getActivity());
-        mWithinTextView = (TextView) view.findViewById(R.id.withinTextView);
+        mWithinSeekBar = (SeekBar) view.findViewById(R.id.seekBar);
+        mDistTextView = (TextView) view.findViewById(R.id.distTextView);
 
 //        setEmptyText("No sellers nearby. Try relaxing location/categories/brands constraints");
 
         // Set the adapter
         mListView = (ListView) view.findViewById(R.id.listView);
-//        mListView.addHeaderView(mHeader);
         mListView.setAdapter(mAdapter);
         mListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         mAdapter.setListener(this);
+//        mAnimationFadeOut = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
+
+        mDistTextLayoutParams = (RelativeLayout.LayoutParams) mDistTextView.getLayoutParams();
 
         mWithinSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // progress ranges from 0 to 99 while distance needs to be from 1km to 100km
-                mWithinTextView.setText(String.format("Within %dkm:", progress + 1));
-                ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(
-                        (progress + 1) * 100); // * 100 since it needs to be sent in 10x meters
+                updateTextView();
             }
 
             @Override
@@ -131,7 +131,22 @@ public class SellersListFragment extends Fragment implements
             }
         });
 
+        mWithinSeekBar.setProgress(999);
+
         return view;
+    }
+
+    private void updateTextView() {
+        Log.d("mWithinSeekBar", "updateTextView " + mWithinSeekBar.getProgress());
+        Rect thumbRect = mWithinSeekBar.getThumb().getBounds();
+        int halfWidth = mDistTextView.getWidth() / 2;
+        mDistTextLayoutParams.setMargins((thumbRect.centerX() - halfWidth), 0, 0, 0);
+        mDistTextView.setLayoutParams(mDistTextLayoutParams);
+        // progress ranges from 0 to 99 while distance needs to be from 1km to 100km
+        int dist = mWithinSeekBar.getProgress() + 1;
+        mDistTextView.setText(String.format("%dkm", dist/100));
+        ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(
+                dist); // * 100 since it needs to be sent in 10x meters
     }
 
     /**

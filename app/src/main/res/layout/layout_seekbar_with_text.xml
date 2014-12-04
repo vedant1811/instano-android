@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content" android:layout_height="wrap_content"
-    android:id="@+id/parentSeekBarWithText">
+    android:id="@+id/seekBarContainer">
 
-    <view
+    <SeekBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        class="com.instano.retailer.instano.utilities.TextualSeekBar"
-        android:id="@+id/seekbar"
+        android:id="@+id/seekBar"
         android:indeterminate="false"
         android:progressDrawable="@drawable/bg_seek_progress"
         android:thumb="@drawable/seek_thumb_normal"
@@ -20,8 +19,8 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
-        android:id="@+id/text"
-        android:layout_above="@+id/seekbar"
+        android:id="@+id/distTextView"
+        android:layout_above="@+id/seekBar"
         android:lines="1" />
 
 </RelativeLayout>
