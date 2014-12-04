@@ -1,44 +1,44 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.instano.retailer.instano.search.SearchConstraintsFragment">
-
-
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:id="@+id/parentLayout"
-        android:padding="4dp"
-        android:paddingTop="10dp"
-        android:orientation="vertical">
+    tools:context="com.instano.retailer.instano.search.SearchConstraintsFragment"
+    android:padding="@dimen/activity_horizontal_margin">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Search constraints:"
             android:id="@+id/textView3"
             android:paddingTop="16dp"
             android:paddingRight="8dp"
-            android:paddingBottom="8dp"/>
+            android:paddingBottom="8dp"
+            style="@style/TextAppearanceHeading"
+            android:textAlignment="gravity"
+            android:gravity="center" />
 
-        <LinearLayout
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Brands:"
+        android:id="@+id/textView6"
+        android:paddingTop="10dp"
+        android:paddingRight="4dp"
+        android:paddingBottom="10dp"
+        style="@style/TextAppearanceMedium"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView3" />
+
+    <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Brands:"
-                android:id="@+id/textView6"
-                android:paddingTop="10dp"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:paddingBottom="10dp" />
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayout2"
+        android:layout_alignBottom="@+id/textView6"
+        android:layout_centerHorizontal="true">
 
             <view
                 android:layout_width="wrap_content"
@@ -54,47 +54,74 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Price Range"
             android:id="@+id/textView5"
-            android:paddingLeft="4dp"
-            android:paddingTop="10dp" />
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/priceRangeLinearLayout">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="₹5,000 to ₹50,000"
-                android:id="@+id/priceRangeTextView"
-                android:paddingLeft="4dp"
-                android:paddingTop="4dp"
-                android:paddingRight="16dp" />
-
-            <!--Uncomment and set attibutes then set them by code. This custom class doesn't support XML-->
-            <!--<view-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--class="com.instano.retailer.instano.utilities.RangeSeekBar"-->
-                <!--android:id="@+id/priceRangeSeekBar" />-->
-
-        </LinearLayout>
+            android:paddingTop="10dp"
+            style="@style/TextAppearanceMedium"
+            android:layout_below="@+id/linearLayout2"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:paddingBottom="10dp" />
 
 
-        <EditText
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/additionalInfoEditText"
-            android:hint="additional info (if any)" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="₹5,000 to ₹50,000"
+        android:id="@+id/priceRangeTextView"
+        android:paddingTop="4dp"
+        android:paddingRight="16dp"
+        android:layout_below="@+id/priceRangeSeekBarContainer"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Next"
-            android:id="@+id/nextButton"
-            android:onClick="nextButtonClicked" />
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/priceRangeSeekBarContainer"
+        android:layout_below="@+id/textView5"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" >
 
-    </LinearLayout>
-</FrameLayout>
+        <!--Uncomment and set attibutes then set them by code. This custom class doesn't support XML-->
+        <!--<view-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--class="com.instano.retailer.instano.utilities.RangeSeekBar"-->
+            <!--android:id="@+id/priceRangeSeekBar" />-->
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Additional Info (Optional)"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/priceRangeTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        style="@style/TextAppearanceMedium" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/additionalInfoEditText"
+        android:hint="type here"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/textView2"
+        android:singleLine="false"
+        android:layout_above="@+id/nextButton"
+        android:textAlignment="gravity"
+        android:gravity="start"
+        android:padding="8dp"
+        android:layout_margin="8dp" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        android:id="@+id/nextButton"
+        android:onClick="nextButtonClicked"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="8dp" />
+
+</RelativeLayout>

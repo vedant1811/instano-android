@@ -2,19 +2,49 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="android:Theme.Holo.Light">
-        <item name="android:buttonStyle">@style/DefaultButton</item>
+        <item name="android:buttonStyle">@style/YellowButton</item>
+        <item name="android:actionBarStyle">@style/ActionBar</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:editTextBackground">@android:color/white</item>
     </style>
 
-    <style name="DefaultButton" parent="android:style/Widget.Holo.Light.Button">
+    <style name="ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">
+        <item name="android:titleTextStyle">@style/ButtonTextAppearance</item>
         <item name="android:background">@color/instano_red</item>
+    </style>
+
+    <style name="TextView" parent="android:Widget.Holo.Light.TextView">
+
+    </style>
+
+    <style name="RedButton" parent="android:style/Widget.Holo.Light.Button">
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:layout_marginLeft">@dimen/activity_vertical_margin</item>
-        <item name="android:layout_marginRight">@dimen/activity_vertical_margin</item>
+        <item name="android:textAppearance">@style/ButtonTextAppearance</item>
+        <item name="android:background">@color/instano_red</item>
         <item name="android:padding">8dp</item>
     </style>
 
-    <style name="YellowButton" parent="DefaultButton">
+    <style name="YellowButton" parent="RedButton">
         <item name="android:background">@color/instano_yellow</item>
+    </style>
+
+    <style name="ButtonTextAppearance" parent="android:TextAppearance">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearanceMedium" parent="android:TextAppearanceMedium">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+        <!--<item name=""-->
+    </style>
+
+    <style name="TextAppearanceHeading" parent="android:TextAppearance.Large">
+        <item name="android:textColor">@color/instano_red</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">24sp</item>
     </style>
 
 </resources>
