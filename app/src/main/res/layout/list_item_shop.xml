@@ -6,7 +6,11 @@
     android:clickable="true"
     android:orientation="horizontal"
     android:focusable="false"
-    android:paddingLeft="8dp">
+    android:background="@android:color/white"
+    android:paddingLeft="8dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:layout_margin="8dp">
 
     <CheckBox
         android:layout_width="wrap_content"
@@ -16,84 +20,57 @@
         android:checked="true"
         android:minWidth="45dp" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1.0"
-        android:orientation="vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:id="@+id/addressLayoutInShop"
+        android:layout_weight="1">
 
-        <LinearLayout
-            android:id="@+id/cardlayout"
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:layout_weight="0.8">
-
-            <TextView
-                android:id="@+id/shopNameTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:textAppearanceMedium"
-                android:text="Shop name"
-                style="@android:style/TextAppearance.DeviceDefault.Large" />
-        </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/shopNameTextView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:id="@+id/addressLayoutInShop">
+            android:text="Shop name"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="4dp"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/addressTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:textAppearanceSmall"
-                android:text="Address1\nAddress2"
-                android:lines="2"
-                android:layout_gravity="left"
-                android:layout_toLeftOf="@+id/distanceTextView"
-                android:layout_toStartOf="@+id/distanceTextView"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="2.4km"
-                android:id="@+id/distanceTextView"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true" />
-        </RelativeLayout>
-
-        <LinearLayout
-            android:layout_width="fill_parent"
+        <TextView
+            android:id="@+id/addressTextView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:focusable="false">
+            android:textAppearance="?android:textAppearanceSmall"
+            android:text="Address1\nAddress2"
+            android:lines="2"
+            android:layout_gravity="left"
+            android:layout_below="@+id/shopNameTextView"
+            android:layout_toStartOf="@+id/distanceTextView"
+            android:layout_toLeftOf="@+id/distanceTextView"
+            android:layout_alignParentLeft="true"
+            android:textColor="@color/instano_red" />
 
-            <!--TODO:-->
-            <!--<RatingBar-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/ratingBar"-->
-                <!--android:numStars="5"-->
-                <!--android:clickable="true"-->
-                <!--android:focusableInTouchMode="false" />-->
-        </LinearLayout>
-    </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="2.40 km"
+            android:id="@+id/distanceTextView"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentRight="true"
+            android:layout_alignBottom="@+id/addressTextView"
+            style="@style/TextAppearanceHeading"
+            android:textStyle="normal" />
+    </RelativeLayout>
 
     <ImageButton
         android:id="@+id/callImageButton"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:scaleType="fitCenter"
-        android:src="@android:drawable/ic_menu_call"
-        android:adjustViewBounds="false"
-        android:minWidth="45dp"
-        android:clickable="true" />
+        android:layout_height="wrap_content"
+        android:scaleType="centerInside"
+        android:clickable="true"
+        android:background="@drawable/selector_dial_image"
+        android:layout_marginLeft="8dp" />
 </LinearLayout>

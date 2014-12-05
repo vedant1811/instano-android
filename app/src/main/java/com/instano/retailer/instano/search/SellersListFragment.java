@@ -122,12 +122,13 @@ public class SellersListFragment extends Fragment implements
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                // TODO: animate based on alpha (Create a new drawable that is just a border)
+                mDistTextView.setEnabled(true);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                mDistTextView.setEnabled(false);
             }
         });
 

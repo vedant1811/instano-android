@@ -21,12 +21,12 @@
     <style name="RedButton" parent="android:style/Widget.Holo.Light.Button">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textAppearance">@style/ButtonTextAppearance</item>
-        <item name="android:background">@color/instano_red</item>
+        <item name="android:background">@drawable/selector_red_button</item>
         <item name="android:padding">8dp</item>
     </style>
 
     <style name="YellowButton" parent="RedButton">
-        <item name="android:background">@color/instano_yellow</item>
+        <item name="android:background">@drawable/selector_yellow_button</item>
     </style>
 
     <style name="ButtonTextAppearance" parent="android:TextAppearance">

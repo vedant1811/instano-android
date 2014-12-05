@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/dial_image_unselected" />
+    <item>
+        <color
+            android:color="@color/translucent_black" />
+    </item>
+</layer-list>

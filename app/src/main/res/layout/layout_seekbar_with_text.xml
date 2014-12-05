@@ -8,7 +8,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/seekBar"
         android:indeterminate="false"
-        android:progressDrawable="@drawable/bg_seek_progress"
+        android:progressDrawable="@drawable/seek_bar_progress"
         android:thumb="@drawable/seek_thumb_normal"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"

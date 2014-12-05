@@ -58,28 +58,32 @@
                     android:text="8km"
                     android:id="@+id/distTextView"
                     android:lines="1"
-                    android:background="@drawable/seek_bar_text_view"
+                    android:background="@drawable/selector_seek_bar_text_view"
                     android:gravity="center_horizontal"
                     android:paddingTop="4dp"
                     android:paddingBottom="4dp"
                     android:layout_alignParentTop="true"
                     android:layout_alignLeft="@+id/seekBar"
-                    android:layout_alignStart="@+id/seekBar" />
+                    android:layout_alignStart="@+id/seekBar"
+                    android:clickable="false"
+                    android:enabled="false" />
 
                 <SeekBar
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/seekBar"
                     android:indeterminate="false"
-                    android:progressDrawable="@drawable/bg_seek_progress"
-                    android:thumb="@drawable/seek_thumb_white"
+                    android:progressDrawable="@drawable/seek_bar_progress"
+                    android:thumb="@drawable/seek_thumb_white_stroked_red"
                     android:layout_below="@+id/distTextView"
                     android:layout_toRightOf="@+id/textView7"
                     android:layout_toEndOf="@+id/textView7"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:max="9999"
-                    android:progress="799" />
+                    android:progress="799"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginTop="2dp" />
 
             </RelativeLayout>
 

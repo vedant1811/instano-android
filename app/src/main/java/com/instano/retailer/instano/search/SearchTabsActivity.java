@@ -27,6 +27,7 @@ public class SearchTabsActivity extends Activity implements
         ServicesSingleton.QuoteCallbacks {
 
     private final static String[] TABS = {"Search", "Constraints", "Sellers list", "Sellers Map"};
+//    private enum TABS {Search, Constraints, Sellers_list, Sellers_Map};
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -114,6 +115,7 @@ public class SearchTabsActivity extends Activity implements
                     keyboard.hideSoftInputFromWindow(focusedView.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
                 }
                 double timeTaken = (System.nanoTime() - start)/1000000;
+
                 Log.d("Timing", "onPageSelected took " + timeTaken + "ms");
             }
 
