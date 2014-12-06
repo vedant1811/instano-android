@@ -9,14 +9,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Search constraints:"
+            android:text="Filters"
             android:id="@+id/textView3"
             android:paddingTop="16dp"
             android:paddingRight="8dp"
-            android:paddingBottom="8dp"
             style="@style/TextAppearanceHeading"
             android:textAlignment="gravity"
             android:gravity="center" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You can just skip these if you want"
+        android:id="@+id/textView8"
+        android:layout_below="@+id/textView3"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="8dp"
+        style="@style/TextAppearanceComment" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -28,9 +37,9 @@
         android:paddingRight="4dp"
         android:paddingBottom="10dp"
         style="@style/TextAppearanceMedium"
+        android:layout_below="@+id/textView8"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView3" />
+        android:layout_alignParentStart="true" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -98,7 +107,8 @@
         android:layout_below="@+id/priceRangeTextView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        style="@style/TextAppearanceMedium" />
+        style="@style/TextAppearanceMedium"
+        android:layout_marginTop="24dp" />
 
     <EditText
         android:layout_width="match_parent"

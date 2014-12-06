@@ -2,57 +2,61 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:focusable="false">
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/linearLayout"
-        android:layout_toLeftOf="@+id/imageButton"
-        android:layout_toStartOf="@+id/imageButton">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Model Name 1"
-            android:id="@+id/modelTextView" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="42 min ago"
-            android:id="@+id/timeElapsedTextView" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="₹ 7000"
-            android:id="@+id/priceTextView"/>
-
-        <!--TODO: Add a custom rating widget only displaying rating and append to "shop name"-->
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Description"
-            android:id="@+id/descrptionTextView"
-            android:padding="2dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Shop name"
-            android:id="@+id/shopTextView" />
-    </LinearLayout>
+    android:layout_height="wrap_content"
+    android:focusable="false"
+    android:background="@android:color/white"
+    android:layout_marginLeft="@dimen/general_separator_margin"
+    android:layout_marginRight="@dimen/general_separator_margin"
+    android:layout_marginBottom="@dimen/general_separator_margin"
+    android:padding="@dimen/general_separator_margin">
 
     <!--TODO: Make sure that siblings above and below never overlap-->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearanceHeading"
+        android:text="Model Name 1"
+        android:id="@+id/modelTextView"
+        android:paddingBottom="4dp"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="42 min ago"
+        android:id="@+id/timeElapsedTextView"
+        android:layout_below="@+id/modelTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textColor="@color/instano_red"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearanceHeading"
+        android:text="₹ 7000"
+        android:id="@+id/priceTextView"
+        android:layout_alignBaseline="@+id/modelTextView"
+        android:layout_alignBottom="@+id/modelTextView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/instano_yellow" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Shop name"
+        android:id="@+id/shopTextView"
+        android:textColor="@color/instano_red"
+        android:layout_below="@+id/timeElapsedTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -61,17 +65,19 @@
         android:text="4.7 km"
         android:id="@+id/distanceTextView"
         android:layout_gravity="right"
-        android:layout_toStartOf="@+id/imageButton"
-        android:layout_alignBottom="@+id/linearLayout"
-        android:layout_toLeftOf="@+id/imageButton" />
-
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageButton"
-        android:layout_gravity="right"
-        android:src="@android:drawable/ic_menu_report_image"
-        android:layout_alignBottom="@+id/linearLayout"
+        android:textColor="@color/instano_red"
+        android:layout_alignBaseline="@+id/shopTextView"
+        android:layout_alignBottom="@+id/shopTextView"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentEnd="true" />
+
+    <!--<ImageButton-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/imageButton"-->
+        <!--android:layout_gravity="right"-->
+        <!--android:src="@android:drawable/ic_menu_report_image"-->
+        <!--android:layout_alignBottom="@+id/linearLayout"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_alignParentTop="true" />-->
 </RelativeLayout>

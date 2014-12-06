@@ -5,5 +5,7 @@
     <color name="instano_yellow">#ff9900</color>
     <color name="instano_yellow_dark">#804c00</color>
     <color name="background">#f3f3f3</color>
+    <color name="instano_grey">#c7c7c7</color>
+
     <color name="translucent_black">#7f000000</color>
 </resources>

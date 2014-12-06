@@ -1,4 +1,4 @@
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="fill_parent"
@@ -10,61 +10,75 @@
     tools:context=".PurchaseFragment"
     android:baselineAligned="false">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <TextView
+        android:id="@+id/section_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:text="What would you like to buy today?"
+        android:layout_gravity="center"
+        android:layout_alignParentTop="true"
+        android:textAppearance="@style/TextAppearanceHeading"
+        android:textSize="20sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/general_separator_margin" />
 
-        <TextView
-            android:id="@+id/section_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="What would you like to buy today"
-            style="@android:style/TextAppearance.DeviceDefault.Medium"
-            android:layout_gravity="center" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearanceMedium"
+        android:text="Category:"
+        android:id="@+id/textView4"
+        android:paddingTop="16dp"
+        android:paddingRight="4dp"
+        android:paddingBottom="8dp"
+        android:layout_below="@+id/section_label"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+    <Spinner
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/productCategorySpinner"
+        android:spinnerMode="dialog"
+        android:layout_below="@+id/textView4"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="4dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Category:"
-                android:id="@+id/textView4"
-                android:paddingTop="10dp"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:paddingBottom="10dp" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/searchEditText"
+        android:singleLine="true"
+        android:hint="model or description"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:layout_below="@+id/textView9"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="4dp" />
 
-            <Spinner
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/productCategorySpinner"
-                android:spinnerMode="dialog" />
-        </LinearLayout>
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        android:id="@+id/nextButton"
+        android:layout_gravity="center"
+        android:onClick="nextButtonClicked"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/searchEditText"
-            android:singleLine="true"
-            android:hint="model or description"
-            android:layout_gravity="center"
-            android:textAlignment="center" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Product:"
+        android:id="@+id/textView9"
+        android:layout_below="@+id/productCategorySpinner"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textAppearance="@style/TextAppearanceMedium"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp" />
 
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="Next"
-            android:id="@+id/nextButton"
-            android:layout_gravity="center"
-            android:onClick="nextButtonClicked" />
-
-    </LinearLayout>
-
-</GridLayout>
+</RelativeLayout>

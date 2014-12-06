@@ -1,26 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center"
-    android:background="@android:color/darker_gray">
+    android:background="@color/instano_red"
+    android:layout_marginLeft="@dimen/general_separator_margin"
+    android:layout_marginRight="@dimen/general_separator_margin"
+    android:layout_marginTop="@dimen/general_separator_margin">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Query String:"
-        android:id="@+id/primaryTextView"
-        android:layout_weight="0.5"
+        android:id="@+id/queryStringTextView"
         android:paddingLeft="16dp"
-        android:paddingTop="4dp"
+        android:paddingTop="8dp"
         android:paddingRight="4dp"
-        android:paddingBottom="4dp" />
+        android:paddingBottom="8dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="false"
+        android:textStyle="bold"
+        android:textColor="@android:color/white" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Small Text"
-        android:id="@+id/secondaryTextView" />
-</LinearLayout>
+        android:text="4 hours ago"
+        android:id="@+id/timeTextView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textColor="@android:color/white"
+        android:paddingRight="4dp"
+        android:paddingTop="2dp"
+        android:textStyle="italic" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="0 responses"
+        android:id="@+id/responsesTextView"
+        android:textColor="@android:color/white"
+        android:layout_alignBottom="@+id/queryStringTextView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:padding="4dp"
+        android:textStyle="bold" />
+</RelativeLayout>

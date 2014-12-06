@@ -74,41 +74,45 @@ public class QuotationsArrayAdapter extends BaseAdapter {
 
         Object object = getItem(position);
         // first check to see if the view is null. if so, we have to inflate it.
-        if (object instanceof Quotation) {
+        if (object instanceof Separator) {
+            if (view == null)
+                view = mInflater.inflate(R.layout.list_item_separator, parent, false);
+            getSeparatorView((Separator) object, view);
+        } else {
             if (view == null)
                 view = mInflater.inflate(R.layout.list_item_quotation, parent, false);
             getQuotationView((Quotation) object, view);
-        } else {
-            if (view == null)
-                view = mInflater.inflate(R.layout.list_item_separator, parent, false);
-            getSeparatorView((Quote) object, view);
         }
 
         return view;
     }
 
-    private void getSeparatorView(Quote quote, View view) {
-        TextView primaryTextView = (TextView) view.findViewById(R.id.primaryTextView);
-        TextView secondaryTextView = (TextView) view.findViewById(R.id.secondaryTextView);
-        primaryTextView.setText(quote.searchString + ":");
-        secondaryTextView.setText(quote.getPrettyTimeElapsed());
+    private void getSeparatorView(Separator separator, View view) {
+        TextView primaryTextView = (TextView) view.findViewById(R.id.queryStringTextView);
+        TextView timeTextView = (TextView) view.findViewById(R.id.timeTextView);
+        TextView responsesTextView = (TextView) view.findViewById(R.id.responsesTextView);
+
+        Quote quote = separator.quote;
+
+        primaryTextView.setText(quote.searchString);
+        timeTextView.setText(quote.getPrettyTimeElapsed());
+        responsesTextView.setText(separator.numQuotations + " responses");
     }
 
     private void getQuotationView(final Quotation quotation, View view) {
         TextView modelTextView = (TextView) view.findViewById(R.id.modelTextView);
         TextView timeElapsedTextView = (TextView) view.findViewById(R.id.timeElapsedTextView);
         TextView priceTextView = (TextView) view.findViewById(R.id.priceTextView);
-        TextView descriptionTextView = (TextView) view.findViewById(R.id.descrptionTextView);
         TextView shopTextView = (TextView) view.findViewById(R.id.shopTextView);
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
 
         ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(null);
         String timeElapsed = quotation.getPrettyTimeElapsed();
 
+        // TODO: also change color alternating-ly
         modelTextView.setText(quotation.nameOfProduct);
         timeElapsedTextView.setText(timeElapsed);
-        priceTextView.setText("₹" + quotation.price);
-        descriptionTextView.setText(quotation.description);
+        priceTextView.setText("₹ " + quotation.price);
 
         String nameOfShop;
 
@@ -145,6 +149,15 @@ public class QuotationsArrayAdapter extends BaseAdapter {
             if (group.quote.id == quoteId)
                 return group;
         }
+        return null;
+    }
+
+    @Nullable
+    public Quotation getQuotation(int quotationId) {
+        for (QuotationsGroup group : mGroupsOfQuotations)
+            for (Quotation quotation : group.quotations)
+                if (quotation.id == quotationId)
+                    return quotation;
         return null;
     }
 
@@ -191,7 +204,8 @@ public class QuotationsArrayAdapter extends BaseAdapter {
     private void newData() {
         mObjects.clear();
         for (QuotationsGroup group : mGroupsOfQuotations) {
-            mObjects.add(group.quote);
+            int n = group.quotations.size();
+            mObjects.add(new Separator(n, group.quote));
             for (Quotation quotation : group.quotations)
                 mObjects.add(quotation);
         }
@@ -212,12 +226,14 @@ public class QuotationsArrayAdapter extends BaseAdapter {
         return false;
     }
 
-    public Quotation getQuotation(int quotationId) {
-        for (QuotationsGroup group : mGroupsOfQuotations)
-            for (Quotation quotation : group.quotations)
-                if (quotation.id == quotationId)
-                    return quotation;
-        return null;
+    private class Separator {
+        private int numQuotations;
+        private Quote quote;
+
+        private Separator(int numQuotations, Quote quote) {
+            this.numQuotations = numQuotations;
+            this.quote = quote;
+        }
     }
 
     private class QuotationsGroup {

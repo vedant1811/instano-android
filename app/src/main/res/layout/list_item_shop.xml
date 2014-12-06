@@ -7,10 +7,10 @@
     android:orientation="horizontal"
     android:focusable="false"
     android:background="@android:color/white"
-    android:paddingLeft="8dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
-    android:layout_margin="8dp">
+    android:paddingLeft="@dimen/general_separator_margin"
+    android:paddingTop="@dimen/general_separator_margin"
+    android:paddingBottom="@dimen/general_separator_margin"
+    android:layout_margin="@dimen/general_separator_margin">
 
     <CheckBox
         android:layout_width="wrap_content"
@@ -72,5 +72,5 @@
         android:scaleType="centerInside"
         android:clickable="true"
         android:background="@drawable/selector_dial_image"
-        android:layout_marginLeft="8dp" />
+        android:layout_marginLeft="@dimen/general_separator_margin" />
 </LinearLayout>
