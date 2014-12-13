@@ -20,11 +20,11 @@ import android.util.Log;
 import android.util.Xml;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -38,6 +38,7 @@ import com.instano.retailer.instano.utilities.PeriodicWorker;
 import com.instano.retailer.instano.utilities.ProductCategories;
 import com.instano.retailer.instano.utilities.Quotation;
 import com.instano.retailer.instano.utilities.Quote;
+import com.instano.retailer.instano.utilities.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -124,6 +125,7 @@ public class ServicesSingleton implements
     }
 
     public void createNotification() {
+        Log.d(TAG, "new quotations received");
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mAppContext)
                 .setSmallIcon(R.drawable.instano_launcher)
                 .setContentTitle("New Quotations")
@@ -156,7 +158,7 @@ public class ServicesSingleton implements
         }
 
         JsonArrayRequest request = new JsonArrayRequest(
-                getRequestUrl(RequestType.GET_QUOTATIONS),
+                getRequestUrl(RequestType.GET_QUOTATIONS, -1),
                 postData,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -174,7 +176,7 @@ public class ServicesSingleton implements
                                 }
                             }
                             if (dataChanged)
-                                Log.d(TAG, "new quotations received");
+                                createNotification();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -187,15 +189,14 @@ public class ServicesSingleton implements
     }
 
     public void getSellersRequest() {
-        StringRequest request = new StringRequest(
-                getRequestUrl(RequestType.GET_SELLERS),
-                new Response.Listener<String>() {
+        JsonArrayRequest request = new JsonArrayRequest(
+                getRequestUrl(RequestType.GET_SELLERS, -1),
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONArray response) {
                         Log.v(TAG, "Sellers response:" + response.toString());
                         try {
-                            JSONArray quotesJsonArray = new JSONArray(response);
-                            mSellersArrayAdapter.addAll(quotesJsonArray);
+                            mSellersArrayAdapter.addAll(response);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -221,7 +222,7 @@ public class ServicesSingleton implements
         Log.d(TAG, "sendQuoteRequest request: " + quote.toJsonObject());
 
         JsonObjectRequest request = new JsonObjectRequest(
-                getRequestUrl(RequestType.SEND_QUOTE),
+                getRequestUrl(RequestType.SEND_QUOTE, -1),
                 quote.toJsonObject(),
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -250,7 +251,7 @@ public class ServicesSingleton implements
             JSONObject apiKeyJson = new JSONObject().put("api_key", apiKey);
             JSONObject postData = new JSONObject().put("buyer", apiKeyJson);
             request = new JsonObjectRequest(
-                    getRequestUrl(RequestType.SIGN_IN),
+                    getRequestUrl(RequestType.SIGN_IN, -1),
                     postData,
                     new Response.Listener<JSONObject>() {
                         @Override
@@ -281,7 +282,7 @@ public class ServicesSingleton implements
 
     public void getProductCategoriesRequest() {
         final JsonObjectRequest request = new JsonObjectRequest(
-                getRequestUrl(RequestType.GET_PRODUCT_CATEGORIES),
+                getRequestUrl(RequestType.GET_PRODUCT_CATEGORIES, -1),
                 null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -319,7 +320,7 @@ public class ServicesSingleton implements
         Log.e(TAG, "getQuotesRequest requestData" + requestData);
 
         JsonArrayRequest request = new JsonArrayRequest(
-                getRequestUrl(RequestType.GET_QUOTES),
+                getRequestUrl(RequestType.GET_QUOTES, -1),
                 requestData,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -351,18 +352,47 @@ public class ServicesSingleton implements
         mRequestQueue.add(request);
     }
 
-    public ArrayList<ProductCategories.Category> getProductCategories() {
-        if (mProductCategories != null)
-            return mProductCategories.getProductCategories();
-        else
-            return null;
+    public void setQuotationStatusReadRequest (int quotationId) {
+        JSONObject requestData;
+        try {
+            requestData = new JSONObject()
+                    .put("status", "read");
+        } catch (JSONException e) {
+            Log.e(TAG, "setQuotationStatusReadRequest exception", e);
+            return;
+        }
+        Log.d(TAG, "setQuotationStatusReadRequest requestData" + requestData);
+        StringRequest request = new StringRequest(
+                Request.Method.PUT,
+                getRequestUrl(RequestType.PATCH_QUOTATION_STATUS, quotationId),
+                requestData,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, ".setQuotationStatusReadRequest networkResponse: " + error.networkResponse, error);
+                    }
+                }
+        );
+        mRequestQueue.add(request);
     }
 
-    private String getRequestUrl(RequestType requestType) {
+    /**
+     *
+     * @param requestType
+     * @param id The id to be used for specific URLs. unused for others
+     * @return the complete URL to be sent
+     */
+    private static String getRequestUrl(RequestType requestType, int id) {
 
-        final String SERVER_URL = "http://instano.in/";
+//        final String SERVER_URL = "http://instano.in/";
 //        final String SERVER_URL = "http://10.42.0.1:3000/";
-//        final String SERVER_URL = "http://192.168.43.81:3000/";
+        final String SERVER_URL = "http://192.168.1.15:3000/";
         final String API_VERSION = "v1/";
         String url = SERVER_URL + API_VERSION;
         switch (requestType) {
@@ -380,9 +410,19 @@ public class ServicesSingleton implements
                 return url + "sellers";
             case GET_PRODUCT_CATEGORIES:
                 return url + "brands_categories";
+
+            case PATCH_QUOTATION_STATUS:
+                return url + "quotations/" + id;
         }
 
         throw new IllegalArgumentException();
+    }
+
+    public ArrayList<ProductCategories.Category> getProductCategories() {
+        if (mProductCategories != null)
+            return mProductCategories.getProductCategories();
+        else
+            return null;
     }
 
     private ServicesSingleton(Activity startingActivity) {
@@ -612,7 +652,9 @@ public class ServicesSingleton implements
         GET_QUOTATIONS,
         SEND_QUOTE,
         GET_PRODUCT_CATEGORIES,
-        GET_SELLERS
+        GET_SELLERS,
+
+        PATCH_QUOTATION_STATUS
     }
 
     public boolean isOnline() {

@@ -3,7 +3,7 @@
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center"
-    android:background="@color/instano_red"
+    android:background="@color/instano_yellow"
     android:layout_marginLeft="@dimen/general_separator_margin"
     android:layout_marginRight="@dimen/general_separator_margin"
     android:layout_marginTop="@dimen/general_separator_margin">
@@ -20,9 +20,7 @@
         android:paddingBottom="8dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="false"
-        android:textStyle="bold"
-        android:textColor="@android:color/white" />
+        android:layout_alignParentStart="false" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -33,7 +31,6 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:textColor="@android:color/white"
         android:paddingRight="4dp"
         android:paddingTop="2dp"
         android:textStyle="italic" />
@@ -44,7 +41,6 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="0 responses"
         android:id="@+id/responsesTextView"
-        android:textColor="@android:color/white"
         android:layout_alignBottom="@+id/queryStringTextView"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"

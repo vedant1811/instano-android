@@ -49,9 +49,10 @@ public class QuotationsArrayAdapter extends BaseAdapter {
             group.quotations.add(0, quotation);
             // TODO: sort if needed
             newData();
-            return true;
-        } else
-            return false;
+            if (!quotation.isRead())
+                return true;
+        }
+        return false;
     }
 
     public void insertAtStart(Quote quote) {
@@ -100,13 +101,14 @@ public class QuotationsArrayAdapter extends BaseAdapter {
     }
 
     private void getQuotationView(final Quotation quotation, View view) {
-        TextView modelTextView = (TextView) view.findViewById(R.id.modelTextView);
+        TextView modelTextView = (TextView) view.findViewById(R.id.queryTextView);
         TextView timeElapsedTextView = (TextView) view.findViewById(R.id.timeElapsedTextView);
         TextView priceTextView = (TextView) view.findViewById(R.id.priceTextView);
         TextView shopTextView = (TextView) view.findViewById(R.id.shopTextView);
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
+        final TextView newTextView = (TextView) view.findViewById(R.id.newTextView);
 
-        ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(null);
+        final ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(null);
         String timeElapsed = quotation.getPrettyTimeElapsed();
 
         // TODO: also change color alternating-ly
@@ -137,10 +139,21 @@ public class QuotationsArrayAdapter extends BaseAdapter {
             public void onClick(View v) {
                 if (mCallbacks != null)
                     mCallbacks.onItemSelected(quotation.id);
+                if (!quotation.isRead()) {
+                    servicesSingleton.setQuotationStatusReadRequest(quotation.id);
+                    quotation.setStatusRead();
+//                    newTextView.setVisibility(View.GONE);
+                    notifyDataSetChanged();
+                    //TODO: optimize if needed. ref: http://stackoverflow.com/a/9987714/1396264
+                }
             }
         });
 
-        view.setFocusable(false);
+        if(quotation.isRead())
+            newTextView.setVisibility(View.GONE);
+        else
+            newTextView.setVisibility(View.VISIBLE);
+
     }
 
     @Nullable

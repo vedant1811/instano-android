@@ -6,6 +6,9 @@
         <item name="android:actionBarStyle">@style/ActionBar</item>
         <item name="android:windowBackground">@color/background</item>
         <item name="android:editTextStyle">@style/WhiteEditText</item>
+        <item name="android:textAppearanceLarge">@style/TextAppearanceHeading</item>
+        <item name="android:textAppearanceMedium">@style/TextAppearanceMedium</item>
+        <item name="android:textAppearanceSmall">@style/TextAppearanceComment</item>
     </style>
 
     <style name="ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">

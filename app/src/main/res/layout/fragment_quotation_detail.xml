@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/activity_horizontal_margin">
 
     <!--TODO: implement this-->
     <!--<ListView-->
@@ -14,76 +14,132 @@
 
     <!--TODO: and remove this LinearLayout-->
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:clickable="false"
-        android:layout_below="@+id/headerTextView">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/chatLinearLayout"
-            android:orientation="vertical"
-            android:background="@drawable/bubble_received">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/chatImageView"
-                android:src="@android:drawable/ic_menu_report_image" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Manufacturer\nModel\n₹ 5,600\nProduct Specs"
-                android:id="@+id/chatTextView"
-                android:textColor="@android:color/black"
-                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
-        </LinearLayout>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Accept Deal"
-            android:id="@+id/button" />
-
-    </LinearLayout>
-
-    <Button
-        android:layout_width="fill_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text='Seller name of "Shop Name"'
-        android:id="@+id/headerTextView"
+        android:text="Shop Name"
+        android:id="@+id/shopNameTextView"
+        android:layout_gravity="center_horizontal"
+        style="@style/TextAppearanceHeading"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:background="@android:color/darker_gray"
-        android:padding="4dp" />
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="@dimen/general_separator_margin" />
 
-    <EditText
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="textMultiLine"
-        android:ems="10"
-        android:id="@+id/chatText"
+        android:text="Seller Name"
+        android:id="@+id/sellerNameTextView"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/shopNameTextView"
+        android:layout_centerHorizontal="true"
+        style="@style/TextAppearanceMedium"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Query String"
+        android:id="@+id/queryTextView"
+        style="@style/TextAppearanceHeading"
+        android:textStyle="normal"
+        android:textColor="@android:color/black"
+        android:layout_below="@+id/sellerNameTextView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView3"
+        android:src="@drawable/logo_price_tag"
+        android:layout_alignTop="@+id/queryTextView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:hint="enter text to chat"
-        android:layout_toLeftOf="@+id/buttonSend"
-        android:layout_toStartOf="@+id/buttonSend"
-        android:layout_alignParentBottom="true"
-        android:text="we will very soon add a chat feature"
-        android:enabled="false" />
+        android:layout_toLeftOf="@+id/queryTextView"
+        android:layout_toStartOf="@+id/queryTextView"
+        android:layout_alignBottom="@+id/queryTextView" />
 
-    <ImageButton
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonSend"
-        android:src="@android:drawable/ic_menu_send"
-        android:layout_alignParentBottom="true"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Model Name"
+        android:id="@+id/textView10"
+        android:layout_below="@+id/queryTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="24dp"
+        android:layout_marginBottom="@dimen/general_separator_margin" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="model TextView"
+        android:id="@+id/modelTextView"
+        android:textColor="@color/instano_red"
+        android:layout_alignTop="@+id/textView10"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="24dp"
+        android:layout_marginBottom="@dimen/general_separator_margin" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Price"
+        android:id="@+id/textView11"
+        android:layout_below="@+id/textView10"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="24dp"
+        android:layout_marginBottom="@dimen/general_separator_margin" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="$7000"
+        android:id="@+id/textView12"
+        android:layout_below="@+id/modelTextView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="24dp"
+        android:textColor="@color/instano_red" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Addtional Info:\nLine 1\nLine 2"
+        android:id="@+id/textView16"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView11"
+        android:background="@drawable/red_rectangle"
+        android:padding="@dimen/general_separator_margin"
+        android:minLines="4"
+        android:layout_marginTop="@dimen/general_separator_margin"
+        android:layout_marginBottom="@dimen/general_separator_margin" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView16"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Accept Deal"
+            android:id="@+id/button"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="bottom" />
+    </FrameLayout>
 
 </RelativeLayout>

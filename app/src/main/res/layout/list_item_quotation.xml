@@ -16,10 +16,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearanceHeading"
-        android:text="Model Name 1"
-        android:id="@+id/modelTextView"
+        android:text="Model Name 1234561234"
+        android:id="@+id/queryTextView"
         android:paddingBottom="4dp"
-        android:textColor="@android:color/black" />
+        android:textStyle="normal"
+        android:singleLine="true"
+        android:layout_toLeftOf="@+id/newTextView"
+        android:paddingRight="12dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -27,11 +32,13 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="42 min ago"
         android:id="@+id/timeElapsedTextView"
-        android:layout_below="@+id/modelTextView"
+        android:layout_below="@+id/queryTextView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textColor="@color/instano_red"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:textStyle="italic"
+        android:layout_toLeftOf="@+id/priceTextView"
+        android:layout_toStartOf="@+id/priceTextView" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -39,11 +46,10 @@
         android:textAppearance="@style/TextAppearanceHeading"
         android:text="₹ 7000"
         android:id="@+id/priceTextView"
-        android:layout_alignBaseline="@+id/modelTextView"
-        android:layout_alignBottom="@+id/modelTextView"
+        android:textStyle="normal"
+        android:layout_above="@+id/distanceTextView"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:textColor="@color/instano_yellow" />
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -51,12 +57,13 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Shop name"
         android:id="@+id/shopTextView"
-        android:textColor="@color/instano_red"
         android:layout_below="@+id/timeElapsedTextView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp" />
+        android:layout_marginBottom="4dp"
+        android:layout_toLeftOf="@+id/distanceTextView"
+        android:layout_toStartOf="@+id/distanceTextView" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -65,11 +72,28 @@
         android:text="4.7 km"
         android:id="@+id/distanceTextView"
         android:layout_gravity="right"
-        android:textColor="@color/instano_red"
         android:layout_alignBaseline="@+id/shopTextView"
         android:layout_alignBottom="@+id/shopTextView"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NEW"
+        android:id="@+id/newTextView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textAppearance="@style/TextAppearanceHeading"
+        android:background="@color/instano_red"
+        android:textColor="@android:color/white"
+        android:padding="8dp"
+        android:textSize="12sp"
+        android:layout_alignBottom="@+id/queryTextView"
+        android:gravity="center"
+        android:textStyle="bold|italic"
+        android:visibility="gone" />
 
     <!--<ImageButton-->
         <!--android:layout_width="wrap_content"-->
