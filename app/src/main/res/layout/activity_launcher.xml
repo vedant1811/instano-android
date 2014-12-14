@@ -16,5 +16,6 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:src="@drawable/instano_logo_large"
-        android:scaleType="center" />
+        android:scaleType="fitCenter"
+        android:layout_margin="16dp" />
 </RelativeLayout>

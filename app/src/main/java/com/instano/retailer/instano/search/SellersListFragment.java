@@ -75,6 +75,8 @@ public class SellersListFragment extends Fragment implements
 
     @Override
     public void onResume() {
+        updateTextView();
+
         super.onResume();
 
         ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
@@ -82,6 +84,8 @@ public class SellersListFragment extends Fragment implements
         addressUpdated(address, false);
 
         itemCheckedStateChanged(mAdapter.getSelectedSellerIds().size());
+
+        updateTextView();
     }
 
     /* package private */
@@ -143,11 +147,11 @@ public class SellersListFragment extends Fragment implements
         int halfWidth = mDistTextView.getWidth() / 2;
         mDistTextLayoutParams.setMargins((thumbRect.centerX() - halfWidth), 0, 0, 0);
         mDistTextView.setLayoutParams(mDistTextLayoutParams);
-        // progress ranges from 0 to 99 while distance needs to be from 1km to 100km
+        // progress ranges from 0 to 9999 while distance needs to be from 1km to 10km
         int dist = mWithinSeekBar.getProgress() + 1;
-        mDistTextView.setText(String.format("%dkm", dist/100));
+        mDistTextView.setText(String.format("%1.2fkm", dist/1000.0));
         ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(
-                dist); // * 100 since it needs to be sent in 10x meters
+                dist/10); // * 100 since it needs to be sent in 10x meters
     }
 
     /**

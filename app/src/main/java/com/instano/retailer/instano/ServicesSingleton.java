@@ -390,9 +390,13 @@ public class ServicesSingleton implements
      */
     private static String getRequestUrl(RequestType requestType, int id) {
 
-//        final String SERVER_URL = "http://instano.in/";
+        String SERVER_URL;
+        if (BuildConfig.DEBUG)
+            SERVER_URL = "http://192.168.0.3:3000/";
+        else
+            SERVER_URL = "http://instano.in/";
 //        final String SERVER_URL = "http://10.42.0.1:3000/";
-        final String SERVER_URL = "http://192.168.1.15:3000/";
+//        final String SERVER_URL = "http://192.168.1.15:3000/";
         final String API_VERSION = "v1/";
         String url = SERVER_URL + API_VERSION;
         switch (requestType) {

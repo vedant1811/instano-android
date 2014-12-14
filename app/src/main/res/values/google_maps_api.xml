@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
         <string name="google_maps_key_instructions" templateMergeStrategy="replace"><!--
 
@@ -14,5 +15,5 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     string in this file.
     --></string>
 
-    <string name="google_maps_key" templateMergeStrategy="preserve">AIzaSyAgoyCZWxKRdivExrrcjepr6qTonPcmjAU</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve">AIzaSyDxVsKYcLBT5dwOdb-ea2_fnNaAmgtCttE</string>
 </resources>
