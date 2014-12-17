@@ -16,17 +16,9 @@ public class Log {
 
     }
 
-    private static void sendError(String tag, String msg) {
+    private static void send(String category, String tag, String msg) {
         sAppTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("Error Log")
-                .setLabel(tag)
-                .setAction(msg)
-                .build());
-    }
-
-    private static void sendDebug(String tag, String msg) {
-        sAppTracker.send(new HitBuilders.EventBuilder()
-                .setCategory("Debug Log")
+                .setCategory(category + " Log")
                 .setLabel(tag)
                 .setAction(msg)
                 .build());
@@ -50,7 +42,7 @@ public class Log {
         if (BuildConfig.DEBUG)
             android.util.Log.d(tag, msg);
         else
-            sendDebug(tag, msg);
+            send("debug", tag, msg);
     }
 
 
@@ -65,7 +57,7 @@ public class Log {
         if (BuildConfig.DEBUG)
             android.util.Log.d(tag, msg);
         else
-            sendDebug(tag, msg + '\n' + android.util.Log.getStackTraceString(tr));
+            send("debug", tag, msg + '\n' + android.util.Log.getStackTraceString(tr));
     }
 
     /**
@@ -78,7 +70,7 @@ public class Log {
         if (BuildConfig.DEBUG)
             android.util.Log.e(tag, msg);
         else
-            sendError(tag, msg);
+            send("error", tag, msg);
     }
 
     /**
@@ -92,6 +84,13 @@ public class Log {
         if (BuildConfig.DEBUG)
             android.util.Log.e(tag, msg);
         else
-            sendError(tag, msg + '\n' + android.util.Log.getStackTraceString(tr));
+            send("error", tag, msg + '\n' + android.util.Log.getStackTraceString(tr));
+    }
+
+    public static void v(String tag, String msg) {
+        if (BuildConfig.DEBUG)
+            android.util.Log.e(tag, msg);
+        else
+            send("verbose", tag, msg);
     }
 }
