@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
-import com.instano.retailer.instano.utilities.library.Log;
 import android.util.Xml;
 import android.widget.Toast;
 
@@ -35,13 +34,14 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
-import com.instano.retailer.instano.utilities.library.JsonArrayRequest;
 import com.instano.retailer.instano.utilities.MyApplication;
 import com.instano.retailer.instano.utilities.PeriodicWorker;
+import com.instano.retailer.instano.utilities.library.JsonArrayRequest;
+import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.library.StringRequest;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
-import com.instano.retailer.instano.utilities.library.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -100,11 +100,23 @@ public class ServicesSingleton implements
     private ProductCategories mProductCategories;
     private PeriodicWorker mPeriodicWorker;
 
-    public void signInRequest() {
-//        if (newBuyer)
-//            sendSignInRequest("create");
-//        else
-        sendSignInRequest(mSharedPreferences.getString(KEY_BUYER_API_KEY, "create"));
+    public boolean signInRequest() {
+        String defValue = "create";
+        String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, defValue);
+        sendSignInRequest(apiKey);
+
+        if (apiKey.equals(defValue))
+            return true;
+        else
+            return false;
+    }
+
+    public boolean firstTime() {
+
+        return true;
+
+        // TODO:
+//        return !mSharedPreferences.contains(KEY_BUYER_API_KEY);
     }
 
     private void postSignIn() {

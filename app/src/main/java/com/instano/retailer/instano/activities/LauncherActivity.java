@@ -31,16 +31,22 @@ public class LauncherActivity extends Activity {
             public void run() {
                 // This method will be executed once the timer is over
                 // Start your app main activity
-                Intent i = new Intent(LauncherActivity.this, HomeActivity.class);
-                startActivity(i);
-
-                // close this activity
-                finish();
+                onSplashTimeOut();
             }
         }, SPLASH_TIME_OUT);
 
+    }
+
+    private void onSplashTimeOut() {
         // initialize:
-        ServicesSingleton.getInstance(this);
+        Intent i = null;
+        if (ServicesSingleton.getInstance(this).firstTime())
+            i = new Intent(this, StartingActivity.class);
+
+        startActivity(i);
+
+        // close this activity
+        finish();
     }
 
     @Override
