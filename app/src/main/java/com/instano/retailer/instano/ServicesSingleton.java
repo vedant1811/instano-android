@@ -26,6 +26,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -34,6 +36,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.JsonArrayRequest;
+import com.instano.retailer.instano.utilities.MyApplication;
 import com.instano.retailer.instano.utilities.PeriodicWorker;
 import com.instano.retailer.instano.utilities.ProductCategories;
 import com.instano.retailer.instano.utilities.Quotation;
@@ -72,7 +75,7 @@ public class ServicesSingleton implements
 
     private static ServicesSingleton sInstance;
 
-    private final Context mAppContext;
+    private final MyApplication mApplication;
     private SharedPreferences mSharedPreferences;
 
 
@@ -106,7 +109,12 @@ public class ServicesSingleton implements
 
     private void postSignIn() {
         Log.d(TAG, "buyer ID: " + mBuyerId);
-        Toast.makeText(mAppContext, String.format("you are %d user to sign in", mBuyerId), Toast.LENGTH_SHORT).show();
+        Toast.makeText(mApplication, String.format("you are %d user to sign in", mBuyerId), Toast.LENGTH_SHORT).show();
+
+        Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
+        appTracker.setClientId(String.valueOf(mBuyerId));
+        appTracker.send(new HitBuilders.AppViewBuilder().build());
+
         mQuotationsArrayAdapter.clear();
     }
 
@@ -126,15 +134,15 @@ public class ServicesSingleton implements
 
     public void createNotification() {
         Log.d(TAG, "new quotations received");
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mAppContext)
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mApplication)
                 .setSmallIcon(R.drawable.instano_launcher)
                 .setContentTitle("New Quotations")
                 .setContentText("Click to view your new quotations");
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                mAppContext,
+                mApplication,
                 0,
-                new Intent(mAppContext, QuotationListActivity.class),
+                new Intent(mApplication, QuotationListActivity.class),
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
@@ -430,8 +438,8 @@ public class ServicesSingleton implements
     }
 
     private ServicesSingleton(Activity startingActivity) {
-        mAppContext = startingActivity.getApplicationContext();
-        mSharedPreferences = mAppContext.getSharedPreferences(
+        mApplication = (MyApplication) startingActivity.getApplication();
+        mSharedPreferences = mApplication.getSharedPreferences(
                 "com.instano.SHARED_PREFERENCES_FILE", Context.MODE_PRIVATE);
         mUserAddress = null;
         mLastLocation = null;
@@ -442,13 +450,15 @@ public class ServicesSingleton implements
          * Create a new location client, using the enclosing class to
          * handle callbacks.
          */
-        mLocationClient = new LocationClient(mAppContext, this, this);
+        mLocationClient = new LocationClient(mApplication, this, this);
         mLocationClient.connect();
         checkPlayServices(); // not performing checkUserAccount
         // see http://www.androiddesignpatterns.com/2013/01/google-play-services-setup.html
 
-        mRequestQueue = Volley.newRequestQueue(mAppContext);
+        mRequestQueue = Volley.newRequestQueue(mApplication);
 
+        // TODO: fix this. create only when needed. then move ServicesSingleton.init() to MyApplication
+        // ref: http://www.devahead.com/blog/2011/06/extending-the-android-application-class-and-dealing-with-singleton/
         mQuotationsArrayAdapter = new QuotationsArrayAdapter(startingActivity);
         mSellersArrayAdapter = new SellersArrayAdapter(startingActivity);
 
@@ -466,7 +476,7 @@ public class ServicesSingleton implements
     }
 
     public boolean checkPlayServices() {
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(mAppContext);
+        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(mApplication);
         if (status != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(status) && mInitialDataCallbacks != null) {
                 mInitialDataCallbacks.showErrorDialog(status);
@@ -528,7 +538,7 @@ public class ServicesSingleton implements
                  * When the task finishes,
                  * callback displays the address.
                  */
-                (new GetAddressTask(mAppContext, new GetAddressTask.AddressCallback() {
+                (new GetAddressTask(mApplication, new GetAddressTask.AddressCallback() {
                     @Override
                     public void addressFetched(@Nullable Address address) {
                         Log.d("Address", address != null ? address.toString() : "not found");
@@ -663,7 +673,7 @@ public class ServicesSingleton implements
 
     public boolean isOnline() {
         ConnectivityManager cm =
-                (ConnectivityManager) mAppContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) mApplication.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         if (netInfo != null && netInfo.isConnectedOrConnecting()) {
             return true;
@@ -677,7 +687,7 @@ public class ServicesSingleton implements
      * @return Human readable time elapsed. Eg: "42 minutes ago"
      */
     public String getPrettyTimeElapsed(long updatedAt) {
-        String dateTimeString = (String) DateUtils.getRelativeDateTimeString(mAppContext, updatedAt,
+        String dateTimeString = (String) DateUtils.getRelativeDateTimeString(mApplication, updatedAt,
                 DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
         return dateTimeString.split(",")[0];
     }

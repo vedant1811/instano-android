@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <screenName name="com.google.foo.FirstActivity">
+        First Activity
+    </screenName>
+    <screenName name="com.google.foo.AnotherActivity">
+        Another Activity
+    </screenName>
+    <string name="ga_trackingId">UA-56783604-2</string>
+    <string name="ga_sampleFrequency">99.8</string>
+    <integer name="ga_sessionTimeout">30</integer><!--default-->
+    <bool name="ga_autoActivityTracking">true</bool>
+    <bool name="ga_anonymizeIp">true</bool>
+    <bool name="ga_reportUncaughtExceptions">true</bool>
+</resources>
