@@ -40,7 +40,7 @@ public class LauncherActivity extends Activity {
     private void onSplashTimeOut() {
         // initialize:
         Intent i = null;
-        if (ServicesSingleton.getInstance(this).firstTime())
+//        if (ServicesSingleton.getInstance(this).firstTime())
             i = new Intent(this, StartingActivity.class);
 
         startActivity(i);
