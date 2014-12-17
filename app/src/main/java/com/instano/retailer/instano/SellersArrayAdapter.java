@@ -16,8 +16,8 @@ import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.instano.retailer.instano.utilities.ProductCategories;
-import com.instano.retailer.instano.utilities.Seller;
+import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Seller;
 
 import org.json.JSONArray;
 import org.json.JSONException;

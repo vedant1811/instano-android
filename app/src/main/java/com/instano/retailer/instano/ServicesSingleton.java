@@ -35,13 +35,13 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
-import com.instano.retailer.instano.utilities.JsonArrayRequest;
+import com.instano.retailer.instano.utilities.library.JsonArrayRequest;
 import com.instano.retailer.instano.utilities.MyApplication;
 import com.instano.retailer.instano.utilities.PeriodicWorker;
-import com.instano.retailer.instano.utilities.ProductCategories;
-import com.instano.retailer.instano.utilities.Quotation;
-import com.instano.retailer.instano.utilities.Quote;
-import com.instano.retailer.instano.utilities.StringRequest;
+import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Quotation;
+import com.instano.retailer.instano.utilities.models.Quote;
+import com.instano.retailer.instano.utilities.library.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;

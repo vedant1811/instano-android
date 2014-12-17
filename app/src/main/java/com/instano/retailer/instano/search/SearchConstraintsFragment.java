@@ -11,9 +11,9 @@ import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
-import com.instano.retailer.instano.utilities.MultiSpinner;
-import com.instano.retailer.instano.utilities.ProductCategories;
-import com.instano.retailer.instano.utilities.RangeSeekBar;
+import com.instano.retailer.instano.utilities.library.MultiSpinner;
+import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.library.RangeSeekBar;
 
 
 /**

@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.utilities;
+package com.instano.retailer.instano.utilities.models;
 
 import android.support.annotation.NonNull;
 import android.util.Log;

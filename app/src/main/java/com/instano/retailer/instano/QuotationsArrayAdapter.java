@@ -9,9 +9,9 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.buyerDashboard.QuotationListFragment;
-import com.instano.retailer.instano.utilities.Quotation;
-import com.instano.retailer.instano.utilities.Quote;
-import com.instano.retailer.instano.utilities.Seller;
+import com.instano.retailer.instano.utilities.models.Quotation;
+import com.instano.retailer.instano.utilities.models.Quote;
+import com.instano.retailer.instano.utilities.models.Seller;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.utilities;
+package com.instano.retailer.instano.utilities.library;
 
 import android.content.Context;
 import android.graphics.Bitmap;

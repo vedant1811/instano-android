@@ -52,7 +52,7 @@
             <view
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                class="com.instano.retailer.instano.utilities.MultiSpinner"
+                class="com.instano.retailer.instano.utilities.library.MultiSpinner"
                 android:id="@+id/brandsMultiSpinner" />
 
         </LinearLayout>
@@ -95,7 +95,7 @@
         <!--<view-->
             <!--android:layout_width="wrap_content"-->
             <!--android:layout_height="wrap_content"-->
-            <!--class="com.instano.retailer.instano.utilities.RangeSeekBar"-->
+            <!--class="com.instano.retailer.instano.utilities.library.RangeSeekBar"-->
             <!--android:id="@+id/priceRangeSeekBar" />-->
     </FrameLayout>
 

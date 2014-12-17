@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.utilities;
+package com.instano.retailer.instano.utilities.models;
 
 import com.instano.retailer.instano.ServicesSingleton;
 

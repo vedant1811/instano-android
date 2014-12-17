@@ -18,7 +18,7 @@ import android.widget.Toast;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
-import com.instano.retailer.instano.utilities.ProductCategories;
+import com.instano.retailer.instano.utilities.models.ProductCategories;
 
 import java.util.ArrayList;
 

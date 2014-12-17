@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.utilities;
+package com.instano.retailer.instano.utilities.library;
 
 import android.app.AlertDialog;
 import android.content.Context;

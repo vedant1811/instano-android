@@ -9,8 +9,8 @@ import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
-import com.instano.retailer.instano.utilities.Quotation;
-import com.instano.retailer.instano.utilities.Seller;
+import com.instano.retailer.instano.utilities.models.Quotation;
+import com.instano.retailer.instano.utilities.models.Seller;
 
 /**
  * A fragment representing a single Quotation detail screen.
