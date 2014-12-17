@@ -2,7 +2,6 @@ package com.instano.retailer.instano;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -16,6 +15,7 @@ import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Seller;
 

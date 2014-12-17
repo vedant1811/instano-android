@@ -16,7 +16,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
-import android.util.Log;
+import com.instano.retailer.instano.utilities.library.Log;
 import android.util.Xml;
 import android.widget.Toast;
 
