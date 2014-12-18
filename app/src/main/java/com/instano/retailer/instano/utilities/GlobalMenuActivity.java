@@ -13,6 +13,20 @@ import com.instano.retailer.instano.R;
  */
 public class GlobalMenuActivity extends Activity {
 
+    private static final int SHARE_REQUEST_CODE = 998;
+    private static final int MESSAGE_REQUEST_CODE = 997;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            // TODO: handle separately
+            case SHARE_REQUEST_CODE:
+            case MESSAGE_REQUEST_CODE:
+                if (resultCode == RESULT_OK)
+                    Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -33,7 +47,11 @@ public class GlobalMenuActivity extends Activity {
                 sAux = sAux + "http://play.google.com/store/apps/details?id=com.instano.retailer";
                 intent.putExtra(Intent.EXTRA_TEXT, sAux);
                 intent = Intent.createChooser(intent, "choose one");
-                startActivity(intent);
+                try {
+                    startActivityForResult(intent, SHARE_REQUEST_CODE);
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(this, "There are no email clients installed", Toast.LENGTH_SHORT).show();
+                }
                 return true;
 
             case R.id.action_message:
@@ -41,8 +59,9 @@ public class GlobalMenuActivity extends Activity {
                 intent.setType("message/rfc822");
                 intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"contact@instano.in"});
                 intent.putExtra(Intent.EXTRA_SUBJECT, "Contacting instano");
+                intent = Intent.createChooser(intent, "Send mail");
                 try {
-                    startActivity(Intent.createChooser(intent, "Send mail"));
+                    startActivityForResult(intent, MESSAGE_REQUEST_CODE);
                 } catch (android.content.ActivityNotFoundException ex) {
                     Toast.makeText(this, "There are no email clients installed", Toast.LENGTH_SHORT).show();
                 }

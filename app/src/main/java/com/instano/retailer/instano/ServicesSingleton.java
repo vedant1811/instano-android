@@ -1,6 +1,7 @@
 package com.instano.retailer.instano;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -9,22 +10,13 @@ import android.content.SharedPreferences;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
-import android.util.Xml;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
@@ -36,25 +28,14 @@ import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.MyApplication;
 import com.instano.retailer.instano.utilities.PeriodicWorker;
-import com.instano.retailer.instano.utilities.library.JsonArrayRequest;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.library.StringRequest;
+import com.instano.retailer.instano.utilities.models.Buyer;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
-import com.instano.retailer.instano.utilities.models.Quotation;
-import com.instano.retailer.instano.utilities.models.Quote;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.TimeZone;
 
 /**
@@ -63,9 +44,7 @@ import java.util.TimeZone;
  */
 public class ServicesSingleton implements
         GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener,
-        Response.Listener<String>,
-        Response.ErrorListener {
+        GooglePlayServicesClient.OnConnectionFailedListener {
 
     private final static String TAG = "ServicesSingleton";
 
@@ -78,7 +57,6 @@ public class ServicesSingleton implements
     private final MyApplication mApplication;
     private SharedPreferences mSharedPreferences;
 
-
     /* location variables */
     private LocationClient mLocationClient;
     private Location mLastLocation;
@@ -88,22 +66,23 @@ public class ServicesSingleton implements
 
     private InitialDataCallbacks mInitialDataCallbacks;
     private AddressCallbacks mAddressCallbacks;
-    private QuoteCallbacks mQuoteCallbacks;
-
     /* network variables */
-    private Quote mQuote;
-    private int mBuyerId;
+    private Buyer mBuyer;
 
-    private RequestQueue mRequestQueue;
     private QuotationsArrayAdapter mQuotationsArrayAdapter;
     private SellersArrayAdapter mSellersArrayAdapter;
     private ProductCategories mProductCategories;
     private PeriodicWorker mPeriodicWorker;
 
+    @Nullable
+    public Buyer getBuyer() {
+        return mBuyer;
+    }
+
     public boolean signInRequest() {
         String defValue = "create";
         String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, defValue);
-        sendSignInRequest(apiKey);
+        NetworkRequestsManager.instance().sendSignInRequest(apiKey);
 
         if (apiKey.equals(defValue))
             return true;
@@ -119,34 +98,48 @@ public class ServicesSingleton implements
         return !mSharedPreferences.contains(KEY_BUYER_API_KEY);
     }
 
-    private void postSignIn() {
-        Log.d(TAG, "buyer ID: " + mBuyerId);
-        Toast.makeText(mApplication, String.format("you are %d user to sign in", mBuyerId), Toast.LENGTH_SHORT).show();
+    /**
+     * called after a signIn request
+     * @param buyer null if no buyer with given api key
+     * @param apiKey null if no buyer with given api key
+     */
+    /*package*/ void afterSignIn(@Nullable Buyer buyer, @Nullable String apiKey) {
+        mBuyer = buyer;
+        Log.d(TAG, "buyer ID: " + mBuyer);
 
-        Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
-        appTracker.setClientId(String.valueOf(mBuyerId));
-        appTracker.send(new HitBuilders.AppViewBuilder().build());
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(KEY_BUYER_API_KEY, apiKey); // clear saved API key if null
+        editor.apply();
 
-        mQuotationsArrayAdapter.clear();
+        if (buyer != null) {
+            Toast.makeText(mApplication, String.format("you are %d user to sign in", mBuyer.id), Toast.LENGTH_SHORT).show();
+
+            Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
+            appTracker.setClientId(String.valueOf(mBuyer.id));
+            appTracker.send(new HitBuilders.AppViewBuilder().build());
+
+            mQuotationsArrayAdapter.clear();
+        }
+        // TODO: else
     }
 
     public void runPeriodicTasks() {
-        if (mBuyerId != -1) // i.e. if user is signed in
+        if (mBuyer == null) // i.e. if user is signed in
         {
-            getQuotesRequest(); // also fetches quotations once quotes are fetched
-            getSellersRequest();
+            NetworkRequestsManager.instance().getQuotesRequest(mBuyer); // also fetches quotations once quotes are fetched
+            NetworkRequestsManager.instance().getSellersRequest();
         }
 //        else
 //            signInRequest(false);
 
         if (getProductCategories() == null)
-            getProductCategoriesRequest();
+            NetworkRequestsManager.instance().getProductCategoriesRequest();
 
     }
 
     public void createNotification() {
         Log.d(TAG, "new quotations received");
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(mApplication)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mApplication)
                 .setSmallIcon(R.drawable.instano_launcher)
                 .setContentTitle("New Quotations")
                 .setContentText("Click to view your new quotations");
@@ -158,288 +151,11 @@ public class ServicesSingleton implements
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        mBuilder.setContentIntent(resultPendingIntent);
+        builder.setContentIntent(resultPendingIntent);
 
-    }
+        NotificationManager manager = (NotificationManager) mApplication.getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(001, builder.build());
 
-    public void getQuotationsRequest () {
-        if (mBuyerId == -1){
-            Log.e(TAG, "getQuotationsRequest: buyer id == -1");
-            return;
-        }
-
-        JSONObject postData;
-        try {
-             postData = new JSONObject()
-                    .put("id", mBuyerId);
-        } catch (JSONException e) {
-            Log.e(TAG, "getQuotationsRequest", e);
-            return;
-        }
-
-        JsonArrayRequest request = new JsonArrayRequest(
-                getRequestUrl(RequestType.GET_QUOTATIONS, -1),
-                postData,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.v(TAG, "Quotations response:" + response.toString());
-                        try {
-                            boolean dataChanged = false;
-                            for (int i = 0; i < response.length(); i++){
-                                JSONObject quotationJsonObject = response.getJSONObject(i);
-                                try {
-                                    // TODO: create a notification based on return value
-                                    dataChanged |= mQuotationsArrayAdapter.insertIfNeeded(new Quotation(quotationJsonObject));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            if (dataChanged)
-                                createNotification();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                },
-                this
-        );
-        mRequestQueue.add(request);
-    }
-
-    public void getSellersRequest() {
-        JsonArrayRequest request = new JsonArrayRequest(
-                getRequestUrl(RequestType.GET_SELLERS, -1),
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.v(TAG, "Sellers response:" + response.toString());
-                        try {
-                            mSellersArrayAdapter.addAll(response);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                },
-                this
-        );
-        mRequestQueue.add(request);
-    }
-
-    public void sendQuoteRequest(String searchString, String priceRange,
-                                 ProductCategories.Category productCategory,
-                                 String additionalInfo,
-                                 HashSet<Integer> sellerIds) {
-
-        if (mBuyerId == -1) {
-            Log.e(TAG, ".sendQuoteRequest : mBuyerId is -1. Search string: " + searchString);
-            return;
-        }
-
-        Quote quote =  new Quote(mBuyerId, searchString, priceRange, productCategory, additionalInfo, sellerIds);
-        Log.d(TAG, "sendQuoteRequest request: " + quote.toJsonObject());
-
-        JsonObjectRequest request = new JsonObjectRequest(
-                getRequestUrl(RequestType.SEND_QUOTE, -1),
-                quote.toJsonObject(),
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.v (TAG, response.toString());
-                        if (mQuoteCallbacks != null)
-                            mQuoteCallbacks.quoteSent(true);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        if (mQuoteCallbacks != null)
-                            mQuoteCallbacks.quoteSent(false);
-                    }
-                }
-        );
-        mRequestQueue.add(request);
-    }
-
-    public void sendSignInRequest(String apiKey) {
-
-        JsonObjectRequest request = null;
-        try {
-            Log.d(TAG, "sign in request: " + new JSONObject().toString());
-            JSONObject apiKeyJson = new JSONObject().put("api_key", apiKey);
-            JSONObject postData = new JSONObject().put("buyer", apiKeyJson);
-            request = new JsonObjectRequest(
-                    getRequestUrl(RequestType.SIGN_IN, -1),
-                    postData,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            try {
-                                mBuyerId = response.getInt("id");
-
-                                SharedPreferences.Editor editor = mSharedPreferences.edit();
-                                editor.putString(KEY_BUYER_API_KEY, response.getString("api_key"));
-                                editor.apply();
-
-                                postSignIn();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                mBuyerId = -1;
-                                // try again
-                                signInRequest();
-                            }
-                        }
-                    },
-                    this
-            );
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        mRequestQueue.add(request);
-    }
-
-    public void getProductCategoriesRequest() {
-        final JsonObjectRequest request = new JsonObjectRequest(
-                getRequestUrl(RequestType.GET_PRODUCT_CATEGORIES, -1),
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.v(TAG, "ProductCategories response:" + response.toString());
-                        mProductCategories = new ProductCategories(response, true);
-                        if (mQuoteCallbacks != null)
-                            mQuoteCallbacks.productCategoriesUpdated(getProductCategories());
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, ".getProductCategoriesRequest network response: " + error.networkResponse, error);
-                    }
-                }
-        );
-        mRequestQueue.add(request);
-    }
-
-    public void getQuotesRequest () {
-
-        if (mBuyerId == -1) {
-            Log.e(TAG, "getQuotesRequest mSellerId == -1");
-            return;
-        }
-        JSONObject requestData;
-        try {
-            requestData = new JSONObject()
-                    .put("id", mBuyerId);
-        } catch (JSONException e) {
-            Log.e(TAG, "getQuotesRequest exception", e);
-            return;
-        }
-        Log.e(TAG, "getQuotesRequest requestData" + requestData);
-
-        JsonArrayRequest request = new JsonArrayRequest(
-                getRequestUrl(RequestType.GET_QUOTES, -1),
-                requestData,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.v(TAG, "Quotes response:" + response.toString());
-                        for (int i = 0; i < response.length(); i++){
-                            try {
-                                JSONObject quoteJsonObject = response.getJSONObject(i);
-                                Quote quote = new Quote(quoteJsonObject);
-                                if (quote.buyerId == mBuyerId)
-                                    mQuotationsArrayAdapter.insertAtStart(quote);
-                            } catch (JSONException e) {
-                                Log.e(TAG, ".getQuotesRequest JSONException: ", e);
-                            }
-                        }
-
-                        // fetch quotations once quotes are fetched:
-                        getQuotationsRequest();
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, ".getQuotesRequest networkResponse: " + error.networkResponse, error);
-                    }
-                }
-        );
-        mRequestQueue.add(request);
-    }
-
-    public void setQuotationStatusReadRequest (int quotationId) {
-        JSONObject requestData;
-        try {
-            requestData = new JSONObject()
-                    .put("status", "read");
-        } catch (JSONException e) {
-            Log.e(TAG, "setQuotationStatusReadRequest exception", e);
-            return;
-        }
-        Log.d(TAG, "setQuotationStatusReadRequest requestData" + requestData);
-        StringRequest request = new StringRequest(
-                Request.Method.PUT,
-                getRequestUrl(RequestType.PATCH_QUOTATION_STATUS, quotationId),
-                requestData,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, ".setQuotationStatusReadRequest networkResponse: " + error.networkResponse, error);
-                    }
-                }
-        );
-        mRequestQueue.add(request);
-    }
-
-    /**
-     *
-     * @param requestType
-     * @param id The id to be used for specific URLs. unused for others
-     * @return the complete URL to be sent
-     */
-    private static String getRequestUrl(RequestType requestType, int id) {
-
-        String SERVER_URL;
-        if (BuildConfig.DEBUG)
-            SERVER_URL = "http://192.168.0.3:3000/";
-        else
-            SERVER_URL = "http://instano.in/";
-//        final String SERVER_URL = "http://10.42.0.1:3000/";
-//        final String SERVER_URL = "http://192.168.1.15:3000/";
-        final String API_VERSION = "v1/";
-        String url = SERVER_URL + API_VERSION;
-        switch (requestType) {
-//            case REGISTER:
-//                return url + "sellers";
-            case SIGN_IN:
-                return url + "buyers";
-            case GET_QUOTES:
-                return url + "quotes/for_buyer";
-            case GET_QUOTATIONS:
-                return url + "quotations/for_buyer";
-            case SEND_QUOTE:
-                return url + "quotes";
-            case GET_SELLERS:
-                return url + "sellers";
-            case GET_PRODUCT_CATEGORIES:
-                return url + "brands_categories";
-
-            case PATCH_QUOTATION_STATUS:
-                return url + "quotations/" + id;
-        }
-
-        throw new IllegalArgumentException();
     }
 
     public ArrayList<ProductCategories.Category> getProductCategories() {
@@ -449,13 +165,17 @@ public class ServicesSingleton implements
             return null;
     }
 
+    /*package*/ void setProductCategories(ProductCategories productCategories) {
+        mProductCategories = productCategories;
+    }
+
     private ServicesSingleton(Activity startingActivity) {
         mApplication = (MyApplication) startingActivity.getApplication();
         mSharedPreferences = mApplication.getSharedPreferences(
                 "com.instano.SHARED_PREFERENCES_FILE", Context.MODE_PRIVATE);
         mUserAddress = null;
         mLastLocation = null;
-        mBuyerId = -1;
+        mBuyer = null;
         mProductCategories = null;
 
         /*
@@ -467,7 +187,6 @@ public class ServicesSingleton implements
         checkPlayServices(); // not performing checkUserAccount
         // see http://www.androiddesignpatterns.com/2013/01/google-play-services-setup.html
 
-        mRequestQueue = Volley.newRequestQueue(mApplication);
 
         // TODO: fix this. create only when needed. then move ServicesSingleton.init() to MyApplication
         // ref: http://www.devahead.com/blog/2011/06/extending-the-android-application-class-and-dealing-with-singleton/
@@ -606,56 +325,12 @@ public class ServicesSingleton implements
         }
     }
 
-    /**
-     * ** Volley **
-     *
-     * BuyersCallbacks method that an error has been occurred with the
-     * provided error code and optional user-readable message.
-     */
-    @Override
-    public void onErrorResponse(VolleyError error) {
-        Log.d(TAG + ".onErrorResponse", "", error);
-
-    }
-
-    /**
-     * ** Volley **
-     *
-     * Called when a response is received.
-     */
-    @Override
-    public void onResponse(String response) {
-        Log.d(TAG + ".onResponse", response);
-
-
-
-        XmlPullParser parser = Xml.newPullParser();
-        try {
-            parser.setInput(new StringReader(response));
-        } catch (XmlPullParserException e) {
-            Log.d(TAG + ".onResponse", "XmlPullParser ERROR", e);
-        }
-    }
-
-    public QuotationsArrayAdapter getQuotationArrayAdapter() {
-        return mQuotationsArrayAdapter;
-    }
-
     public void registerCallback (InitialDataCallbacks initialDataCallbacks) {
-        this.mInitialDataCallbacks = initialDataCallbacks;
-    }
-
-    public void registerCallback (QuoteCallbacks quoteCallbacks) {
-        mQuoteCallbacks = quoteCallbacks;
+        mInitialDataCallbacks = initialDataCallbacks;
     }
 
     public void registerCallback (AddressCallbacks addressCallbacks) {
         mAddressCallbacks = addressCallbacks;
-    }
-
-    public interface QuoteCallbacks {
-        public void productCategoriesUpdated(ArrayList<ProductCategories.Category> productCategories);
-        public void quoteSent(boolean success);
     }
 
     public interface InitialDataCallbacks {
@@ -671,26 +346,8 @@ public class ServicesSingleton implements
         public void addressUpdated(Address address, boolean userSelected);
     }
 
-
-    private enum RequestType {
-        SIGN_IN,
-        GET_QUOTES,
-        GET_QUOTATIONS,
-        SEND_QUOTE,
-        GET_PRODUCT_CATEGORIES,
-        GET_SELLERS,
-
-        PATCH_QUOTATION_STATUS
-    }
-
-    public boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) mApplication.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-            return true;
-        }
-        return false;
+    public QuotationsArrayAdapter getQuotationArrayAdapter() {
+        return mQuotationsArrayAdapter;
     }
 
     // TODO: fix bug of showing a future time

@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.ServicesSingleton;
 
 /**
  * An activity representing a list of Quotations. This activity
@@ -62,7 +61,6 @@ public class QuotationListActivity extends Activity
     @Override
     public void onResume() {
         super.onResume();
-        ServicesSingleton.getInstance(this).getQuotationsRequest();
     }
 
     @Override

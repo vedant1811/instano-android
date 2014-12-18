@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.instano.retailer.instano.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
 
 import java.util.HashMap;
@@ -20,6 +21,7 @@ public class MyApplication extends Application
 
         // Initialize the singletons so their instances
         // are bound to the application process.
+        NetworkRequestsManager.init(this);
         GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
     }
 

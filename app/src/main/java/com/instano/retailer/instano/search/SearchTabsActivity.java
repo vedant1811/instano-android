@@ -15,16 +15,18 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.instano.retailer.instano.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
+import com.instano.retailer.instano.utilities.models.Buyer;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 
 import java.util.ArrayList;
 
 
 public class SearchTabsActivity extends Activity implements
-        ServicesSingleton.QuoteCallbacks {
+        NetworkRequestsManager.QuoteCallbacks {
 
     private final static String[] TABS = {"Search", "Constraints", "Sellers list", "Sellers Map"};
 //    private enum TABS {Search, Constraints, Sellers_list, Sellers_Map};
@@ -58,7 +60,15 @@ public class SearchTabsActivity extends Activity implements
             mSearchFragment.showSearchEmptyError();
             return;
         }
-        ServicesSingleton.getInstance(this).sendQuoteRequest(
+        Buyer buyer = ServicesSingleton.getInstance(this).getBuyer();
+
+        if (buyer == null) {
+            Log.e("SearchTabsActivity", "buyer is null but a search button has been clicked");
+            return;
+        }
+
+        NetworkRequestsManager.instance().sendQuoteRequest(
+                buyer,
                 searchString,
                 mSearchConstraintsFragment.getPriceRange(),
                 mSelectedCategory,
@@ -147,7 +157,7 @@ public class SearchTabsActivity extends Activity implements
 //                            .setTabListener(this));
 //        }
 
-        ServicesSingleton.getInstance(this).registerCallback(this);
+        NetworkRequestsManager.instance().registerCallback(this);
 
     }
 

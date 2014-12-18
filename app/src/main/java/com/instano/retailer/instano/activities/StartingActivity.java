@@ -56,6 +56,10 @@ public class StartingActivity extends GlobalMenuActivity {
             case REQUEST_CODE:
                 if (resultCode == RESULT_OK)
                     onProfileSetUp();
+                // else user must have clicked back button
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
         }
     }
 

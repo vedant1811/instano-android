@@ -7,13 +7,17 @@ import android.os.Handler;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.ServicesSingleton;
 
 
 public class LauncherActivity extends Activity {
 
     // Splash screen timer
     private static int SPLASH_TIME_OUT = 2000;
+
+    @Override
+    public void onBackPressed() {
+        // ignore the press
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

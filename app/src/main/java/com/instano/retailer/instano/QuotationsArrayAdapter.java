@@ -140,7 +140,7 @@ public class QuotationsArrayAdapter extends BaseAdapter {
                 if (mCallbacks != null)
                     mCallbacks.onItemSelected(quotation.id);
                 if (!quotation.isRead()) {
-                    servicesSingleton.setQuotationStatusReadRequest(quotation.id);
+                    NetworkRequestsManager.instance().setQuotationStatusReadRequest(quotation.id);
                     quotation.setStatusRead();
 //                    newTextView.setVisibility(View.GONE);
                     notifyDataSetChanged();
