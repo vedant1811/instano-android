@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.instano.retailer.instano.IntroductionFragment;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 
 public class StartingActivity extends GlobalMenuActivity {
@@ -42,6 +43,9 @@ public class StartingActivity extends GlobalMenuActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_starting);
         mContainerView = findViewById(R.id.container);
+
+        // be sure to initialize ServicesSingleton:
+        ServicesSingleton.getInstance(this);
 
         mIntroductionFragment = new IntroductionFragment();
 

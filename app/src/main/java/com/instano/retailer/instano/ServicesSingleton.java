@@ -79,10 +79,10 @@ public class ServicesSingleton implements
         return mBuyer;
     }
 
-    public boolean signInRequest() {
+    public boolean signIn() {
         String defValue = "create";
         String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, defValue);
-        NetworkRequestsManager.instance().sendSignInRequest(apiKey);
+        NetworkRequestsManager.instance().signInRequest(apiKey);
 
         if (apiKey.equals(defValue))
             return true;
@@ -119,19 +119,17 @@ public class ServicesSingleton implements
             appTracker.send(new HitBuilders.AppViewBuilder().build());
 
             mQuotationsArrayAdapter.clear();
+            mPeriodicWorker.start();
         }
         // TODO: else
     }
 
     public void runPeriodicTasks() {
-        if (mBuyer == null) // i.e. if user is signed in
+        if (mBuyer != null) // i.e. if user is signed in
         {
             NetworkRequestsManager.instance().getQuotesRequest(mBuyer); // also fetches quotations once quotes are fetched
             NetworkRequestsManager.instance().getSellersRequest();
         }
-//        else
-//            signInRequest(false);
-
         if (getProductCategories() == null)
             NetworkRequestsManager.instance().getProductCategoriesRequest();
 
@@ -178,6 +176,8 @@ public class ServicesSingleton implements
         mBuyer = null;
         mProductCategories = null;
 
+        NetworkRequestsManager.instance().registerServices(this);
+
         /*
          * Create a new location client, using the enclosing class to
          * handle callbacks.
@@ -194,8 +194,7 @@ public class ServicesSingleton implements
         mSellersArrayAdapter = new SellersArrayAdapter(startingActivity);
 
         mPeriodicWorker = new PeriodicWorker(this);
-        mPeriodicWorker.start();
-        signInRequest();
+//        signIn();
     }
 
     public static ServicesSingleton getInstance(Activity startingActivity) {

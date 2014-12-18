@@ -89,8 +89,8 @@ public class Log {
 
     public static void v(String tag, String msg) {
         if (BuildConfig.DEBUG)
-            android.util.Log.e(tag, msg);
-        else
-            send("verbose", tag, msg);
+            android.util.Log.v(tag, msg);
+//        else // do not send verbose messages
+//            send("verbose", tag, msg);
     }
 }

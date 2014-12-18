@@ -2,6 +2,7 @@ package com.instano.retailer.instano.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -9,16 +10,35 @@ import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.utilities.models.Buyer;
 
 public class ProfileActivity extends Activity implements NetworkRequestsManager.RegistrationCallback {
 
+    private static final String ALREADY_TAKEN_ERROR = "already taken. Contact us if this is an error";
     EditText mNameEditText;
     EditText mPhoneEditText;
     ViewFlipper mSetUpViewFlipper;
-    private ServicesSingleton mServicesSingleton;
     private Toast mErrorToast;
+
+    Editable mName;
+    Editable mPhone;
+    int mViewFlipperState;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mName = mNameEditText.getText();
+        mPhone = mPhoneEditText.getText();
+        mViewFlipperState = mSetUpViewFlipper.getDisplayedChild();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mNameEditText.setText(mName);
+        mPhoneEditText.setText(mPhone);
+        mSetUpViewFlipper.setDisplayedChild(mViewFlipperState);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +49,6 @@ public class ProfileActivity extends Activity implements NetworkRequestsManager.
         mPhoneEditText = (EditText) findViewById(R.id.phoneEditText);
         mSetUpViewFlipper = (ViewFlipper) findViewById(R.id.setUpViewFlipper);
 
-        mServicesSingleton = ServicesSingleton.getInstance(this);
         NetworkRequestsManager.instance().registerCallback(this);
 
         mPhoneEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -37,7 +56,8 @@ public class ProfileActivity extends Activity implements NetworkRequestsManager.
             public void onFocusChange(View v, boolean hasFocus) {
                 String text = mPhoneEditText.getText().toString();
                 if (!hasFocus && !text.equals("")) {
-                    checkPhoneNumber();
+                    if (checkPhoneNumber())
+                        NetworkRequestsManager.instance().buyerExistsRequest(text);
                 }
             }
         });
@@ -56,10 +76,10 @@ public class ProfileActivity extends Activity implements NetworkRequestsManager.
         // so that we can get the number of digits in `text`
         if (text.replaceAll("\\D", "").length() != 10) {
             mPhoneEditText.setError("Enter 10 digits");
+            mPhoneEditText.requestFocus();
             return false;
         }
         else {
-            NetworkRequestsManager.instance().buyerExistsRequest(text);
             return true;
         }
     }
@@ -80,7 +100,7 @@ public class ProfileActivity extends Activity implements NetworkRequestsManager.
         mSetUpViewFlipper.showNext(); // progressbar
         Buyer buyer = new Buyer(
                 mNameEditText.getText().toString(),
-                mPhoneEditText.getText().toString()
+                "+91 " + mPhoneEditText.getText().toString()
         ) ;
         NetworkRequestsManager.instance().registerRequest(buyer);
     }
@@ -88,7 +108,7 @@ public class ProfileActivity extends Activity implements NetworkRequestsManager.
     @Override
     public void phoneExists(boolean exists) {
         if (exists) {
-            mPhoneEditText.setError("already taken. Contact us if this is an error");
+            mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
             if (mErrorToast != null)
                 mErrorToast.cancel();
         }
@@ -97,12 +117,15 @@ public class ProfileActivity extends Activity implements NetworkRequestsManager.
     @Override
     public void onRegistration(Result result) {
         mSetUpViewFlipper.setDisplayedChild(0); // button
+        mViewFlipperState = 0; // so as update it if activity is not resumed
         if (result == Result.NO_ERROR) {
             setResult(RESULT_OK);
             finish();
         }
-        else if (result == Result.PHONE_EXISTS)
-                mPhoneEditText.requestFocus();
+        else if (result == Result.PHONE_EXISTS) {
+            mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
+            mPhoneEditText.requestFocus();
+        }
         else if (!NetworkRequestsManager.instance().isOnline())
             Toast.makeText(this, "you are not connected to the internet", Toast.LENGTH_LONG).show();
         else {

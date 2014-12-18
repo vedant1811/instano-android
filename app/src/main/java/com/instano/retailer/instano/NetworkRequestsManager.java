@@ -24,7 +24,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -34,6 +33,7 @@ import java.util.HashSet;
 public class NetworkRequestsManager implements Response.ErrorListener{
 
     private static final String TAG = "NetworkRequestsManager";
+    private static final String LOCAL_SERVER_URL = "http://192.168.0.150:3000/";
 
     private final static String API_ERROR_ALREADY_TAKEN = "has already been taken";
     private final static String API_ERROR_IS_BLANK = "can't be blank";
@@ -117,13 +117,13 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                                     // TODO: create a notification based on return value
                                     dataChanged |= mServicesSingleton.getQuotationArrayAdapter().insertIfNeeded(new Quotation(quotationJsonObject));
                                 } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    Log.e(TAG + "getQuotationsRequest.onResponse", response.toString(), e);
                                 }
                             }
                             if (dataChanged)
                                 mServicesSingleton.createNotification();
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Log.e(TAG + "getQuotationsRequest.onResponse", response.toString(), e);
                         }
 
                     }
@@ -143,17 +143,12 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                         try {
                             mServicesSingleton.getSellersArrayAdapter().addAll(response);
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Log.e(TAG + "getSellersRequest.onResponse", response.toString(), e);
                         }
 
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG + ".onErrorResponse", "", error);
-                    }
-                }
+                this
         );
         mRequestQueue.add(request);
     }
@@ -165,7 +160,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                                  HashSet<Integer> sellerIds) {
 
         Quote quote =  new Quote(buyer.id, searchString, priceRange, productCategory, additionalInfo, sellerIds);
-        Log.d(TAG, "sendQuoteRequest request: " + quote.toJsonObject());
+        Log.v(TAG, "sendQuoteRequest request: " + quote.toJsonObject());
 
         JsonObjectRequest request = new JsonObjectRequest(
                 getRequestUrl(RequestType.SEND_QUOTE, -1),
@@ -183,19 +178,18 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                     public void onErrorResponse(VolleyError error) {
                         if (mQuoteCallbacks != null)
                             mQuoteCallbacks.quoteSent(false);
+                        NetworkRequestsManager.this.onErrorResponse(error);
                     }
                 }
         );
         mRequestQueue.add(request);
     }
 
-    public void sendSignInRequest(String apiKey) {
-
-        Buyer buyer = mServicesSingleton.getBuyer();
+    public void signInRequest(String apiKey) {
 
         JsonObjectRequest request = null;
         try {
-            Log.d(TAG, "sign in request: " + new JSONObject().toString());
+            Log.v(TAG, "sign in request: " + new JSONObject().toString());
             JSONObject postData = new JSONObject().put("api_key", apiKey);
             request = new JsonObjectRequest(
                     getRequestUrl(RequestType.SIGN_IN, -1),
@@ -211,7 +205,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                                 else
                                     mServicesSingleton.afterSignIn(null, null);
                             } catch (JSONException e) {
-                                e.printStackTrace();
+                                Log.e(TAG + "signInRequest.onResponse", response.toString(), e);
                                 mServicesSingleton.afterSignIn(null, null);
                             }
                         }
@@ -219,7 +213,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                     this
             );
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e(TAG, "signInRequest.onResponse", e);
         }
         mRequestQueue.add(request);
     }
@@ -228,7 +222,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
 
         try {
             JSONObject jsonRequest = buyer.toJsonObject();
-            Log.d(TAG + ".registerRequest", jsonRequest.toString(4));
+            Log.v(TAG + ".registerRequest", jsonRequest.toString(4));
             JsonObjectRequest request = new JsonObjectRequest(
                     getRequestUrl(RequestType.REGISTER_BUYER, -1), // String url
                     jsonRequest, // JSONObject jsonRequest
@@ -236,39 +230,31 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            Log.d(TAG + ".onResponse", response.toString());
+                            Log.v(TAG + ".onResponse", response.toString());
 
+                            RegistrationCallback.Result result = RegistrationCallback.Result.UNKNOWN_ERROR;
                             try {
                                 Buyer buyer = new Buyer(response);
-                                if (mRegistrationCallback != null)
-                                    mRegistrationCallback.onRegistration(RegistrationCallback.Result.NO_ERROR);
+                                result = RegistrationCallback.Result.NO_ERROR;
                                 mServicesSingleton.afterSignIn(buyer, response.getString("api_key"));
                             } catch (JSONException e) {
-                                Log.e (TAG + ".onResponse", response.toString(),e);
-                                if (mRegistrationCallback != null)
-                                    mRegistrationCallback.onRegistration(RegistrationCallback.Result.UNKNOWN_ERROR);
+                                try {
+                                    if (API_ERROR_ALREADY_TAKEN.equals(response.getJSONArray("phone").getString(0)))
+                                        result = RegistrationCallback.Result.PHONE_EXISTS;
+                                } catch (JSONException e1) {
+                                    Log.e (TAG + ".onResponse", response.toString(), e);
+                                }
                             }
+                            if (mRegistrationCallback != null)
+                                mRegistrationCallback.onRegistration(result);
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            RegistrationCallback.Result result = RegistrationCallback.Result.UNKNOWN_ERROR;
-                            try {
-
-                                String responseBody = new String(error.networkResponse.data, "utf-8");
-                                JSONObject jsonObject = new JSONObject(responseBody);
-                                if (API_ERROR_ALREADY_TAKEN.equals(jsonObject.getString("phone")))
-                                    result = RegistrationCallback.Result.PHONE_EXISTS;
-
-                            } catch ( JSONException e ) {
-                                //Handle a malformed json response
-                                Log.e(TAG, ".registerRequest networkResponse: " + error.networkResponse, error);
-                            } catch (UnsupportedEncodingException e){
-                                Log.e(TAG, ".registerRequest networkResponse: " + error.networkResponse, error);
-                            }
                             if (mRegistrationCallback != null)
-                                mRegistrationCallback.onRegistration(result);
+                                mRegistrationCallback.onRegistration(RegistrationCallback.Result.UNKNOWN_ERROR);
+                            NetworkRequestsManager.this.onErrorResponse(error);
                         }
                     }); // ErrorListener
 
@@ -288,7 +274,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                         @Override
                         public void onResponse(JSONObject response) {
                             try {
-                                Log.e(TAG, ".buyerExistsRequest response: " + response);
+                                Log.v(TAG, ".buyerExistsRequest response: " + response);
                                 mRegistrationCallback.phoneExists(response.getBoolean("exists"));
                             } catch (JSONException e) {
                                 Log.e(TAG, ".buyerExistsRequest error: ", e);
@@ -342,7 +328,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
             Log.e(TAG, "getQuotesRequest exception", e);
             return;
         }
-        Log.e(TAG, "getQuotesRequest requestData" + requestData);
+        Log.v(TAG, "getQuotesRequest requestData" + requestData);
 
         JsonArrayRequest request = new JsonArrayRequest(
                 getRequestUrl(RequestType.GET_QUOTES, -1),
@@ -417,7 +403,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
 
         String SERVER_URL;
         if (BuildConfig.DEBUG)
-            SERVER_URL = "http://192.168.1.11:3000/";
+            SERVER_URL = LOCAL_SERVER_URL;
         else
             SERVER_URL = "http://instano.in/";
 //        final String SERVER_URL = "http://10.42.0.1:3000/";
@@ -458,7 +444,8 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         GET_PRODUCT_CATEGORIES,
         GET_SELLERS,
 
-        BUYER_EXISTS, PATCH_QUOTATION_STATUS
+        BUYER_EXISTS,
+        PATCH_QUOTATION_STATUS
     }
 
     public boolean isOnline() {
@@ -473,13 +460,9 @@ public class NetworkRequestsManager implements Response.ErrorListener{
 
     /**
      * ** Volley **
-     *
-     * BuyersCallbacks method that an error has been occurred with the
-     * provided error code and optional user-readable message.
      */
     @Override
     public void onErrorResponse(VolleyError error) {
-        Log.d(TAG + ".onErrorResponse", "", error);
-
+        Log.e(TAG + ".onErrorResponse", "", error);
     }
 }
