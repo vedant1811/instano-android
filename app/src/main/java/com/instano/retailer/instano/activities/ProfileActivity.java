@@ -2,26 +2,30 @@ package com.instano.retailer.instano.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.text.Editable;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.utilities.models.Buyer;
 
 public class ProfileActivity extends Activity implements NetworkRequestsManager.RegistrationCallback {
 
     private static final String ALREADY_TAKEN_ERROR = "already taken. Contact us if this is an error";
+
     EditText mNameEditText;
     EditText mPhoneEditText;
     ViewFlipper mSetUpViewFlipper;
+    Button mSetUpButton;
+
     private Toast mErrorToast;
 
-    Editable mName;
-    Editable mPhone;
+    CharSequence mName;
+    CharSequence mPhone;
     int mViewFlipperState;
 
     @Override
@@ -48,6 +52,7 @@ public class ProfileActivity extends Activity implements NetworkRequestsManager.
         mNameEditText = (EditText) findViewById(R.id.nameEditText);
         mPhoneEditText = (EditText) findViewById(R.id.phoneEditText);
         mSetUpViewFlipper = (ViewFlipper) findViewById(R.id.setUpViewFlipper);
+        mSetUpButton = (Button) findViewById(R.id.setUpButton);
 
         NetworkRequestsManager.instance().registerCallback(this);
 
@@ -61,6 +66,15 @@ public class ProfileActivity extends Activity implements NetworkRequestsManager.
                 }
             }
         });
+
+        // check if a user exists:
+        Buyer buyer = ServicesSingleton.getInstance(this).getBuyer();
+        if (buyer != null) {
+            mName = buyer.name;
+            mPhone = buyer.phone;
+            // TODO: this and other things, including saving state onPause
+//            mSetUpButton.setText("Update");
+        }
     }
 
     private boolean checkPhoneNumber() {
