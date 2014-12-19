@@ -28,7 +28,7 @@ import java.util.ArrayList;
 public class SearchTabsActivity extends Activity implements
         NetworkRequestsManager.QuoteCallbacks {
 
-    private final static String[] TABS = {"Search", "Constraints", "Sellers list", "Sellers Map"};
+    private final static String[] TABS = {"Search", "Constraints"};
 //    private enum TABS {Search, Constraints, Sellers_list, Sellers_Map};
 
     /**
@@ -48,8 +48,8 @@ public class SearchTabsActivity extends Activity implements
 
     private SearchFragment mSearchFragment;
     private SearchConstraintsFragment mSearchConstraintsFragment;
-    private SellersListFragment mSellersListFragment;
-    private SellersMapFragment mSellersMapFragment;
+//    private SellersListFragment mSellersListFragment;
+//    private SellersMapFragment mSellersMapFragment;
 
     private ProductCategories.Category mSelectedCategory;
 
@@ -73,17 +73,14 @@ public class SearchTabsActivity extends Activity implements
                 mSearchConstraintsFragment.getPriceRange(),
                 mSelectedCategory,
                 mSearchConstraintsFragment.getAdditionalInfo(),
-                mSellersListFragment.getSellerIds()
+//                mSellersListFragment.getSellerIds()
+                null
         );
-        sendingQuote(true);
+//        sendingQuote(true);
     }
 
     public void nextButtonClicked(View view) {
         mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1, true);
-    }
-
-    public void mapButtonClicked(View view) {
-        mViewPager.setCurrentItem(3, true);
     }
 
     @Override
@@ -91,11 +88,11 @@ public class SearchTabsActivity extends Activity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_tabs);
 
-        mSellersListFragment = new SellersListFragment();
+//        mSellersListFragment = new SellersListFragment();
         mSearchFragment = SearchFragment.newInstance();
         mSearchConstraintsFragment = SearchConstraintsFragment.newInstance();
 
-        mSellersMapFragment = new SellersMapFragment();
+//        mSellersMapFragment = new SellersMapFragment();
         mViewPager = (ViewPager) findViewById(R.id.pager);
 
         // Set up the action bar.
@@ -109,7 +106,6 @@ public class SearchTabsActivity extends Activity implements
         // Set up the ViewPager with the sections adapter.
 
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(2);
         mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int i, float v, int i2) {
@@ -232,13 +228,13 @@ public class SearchTabsActivity extends Activity implements
             finish();
         } else {
             Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG).show();
-            sendingQuote(false);
+//            sendingQuote(false);
         }
     }
-
-    private void sendingQuote(boolean isSending) {
-        mSellersListFragment.sendingQuote(isSending);
-    }
+//
+//    private void sendingQuote(boolean isSending) {
+//        mSellersListFragment.sendingQuote(isSending);
+//    }
 
     public void onCategorySelected(ProductCategories.Category selectedCategory) {
 
@@ -271,10 +267,10 @@ public class SearchTabsActivity extends Activity implements
                     return mSearchFragment;
                 case 1:
                     return mSearchConstraintsFragment;
-                case 2:
-                    return mSellersListFragment;
-                case 3:
-                    return mSellersMapFragment;
+//                case 2:
+//                    return mSellersListFragment;
+//                case 3:
+//                    return mSellersMapFragment;
             }
 
             throw new IllegalArgumentException("Invalid parameter position: " + position);
@@ -282,7 +278,7 @@ public class SearchTabsActivity extends Activity implements
 
         @Override
         public int getCount() {
-            return 4;
+            return 2;
         }
 
         @Override

@@ -116,15 +116,17 @@ public class Quote {
 
     public JSONObject toJsonObject() {
         try {
-            JSONArray sellerIds = new JSONArray(this.sellerIds);
 
             JSONObject quoteParamsJsonObject = new JSONObject()
                     .put("buyer_id", buyerId)
                     .put("search_string", searchString)
                     .put("additional_info", additionalInfo)
                     .put("price_range", priceRange)
-                    .put("product_category", productCategory.toJsonObject())
-                    .put("seller_ids", sellerIds);
+                    .put("product_category", productCategory.toJsonObject());
+
+            if (sellerIds != null && sellerIds.size() > 0) {
+                quoteParamsJsonObject.put("seller_ids", new JSONArray(this.sellerIds));
+            }
 
             if (id != -1)
                 quoteParamsJsonObject.put ("id", id);

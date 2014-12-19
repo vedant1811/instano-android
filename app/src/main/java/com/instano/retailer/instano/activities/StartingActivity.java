@@ -8,11 +8,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.instano.retailer.instano.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 
-public class StartingActivity extends GlobalMenuActivity {
+public class StartingActivity extends GlobalMenuActivity implements ServicesSingleton.SignInCallbacks {
 
     private static final String SEARCH_ICON_HELP = "You can Search for products by clicking the icon in the action bar";
     private static final int SETUP_REQUEST_CODE = 1001;
@@ -50,10 +51,26 @@ public class StartingActivity extends GlobalMenuActivity {
         // be sure to initialize ServicesSingleton:
         ServicesSingleton instance = ServicesSingleton.getInstance(this);
 
-        if (instance.signIn())
+        if (instance.signIn(this)) {
             mText = "Welcome back! " + SEARCH_ICON_HELP;
-        else
+            mStatus = Status.SIGNING_IN;
+        }
+        else {
             mText = mTextView.getText();
+            mStatus = Status.FIRST_TIME;
+        }
+    }
+
+    @Override
+    public void signedIn(boolean success) {
+        if (success) {
+            mStatus = Status.SIGNED_IN;
+            return;
+        }
+        else if (NetworkRequestsManager.instance().isOnline(true))
+            Toast.makeText(this, "sign in error!\ncreate a new profile or contact us", Toast.LENGTH_LONG).show();
+
+        mStatus = Status.ERROR_SIGN_IN;
     }
 
     /**
@@ -86,8 +103,14 @@ public class StartingActivity extends GlobalMenuActivity {
     }
 
     public void getStartedClicked(View view) {
-        Intent intent = new Intent(this, ProfileActivity.class);
-        startActivityForResult(intent, SETUP_REQUEST_CODE);
+        switch (mStatus) {
+            case FIRST_TIME:
+                Intent intent = new Intent(this, ProfileActivity.class);
+                startActivityForResult(intent, SETUP_REQUEST_CODE);
+                break;
+            default:
+                search();
+        }
     }
 
 }

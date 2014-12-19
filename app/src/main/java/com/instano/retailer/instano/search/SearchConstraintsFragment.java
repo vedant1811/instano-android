@@ -12,8 +12,8 @@ import android.widget.TextView;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.MultiSpinner;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.library.RangeSeekBar;
+import com.instano.retailer.instano.utilities.models.ProductCategories;
 
 
 /**
@@ -22,7 +22,8 @@ import com.instano.retailer.instano.utilities.library.RangeSeekBar;
  * create an instance of this fragment.
  *
  */
-public class SearchConstraintsFragment extends Fragment implements MultiSpinner.MultiSpinnerListener {
+public class SearchConstraintsFragment extends Fragment
+        implements MultiSpinner.MultiSpinnerListener, View.OnClickListener {
 
     private final int MIN_OF_RANGE_SEEK_BAR = 1;
     private final int MAX_OF_RANGE_SEEK_BAR = 10;
@@ -31,6 +32,8 @@ public class SearchConstraintsFragment extends Fragment implements MultiSpinner.
 
     private MultiSpinner mBrandsMultiSpinner;
     private TextView mPriceRangeTextView;
+
+    private View[] overlayViews;
 
     /**
      * Use this factory method to create a new instance of
@@ -60,6 +63,13 @@ public class SearchConstraintsFragment extends Fragment implements MultiSpinner.
         mAdditionalInfoEditText = (EditText) view.findViewById(R.id.additionalInfoEditText);
         mBrandsMultiSpinner = (MultiSpinner) view.findViewById(R.id.brandsMultiSpinner);
         mPriceRangeTextView = (TextView) view.findViewById(R.id.priceRangeTextView);
+
+        overlayViews = new View[3];
+        overlayViews[0] = view.findViewById(R.id.overlay);
+        overlayViews[1] = view.findViewById(R.id.overlayTextView);
+        overlayViews[2] = view.findViewById(R.id.overlayTextView2);
+
+        overlayViews[0].setOnClickListener(this);
 
         // setup brands multi spinner:
         {
@@ -96,6 +106,16 @@ public class SearchConstraintsFragment extends Fragment implements MultiSpinner.
             parent.addView(seekBar, params);
         }
         return view;
+    }
+
+    /**
+     * Overlay clicked
+     */
+    @Override
+    public void onClick(View v) {
+        // TODO: fadeout
+        for(View view : overlayViews)
+            view.setVisibility(View.GONE);
     }
 
     @Override

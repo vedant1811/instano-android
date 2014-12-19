@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.activities.ProfileActivity;
 import com.instano.retailer.instano.search.SearchTabsActivity;
 
@@ -21,6 +20,8 @@ public abstract class GlobalMenuActivity extends Activity {
 
     private static final int SHARE_REQUEST_CODE = 998;
     private static final int MESSAGE_REQUEST_CODE = 997;
+
+    protected Status mStatus;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -64,12 +65,17 @@ public abstract class GlobalMenuActivity extends Activity {
     }
 
     protected void search() {
-        if (ServicesSingleton.getInstance(this).getBuyer() == null) {
-            Toast.makeText(this, "please create a profile first", Toast.LENGTH_LONG).show();
-            profile();
+        switch (mStatus) {
+            case SIGNED_IN:
+                startActivity(new Intent(this, SearchTabsActivity.class));
+                break;
+            case SIGNING_IN:
+                Toast.makeText(this, "Please wait while we sign you in", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                Toast.makeText(this, "please create a profile first", Toast.LENGTH_LONG).show();
+                profile();
         }
-        else
-            startActivity(new Intent(this, SearchTabsActivity.class));
     }
 
     protected void profile() {
@@ -114,4 +120,10 @@ public abstract class GlobalMenuActivity extends Activity {
         return true;
     }
 
+    protected enum Status {
+        SIGNED_IN,
+        SIGNING_IN,
+        ERROR_SIGN_IN,
+        FIRST_TIME
+    }
 }

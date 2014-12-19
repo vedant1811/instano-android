@@ -12,6 +12,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
@@ -83,11 +84,11 @@ public class ServicesSingleton implements
      * tries to sign in if login details are saved
      * @return true if login details are saved
      */
-    public boolean signIn() {
+    public boolean signIn(@NonNull SignInCallbacks callbacks) {
         String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, null);
 
         if (apiKey != null) {
-            NetworkRequestsManager.instance().signInRequest(apiKey);
+            NetworkRequestsManager.instance().signInRequest(apiKey, callbacks);
             return true;
         }
         else
@@ -334,6 +335,10 @@ public class ServicesSingleton implements
 
     public void registerCallback (AddressCallbacks addressCallbacks) {
         mAddressCallbacks = addressCallbacks;
+    }
+
+    public interface SignInCallbacks {
+        public void signedIn(boolean success);
     }
 
     public interface InitialDataCallbacks {

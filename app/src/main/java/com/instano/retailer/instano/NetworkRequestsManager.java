@@ -34,7 +34,7 @@ import java.util.HashSet;
 public class NetworkRequestsManager implements Response.ErrorListener{
 
     private static final String TAG = "NetworkRequestsManager";
-    private static final String LOCAL_SERVER_URL = "http://192.168.1.17:3000/";
+    private static final String LOCAL_SERVER_URL = "http://instano.in/";
 
     private final static String API_ERROR_ALREADY_TAKEN = "has already been taken";
     private final static String API_ERROR_IS_BLANK = "can't be blank";
@@ -186,28 +186,33 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         mRequestQueue.add(request);
     }
 
-    public void signInRequest(String apiKey) {
+    public void signInRequest(@NonNull String apiKey, @NonNull final ServicesSingleton.SignInCallbacks callback) {
 
         JsonObjectRequest request = null;
         try {
-            Log.v(TAG, "sign in request: " + new JSONObject().toString());
             JSONObject postData = new JSONObject().put("api_key", apiKey);
+            Log.v(TAG, "sign in request: " + postData.toString());
             request = new JsonObjectRequest(
                     getRequestUrl(RequestType.SIGN_IN, -1),
                     postData,
                     new Response.Listener<JSONObject>() {
                         @Override
                         public void onResponse(JSONObject response) {
+                            Log.d(TAG + "signInRequest.onResponse", response.toString());
                             try {
                                 if (response.getInt("id") != -1) {
                                     Buyer buyer = new Buyer(response);
                                     mServicesSingleton.afterSignIn(buyer, response.getString("api_key"));
+                                    callback.signedIn(true);
                                 }
-                                else
+                                else {
                                     mServicesSingleton.afterSignIn(null, null);
+                                    callback.signedIn(false);
+                                }
                             } catch (JSONException e) {
                                 Log.e(TAG + "signInRequest.onResponse", response.toString(), e);
                                 mServicesSingleton.afterSignIn(null, null);
+                                callback.signedIn(false);
                             }
                         }
                     },
