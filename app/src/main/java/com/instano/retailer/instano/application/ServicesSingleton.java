@@ -24,6 +24,7 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
+import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
@@ -47,6 +48,7 @@ public class ServicesSingleton implements
     private final static String TAG = "ServicesSingleton";
 
     private final static String KEY_BUYER_API_KEY = "com.instano.retailer.instano.application.ServicesSingleton.buyer_api_key";
+    private final static String KEY_FIRST_TIME = "com.instano.retailer.instano.application.ServicesSingleton.first_time";
 
     public static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
 
@@ -54,6 +56,7 @@ public class ServicesSingleton implements
 
     private final MyApplication mApplication;
     private SharedPreferences mSharedPreferences;
+    private boolean mFirstTime;
 
     /* location variables */
     private LocationClient mLocationClient;
@@ -64,7 +67,7 @@ public class ServicesSingleton implements
 
     private InitialDataCallbacks mInitialDataCallbacks;
     private AddressCallbacks mAddressCallbacks;
-    /* network variables */
+
     private Buyer mBuyer;
 
     private PeriodicWorker mPeriodicWorker;
@@ -90,7 +93,10 @@ public class ServicesSingleton implements
     }
 
     public boolean firstTime() {
-        return !mSharedPreferences.contains(KEY_BUYER_API_KEY);
+        if (BuildConfig.DEBUG)
+            return true;
+        else
+            return mFirstTime;
     }
 
     /**
@@ -104,6 +110,7 @@ public class ServicesSingleton implements
 
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString(KEY_BUYER_API_KEY, apiKey); // clear saved API key if null
+        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
         editor.apply();
 
         if (buyer != null) {
@@ -165,6 +172,7 @@ public class ServicesSingleton implements
         mApplication = application;
         mSharedPreferences = mApplication.getSharedPreferences(
                 "com.instano.SHARED_PREFERENCES_FILE", Context.MODE_PRIVATE);
+        mFirstTime = mSharedPreferences.getBoolean(KEY_FIRST_TIME, false);
         mUserAddress = null;
         mLastLocation = null;
         mBuyer = null;

@@ -10,6 +10,8 @@ import com.instano.retailer.instano.application.MyApplication;
  */
 public class Log {
 
+    public static final String TIMER_TAG = "timer";
+
     private static Tracker sAppTracker;
 
     private Log() {

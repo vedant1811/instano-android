@@ -111,7 +111,7 @@ public class Quote {
      * @return Human readable time elapsed. Eg: "42 minutes ago"
      */
     public String getPrettyTimeElapsed() {
-        return ServicesSingleton.getInstance(null).getPrettyTimeElapsed(updatedAt);
+        return ServicesSingleton.instance().getPrettyTimeElapsed(updatedAt);
     }
 
     public JSONObject toJsonObject() {

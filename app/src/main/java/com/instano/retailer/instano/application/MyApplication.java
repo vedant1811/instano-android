@@ -21,6 +21,8 @@ public class MyApplication extends Application
         // Initialize the singletons so their instances
         // are bound to the application process.
         NetworkRequestsManager.init(this);
+        ServicesSingleton.init(this);
+        DataManager.init();
         GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
     }
 

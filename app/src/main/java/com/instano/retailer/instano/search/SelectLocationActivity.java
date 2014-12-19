@@ -66,7 +66,7 @@ public class SelectLocationActivity extends Activity implements GoogleMap.OnMapL
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
         LatLng startLatLng;
-        ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(this);
+        ServicesSingleton servicesSingleton = ServicesSingleton.instance();
         Location userLocation = servicesSingleton.getUserLocation();
         if (userLocation != null)
             startLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
@@ -173,7 +173,7 @@ public class SelectLocationActivity extends Activity implements GoogleMap.OnMapL
 
     private void sendLocation(Address address) {
         if (!SELECT_LOCATION.equals(mSelectedLocationMarker.getTitle())) {// i.e. if location has been updated
-            ServicesSingleton.getInstance(this).userSelectsLocation(
+            ServicesSingleton.instance().userSelectsLocation(
                     mSelectedLocationMarker.getPosition(), address);
             Log.d("address", "address updated by MapActivity:" + address);
         }
