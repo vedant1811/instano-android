@@ -25,7 +25,7 @@ public class StartingActivity extends GlobalMenuActivity {
     @Override
     public void onBackPressed() {
         if (mIsExiting)
-            super.onBackPressed();
+            super.onBackPressed(); // basically exit
         else {
             Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
             mIsExiting = true;

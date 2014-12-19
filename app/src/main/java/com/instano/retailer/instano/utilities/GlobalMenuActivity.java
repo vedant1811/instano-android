@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.activities.ProfileActivity;
+import com.instano.retailer.instano.search.SearchTabsActivity;
 
 /**
  * Base class for activities with a common menu (menu.global)
@@ -68,7 +69,7 @@ public abstract class GlobalMenuActivity extends Activity {
             profile();
         }
         else
-            Toast.makeText(this, "not yet implemented", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, SearchTabsActivity.class));
     }
 
     protected void profile() {
@@ -101,7 +102,7 @@ public abstract class GlobalMenuActivity extends Activity {
         try {
             startActivityForResult(intent, SHARE_REQUEST_CODE);
         } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(this, "There are no email clients installed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "There are no clients to share links", Toast.LENGTH_SHORT).show();
         }
     }
 
