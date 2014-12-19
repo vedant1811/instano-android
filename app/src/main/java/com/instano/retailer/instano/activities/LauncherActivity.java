@@ -12,7 +12,7 @@ import com.instano.retailer.instano.R;
 public class LauncherActivity extends Activity {
 
     // Splash screen timer
-    private static int SPLASH_TIME_OUT = 2000;
+    private static int SPLASH_TIME_OUT = 1500;
 
     @Override
     public void onBackPressed() {

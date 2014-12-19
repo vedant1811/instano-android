@@ -1,6 +1,5 @@
 package com.instano.retailer.instano.activities;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,9 +10,11 @@ import android.widget.ViewFlipper;
 import com.instano.retailer.instano.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
+import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.models.Buyer;
 
-public class ProfileActivity extends Activity implements NetworkRequestsManager.RegistrationCallback {
+public class ProfileActivity extends GlobalMenuActivity
+        implements NetworkRequestsManager.RegistrationCallback {
 
     private static final String ALREADY_TAKEN_ERROR = "already taken. Contact us if this is an error";
 

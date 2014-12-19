@@ -79,13 +79,17 @@ public class ServicesSingleton implements
         return mBuyer;
     }
 
+    /**
+     * tries to sign in if login details are saved
+     * @return true if login details are saved
+     */
     public boolean signIn() {
-        String defValue = "create";
-        String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, defValue);
-        NetworkRequestsManager.instance().signInRequest(apiKey);
+        String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, null);
 
-        if (apiKey.equals(defValue))
+        if (apiKey != null) {
+            NetworkRequestsManager.instance().signInRequest(apiKey);
             return true;
+        }
         else
             return false;
     }

@@ -45,13 +45,15 @@ public class StartingActivity extends GlobalMenuActivity {
         mContainerView = findViewById(R.id.container);
 
         // be sure to initialize ServicesSingleton:
-        ServicesSingleton.getInstance(this);
+        ServicesSingleton instance = ServicesSingleton.getInstance(this);
 
         mIntroductionFragment = new IntroductionFragment();
 
         getFragmentManager().beginTransaction()
                 .replace(mContainerView.getId(), mIntroductionFragment)
                 .commit();
+
+//        if (instance.signIn())
     }
 
     @Override

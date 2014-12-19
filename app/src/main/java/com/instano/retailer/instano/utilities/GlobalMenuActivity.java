@@ -7,11 +7,16 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.ServicesSingleton;
+import com.instano.retailer.instano.activities.ProfileActivity;
 
 /**
+ * Base class for activities with a common menu (menu.global)
+ * different actions call different methods that may be overridden by implementing classes
+ *
  * Created by vedant on 15/12/14.
  */
-public class GlobalMenuActivity extends Activity {
+public abstract class GlobalMenuActivity extends Activity {
 
     private static final int SHARE_REQUEST_CODE = 998;
     private static final int MESSAGE_REQUEST_CODE = 997;
@@ -33,41 +38,71 @@ public class GlobalMenuActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        Intent intent;
         switch (id) {
 
 //            case R.id.action_about_us:
 //                return true;
 
+            case R.id.action_search:
+                search();
+                return true;
+
+            case R.id.action_profile:
+                profile();
+                return true;
+
             case R.id.action_share:
-                intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Instano Retailer");
-                String sAux = "Let me recommend you this application\n";
-                sAux = sAux + "http://play.google.com/store/apps/details?id=com.instano.retailer";
-                intent.putExtra(Intent.EXTRA_TEXT, sAux);
-                intent = Intent.createChooser(intent, "choose one");
-                try {
-                    startActivityForResult(intent, SHARE_REQUEST_CODE);
-                } catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(this, "There are no email clients installed", Toast.LENGTH_SHORT).show();
-                }
+                share();
                 return true;
 
             case R.id.action_message:
-                intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("message/rfc822");
-                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"contact@instano.in"});
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Contacting instano");
-                intent = Intent.createChooser(intent, "Send mail");
-                try {
-                    startActivityForResult(intent, MESSAGE_REQUEST_CODE);
-                } catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(this, "There are no email clients installed", Toast.LENGTH_SHORT).show();
-                }
+                message();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    protected void search() {
+        if (ServicesSingleton.getInstance(this).getBuyer() == null) {
+            Toast.makeText(this, "please create a profile first", Toast.LENGTH_LONG).show();
+            profile();
+        }
+        else
+            Toast.makeText(this, "not yet implemented", Toast.LENGTH_LONG).show();
+    }
+
+    protected void profile() {
+        startActivity(new Intent(this, ProfileActivity.class));
+    }
+
+    protected void message() {
+        Intent intent;
+        intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("message/rfc822");
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"contact@instano.in"});
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Contacting instano");
+        intent = Intent.createChooser(intent, "Send mail");
+        try {
+            startActivityForResult(intent, MESSAGE_REQUEST_CODE);
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(this, "There are no email clients installed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    protected void share() {
+        Intent intent;
+        intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Instano Retailer");
+        String sAux = "Let me recommend you this application\n";
+        sAux = sAux + "http://play.google.com/store/apps/details?id=com.instano.retailer";
+        intent.putExtra(Intent.EXTRA_TEXT, sAux);
+        intent = Intent.createChooser(intent, "choose one");
+        try {
+            startActivityForResult(intent, SHARE_REQUEST_CODE);
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(this, "There are no email clients installed", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

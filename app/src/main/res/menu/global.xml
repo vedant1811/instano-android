@@ -3,6 +3,9 @@
         android:title="search"
         android:icon="@android:drawable/ic_menu_search"
         android:showAsAction="always"/>
+    <item android:id="@+id/action_profile"
+        android:title="Profile"
+        android:showAsAction="never" />
     <item android:id="@+id/action_share"
         android:title="Share"
         android:showAsAction="never" />
