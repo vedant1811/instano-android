@@ -1,4 +1,4 @@
-package com.instano.retailer.instano;
+package com.instano.retailer.instano.application;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -12,13 +12,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.instano.retailer.instano.utilities.MyApplication;
+import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.utilities.library.JsonArrayRequest;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.library.StringRequest;
 import com.instano.retailer.instano.utilities.models.Buyer;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
-import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
 
 import org.json.JSONArray;
@@ -42,8 +41,6 @@ public class NetworkRequestsManager implements Response.ErrorListener{
     private static NetworkRequestsManager sInstance;
 
     private final MyApplication mApplication;
-
-    private ServicesSingleton mServicesSingleton;
 
     private QuoteCallbacks mQuoteCallbacks;
     private RegistrationCallback mRegistrationCallback;
@@ -77,7 +74,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         mRequestQueue = Volley.newRequestQueue(application);
     }
 
-    public static void init(MyApplication application) {
+    /*package*/ static void init(MyApplication application) {
         sInstance = new NetworkRequestsManager(application);
     }
 
@@ -86,10 +83,6 @@ public class NetworkRequestsManager implements Response.ErrorListener{
             throw new IllegalStateException("NetworkRequestsManager.init() not called");
 
         return sInstance;
-    }
-
-    public void registerServices(ServicesSingleton servicesSingleton){
-        mServicesSingleton = servicesSingleton;
     }
 
     public void getQuotationsRequest (@NonNull Buyer buyer) {
@@ -110,26 +103,47 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                     @Override
                     public void onResponse(JSONArray response) {
                         Log.v(TAG, "Quotations response:" + response.toString());
-                        try {
-                            boolean dataChanged = false;
-                            for (int i = 0; i < response.length(); i++){
-                                JSONObject quotationJsonObject = response.getJSONObject(i);
-                                try {
-                                    // TODO: create a notification based on return value
-                                    dataChanged |= mServicesSingleton.getQuotationArrayAdapter().insertIfNeeded(new Quotation(quotationJsonObject));
-                                } catch (JSONException e) {
-                                    Log.e(TAG + "getQuotationsRequest.onResponse", response.toString(), e);
-                                }
-                            }
-                            if (dataChanged)
-                                mServicesSingleton.createNotification();
-                        } catch (JSONException e) {
-                            Log.e(TAG + "getQuotationsRequest.onResponse", response.toString(), e);
-                        }
-
+                        boolean dataChanged = DataManager.instance().updateQuotations(response);
+                        if (dataChanged)
+                            ServicesSingleton.instance().createNotification();
                     }
                 },
                 this
+        );
+        mRequestQueue.add(request);
+    }
+
+    public void getQuotesRequest (@NonNull final Buyer buyer) {
+
+        JSONObject requestData;
+        try {
+            requestData = new JSONObject()
+                    .put("id", buyer.id);
+        } catch (JSONException e) {
+            Log.e(TAG, "getQuotesRequest exception", e);
+            return;
+        }
+        Log.v(TAG, "getQuotesRequest requestData" + requestData);
+
+        JsonArrayRequest request = new JsonArrayRequest(
+                getRequestUrl(RequestType.GET_QUOTES, -1),
+                requestData,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.v(TAG, "Quotes response:" + response.toString());
+                        DataManager.instance().updateQuotes(response);
+                        // fetch quotations once quotes are fetched:
+                        getQuotationsRequest(buyer);
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e(TAG, ".getQuotesRequest networkResponse: " + error.networkResponse, error);
+                    }
+                }
         );
         mRequestQueue.add(request);
     }
@@ -141,12 +155,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                     @Override
                     public void onResponse(JSONArray response) {
                         Log.v(TAG, "Sellers response:" + response.toString());
-                        try {
-                            mServicesSingleton.getSellersArrayAdapter().addAll(response);
-                        } catch (JSONException e) {
-                            Log.e(TAG + "getSellersRequest.onResponse", response.toString(), e);
-                        }
-
+                        DataManager.instance().updateSellers(response);
                     }
                 },
                 this
@@ -202,16 +211,16 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                             try {
                                 if (response.getInt("id") != -1) {
                                     Buyer buyer = new Buyer(response);
-                                    mServicesSingleton.afterSignIn(buyer, response.getString("api_key"));
+                                    ServicesSingleton.instance().afterSignIn(buyer, response.getString("api_key"));
                                     callback.signedIn(true);
                                 }
                                 else {
-                                    mServicesSingleton.afterSignIn(null, null);
+                                    ServicesSingleton.instance().afterSignIn(null, null);
                                     callback.signedIn(false);
                                 }
                             } catch (JSONException e) {
                                 Log.e(TAG + "signInRequest.onResponse", response.toString(), e);
-                                mServicesSingleton.afterSignIn(null, null);
+                                ServicesSingleton.instance().afterSignIn(null, null);
                                 callback.signedIn(false);
                             }
                         }
@@ -242,7 +251,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                             try {
                                 Buyer buyer = new Buyer(response);
                                 result = RegistrationCallback.Result.NO_ERROR;
-                                mServicesSingleton.afterSignIn(buyer, response.getString("api_key"));
+                                ServicesSingleton.instance().afterSignIn(buyer, response.getString("api_key"));
                             } catch (JSONException e) {
                                 try {
                                     if (API_ERROR_ALREADY_TAKEN.equals(response.getJSONArray("phone").getString(0)))
@@ -308,61 +317,15 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.v(TAG, "ProductCategories response:" + response.toString());
-                        ProductCategories productCategories = new ProductCategories(response, true);
-                        mServicesSingleton.setProductCategories(productCategories);
-                        if (mQuoteCallbacks != null)
-                            mQuoteCallbacks.productCategoriesUpdated(productCategories.getProductCategories());
+                        boolean updated = DataManager.instance().updateProductCategories(response);
+                        if (mQuoteCallbacks != null && updated)
+                            mQuoteCallbacks.productCategoriesUpdated(DataManager.instance().getProductCategories());
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, ".getProductCategoriesRequest network response: " + error.networkResponse, error);
-                    }
-                }
-        );
-        mRequestQueue.add(request);
-    }
-
-    public void getQuotesRequest (@NonNull final Buyer buyer) {
-
-        JSONObject requestData;
-        try {
-            requestData = new JSONObject()
-                    .put("id", buyer.id);
-        } catch (JSONException e) {
-            Log.e(TAG, "getQuotesRequest exception", e);
-            return;
-        }
-        Log.v(TAG, "getQuotesRequest requestData" + requestData);
-
-        JsonArrayRequest request = new JsonArrayRequest(
-                getRequestUrl(RequestType.GET_QUOTES, -1),
-                requestData,
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.v(TAG, "Quotes response:" + response.toString());
-                        for (int i = 0; i < response.length(); i++){
-                            try {
-                                JSONObject quoteJsonObject = response.getJSONObject(i);
-                                Quote quote = new Quote(quoteJsonObject);
-                                if (quote.buyerId == buyer.id)
-                                    mServicesSingleton.getQuotationArrayAdapter().insertAtStart(quote);
-                            } catch (JSONException e) {
-                                Log.e(TAG, ".getQuotesRequest JSONException: ", e);
-                            }
-                        }
-
-                        // fetch quotations once quotes are fetched:
-                        getQuotationsRequest(buyer);
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, ".getQuotesRequest networkResponse: " + error.networkResponse, error);
                     }
                 }
         );

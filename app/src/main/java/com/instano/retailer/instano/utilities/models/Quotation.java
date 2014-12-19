@@ -1,6 +1,6 @@
 package com.instano.retailer.instano.utilities.models;
 
-import com.instano.retailer.instano.ServicesSingleton;
+import com.instano.retailer.instano.application.ServicesSingleton;
 
 import org.json.JSONException;
 import org.json.JSONObject;

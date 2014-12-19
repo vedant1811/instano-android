@@ -3,7 +3,7 @@ package com.instano.retailer.instano.utilities.library;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.instano.retailer.instano.BuildConfig;
-import com.instano.retailer.instano.utilities.MyApplication;
+import com.instano.retailer.instano.application.MyApplication;
 
 /**
  * Created by vedant on 17/12/14.

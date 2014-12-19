@@ -4,7 +4,7 @@ import android.graphics.PointF;
 import android.location.Location;
 import android.support.annotation.NonNull;
 
-import com.instano.retailer.instano.ServicesSingleton;
+import com.instano.retailer.instano.application.ServicesSingleton;
 
 import org.json.JSONArray;
 import org.json.JSONException;

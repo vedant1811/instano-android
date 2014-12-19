@@ -7,9 +7,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.instano.retailer.instano.NetworkRequestsManager;
+import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.ServicesSingleton;
+import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.models.Buyer;
 

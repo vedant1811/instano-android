@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.ServicesSingleton;
+import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.MultiSpinner;
 import com.instano.retailer.instano.utilities.library.RangeSeekBar;
 import com.instano.retailer.instano.utilities.models.ProductCategories;

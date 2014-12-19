@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.instano.retailer.instano.NetworkRequestsManager;
+import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.ServicesSingleton;
+import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.QuotationListFragment;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;

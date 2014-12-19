@@ -1,6 +1,5 @@
-package com.instano.retailer.instano;
+package com.instano.retailer.instano.application;
 
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -25,19 +24,15 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
+import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
-import com.instano.retailer.instano.utilities.MyApplication;
 import com.instano.retailer.instano.utilities.PeriodicWorker;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.library.old.QuotationsArrayAdapter;
-import com.instano.retailer.instano.utilities.library.old.SellersArrayAdapter;
 import com.instano.retailer.instano.utilities.models.Buyer;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -51,7 +46,7 @@ public class ServicesSingleton implements
 
     private final static String TAG = "ServicesSingleton";
 
-    private final static String KEY_BUYER_API_KEY = "com.instano.retailer.instano.ServicesSingleton.buyer_api_key";
+    private final static String KEY_BUYER_API_KEY = "com.instano.retailer.instano.application.ServicesSingleton.buyer_api_key";
 
     public static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
 
@@ -72,9 +67,6 @@ public class ServicesSingleton implements
     /* network variables */
     private Buyer mBuyer;
 
-    private QuotationsArrayAdapter mQuotationsArrayAdapter;
-    private SellersArrayAdapter mSellersArrayAdapter;
-    private ProductCategories mProductCategories;
     private PeriodicWorker mPeriodicWorker;
 
     @Nullable
@@ -121,7 +113,7 @@ public class ServicesSingleton implements
             appTracker.setClientId(String.valueOf(mBuyer.id));
             appTracker.send(new HitBuilders.AppViewBuilder().build());
 
-            mQuotationsArrayAdapter.clear();
+            DataManager.instance().onNewBuyer();
             mPeriodicWorker.start();
         }
         // TODO: else
@@ -133,7 +125,7 @@ public class ServicesSingleton implements
             NetworkRequestsManager.instance().getQuotesRequest(mBuyer); // also fetches quotations once quotes are fetched
             NetworkRequestsManager.instance().getSellersRequest();
         }
-        if (getProductCategories() == null)
+        if (DataManager.instance().getProductCategories() == null)
             NetworkRequestsManager.instance().getProductCategoriesRequest();
 
     }
@@ -159,27 +151,23 @@ public class ServicesSingleton implements
 
     }
 
-    public ArrayList<ProductCategories.Category> getProductCategories() {
-        if (mProductCategories != null)
-            return mProductCategories.getProductCategories();
-        else
-            return null;
+    /*package*/ static void init(MyApplication application) {
+        sInstance = new ServicesSingleton(application);
     }
 
-    /*package*/ void setProductCategories(ProductCategories productCategories) {
-        mProductCategories = productCategories;
+    public static ServicesSingleton instance() {
+        if (sInstance == null)
+            throw new IllegalStateException("ServicesSingleton.Init() never called");
+        return sInstance;
     }
 
-    private ServicesSingleton(Activity startingActivity) {
-        mApplication = (MyApplication) startingActivity.getApplication();
+    private ServicesSingleton(MyApplication application) {
+        mApplication = application;
         mSharedPreferences = mApplication.getSharedPreferences(
                 "com.instano.SHARED_PREFERENCES_FILE", Context.MODE_PRIVATE);
         mUserAddress = null;
         mLastLocation = null;
         mBuyer = null;
-        mProductCategories = null;
-
-        NetworkRequestsManager.instance().registerServices(this);
 
         /*
          * Create a new location client, using the enclosing class to
@@ -190,22 +178,8 @@ public class ServicesSingleton implements
         checkPlayServices(); // not performing checkUserAccount
         // see http://www.androiddesignpatterns.com/2013/01/google-play-services-setup.html
 
-
-        // TODO: fix this. create only when needed. then move ServicesSingleton.init() to MyApplication
-        // ref: http://www.devahead.com/blog/2011/06/extending-the-android-application-class-and-dealing-with-singleton/
-        mQuotationsArrayAdapter = new QuotationsArrayAdapter(startingActivity);
-        mSellersArrayAdapter = new SellersArrayAdapter(startingActivity);
-
         mPeriodicWorker = new PeriodicWorker(this);
 //        signIn();
-    }
-
-    public static ServicesSingleton getInstance(Activity startingActivity) {
-
-        if(sInstance == null)
-            sInstance = new ServicesSingleton(startingActivity);
-
-        return sInstance;
     }
 
     public boolean checkPlayServices() {
@@ -227,10 +201,6 @@ public class ServicesSingleton implements
 
     public Address getUserAddress() {
         return mUserAddress;
-    }
-
-    public SellersArrayAdapter getSellersArrayAdapter() {
-        return mSellersArrayAdapter;
     }
 
     @Nullable
@@ -359,10 +329,6 @@ public class ServicesSingleton implements
          * @param userSelected
          */
         public void addressUpdated(@Nullable Address address, boolean userSelected);
-    }
-
-    public QuotationsArrayAdapter getQuotationArrayAdapter() {
-        return mQuotationsArrayAdapter;
     }
 
     // TODO: fix bug of showing a future time

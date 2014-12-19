@@ -1,10 +1,9 @@
-package com.instano.retailer.instano.utilities;
+package com.instano.retailer.instano.application;
 
 import android.app.Application;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
-import com.instano.retailer.instano.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
 
 import java.util.HashMap;

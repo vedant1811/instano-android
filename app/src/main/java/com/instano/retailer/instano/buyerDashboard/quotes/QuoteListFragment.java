@@ -1,23 +1,26 @@
-package com.instano.retailer.instano.buyerDashboard;
+package com.instano.retailer.instano.buyerDashboard.quotes;
 
 import android.app.Activity;
-import android.app.ListFragment;
 import android.os.Bundle;
+import android.app.ListFragment;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.R;
+
+import com.instano.retailer.instano.buyerDashboard.quotes.dummy.DummyContent;
 
 /**
- * A list fragment representing a list of Quotations. This fragment
+ * A list fragment representing a list of Quotes. This fragment
  * also supports tablet devices by allowing list items to be given an
  * 'activated' state upon selection. This helps indicate which item is
- * currently being viewed in a {@link QuotationDetailFragment}.
- * <p>
+ * currently being viewed in a {@link QuoteDetailFragment}.
+ * <p/>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class QuotationListFragment extends ListFragment {
+public class QuoteListFragment extends ListFragment {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -29,7 +32,7 @@ public class QuotationListFragment extends ListFragment {
      * The fragment's current callback object, which is notified of list item
      * clicks.
      */
-    private Callbacks mCallbacks;
+    private Callbacks mCallbacks = sDummyCallbacks;
 
     /**
      * The current activated item position. Only used on tablets.
@@ -43,23 +46,38 @@ public class QuotationListFragment extends ListFragment {
      */
     public interface Callbacks {
         /**
-         * BuyersCallbacks for when an item has been selected.
+         * Callback for when an item has been selected.
          */
-        public void onItemSelected(int quotationId);
+        public void onItemSelected(String id);
     }
+
+    /**
+     * A dummy implementation of the {@link Callbacks} interface that does
+     * nothing. Used only when this fragment is not attached to an activity.
+     */
+    private static Callbacks sDummyCallbacks = new Callbacks() {
+        @Override
+        public void onItemSelected(String id) {
+        }
+    };
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public QuotationListFragment() {
+    public QuoteListFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setListAdapter(ServicesSingleton.getInstance(getActivity()).getQuotationArrayAdapter());
-        ServicesSingleton.getInstance(getActivity()).getQuotationArrayAdapter().registerCallback(mCallbacks);
+
+        // TODO: replace with a real list adapter.
+        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(
+                getActivity(),
+                android.R.layout.simple_list_item_activated_1,
+                android.R.id.text1,
+                DummyContent.ITEMS));
     }
 
     @Override
@@ -71,8 +89,6 @@ public class QuotationListFragment extends ListFragment {
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
-
-        setEmptyText("Wait while sellers reply to your query");
     }
 
     @Override
@@ -88,12 +104,20 @@ public class QuotationListFragment extends ListFragment {
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+
+        // Reset the active callbacks interface to the dummy implementation.
+        mCallbacks = sDummyCallbacks;
+    }
+
+    @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(position);
+        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
     }
 
     @Override
