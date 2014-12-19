@@ -12,8 +12,12 @@
     </style>
 
     <style name="ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">
-        <item name="android:titleTextStyle">@style/ButtonTextAppearance</item>
+        <item name="android:titleTextStyle">@style/titleTextStyle</item>
         <item name="android:background">@color/instano_red</item>
+    </style>
+
+    <style name="titleTextStyle" parent="android:style/TextAppearance.Holo.Widget.ActionBar.Title" >
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="WhiteEditText" parent="android:Widget.Holo.Light.EditText">

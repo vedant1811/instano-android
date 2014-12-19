@@ -108,6 +108,10 @@ public class StartingActivity extends GlobalMenuActivity implements ServicesSing
                 Intent intent = new Intent(this, ProfileActivity.class);
                 startActivityForResult(intent, SETUP_REQUEST_CODE);
                 break;
+            case ERROR_SIGN_IN: // try again
+                ServicesSingleton.getInstance(this).signIn(this);
+                Toast.makeText(this, "Trying again to sign in", Toast.LENGTH_LONG).show();
+                break;
             default:
                 search();
         }

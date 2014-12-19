@@ -21,7 +21,7 @@ public abstract class GlobalMenuActivity extends Activity {
     private static final int SHARE_REQUEST_CODE = 998;
     private static final int MESSAGE_REQUEST_CODE = 997;
 
-    protected Status mStatus;
+    protected Status mStatus = Status.FIRST_TIME;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -66,15 +66,12 @@ public abstract class GlobalMenuActivity extends Activity {
 
     protected void search() {
         switch (mStatus) {
-            case SIGNED_IN:
-                startActivity(new Intent(this, SearchTabsActivity.class));
-                break;
-            case SIGNING_IN:
-                Toast.makeText(this, "Please wait while we sign you in", Toast.LENGTH_SHORT).show();
-                break;
-            default:
+            case FIRST_TIME:
                 Toast.makeText(this, "please create a profile first", Toast.LENGTH_LONG).show();
                 profile();
+                break;
+            default:
+                startActivity(new Intent(this, SearchTabsActivity.class));
         }
     }
 

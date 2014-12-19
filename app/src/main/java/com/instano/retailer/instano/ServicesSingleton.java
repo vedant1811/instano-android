@@ -96,10 +96,6 @@ public class ServicesSingleton implements
     }
 
     public boolean firstTime() {
-
-//        return true;
-//
-//        // TODO:
         return !mSharedPreferences.contains(KEY_BUYER_API_KEY);
     }
 
