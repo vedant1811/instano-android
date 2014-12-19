@@ -141,11 +141,9 @@ public class ProfileActivity extends GlobalMenuActivity
             mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
             mPhoneEditText.requestFocus();
         }
-        else if (!NetworkRequestsManager.instance().isOnline())
-            Toast.makeText(this, "you are not connected to the internet", Toast.LENGTH_LONG).show();
-        else {
+        else if (NetworkRequestsManager.instance().isOnline(true)) {
             mErrorToast = Toast.makeText(this, "Server error :(\nplease send us an email", Toast.LENGTH_LONG);
             mErrorToast.show();
-        }
+        } // if it is not not online a toast is already shown. see link{NetworkRequestsManager#isOnline(true)}
     }
 }

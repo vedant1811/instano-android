@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -33,7 +34,7 @@ import java.util.HashSet;
 public class NetworkRequestsManager implements Response.ErrorListener{
 
     private static final String TAG = "NetworkRequestsManager";
-    private static final String LOCAL_SERVER_URL = "http://192.168.0.150:3000/";
+    private static final String LOCAL_SERVER_URL = "http://192.168.1.17:3000/";
 
     private final static String API_ERROR_ALREADY_TAKEN = "has already been taken";
     private final static String API_ERROR_IS_BLANK = "can't be blank";
@@ -448,13 +449,20 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         PATCH_QUOTATION_STATUS
     }
 
-    public boolean isOnline() {
+    /**
+     *
+     * @param showToast if true, this method shows a toast if the app is not connected
+     * @return
+     */
+    public boolean isOnline(boolean showToast) {
         ConnectivityManager cm =
                 (ConnectivityManager) mApplication.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         if (netInfo != null && netInfo.isConnectedOrConnecting()) {
             return true;
         }
+        if (showToast)
+            Toast.makeText(mApplication, "you are not connected to the internet", Toast.LENGTH_LONG).show();
         return false;
     }
 

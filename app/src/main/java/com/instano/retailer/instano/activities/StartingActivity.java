@@ -4,22 +4,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.instano.retailer.instano.IntroductionFragment;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 
 public class StartingActivity extends GlobalMenuActivity {
 
-    private static final int REQUEST_CODE = 1001;
+    private static final String SEARCH_ICON_HELP = "You can Search for products by clicking the icon in the action bar";
+    private static final int SETUP_REQUEST_CODE = 1001;
     private static final int EXIT_DELAY = 1000; // in ms
 
-    View mContainerView;
+    TextView mTextView;
+    Button mButton;
 
-    IntroductionFragment mIntroductionFragment;
-
+    CharSequence mText;
     boolean mIsExiting = false;
 
     @Override
@@ -42,26 +44,28 @@ public class StartingActivity extends GlobalMenuActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_starting);
-        mContainerView = findViewById(R.id.container);
 
+        mTextView = (TextView) findViewById(R.id.textView);
+        mButton = (Button) findViewById(R.id.button);
         // be sure to initialize ServicesSingleton:
         ServicesSingleton instance = ServicesSingleton.getInstance(this);
 
-        mIntroductionFragment = new IntroductionFragment();
-
-        getFragmentManager().beginTransaction()
-                .replace(mContainerView.getId(), mIntroductionFragment)
-                .commit();
-
-//        if (instance.signIn())
+        if (instance.signIn())
+            mText = "Welcome back! " + SEARCH_ICON_HELP;
+        else
+            mText = mTextView.getText();
     }
 
+    /**
+     * You will receive this call immediately before onResume() when your activity is re-starting.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_CODE:
+            case SETUP_REQUEST_CODE:
                 if (resultCode == RESULT_OK)
-                    onProfileSetUp();
+                    // since onResume is yet to be called.
+                    mText = "Your profile has been set up. " + SEARCH_ICON_HELP;
                 // else user must have clicked back button
                 break;
             default:
@@ -69,13 +73,21 @@ public class StartingActivity extends GlobalMenuActivity {
         }
     }
 
-    private void onProfileSetUp() {
-        mIntroductionFragment.onProfileSetUp();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mTextView.setText(mText);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mText = mTextView.getText();
     }
 
     public void getStartedClicked(View view) {
         Intent intent = new Intent(this, ProfileActivity.class);
-        startActivityForResult(intent, REQUEST_CODE);
+        startActivityForResult(intent, SETUP_REQUEST_CODE);
     }
 
 }
