@@ -53,10 +53,20 @@
         <activity
             android:name=".search.SearchTabsActivity"
             android:label="@string/title_activity_search_tabs"
+            android:launchMode="singleTop"
+            android:screenOrientation="nosensor"
             android:parentActivityName=".activities.HomeActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.instano.retailer.instano.activities.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".search.SelectLocationActivity"
+            android:label="Select Location"
+            android:parentActivityName=".search.SearchTabsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.instano.retailer.instano.search.SearchTabsActivity" />
         </activity>
         <activity
             android:name=".buyerDashboard.QuotationListActivity"
@@ -84,7 +94,6 @@
         <activity
             android:name=".activities.ProfileActivity"
             android:label="Profile"
-            android:launchMode="singleTop"
             android:windowSoftInputMode="stateVisible|adjustResize"
             android:screenOrientation="nosensor" >
         </activity>

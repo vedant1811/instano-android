@@ -1,4 +1,4 @@
-package com.instano.retailer.instano;
+package com.instano.retailer.instano.utilities.library.old;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -15,6 +15,7 @@ import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Seller;

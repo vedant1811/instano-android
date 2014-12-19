@@ -101,36 +101,6 @@
             <!--android:id="@+id/priceRangeSeekBar" />-->
     </FrameLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Additional Info (Optional)"
-        android:id="@+id/textView2"
-        android:layout_below="@+id/priceRangeTextView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        style="@style/TextAppearanceMedium"
-        android:layout_marginTop="24dp"
-        android:layout_marginLeft="@dimen/general_separator_margin" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/additionalInfoEditText"
-        android:hint="type here"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/textView2"
-        android:singleLine="false"
-        android:layout_above="@+id/searchButton"
-        android:textAlignment="gravity"
-        android:gravity="start"
-        android:minLines="2"
-        android:layout_marginLeft="16dp"
-        android:layout_marginBottom="@dimen/general_separator_margin"
-        android:layout_marginTop="@dimen/general_separator_margin"
-        android:layout_marginRight="16dp" />
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -158,13 +128,26 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="@dimen/general_separator_margin" />
 
-    <Button
-        android:layout_width="fill_parent"
+    <ViewFlipper
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Search"
-        android:id="@+id/searchButton"
-        android:onClick="searchButtonClicked"
+        android:id="@+id/searchButtonViewFlipper"
         android:layout_alignParentBottom="true"
-        android:layout_margin="@dimen/general_separator_margin" />
+        android:layout_margin="@dimen/general_separator_margin">
+
+        <Button
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:id="@+id/searchButton"
+            android:onClick="searchButtonClicked" />
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"/>
+
+    </ViewFlipper>
+
 
 </RelativeLayout>

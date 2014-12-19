@@ -15,7 +15,7 @@ import java.util.Collections;
  */
 public class ProductCategories {
 
-    public static final String UNDEFINED = "Undefined";
+    public static final String UNDEFINED = "Select Category";
 
     private static final String TAG = "ProductCategories";
 
@@ -118,6 +118,23 @@ public class ProductCategories {
             }
         }
 
+        public String asAdditionalInfo() {
+            StringBuilder builder = new StringBuilder();
+            builder.append("category: ").append(name).append("\n");
+            if (isAllSelected())
+                builder.append("any brand");
+            else {
+                builder.append("brands: ");
+                for (int i = 0; i < selected.length; i++) {
+                    if (selected[i])
+                        builder.append(brands.get(i));
+                    if (i < selected.length - 1)
+                        builder.append(", ");
+                }
+            }
+            return builder.toString();
+        }
+
         /**
          * dummy category
          */
@@ -166,6 +183,15 @@ public class ProductCategories {
          */
         public boolean[] getSelected() {
             return selected;
+        }
+
+        public boolean isAllSelected() {
+            if (selected == null)
+                return true;
+            for (boolean b : selected)
+                if (!b)
+                    return false;
+            return true;
         }
 
         public void setSelected(boolean[] selected) {

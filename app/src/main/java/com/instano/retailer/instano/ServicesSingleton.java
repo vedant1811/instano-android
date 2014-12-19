@@ -30,6 +30,8 @@ import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.MyApplication;
 import com.instano.retailer.instano.utilities.PeriodicWorker;
 import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.library.old.QuotationsArrayAdapter;
+import com.instano.retailer.instano.utilities.library.old.SellersArrayAdapter;
 import com.instano.retailer.instano.utilities.models.Buyer;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 
@@ -231,6 +233,7 @@ public class ServicesSingleton implements
         return mSellersArrayAdapter;
     }
 
+    @Nullable
     public Location getUserLocation() {
         if (mUserSelectedLocation == null)
             return mLastLocation;
@@ -257,6 +260,8 @@ public class ServicesSingleton implements
     @Override
     public void onConnected(Bundle dataBundle) {
         mLastLocation = mLocationClient.getLastLocation();
+        if (mAddressCallbacks != null)
+            mAddressCallbacks.addressUpdated(null, false);
         if (mLastLocation != null)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && Geocoder.isPresent()) {
                 // Show the activity indicator
@@ -347,7 +352,13 @@ public class ServicesSingleton implements
 
     public interface AddressCallbacks {
         public void searchingForAddress();
-        public void addressUpdated(Address address, boolean userSelected);
+
+        /**
+         *
+         * @param address if null, location has been updated and we have lat long
+         * @param userSelected
+         */
+        public void addressUpdated(@Nullable Address address, boolean userSelected);
     }
 
     public QuotationsArrayAdapter getQuotationArrayAdapter() {

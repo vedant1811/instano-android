@@ -20,30 +20,19 @@
         android:textAppearance="@style/TextAppearanceHeading"
         android:textSize="20sp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/general_separator_margin" />
+        android:layout_marginTop="@dimen/general_separator_margin"
+        android:layout_marginBottom="16dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Product:"
+        android:id="@+id/textView9"
         android:textAppearance="@style/TextAppearanceMedium"
-        android:text="Category:"
-        android:id="@+id/textView4"
-        android:paddingTop="16dp"
-        android:paddingRight="4dp"
-        android:paddingBottom="8dp"
         android:layout_below="@+id/section_label"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
-    <Spinner
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/productCategorySpinner"
-        android:spinnerMode="dialog"
-        android:layout_below="@+id/textView4"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_margin="4dp" />
+        android:layout_marginBottom="@dimen/general_separator_margin" />
 
     <EditText
         android:layout_width="match_parent"
@@ -56,25 +45,34 @@
         android:layout_below="@+id/textView9"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_margin="4dp" />
+        android:layout_marginBottom="@dimen/general_separator_margin"  />
 
-    <TextView
-        android:layout_width="wrap_content"
+    <Spinner
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Product:"
-        android:id="@+id/textView9"
-        android:layout_below="@+id/productCategorySpinner"
+        android:id="@+id/productCategorySpinner"
+        android:spinnerMode="dialog"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textAppearance="@style/TextAppearanceMedium"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="@dimen/general_separator_margin"
+        android:layout_below="@+id/searchEditText" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/locationButton"
+        android:layout_below="@id/productCategorySpinner"
+        android:layout_marginBottom="@dimen/general_separator_margin"
+        style="@style/LinkTypeButton"
+        android:text="Near address line 1, line 2"
+        android:onClick="locationButtonClicked"
+        android:gravity="left|center_vertical" />
 
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/searchEditText"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/locationButton">
 
         <Button
             android:layout_width="fill_parent"

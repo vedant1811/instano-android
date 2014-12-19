@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.location.Address;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -32,14 +34,20 @@ import java.util.ArrayList;
  * create an instance of this fragment.
  *
  */
-public class SearchFragment extends Fragment implements ServicesSingleton.InitialDataCallbacks {
+public class SearchFragment extends Fragment
+        implements ServicesSingleton.InitialDataCallbacks,
+        ServicesSingleton.AddressCallbacks {
+    private static final String PLEASE_SELECT_LOCATION = "please select location";
 
     private EditText mSearchEditText;
     private Spinner mProductCategorySpinner;
+    private Button mLocationButton;
 
     private ArrayAdapter<ProductCategories.Category> mCategoryAdapter;
 
     private CharSequence mSearchString;
+    private CharSequence mLocationButtonText;
+    private boolean mUserSelectedCategory = false;
 
     private Toast mToast;
 
@@ -56,6 +64,33 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
         // Required empty public constructor
     }
 
+
+    @Override
+    public void searchingForAddress() {
+
+    }
+
+    @Override
+    public void addressUpdated(Address address, boolean userSelected) {
+        Log.d("address", "SellersListFragment.address updated " + address);
+
+        // if it was userSelected, the activity is paused and we need to edit the saved state as well,
+        // so it is updated in onResume()
+        if (address != null) {
+            // display a readable address, street if available or city
+            mLocationButtonText = "near " + (
+                    address.getMaxAddressLineIndex() > 0 ?
+                            address.getAddressLine(0) : address.getLocality());
+        }
+        else if (ServicesSingleton.getInstance(getActivity()).getUserLocation() == null)
+            mLocationButtonText = PLEASE_SELECT_LOCATION; // we have no address and no location
+        else
+            mLocationButtonText = "near your location"; // we have location but no address
+
+        // we updating it right now in case it is resumed
+        mLocationButton.setText(mLocationButtonText);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -64,6 +99,7 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
 
         mSearchEditText = (EditText) view.findViewById(R.id.searchEditText);
         mProductCategorySpinner = (Spinner) view.findViewById(R.id.productCategorySpinner);
+        mLocationButton = (Button) view.findViewById(R.id.locationButton);
 
         mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
                 android.R.layout.simple_spinner_item);
@@ -80,7 +116,8 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                guessCategory();
+                if (!mUserSelectedCategory)
+                    guessCategory();
             }
 
             @Override
@@ -94,7 +131,8 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                ((SearchTabsActivity)getActivity()).onCategorySelected(mCategoryAdapter.getItem(position));
+                mUserSelectedCategory = true;
+                ((SearchTabsActivity) getActivity()).onCategorySelected(mCategoryAdapter.getItem(position));
             }
 
             @Override
@@ -134,7 +172,10 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
 
         mToast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
 
-        ServicesSingleton.getInstance(getActivity()).registerCallback(this);
+        ServicesSingleton.getInstance(getActivity()).registerCallback(
+                (ServicesSingleton.AddressCallbacks) this);
+        ServicesSingleton.getInstance(getActivity()).registerCallback(
+                (ServicesSingleton.InitialDataCallbacks) this);
     }
 
     /**
@@ -177,6 +218,7 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
     public void onPause() {
         super.onPause();
         mSearchString = mSearchEditText.getText();
+        mLocationButtonText = mLocationButton.getText();
     }
 
     @Override
@@ -186,6 +228,8 @@ public class SearchFragment extends Fragment implements ServicesSingleton.Initia
         int position = mCategoryAdapter.getPosition(
                 ((SearchTabsActivity)getActivity()).getSelectedCategory());
         mProductCategorySpinner.setSelection(position);
+
+        mLocationButton.setText(mLocationButtonText);
     }
 
     @Override

@@ -1,9 +1,8 @@
-package com.instano.retailer.instano.search;
+package com.instano.retailer.instano.utilities.library.old;
 
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Rect;
-import android.location.Address;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +18,6 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.SellersArrayAdapter;
 import com.instano.retailer.instano.ServicesSingleton;
 
 import java.util.HashSet;
@@ -32,7 +30,6 @@ import java.util.HashSet;
  * <p />
  */
 public class SellersListFragment extends Fragment implements
-        ServicesSingleton.AddressCallbacks,
         SellersArrayAdapter.ItemInteractionListener {
 
     private static final String PLEASE_SELECT_LOCATION = "please select location";
@@ -70,22 +67,7 @@ public class SellersListFragment extends Fragment implements
         mAdapter = ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter();
         mAdapter.filter();
 
-        ServicesSingleton.getInstance(getActivity()).registerCallback(this);
-    }
-
-    @Override
-    public void onResume() {
-        updateTextView();
-
-        super.onResume();
-
-        ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
-        Address address = servicesSingleton.getUserAddress();
-        addressUpdated(address, false);
-
-        itemCheckedStateChanged(mAdapter.getSelectedSellerIds().size());
-
-        updateTextView();
+//        ServicesSingleton.getInstance(getActivity()).registerCallback(this);
     }
 
     /* package private */
@@ -151,7 +133,7 @@ public class SellersListFragment extends Fragment implements
         int dist = mWithinSeekBar.getProgress() + 1;
         mDistTextView.setText(String.format("%1.2fkm", dist/1000.0));
         ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(
-                dist/10); // * 100 since it needs to be sent in 10x meters
+                dist / 10); // * 100 since it needs to be sent in 10x meters
     }
 
     /**
@@ -196,37 +178,5 @@ public class SellersListFragment extends Fragment implements
 
     public HashSet<Integer> getSellerIds() {
         return mAdapter.getSelectedSellerIds();
-    }
-
-    @Override
-    public void searchingForAddress() {
-
-    }
-
-    @Override
-    public void addressUpdated(Address address, boolean userSelected) {
-        Log.d("address", "SellersListFragment.address updated " + address);
-        if (address == null) {
-            if (userSelected) { // rare case if user selects location but no address was fetched
-                mAddressTextView.setText("near selected location");
-            }
-            else
-            {
-                mAddressTextView.setText(PLEASE_SELECT_LOCATION);
-                mSearchButton.setEnabled(false);
-                return; // do not filter
-            }
-        }
-        else
-        {
-            // display a readable address, street if available or city
-            mAddressTextView.setText("near " + (
-                            address.getMaxAddressLineIndex() > 0 ?
-                                    address.getAddressLine(0) : address.getLocality())
-            );
-        }
-        if (mAdapter.getSelectedSellerIds().size() > 0)
-            mSearchButton.setEnabled(true);
-        mAdapter.filter();
     }
 }

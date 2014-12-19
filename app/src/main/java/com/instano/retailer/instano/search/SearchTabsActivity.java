@@ -1,6 +1,5 @@
 package com.instano.retailer.instano.search;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -9,8 +8,6 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
@@ -19,13 +16,14 @@ import com.instano.retailer.instano.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
+import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.models.Buyer;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 
 import java.util.ArrayList;
 
 
-public class SearchTabsActivity extends Activity implements
+public class SearchTabsActivity extends GlobalMenuActivity implements
         NetworkRequestsManager.QuoteCallbacks {
 
     private final static String[] TABS = {"Search", "Constraints"};
@@ -53,6 +51,10 @@ public class SearchTabsActivity extends Activity implements
 
     private ProductCategories.Category mSelectedCategory;
 
+    public void locationButtonClicked(View view) {
+        startActivity(new Intent(this, SelectLocationActivity.class));
+    }
+
     public void searchButtonClicked(View view) {
         String searchString = mSearchFragment.getSearchString();
         if (searchString == null) {
@@ -62,7 +64,13 @@ public class SearchTabsActivity extends Activity implements
         }
         Buyer buyer = ServicesSingleton.getInstance(this).getBuyer();
 
+        if (ServicesSingleton.getInstance(this).getUserLocation() == null)
+            if (!noLocationError())
+                return;
+
         if (buyer == null) {
+            if (NetworkRequestsManager.instance().isOnline(true))
+                Toast.makeText(this, "Error! check your profile", Toast.LENGTH_LONG).show();
             Log.e("SearchTabsActivity", "buyer is null but a search button has been clicked");
             return;
         }
@@ -72,11 +80,18 @@ public class SearchTabsActivity extends Activity implements
                 searchString,
                 mSearchConstraintsFragment.getPriceRange(),
                 mSelectedCategory,
-                mSearchConstraintsFragment.getAdditionalInfo(),
-//                mSellersListFragment.getSellerIds()
+                mSelectedCategory.asAdditionalInfo(),
                 null
         );
-//        sendingQuote(true);
+        mSearchConstraintsFragment.sendingQuote(true);
+    }
+
+    /**
+     * Handles the case of no location selected
+     * @return true if the error should be ignored
+     */
+    private boolean noLocationError() {
+        return true;
     }
 
     public void nextButtonClicked(View view) {
@@ -157,35 +172,6 @@ public class SearchTabsActivity extends Activity implements
 
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.search_tabs, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.action_settings:
-                return true;
-            case android.R.id.home:
-                int currentItem = mViewPager.getCurrentItem();
-                if (currentItem > 0) {
-                    mViewPager.setCurrentItem(currentItem - 1, true);
-                    return true;
-                }
-                else
-                    return super.onOptionsItemSelected(item);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     @Override
     public void onBackPressed() {
         int currentItem = mViewPager.getCurrentItem();
@@ -228,19 +214,14 @@ public class SearchTabsActivity extends Activity implements
             finish();
         } else {
             Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG).show();
-//            sendingQuote(false);
+            mSearchConstraintsFragment.sendingQuote(false);
         }
     }
-//
-//    private void sendingQuote(boolean isSending) {
-//        mSellersListFragment.sendingQuote(isSending);
-//    }
 
     public void onCategorySelected(ProductCategories.Category selectedCategory) {
 
         mSelectedCategory = selectedCategory;
 
-        ServicesSingleton.getInstance(this).getSellersArrayAdapter().filter(mSelectedCategory);
         mSearchConstraintsFragment.onCategorySelected(selectedCategory);
     }
 

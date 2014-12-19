@@ -1,4 +1,4 @@
-package com.instano.retailer.instano;
+package com.instano.retailer.instano.utilities.library.old;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -8,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.instano.retailer.instano.NetworkRequestsManager;
+import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.QuotationListFragment;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;

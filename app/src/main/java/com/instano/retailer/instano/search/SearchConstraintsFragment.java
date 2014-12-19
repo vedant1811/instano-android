@@ -5,9 +5,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.ServicesSingleton;
@@ -28,12 +28,12 @@ public class SearchConstraintsFragment extends Fragment
     private final int MIN_OF_RANGE_SEEK_BAR = 1;
     private final int MAX_OF_RANGE_SEEK_BAR = 10;
 
-    private EditText mAdditionalInfoEditText;
-
     private MultiSpinner mBrandsMultiSpinner;
     private TextView mPriceRangeTextView;
-
+    private ViewFlipper mSearchButtonViewFlipper;
     private View[] overlayViews;
+
+    private boolean mSending;
 
     /**
      * Use this factory method to create a new instance of
@@ -52,6 +52,7 @@ public class SearchConstraintsFragment extends Fragment
     public void onResume() {
         super.onResume();
         onCategorySelected(((SearchTabsActivity) getActivity()).getSelectedCategory());
+        sendingQuote(mSending);
     }
 
     @Override
@@ -60,9 +61,9 @@ public class SearchConstraintsFragment extends Fragment
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search_constraints, container, false);
 
-        mAdditionalInfoEditText = (EditText) view.findViewById(R.id.additionalInfoEditText);
         mBrandsMultiSpinner = (MultiSpinner) view.findViewById(R.id.brandsMultiSpinner);
         mPriceRangeTextView = (TextView) view.findViewById(R.id.priceRangeTextView);
+        mSearchButtonViewFlipper = (ViewFlipper) view.findViewById(R.id.searchButtonViewFlipper);
 
         overlayViews = new View[3];
         overlayViews[0] = view.findViewById(R.id.overlay);
@@ -136,12 +137,15 @@ public class SearchConstraintsFragment extends Fragment
         }
     }
 
-    public String getAdditionalInfo() {
-        return mAdditionalInfoEditText.getText().toString();
-    }
-
-
     public String getPriceRange() {
         return mPriceRangeTextView.getText().toString();
+    }
+
+    public void sendingQuote(boolean isSending) {
+        mSending = isSending;
+        if (isSending)
+            mSearchButtonViewFlipper.setDisplayedChild(1); // progress bar
+        else
+            mSearchButtonViewFlipper.setDisplayedChild(0); // button
     }
 }

@@ -25,6 +25,13 @@
         <item name="android:padding">8dp</item>
     </style>
 
+    <style name="LinkTypeButton">
+        <item name="android:textAppearance">@style/TextAppearanceMedium</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:textColor">@android:color/holo_blue_dark</item>
+        <item name="android:background">@drawable/selector_borderless_button</item>
+    </style>
+
     <style name="RedButton" parent="android:style/Widget.Holo.Light.Button">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textAppearance">@style/ButtonTextAppearance</item>
