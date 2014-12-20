@@ -2,13 +2,20 @@ package com.instano.retailer.instano.buyerDashboard.quotes;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.utilities.models.Quote;
+
+import java.util.List;
 
 /**
  * A list fragment representing a list of Quotes. This fragment
@@ -72,11 +79,10 @@ public class QuoteListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
 
         // TODO: replace with a real list adapter.
-        setListAdapter(new ArrayAdapter<Quote>(
+        QuotesAdapter adapter = new QuotesAdapter(
                 getActivity(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                DataManager.instance().getQuotes()));
+                DataManager.instance().getQuotes());
+        setListAdapter(adapter);
     }
 
     @Override
@@ -151,5 +157,48 @@ public class QuoteListFragment extends ListFragment {
         }
 
         mActivatedPosition = position;
+    }
+
+    private class QuotesAdapter extends ArrayAdapter<Quote> {
+        private LayoutInflater mInflater;
+
+        /**
+         * Constructor
+         *
+         * @param context  The current context.
+         * @param objects  The objects to represent in the ListView.
+         */
+        public QuotesAdapter(Context context, List<Quote> objects) {
+            super(context, -1);
+            addAll(objects); // so that they are copied
+
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            if (view == null)
+                view = mInflater.inflate(R.layout.list_item_quote, parent, false);
+
+            TextView primaryTextView = (TextView) view.findViewById(R.id.queryStringTextView);
+            TextView timeTextView = (TextView) view.findViewById(R.id.timeTextView);
+            TextView responsesTextView = (TextView) view.findViewById(R.id.responsesTextView);
+            TextView sentToTextView = (TextView) view.findViewById(R.id.sentToTextView);
+
+            Quote quote = getItem(position);
+
+            primaryTextView.setText(quote.searchString);
+            timeTextView.setText(quote.getPrettyTimeElapsed());
+
+            // TODO: fix:
+            responsesTextView.setText("0 responses");
+            sentToTextView.setText(String.format("sent to %d retailers", quote.sellerIds.size()));
+
+            // to behave as a button i.e. have a "pressed" state
+            view.setBackgroundResource(R.drawable.selector_list_item);
+
+            return view;
+        }
     }
 }

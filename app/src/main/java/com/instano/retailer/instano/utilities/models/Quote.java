@@ -120,7 +120,13 @@ public class Quote {
         }
         this.brands = brands;
 
-        sellerIds = null;
+        sellerIds = new HashSet<Integer>();
+        JSONArray idJsonArray = jsonObject.getJSONArray("seller_ids");
+        for (int i = 0; i < idJsonArray.length(); i++) {
+            int sellerId = idJsonArray.getInt(i);
+            sellerIds.add(sellerId);
+        }
+        sellerIds.remove(0); // removing the seller id= 0, if exists.
     }
 
     @Override
