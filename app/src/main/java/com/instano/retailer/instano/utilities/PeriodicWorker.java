@@ -1,7 +1,7 @@
 package com.instano.retailer.instano.utilities;
 
 import android.os.Handler;
-import android.util.Log;
+import com.instano.retailer.instano.utilities.library.Log;
 
 import com.instano.retailer.instano.application.ServicesSingleton;
 

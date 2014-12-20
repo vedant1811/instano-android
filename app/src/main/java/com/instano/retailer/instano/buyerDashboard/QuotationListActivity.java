@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
+import com.instano.retailer.instano.utilities.library.Log;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;

@@ -5,7 +5,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import com.instano.retailer.instano.utilities.library.Log;
 
 import java.io.IOException;
 import java.util.List;

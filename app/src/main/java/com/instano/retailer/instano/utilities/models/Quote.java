@@ -24,7 +24,7 @@ public class Quote {
      */
     public final String priceRange;
     public final ProductCategories.Category productCategory;
-    public final String additionalInfo;
+    public final String brands;
     public final long updatedAt; // valid only when constructed from Quote(JSONObject jsonObject)
     public final HashSet<Integer> sellerIds;
     public final String address; // newline separated
@@ -40,14 +40,14 @@ public class Quote {
     }
 
     public Quote(int id, int buyerId, String searchString,
-                 String priceRange, ProductCategories.Category productCategory, String additionalInfo,
+                 String priceRange, ProductCategories.Category productCategory, String brands,
                  HashSet<Integer> sellerIds, String address, double latitude, double longitude) {
         this.id = id;
         this.buyerId = buyerId;
         this.searchString = searchString;
         this.priceRange = priceRange;
         this.productCategory = productCategory;
-        this.additionalInfo = additionalInfo;
+        this.brands = brands;
         this.sellerIds = sellerIds;
         updatedAt = 0;
         this.address = address.trim();
@@ -56,7 +56,7 @@ public class Quote {
     }
 
     public Quote(int buyerId, String searchString,
-                 String priceRange, ProductCategories.Category productCategory, String additionalInfo,
+                 String priceRange, ProductCategories.Category productCategory, String brands,
                  HashSet<Integer> sellerIds, String address, double latitude, double longitude) {
         this.productCategory = productCategory;
         this.sellerIds = sellerIds;
@@ -64,7 +64,7 @@ public class Quote {
         this.buyerId = buyerId;
         this.searchString = searchString.trim();
         this.priceRange = priceRange.trim();
-        this.additionalInfo = additionalInfo.trim();
+        this.brands = brands.trim();
         updatedAt = 0;
         this.address = address;
         this.latitude = latitude;
@@ -102,14 +102,14 @@ public class Quote {
         }
         this.productCategory = productCategory;
 
-        String additionalInfo;
+        String brands;
 
         try {
-            additionalInfo = jsonObject.getString("additional_info");
+            brands = jsonObject.getString("brands");
         } catch (JSONException e) {
-            additionalInfo = "";
+            brands = "";
         }
-        this.additionalInfo = additionalInfo;
+        this.brands = brands;
 
         sellerIds = null;
     }
@@ -145,7 +145,7 @@ public class Quote {
             JSONObject params = new JSONObject()
                     .put("buyer_id", buyerId)
                     .put("search_string", searchString)
-                    .put("additional_info", additionalInfo)
+                    .put("brands", brands)
                     .put("price_range", priceRange)
                     .put("product_category", productCategory.toJsonObject());
 

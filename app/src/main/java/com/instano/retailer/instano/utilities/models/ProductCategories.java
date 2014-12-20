@@ -1,7 +1,7 @@
 package com.instano.retailer.instano.utilities.models;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
+import com.instano.retailer.instano.utilities.library.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;

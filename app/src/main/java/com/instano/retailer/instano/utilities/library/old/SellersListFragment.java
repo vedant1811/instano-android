@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import com.instano.retailer.instano.utilities.library.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

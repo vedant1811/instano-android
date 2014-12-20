@@ -6,7 +6,7 @@ import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import com.instano.retailer.instano.utilities.library.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
