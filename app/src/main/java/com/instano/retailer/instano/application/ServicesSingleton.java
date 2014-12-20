@@ -62,7 +62,7 @@ public class ServicesSingleton implements
     private LocationClient mLocationClient;
     private Location mLastLocation;
     private Location mUserSelectedLocation;
-    private Address mUserAddress;
+    private String mUserAddress;
     private String locationErrorString;
 
     private InitialDataCallbacks mInitialDataCallbacks;
@@ -207,7 +207,7 @@ public class ServicesSingleton implements
         return locationErrorString;
     }
 
-    public Address getUserAddress() {
+    public String getUserAddress() {
         return mUserAddress;
     }
 
@@ -224,10 +224,10 @@ public class ServicesSingleton implements
         mUserSelectedLocation.setLatitude(location.latitude);
         mUserSelectedLocation.setLongitude(location.longitude);
 
-        mUserAddress = address;
+        mUserAddress = readableAddress(address);
 
         if (mAddressCallbacks != null)
-            mAddressCallbacks.addressUpdated(address, true);
+            mAddressCallbacks.addressUpdated(mUserAddress, true);
     }
 
     /*
@@ -258,9 +258,9 @@ public class ServicesSingleton implements
                         Log.d("Address", address != null ? address.toString() : "not found");
                         if (mUserAddress != null)
                             return; // user has already set a location. No need for this address.
-                        mUserAddress = address;
+                        mUserAddress = readableAddress(address);
                         if (mAddressCallbacks != null)
-                            mAddressCallbacks.addressUpdated(address, false);
+                            mAddressCallbacks.addressUpdated(mUserAddress, false);
                     }
                 })).execute(mLastLocation.getLatitude(), mLastLocation.getLongitude());
             }
@@ -336,7 +336,7 @@ public class ServicesSingleton implements
          * @param address if null, location has been updated and we have lat long
          * @param userSelected
          */
-        public void addressUpdated(@Nullable Address address, boolean userSelected);
+        public void addressUpdated(@Nullable String address, boolean userSelected);
     }
 
     // TODO: fix bug of showing a future time
@@ -360,6 +360,18 @@ public class ServicesSingleton implements
             return 0;
         }
         return date.getTime();
+    }
+
+    @Nullable
+    public static String readableAddress(@Nullable Address address) {
+        String text;
+        if (address == null)
+            text = null;
+        else
+            text = address.getMaxAddressLineIndex() > 0 ?
+                address.getAddressLine(0) : address.getLocality();
+
+        return text;
     }
 
 }

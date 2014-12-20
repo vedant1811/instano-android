@@ -47,18 +47,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.HomeActivity"
+            android:name=".utilities.library.old.HomeActivity"
             android:label="@string/title_activity_home" >
         </activity>
         <activity
             android:name=".search.SearchTabsActivity"
             android:label="@string/title_activity_search_tabs"
             android:launchMode="singleTop"
-            android:parentActivityName=".activities.HomeActivity"
+            android:parentActivityName=".utilities.library.old.HomeActivity"
             android:screenOrientation="nosensor" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.instano.retailer.instano.activities.HomeActivity" />
+                android:value=".utilities.library.old.HomeActivity" />
         </activity>
         <activity
             android:name=".search.SelectLocationActivity"
@@ -71,10 +71,10 @@
         <activity
             android:name=".buyerDashboard.QuotationListActivity"
             android:label="@string/title_quotation_list"
-            android:parentActivityName=".activities.HomeActivity" >
+            android:parentActivityName=".utilities.library.old.HomeActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.instano.retailer.instano.activities.HomeActivity" />
+                android:value=".utilities.library.old.HomeActivity" />
         </activity>
         <activity
             android:name=".buyerDashboard.QuotationDetailActivity"
@@ -89,7 +89,7 @@
             android:label="@string/title_activity_queries_map" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.instano.retailer.instano.activities.HomeActivity" />
+                android:value=".utilities.library.old.HomeActivity" />
         </activity>
         <activity
             android:name=".activities.ProfileActivity"

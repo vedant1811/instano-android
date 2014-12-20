@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -19,6 +20,7 @@ import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.models.Buyer;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Quote;
 
 import java.util.ArrayList;
 
@@ -62,11 +64,20 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
             mSearchFragment.showSearchEmptyError();
             return;
         }
-        Buyer buyer = ServicesSingleton.getInstance(this).getBuyer();
+        Buyer buyer = ServicesSingleton.instance().getBuyer();
 
-        if (ServicesSingleton.getInstance(this).getUserLocation() == null)
+        Location userLocation = ServicesSingleton.instance().getUserLocation();
+        double latitude, longitude;
+        if (userLocation == null) {
             if (!noLocationError())
                 return;
+            latitude = Quote.INVALID_COORDINATE;
+            longitude = Quote.INVALID_COORDINATE;
+        }
+        else {
+            latitude = userLocation.getLatitude();
+            longitude = userLocation.getLongitude();
+        }
 
         if (buyer == null) {
             if (NetworkRequestsManager.instance().isOnline(true))
@@ -75,14 +86,19 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
             return;
         }
 
-        NetworkRequestsManager.instance().sendQuoteRequest(
-                buyer,
+        Quote quote = new Quote(
+                buyer.id,
                 searchString,
                 mSearchConstraintsFragment.getPriceRange(),
                 mSelectedCategory,
                 mSelectedCategory.asAdditionalInfo(),
-                null
+                null, // seller Ids
+                ServicesSingleton.instance().getUserAddress(), // address
+                latitude,
+                longitude
         );
+
+        NetworkRequestsManager.instance().sendQuoteRequest(quote);
         mSearchConstraintsFragment.sendingQuote(true);
     }
 

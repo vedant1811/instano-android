@@ -11,6 +11,7 @@ import com.instano.retailer.instano.application.MyApplication;
 public class Log {
 
     public static final String TIMER_TAG = "timer";
+    public static final double ONE_MILLION = 1000000.0;
 
     private static Tracker sAppTracker;
 

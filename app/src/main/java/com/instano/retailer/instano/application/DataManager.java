@@ -55,13 +55,13 @@ public class DataManager {
         long start = System.nanoTime();
         ProductCategories productCategories = new ProductCategories(response, true);
         if (productCategories.equals(mProductCategories)) {
-            double time = (System.nanoTime() - start)/1000000.0;
+            double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
             Log.d(Log.TIMER_TAG, String.format("updateProductCategories took %.4fms", time));
             return false;
         }
         else {
             mProductCategories = productCategories;
-            double time = (System.nanoTime() - start)/1000000.0;
+            double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
             Log.d(Log.TIMER_TAG, String.format("updateProductCategories took %.4fms", time));
             return true;
         }
@@ -81,7 +81,7 @@ public class DataManager {
                 Log.e(TAG + ".updateQuotations", String.format("response: %s, i=%d", String.valueOf(response), i), e);
             }
         }
-        double time = (System.nanoTime() - start)/1000000.0;
+        double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
         Log.d(Log.TIMER_TAG, String.format("updateQuotations took %.4fms", time));
         return newEntries;
     }
@@ -100,7 +100,7 @@ public class DataManager {
                 Log.e(TAG + ".updateQuotes", String.format("response: %s, i=%d", String.valueOf(response), i), e);
             }
         }
-        double time = (System.nanoTime() - start)/1000000.0;
+        double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
         Log.d(Log.TIMER_TAG, String.format("updateQuotes took %.4fms", time));
         return newEntries;
     }
@@ -119,7 +119,7 @@ public class DataManager {
                 Log.e(TAG + ".updateSellers", String.format("response: %s, i=%d", String.valueOf(response), i), e);
             }
         }
-        double time = (System.nanoTime() - start)/1000000.0;
+        double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
         Log.d(Log.TIMER_TAG, String.format("updateSellers took %.4fms", time));
         return newEntries;
     }

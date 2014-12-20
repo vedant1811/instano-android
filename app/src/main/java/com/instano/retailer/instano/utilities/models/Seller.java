@@ -183,7 +183,7 @@ public class Seller {
     // get distance between to two points in 10x meters or -1
     public int getDistanceFromLocation() {
 
-        Location lastLocation = ServicesSingleton.getInstance(null).getUserLocation();
+        Location lastLocation = ServicesSingleton.instance().getUserLocation();
 
         if (lastLocation == null)
             return -1;

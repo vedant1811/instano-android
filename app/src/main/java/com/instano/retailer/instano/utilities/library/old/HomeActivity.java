@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.activities;
+package com.instano.retailer.instano.utilities.library.old;
 
 import android.app.Activity;
 import android.content.Intent;

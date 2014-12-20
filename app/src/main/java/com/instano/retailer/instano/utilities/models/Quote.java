@@ -12,6 +12,8 @@ import java.util.HashSet;
  * Represents a single immutable quote request (that is received by the seller)
  */
 public class Quote {
+    public final static double INVALID_COORDINATE = -1000; // an invalid coordinate
+
     public final int id;
     public final int buyerId;
     public final String searchString;
@@ -25,6 +27,9 @@ public class Quote {
     public final String additionalInfo;
     public final long updatedAt; // valid only when constructed from Quote(JSONObject jsonObject)
     public final HashSet<Integer> sellerIds;
+    public final String address; // newline separated
+    public final double latitude;
+    public final double longitude;
 
     public static int getIdFrom (JSONObject quoteJsonObject) {
         try {
@@ -36,7 +41,7 @@ public class Quote {
 
     public Quote(int id, int buyerId, String searchString,
                  String priceRange, ProductCategories.Category productCategory, String additionalInfo,
-                 HashSet<Integer> sellerIds) {
+                 HashSet<Integer> sellerIds, String address, double latitude, double longitude) {
         this.id = id;
         this.buyerId = buyerId;
         this.searchString = searchString;
@@ -45,11 +50,14 @@ public class Quote {
         this.additionalInfo = additionalInfo;
         this.sellerIds = sellerIds;
         updatedAt = 0;
+        this.address = address.trim();
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public Quote(int buyerId, String searchString,
                  String priceRange, ProductCategories.Category productCategory, String additionalInfo,
-                 HashSet<Integer> sellerIds) {
+                 HashSet<Integer> sellerIds, String address, double latitude, double longitude) {
         this.productCategory = productCategory;
         this.sellerIds = sellerIds;
         this.id = -1;
@@ -58,6 +66,9 @@ public class Quote {
         this.priceRange = priceRange.trim();
         this.additionalInfo = additionalInfo.trim();
         updatedAt = 0;
+        this.address = address.trim();
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public Quote(JSONObject jsonObject) throws JSONException {
@@ -69,6 +80,20 @@ public class Quote {
         priceRange = jsonObject.getString("price_range");
         ProductCategories.Category productCategory;
 
+        address = jsonObject.getString("address");
+
+        double latitude = INVALID_COORDINATE;
+        double longitude = INVALID_COORDINATE;
+        try {
+            latitude = jsonObject.getDouble("latitude");
+            longitude = jsonObject.getDouble("longitude");
+        } catch (JSONException e) {
+            latitude = INVALID_COORDINATE;
+            longitude = INVALID_COORDINATE;
+        } finally {
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
 
         try {
             productCategory = new ProductCategories.Category(jsonObject.getJSONObject("product_category"));
@@ -130,6 +155,14 @@ public class Quote {
 
             if (id != -1)
                 quoteParamsJsonObject.put ("id", id);
+
+            if (address != null)
+                quoteParamsJsonObject.put("address", address);
+
+            if (latitude != INVALID_COORDINATE) {
+                quoteParamsJsonObject.put("latitude", latitude)
+                        .put("longitude", longitude);
+            }
 
             JSONObject quoteJsonObject = new JSONObject()
                     .put("quote", quoteParamsJsonObject);

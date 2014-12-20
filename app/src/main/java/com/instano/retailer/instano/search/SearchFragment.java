@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.location.Address;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,6 +21,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 
@@ -38,6 +38,8 @@ public class SearchFragment extends Fragment
         implements ServicesSingleton.InitialDataCallbacks,
         ServicesSingleton.AddressCallbacks {
     private static final String PLEASE_SELECT_LOCATION = "please select location";
+    private static final String NEAR_YOUR_LOCATION = "near your location";
+    private static final String NEAR = "near ";
 
     private EditText mSearchEditText;
     private Spinner mProductCategorySpinner;
@@ -47,6 +49,7 @@ public class SearchFragment extends Fragment
 
     private CharSequence mSearchString;
     private CharSequence mLocationButtonText;
+    private String mAddress;
     private boolean mUserSelectedCategory = false;
 
     private Toast mToast;
@@ -71,21 +74,19 @@ public class SearchFragment extends Fragment
     }
 
     @Override
-    public void addressUpdated(Address address, boolean userSelected) {
+    public void addressUpdated(String address, boolean userSelected) {
         Log.d("address", "SellersListFragment.address updated " + address);
 
         // if it was userSelected, the activity is paused and we need to edit the saved state as well,
         // so it is updated in onResume()
         if (address != null) {
             // display a readable address, street if available or city
-            mLocationButtonText = "near " + (
-                    address.getMaxAddressLineIndex() > 0 ?
-                            address.getAddressLine(0) : address.getLocality());
+            mLocationButtonText = NEAR + (address);
         }
-        else if (ServicesSingleton.getInstance(getActivity()).getUserLocation() == null)
+        else if (ServicesSingleton.instance().getUserLocation() == null)
             mLocationButtonText = PLEASE_SELECT_LOCATION; // we have no address and no location
         else
-            mLocationButtonText = "near your location"; // we have location but no address
+            mLocationButtonText = NEAR_YOUR_LOCATION; // we have location but no address
 
         // we updating it right now in case it is resumed
         mLocationButton.setText(mLocationButtonText);
@@ -94,7 +95,7 @@ public class SearchFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
+        final ServicesSingleton servicesSingleton = ServicesSingleton.instance();
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
         mSearchEditText = (EditText) view.findViewById(R.id.searchEditText);
@@ -103,7 +104,7 @@ public class SearchFragment extends Fragment
 
         mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
                 android.R.layout.simple_spinner_item);
-        ArrayList<ProductCategories.Category> categories = servicesSingleton.getProductCategories();
+        ArrayList<ProductCategories.Category> categories = DataManager.instance().getProductCategories();
         if (categories != null)
             mCategoryAdapter.addAll(categories);
         mCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -172,9 +173,9 @@ public class SearchFragment extends Fragment
 
         mToast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
 
-        ServicesSingleton.getInstance(getActivity()).registerCallback(
+        ServicesSingleton.instance().registerCallback(
                 (ServicesSingleton.AddressCallbacks) this);
-        ServicesSingleton.getInstance(getActivity()).registerCallback(
+        ServicesSingleton.instance().registerCallback(
                 (ServicesSingleton.InitialDataCallbacks) this);
     }
 

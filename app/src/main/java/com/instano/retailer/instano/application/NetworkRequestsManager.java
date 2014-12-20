@@ -25,7 +25,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * Created by vedant on 18/12/14.
@@ -163,13 +162,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         mRequestQueue.add(request);
     }
 
-    public void sendQuoteRequest(@NonNull Buyer buyer,
-                                 String searchString, String priceRange,
-                                 ProductCategories.Category productCategory,
-                                 String additionalInfo,
-                                 HashSet<Integer> sellerIds) {
-
-        Quote quote =  new Quote(buyer.id, searchString, priceRange, productCategory, additionalInfo, sellerIds);
+    public void sendQuoteRequest(@NonNull Quote quote) {
         Log.v(TAG, "sendQuoteRequest request: " + quote.toJsonObject());
 
         JsonObjectRequest request = new JsonObjectRequest(

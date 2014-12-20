@@ -85,7 +85,7 @@ public class QuoteListActivity extends Activity
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(QuoteDetailFragment.ARG_ITEM_ID, id);
+            arguments.putString(QuoteDetailFragment.ARG_QUOTE_ID, id);
             QuoteDetailFragment fragment = new QuoteDetailFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
@@ -96,7 +96,7 @@ public class QuoteListActivity extends Activity
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
             Intent detailIntent = new Intent(this, QuoteDetailActivity.class);
-            detailIntent.putExtra(QuoteDetailFragment.ARG_ITEM_ID, id);
+            detailIntent.putExtra(QuoteDetailFragment.ARG_QUOTE_ID, id);
             startActivity(detailIntent);
         }
     }
