@@ -88,6 +88,8 @@ public class QuoteListFragment extends ListFragment {
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
+
+        setEmptyText("Wait while sellers reply to your query");
     }
 
     @Override

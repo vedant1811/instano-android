@@ -12,6 +12,7 @@ public class Log {
 
     public static final String TIMER_TAG = "timer";
     public static final double ONE_MILLION = 1000000.0;
+    public static final String ADDRESS_UPDATED = "addressUpdated";
 
     private static Tracker sAppTracker;
 

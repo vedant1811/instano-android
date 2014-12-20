@@ -7,7 +7,6 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import com.instano.retailer.instano.utilities.library.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +22,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 
 import java.util.ArrayList;
@@ -75,7 +75,7 @@ public class SearchFragment extends Fragment
 
     @Override
     public void addressUpdated(String address, boolean userSelected) {
-        Log.d("address", "SellersListFragment.address updated " + address);
+        Log.d(Log.ADDRESS_UPDATED, "SellersListFragment.address updated " + address);
 
         // if it was userSelected, the activity is paused and we need to edit the saved state as well,
         // so it is updated in onResume()
@@ -101,6 +101,8 @@ public class SearchFragment extends Fragment
         mSearchEditText = (EditText) view.findViewById(R.id.searchEditText);
         mProductCategorySpinner = (Spinner) view.findViewById(R.id.productCategorySpinner);
         mLocationButton = (Button) view.findViewById(R.id.locationButton);
+
+        addressUpdated(null, false); // to setup initial state of button
 
         mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
                 android.R.layout.simple_spinner_item);
@@ -163,8 +165,8 @@ public class SearchFragment extends Fragment
             }
         }
         mProductCategorySpinner.setSelection(0); // setting to undefined
-        double time = (System.nanoTime() - start)/1000;
-        Log.v("Timing", "time = " + time + "μs");
+        double time = (System.nanoTime() - start)/Log.ONE_MILLION;
+        Log.v(Log.TIMER_TAG, "guessCategory took " + time + "ms");
     }
 
     @Override

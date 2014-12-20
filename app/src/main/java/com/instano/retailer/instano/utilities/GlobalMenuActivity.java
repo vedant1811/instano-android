@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.ProfileActivity;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.search.SearchTabsActivity;
 
 /**
@@ -48,6 +49,10 @@ public abstract class GlobalMenuActivity extends Activity {
                 search();
                 return true;
 
+            case R.id.action_quote_list:
+                quoteList();
+                return true;
+
             case R.id.action_profile:
                 profile();
                 return true;
@@ -71,6 +76,10 @@ public abstract class GlobalMenuActivity extends Activity {
         }
         else
             startActivity(new Intent(this, SearchTabsActivity.class));
+    }
+
+    protected void quoteList() {
+        startActivity(new Intent(this, QuoteListActivity.class));
     }
 
     protected void profile() {

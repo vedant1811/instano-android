@@ -6,7 +6,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.instano.retailer.instano.utilities.library.Log;
 import android.view.MenuItem;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,6 +20,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GetAddressTask;
+import com.instano.retailer.instano.utilities.library.Log;
 
 /**
  * A simple {@link android.app.Fragment} subclass.
@@ -175,7 +175,7 @@ public class SelectLocationActivity extends Activity implements GoogleMap.OnMapL
         if (!SELECT_LOCATION.equals(mSelectedLocationMarker.getTitle())) {// i.e. if location has been updated
             ServicesSingleton.instance().userSelectsLocation(
                     mSelectedLocationMarker.getPosition(), address);
-            Log.d("address", "address updated by MapActivity:" + address);
+            Log.d(Log.ADDRESS_UPDATED, "address updated by MapActivity:" + address);
         }
     }
 

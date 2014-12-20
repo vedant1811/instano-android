@@ -14,6 +14,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -65,6 +67,25 @@ public class DataManager {
         return null;
     }
 
+    public HashSet<Integer> get5NearbySellers(ProductCategories.Category category) {
+        long start = System.nanoTime();
+
+        // sorted now so that we have latest location
+        Collections.sort(mSellers, new Seller.DistanceComparator());
+
+        HashSet <Integer> nearbySellers = new HashSet<Integer>(5);
+        for (Seller seller : mSellers) {
+            if (seller.productCategories.containsCategoryAndOneBrand(category)) {
+                nearbySellers.add(seller.id);
+                if (nearbySellers.size() == 5)
+                    break;
+            }
+        }
+        double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
+        Log.d(Log.TIMER_TAG, String.format("getNearbySellers took %.4fms", time));
+        return nearbySellers;
+    }
+
     @NonNull
     public static DataManager instance() {
         if (sInstance == null)
@@ -97,13 +118,14 @@ public class DataManager {
         boolean newEntries = false;
         for (int i = 0; i < response.length(); i++) {
             try {
-                Quote quote = new Quote(response.getJSONObject(i));
-                if (!mQuotes.contains(quote)) {
-                    mQuotes.add(quote);
+                Quotation quotation= new Quotation(response.getJSONObject(i));
+                if (!mQuotations.contains(quotation)) {
+                    mQuotations.add(quotation);
                     newEntries = true;
                 }
             } catch (JSONException e) {
                 Log.e(TAG + ".updateQuotations", String.format("response: %s, i=%d", String.valueOf(response), i), e);
+                e.printStackTrace();
             }
         }
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
@@ -116,13 +138,14 @@ public class DataManager {
         boolean newEntries = false;
         for (int i = 0; i < response.length(); i++) {
             try {
-                Quotation quotation= new Quotation(response.getJSONObject(i));
-                if (!mQuotations.contains(quotation)) {
-                    mQuotations.add(quotation);
+                Quote quote = new Quote(response.getJSONObject(i));
+                if (!mQuotes.contains(quote)) {
+                    mQuotes.add(quote);
                     newEntries = true;
                 }
             } catch (JSONException e) {
                 Log.e(TAG + ".updateQuotes", String.format("response: %s, i=%d", String.valueOf(response), i), e);
+                e.printStackTrace();
             }
         }
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
@@ -142,8 +165,10 @@ public class DataManager {
                 }
             } catch (JSONException e) {
                 Log.e(TAG + ".updateSellers", String.format("response: %s, i=%d", String.valueOf(response), i), e);
+                e.printStackTrace();
             }
         }
+
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
         Log.d(Log.TIMER_TAG, String.format("updateSellers took %.4fms", time));
         return newEntries;

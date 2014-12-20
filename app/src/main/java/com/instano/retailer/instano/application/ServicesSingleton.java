@@ -24,7 +24,6 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
-import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
@@ -93,9 +92,9 @@ public class ServicesSingleton implements
     }
 
     public boolean firstTime() {
-        if (BuildConfig.DEBUG)
-            return true;
-        else
+//        if (BuildConfig.DEBUG)
+//            return true;
+//        else
             return mFirstTime;
     }
 
@@ -220,6 +219,7 @@ public class ServicesSingleton implements
     }
 
     public void userSelectsLocation(LatLng location, Address address) {
+        Log.d(Log.ADDRESS_UPDATED, String.format("userSelectsLocation.address: %s, location: %s", address, location));
         mUserSelectedLocation = new Location("Services Singleton Generated");
         mUserSelectedLocation.setLatitude(location.latitude);
         mUserSelectedLocation.setLongitude(location.longitude);
@@ -238,6 +238,7 @@ public class ServicesSingleton implements
     @Override
     public void onConnected(Bundle dataBundle) {
         mLastLocation = mLocationClient.getLastLocation();
+        Log.d(Log.ADDRESS_UPDATED, String.format("onConnected.address: %s, location: %s", null, mLastLocation));
         if (mAddressCallbacks != null)
             mAddressCallbacks.addressUpdated(null, false);
         if (mLastLocation != null)

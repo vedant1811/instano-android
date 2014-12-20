@@ -8,21 +8,22 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import com.instano.retailer.instano.utilities.library.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.DataManager;
+import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
-import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Quote;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 
 public class SearchTabsActivity extends GlobalMenuActivity implements
@@ -87,13 +88,15 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
             return;
         }
 
+        HashSet <Integer> sellerIds = DataManager.instance().get5NearbySellers(mSelectedCategory);
+
         Quote quote = new Quote(
                 buyer.id,
                 searchString,
                 mSearchConstraintsFragment.getPriceRange(),
                 mSelectedCategory,
                 mSelectedCategory.asAdditionalInfo(),
-                null, // seller Ids
+                sellerIds, // seller Ids
                 ServicesSingleton.instance().getUserAddress(), // address
                 latitude,
                 longitude
@@ -227,7 +230,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
     @Override
     public void onQuoteSent(boolean success) {
         if (success) {
-            startActivity(new Intent(this, QuotationListActivity.class));
+            quoteList();
             Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT).show();
             finish();
         } else {

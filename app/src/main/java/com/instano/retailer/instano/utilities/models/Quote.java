@@ -1,5 +1,7 @@
 package com.instano.retailer.instano.utilities.models;
 
+import android.support.annotation.Nullable;
+
 import com.instano.retailer.instano.application.ServicesSingleton;
 
 import org.json.JSONArray;
@@ -27,6 +29,7 @@ public class Quote {
     public final String brands;
     public final long updatedAt; // valid only when constructed from Quote(JSONObject jsonObject)
     public final HashSet<Integer> sellerIds;
+    @Nullable
     public final String address; // newline separated
     public final double latitude;
     public final double longitude;
@@ -80,7 +83,13 @@ public class Quote {
         priceRange = jsonObject.getString("price_range");
         ProductCategories.Category productCategory;
 
-        address = jsonObject.getString("address");
+        String address;
+        try {
+            address = jsonObject.getString("address");
+        } catch (JSONException e) {
+            address = null;
+        }
+        this.address = address;
 
         double latitude = INVALID_COORDINATE;
         double longitude = INVALID_COORDINATE;
