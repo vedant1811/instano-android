@@ -62,7 +62,7 @@ public class Quotation {
      * @return Human readable time elapsed. Eg: "42 minutes ago"
      */
     public String getPrettyTimeElapsed() {
-        return ServicesSingleton.getInstance(null).getPrettyTimeElapsed(createdAt);
+        return ServicesSingleton.instance().getPrettyTimeElapsed(createdAt);
     }
 
     @Override

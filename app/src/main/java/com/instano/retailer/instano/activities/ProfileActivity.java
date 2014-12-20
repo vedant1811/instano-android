@@ -69,7 +69,7 @@ public class ProfileActivity extends GlobalMenuActivity
         });
 
         // check if a user exists:
-        Buyer buyer = ServicesSingleton.getInstance(this).getBuyer();
+        Buyer buyer = ServicesSingleton.instance().getBuyer();
         if (buyer != null) {
             mName = buyer.name;
             mPhone = buyer.phone;

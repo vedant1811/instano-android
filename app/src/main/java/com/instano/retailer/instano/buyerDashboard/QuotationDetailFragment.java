@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
-import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Seller;
 
 /**
@@ -45,7 +44,7 @@ public class QuotationDetailFragment extends Fragment {
             mQuotationId = getArguments().getInt(ARG_QUOTATION_ID);
         }
         
-        mServicesSingleton = ServicesSingleton.getInstance(getActivity());
+//        mServicesSingleton = ServicesSingleton.getInstance(getActivity());
     }
 
     @Override
@@ -53,15 +52,16 @@ public class QuotationDetailFragment extends Fragment {
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_quotation_detail, container, false);
 
-        Quotation quotation = mServicesSingleton.getQuotationArrayAdapter().getQuotation(mQuotationId);
+//        Quotation quotation = mServicesSingleton.getQuotationArrayAdapter().getQuotation(mQuotationId);
 
         TextView textView = (TextView) rootView.findViewById(R.id.chatTextView);
         TextView header = (TextView) rootView.findViewById(R.id.headerTextView);
 
-        String productInfo = quotation.toChatString();
+        String productInfo = null; //quotation.toChatString();
 
         String title;
-        Seller seller = mServicesSingleton.getSellersArrayAdapter().getSeller(quotation.sellerId);
+//        Seller seller = mServicesSingleton.getSellersArrayAdapter().getSeller(quotation.sellerId);
+        Seller seller = null;
         if (seller != null) {
             String distanceFromLocation = seller.getPrettyDistanceFromLocation();
             if (distanceFromLocation != null)

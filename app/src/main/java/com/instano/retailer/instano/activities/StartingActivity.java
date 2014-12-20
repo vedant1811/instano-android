@@ -49,7 +49,7 @@ public class StartingActivity extends GlobalMenuActivity implements ServicesSing
         mTextView = (TextView) findViewById(R.id.textView);
         mButton = (Button) findViewById(R.id.button);
         // be sure to initialize ServicesSingleton:
-        ServicesSingleton instance = ServicesSingleton.getInstance(this);
+        ServicesSingleton instance = ServicesSingleton.instance();
 
         if (instance.signIn(this)) {
             mText = "Welcome back! " + SEARCH_ICON_HELP;
@@ -109,7 +109,7 @@ public class StartingActivity extends GlobalMenuActivity implements ServicesSing
                 startActivityForResult(intent, SETUP_REQUEST_CODE);
                 break;
             case ERROR_SIGN_IN: // try again
-                ServicesSingleton.getInstance(this).signIn(this);
+                ServicesSingleton.instance().signIn(this);
                 Toast.makeText(this, "Trying again to sign in", Toast.LENGTH_LONG).show();
                 break;
             default:

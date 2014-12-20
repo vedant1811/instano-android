@@ -1,6 +1,7 @@
 package com.instano.retailer.instano.application;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
@@ -13,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by vedant on 19/12/14.
@@ -27,13 +29,6 @@ public class DataManager {
     private ArrayList<Seller> mSellers;
     private ProductCategories mProductCategories;
 
-    @NonNull
-    public static DataManager instance() {
-        if (sInstance == null)
-            throw new IllegalStateException("DataManager.Init() never called");
-        return sInstance;
-    }
-
     public ArrayList<ProductCategories.Category> getProductCategories() {
         if (mProductCategories != null)
             return mProductCategories.getProductCategories();
@@ -41,10 +36,40 @@ public class DataManager {
             return null;
     }
 
-    private DataManager() {
-        mQuotes = new ArrayList<Quote>();
-        mQuotations = new ArrayList<Quotation>();
-        mSellers = new ArrayList<Seller>();
+    @Nullable
+    public Quote getQuote(int id) {
+        for (Quote quote : mQuotes)
+            if (quote.id == id)
+                return quote;
+        return null;
+    }
+
+    @NonNull
+    public List<Quote> getQuotes() {
+        return mQuotes;
+    }
+
+    @Nullable
+    public Quotation getQuotation(int id) {
+        for (Quotation quotation : mQuotations)
+            if (quotation.id == id)
+                return quotation;
+        return null;
+    }
+
+    @Nullable
+    public Seller getSeller(int id) {
+        for (Seller seller : mSellers)
+            if (seller.id == id)
+                return seller;
+        return null;
+    }
+
+    @NonNull
+    public static DataManager instance() {
+        if (sInstance == null)
+            throw new IllegalStateException("DataManager.Init() never called");
+        return sInstance;
     }
 
     /*package*/ static void init() {
@@ -127,6 +152,12 @@ public class DataManager {
     /*package*/ void onNewBuyer() {
         mQuotations.clear();
         mQuotes.clear();
+    }
+
+    private DataManager() {
+        mQuotes = new ArrayList<Quote>();
+        mQuotations = new ArrayList<Quotation>();
+        mSellers = new ArrayList<Seller>();
     }
 
 }

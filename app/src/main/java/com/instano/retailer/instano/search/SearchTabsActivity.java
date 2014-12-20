@@ -29,7 +29,8 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
         NetworkRequestsManager.QuoteCallbacks {
 
     private final static String[] TABS = {"Search", "Constraints"};
-//    private enum TABS {Search, Constraints, Sellers_list, Sellers_Map};
+    private static final String TAG = "SearchTabsActivity";
+    //    private enum TABS {Search, Constraints, Sellers_list, Sellers_Map};
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -82,7 +83,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
         if (buyer == null) {
             if (NetworkRequestsManager.instance().isOnline(true))
                 Toast.makeText(this, "Error! check your profile", Toast.LENGTH_LONG).show();
-            Log.e("SearchTabsActivity", "buyer is null but a search button has been clicked");
+            Log.e(TAG, "buyer is null but a search button has been clicked");
             return;
         }
 
@@ -107,6 +108,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
      * @return true if the error should be ignored
      */
     private boolean noLocationError() {
+        Log.e(TAG, "continuing to send quote without location");
         return true;
     }
 

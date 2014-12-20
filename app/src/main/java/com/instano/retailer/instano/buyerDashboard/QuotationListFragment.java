@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
-import com.instano.retailer.instano.application.ServicesSingleton;
-
 /**
  * A list fragment representing a list of Quotations. This fragment
  * also supports tablet devices by allowing list items to be given an
@@ -58,8 +56,8 @@ public class QuotationListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setListAdapter(ServicesSingleton.getInstance(getActivity()).getQuotationArrayAdapter());
-        ServicesSingleton.getInstance(getActivity()).getQuotationArrayAdapter().registerCallback(mCallbacks);
+//        setListAdapter(ServicesSingleton.instance().getQuotationArrayAdapter());
+//        ServicesSingleton.getInstance(getActivity()).getQuotationArrayAdapter().registerCallback(mCallbacks);
     }
 
     @Override

@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.ServicesSingleton;
 
 import java.util.HashSet;
 
@@ -64,8 +63,8 @@ public class SellersListFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter();
-        mAdapter.filter();
+//        mAdapter = ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter();
+//        mAdapter.filter();
 
 //        ServicesSingleton.getInstance(getActivity()).registerCallback(this);
     }
@@ -132,8 +131,8 @@ public class SellersListFragment extends Fragment implements
         // progress ranges from 0 to 9999 while distance needs to be from 1km to 10km
         int dist = mWithinSeekBar.getProgress() + 1;
         mDistTextView.setText(String.format("%1.2fkm", dist/1000.0));
-        ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(
-                dist / 10); // * 100 since it needs to be sent in 10x meters
+//        ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(
+//                dist / 10); // * 100 since it needs to be sent in 10x meters
     }
 
     /**

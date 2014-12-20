@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.utilities.models.Quote;
 
 /**
@@ -43,7 +44,7 @@ public class QuoteDetailFragment extends Fragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_QUOTE_ID));
+            mItem = DataManager.instance().getQuote(getArguments().getInt(ARG_QUOTE_ID));
         }
     }
 
@@ -54,7 +55,7 @@ public class QuoteDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.quote_detail)).setText(mItem.content);
+            ((TextView) rootView.findViewById(R.id.quote_detail)).setText(mItem.searchString);
         }
 
         return rootView;

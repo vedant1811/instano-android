@@ -7,7 +7,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +63,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
         LatLng startLatLng;
-        Location userLocation = ServicesSingleton.getInstance(getActivity()).getUserLocation();
+        Location userLocation = ServicesSingleton.instance().getUserLocation();
         if (userLocation != null)
             startLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
         else
@@ -93,11 +92,11 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         mMap.setOnMarkerDragListener(this);
 
 
-        SellersArrayAdapter sellersArrayAdapter = ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter();
-        sellersArrayAdapter.setListener(this);
-        SparseArray<Seller> sellers = sellersArrayAdapter.getAllSellers();
-        for (int i = 0; i < sellers.size(); i++)
-            sellerAdded(sellers.valueAt(i));
+//        SellersArrayAdapter sellersArrayAdapter = ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter();
+//        sellersArrayAdapter.setListener(this);
+//        SparseArray<Seller> sellers = sellersArrayAdapter.getAllSellers();
+//        for (int i = 0; i < sellers.size(); i++)
+//            sellerAdded(sellers.valueAt(i));
         updateMarkersIfNeeded();
 
     }
@@ -212,7 +211,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
 
     private void sendLocation(Address address) {
         if (!SELECT_LOCATION.equals(mSelectedLocationMarker.getTitle())) {// i.e. if location has been updated
-            ServicesSingleton.getInstance(getActivity()).userSelectsLocation(
+            ServicesSingleton.instance().userSelectsLocation(
                     mSelectedLocationMarker.getPosition(), address);
             Log.d("address", "address updated by SellersMapFragment:" + address);
         }

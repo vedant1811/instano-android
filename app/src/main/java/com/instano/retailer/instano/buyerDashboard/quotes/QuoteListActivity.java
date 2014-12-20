@@ -1,10 +1,8 @@
 package com.instano.retailer.instano.buyerDashboard.quotes;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
-
-import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
 
@@ -57,35 +55,18 @@ public class QuoteListActivity extends Activity
         // TODO: If exposing deep links into your app, handle intents here.
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            navigateUpFromSameTask(this);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     /**
      * Callback method from {@link QuoteListFragment.Callbacks}
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(String id) {
+    public void onItemSelected(int id) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(QuoteDetailFragment.ARG_QUOTE_ID, id);
+            arguments.putInt(QuoteDetailFragment.ARG_QUOTE_ID, id);
             QuoteDetailFragment fragment = new QuoteDetailFragment();
             fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()

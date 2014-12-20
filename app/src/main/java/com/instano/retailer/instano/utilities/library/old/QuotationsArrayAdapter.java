@@ -8,9 +8,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.DataManager;
+import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.buyerDashboard.QuotationListFragment;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
@@ -43,8 +43,8 @@ public class QuotationsArrayAdapter extends BaseAdapter {
     public boolean insertIfNeeded(Quotation quotation) {
 
         QuotationsGroup group = getGroup(quotation.quoteId);
-        Seller seller = ServicesSingleton.getInstance(null).getSellersArrayAdapter().getSeller(quotation.sellerId);
-
+//        Seller seller = ServicesSingleton.getInstance(null).getSellersArrayAdapter().getSeller(quotation.sellerId);
+        Seller seller = null;
         if (group == null || seller == null)
             return false; // group is not yet created. will be created next time
 
@@ -111,7 +111,7 @@ public class QuotationsArrayAdapter extends BaseAdapter {
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
         final TextView newTextView = (TextView) view.findViewById(R.id.newTextView);
 
-        final ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(null);
+//        final ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(null);
         String timeElapsed = quotation.getPrettyTimeElapsed();
 
         // TODO: also change color alternating-ly
@@ -121,7 +121,7 @@ public class QuotationsArrayAdapter extends BaseAdapter {
 
         String nameOfShop;
 
-        Seller seller = servicesSingleton.getSellersArrayAdapter().getSeller(quotation.sellerId);
+        Seller seller = DataManager.instance().getSeller(quotation.sellerId);
         // TODO: better handle error
         if (seller != null) {
             nameOfShop = seller.nameOfShop;

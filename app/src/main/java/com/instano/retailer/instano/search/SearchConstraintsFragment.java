@@ -10,7 +10,6 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.MultiSpinner;
 import com.instano.retailer.instano.utilities.library.RangeSeekBar;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
@@ -123,7 +122,7 @@ public class SearchConstraintsFragment extends Fragment
     public void onItemsSelected(boolean[] selected) {
         ProductCategories.Category selectedCategory = ((SearchTabsActivity)getActivity()).getSelectedCategory();
         selectedCategory.setSelected(selected);
-        ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(selectedCategory);
+//        ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(selectedCategory);
     }
 
     public void onCategorySelected(ProductCategories.Category selectedCategory) {
