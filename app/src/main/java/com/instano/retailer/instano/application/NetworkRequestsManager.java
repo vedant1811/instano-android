@@ -55,7 +55,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
 
     public interface QuoteCallbacks {
         public void productCategoriesUpdated(ArrayList<ProductCategories.Category> productCategories);
-        public void quoteSent(boolean success);
+        public void onQuoteSent(boolean success);
     }
 
     public interface RegistrationCallback {
@@ -173,14 +173,14 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                     public void onResponse(JSONObject response) {
                         Log.v (TAG, response.toString());
                         if (mQuoteCallbacks != null)
-                            mQuoteCallbacks.quoteSent(true);
+                            mQuoteCallbacks.onQuoteSent(true);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         if (mQuoteCallbacks != null)
-                            mQuoteCallbacks.quoteSent(false);
+                            mQuoteCallbacks.onQuoteSent(false);
                         NetworkRequestsManager.this.onErrorResponse(error);
                     }
                 }

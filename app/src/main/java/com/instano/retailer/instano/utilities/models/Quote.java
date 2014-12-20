@@ -66,7 +66,7 @@ public class Quote {
         this.priceRange = priceRange.trim();
         this.additionalInfo = additionalInfo.trim();
         updatedAt = 0;
-        this.address = address.trim();
+        this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -142,7 +142,7 @@ public class Quote {
     public JSONObject toJsonObject() {
         try {
 
-            JSONObject quoteParamsJsonObject = new JSONObject()
+            JSONObject params = new JSONObject()
                     .put("buyer_id", buyerId)
                     .put("search_string", searchString)
                     .put("additional_info", additionalInfo)
@@ -150,22 +150,22 @@ public class Quote {
                     .put("product_category", productCategory.toJsonObject());
 
             if (sellerIds != null && sellerIds.size() > 0) {
-                quoteParamsJsonObject.put("seller_ids", new JSONArray(this.sellerIds));
+                params.put("seller_ids", new JSONArray(this.sellerIds));
             }
 
             if (id != -1)
-                quoteParamsJsonObject.put ("id", id);
+                params.put("id", id);
 
             if (address != null)
-                quoteParamsJsonObject.put("address", address);
+                params.put("address", address);
 
             if (latitude != INVALID_COORDINATE) {
-                quoteParamsJsonObject.put("latitude", latitude)
+                params.put("latitude", latitude)
                         .put("longitude", longitude);
             }
 
             JSONObject quoteJsonObject = new JSONObject()
-                    .put("quote", quoteParamsJsonObject);
+                    .put("quote", params);
             return quoteJsonObject;
         } catch (JSONException e) {
             e.printStackTrace();

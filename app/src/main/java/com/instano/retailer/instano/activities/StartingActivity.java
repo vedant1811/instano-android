@@ -18,6 +18,7 @@ public class StartingActivity extends GlobalMenuActivity implements ServicesSing
     private static final String SEARCH_ICON_HELP = "You can Search for products by clicking the icon in the action bar";
     private static final int SETUP_REQUEST_CODE = 1001;
     private static final int EXIT_DELAY = 1000; // in ms
+    private static final String WELCOME_BACK = "Welcome back! ";
 
     TextView mTextView;
     Button mButton;
@@ -52,25 +53,18 @@ public class StartingActivity extends GlobalMenuActivity implements ServicesSing
         ServicesSingleton instance = ServicesSingleton.instance();
 
         if (instance.signIn(this)) {
-            mText = "Welcome back! " + SEARCH_ICON_HELP;
-            mStatus = Status.SIGNING_IN;
+            mText = WELCOME_BACK + SEARCH_ICON_HELP;
         }
         else {
             mText = mTextView.getText();
-            mStatus = Status.FIRST_TIME;
         }
     }
 
     @Override
     public void signedIn(boolean success) {
-        if (success) {
-            mStatus = Status.SIGNED_IN;
-            return;
-        }
-        else if (NetworkRequestsManager.instance().isOnline(true))
+        if (!success && NetworkRequestsManager.instance().isOnline(true))
             Toast.makeText(this, "sign in error!\ncreate a new profile or contact us", Toast.LENGTH_LONG).show();
 
-        mStatus = Status.ERROR_SIGN_IN;
     }
 
     /**
@@ -103,17 +97,11 @@ public class StartingActivity extends GlobalMenuActivity implements ServicesSing
     }
 
     public void getStartedClicked(View view) {
-        switch (mStatus) {
-            case FIRST_TIME:
-                Intent intent = new Intent(this, ProfileActivity.class);
-                startActivityForResult(intent, SETUP_REQUEST_CODE);
-                break;
-            case ERROR_SIGN_IN: // try again
-                ServicesSingleton.instance().signIn(this);
-                Toast.makeText(this, "Trying again to sign in", Toast.LENGTH_LONG).show();
-                break;
-            default:
-                search();
+        if (mText.toString().contains(SEARCH_ICON_HELP)) {
+            search();
+        } else {
+            Intent intent = new Intent(this, ProfileActivity.class);
+            startActivityForResult(intent, SETUP_REQUEST_CODE);
         }
     }
 

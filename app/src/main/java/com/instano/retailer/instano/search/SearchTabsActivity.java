@@ -225,7 +225,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
     }
 
     @Override
-    public void quoteSent(boolean success) {
+    public void onQuoteSent(boolean success) {
         if (success) {
             startActivity(new Intent(this, QuotationListActivity.class));
             Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT).show();
