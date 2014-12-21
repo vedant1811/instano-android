@@ -39,13 +39,9 @@ public class QuoteDetailActivity extends Activity {
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putString(QuoteDetailFragment.ARG_QUOTE_ID,
-                    getIntent().getStringExtra(QuoteDetailFragment.ARG_QUOTE_ID));
-            QuoteDetailFragment fragment = new QuoteDetailFragment();
-            fragment.setArguments(arguments);
+            int intExtra = getIntent().getIntExtra(QuoteDetailFragment.ARG_QUOTE_ID, -1);
             getFragmentManager().beginTransaction()
-                    .add(R.id.quote_detail_container, fragment)
+                    .add(R.id.quote_detail_container, QuoteDetailFragment.create(intExtra))
                     .commit();
         }
     }

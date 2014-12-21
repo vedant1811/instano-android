@@ -1,5 +1,38 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/quote_detail"
-    style="?android:attr/textAppearanceLarge" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:padding="16dp" android:textIsSelectable="true"
-    tools:context="com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment" />
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/quote_detail"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/activity_horizontal_margin"
+    android:textIsSelectable="true"
+    tools:context="com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Search for Quote"
+        android:id="@+id/headingTextView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Sent to 5 Retailers (out of 27) in 4 hours"
+        android:id="@+id/subheadingTextView"
+        android:layout_below="@+id/headingTextView"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="@dimen/general_separator_margin" />
+
+    <ExpandableListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/expandableListView"
+        android:layout_below="@+id/subheadingTextView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="-8dp"
+        android:layout_marginRight="-8dp" />
+</RelativeLayout>

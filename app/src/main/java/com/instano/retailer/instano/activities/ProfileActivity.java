@@ -101,6 +101,10 @@ public class ProfileActivity extends GlobalMenuActivity
 
     public void setUpClicked(View view) {
 
+        // TODO: add feature of updating profile
+        if (ServicesSingleton.instance().getBuyer() != null)
+            onRegistration(Result.NO_ERROR);
+
         if ("".contentEquals(mNameEditText.getText())) {
             mNameEditText.setError("Cannot be empty");
             mNameEditText.requestFocus();

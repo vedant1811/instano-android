@@ -38,6 +38,17 @@ public class DataManager {
             return null;
     }
 
+    @NonNull
+    public List<Quotation> quotationsBySeller(int id) {
+        ArrayList<Quotation> quotations = new ArrayList<Quotation>();
+
+        for (Quotation quotation : mQuotations) {
+            if (quotation.sellerId == id)
+                quotations.add(quotation);
+        }
+        return quotations;
+    }
+
     @Nullable
     public Quote getQuote(int id) {
         for (Quote quote : mQuotes)

@@ -52,7 +52,8 @@ public class StartingActivity extends GlobalMenuActivity implements ServicesSing
         // be sure to initialize ServicesSingleton:
         ServicesSingleton instance = ServicesSingleton.instance();
 
-        if (instance.signIn(this)) {
+        // in case buyer already has signed in (activity was killed for some reason) do not sign in again
+        if (instance.getBuyer() != null || instance.signIn(this)) {
             mText = WELCOME_BACK + SEARCH_ICON_HELP;
         }
         else {

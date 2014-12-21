@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
+import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Quote;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class QuoteListFragment extends ListFragment {
      * activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
+    private static final String TAG = "QuotesListFragment";
 
     /**
      * The fragment's current callback object, which is notified of list item
@@ -126,6 +128,7 @@ public class QuoteListFragment extends ListFragment {
         // fragment is attached to one) that an item has been selected.
         Quote quote = (Quote) getListAdapter().getItem(position);
         mCallbacks.onItemSelected(quote.id);
+        Log.d(TAG, "Quote clicked, id: " + quote.id);
     }
 
     @Override
