@@ -6,7 +6,6 @@ import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import com.instano.retailer.instano.utilities.library.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +23,7 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.search.SearchTabsActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
+import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Seller;
 
 import java.util.HashMap;
@@ -210,11 +210,11 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
     }
 
     private void sendLocation(Address address) {
-        if (!SELECT_LOCATION.equals(mSelectedLocationMarker.getTitle())) {// i.e. if location has been updated
-            ServicesSingleton.instance().userSelectsLocation(
-                    mSelectedLocationMarker.getPosition(), address);
-            Log.d("address", "address updated by SellersMapFragment:" + address);
-        }
+//        if (!SELECT_LOCATION.equals(mSelectedLocationMarker.getTitle())) {// i.e. if location has been updated
+//            ServicesSingleton.instance().userSelectsLocation(
+//                    mSelectedLocationMarker.getPosition(), address);
+//            Log.d("address", "address updated by SellersMapFragment:" + address);
+//        }
     }
 
     @Override

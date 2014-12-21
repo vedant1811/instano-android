@@ -119,7 +119,7 @@ public class ProfileActivity extends GlobalMenuActivity
         mSetUpViewFlipper.showNext(); // progressbar
         Buyer buyer = new Buyer(
                 mNameEditText.getText().toString(),
-                "+91 " + mPhoneEditText.getText().toString()
+                mPhoneEditText.getText().toString()
         ) ;
         NetworkRequestsManager.instance().registerRequest(buyer);
     }

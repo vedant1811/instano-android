@@ -220,13 +220,13 @@ public class ServicesSingleton implements
             return mUserSelectedLocation;
     }
 
-    public void userSelectsLocation(LatLng location, Address address) {
+    public void userSelectsLocation(@NonNull LatLng location, @Nullable String address) {
         Log.d(Log.ADDRESS_UPDATED, String.format("userSelectsLocation.address: %s, location: %s", address, location));
         mUserSelectedLocation = new Location("Services Singleton Generated");
         mUserSelectedLocation.setLatitude(location.latitude);
         mUserSelectedLocation.setLongitude(location.longitude);
 
-        mUserAddress = readableAddress(address);
+        mUserAddress = address;
 
         if (mAddressCallbacks != null)
             mAddressCallbacks.addressUpdated(mUserAddress, true);

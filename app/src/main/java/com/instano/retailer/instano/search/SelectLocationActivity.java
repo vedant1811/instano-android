@@ -1,22 +1,23 @@
 package com.instano.retailer.instano.search;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.view.MenuItem;
+import android.util.TypedValue;
+import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GetAddressTask;
@@ -25,28 +26,25 @@ import com.instano.retailer.instano.utilities.library.Log;
 /**
  * A simple {@link android.app.Fragment} subclass.
  */
-public class SelectLocationActivity extends Activity implements GoogleMap.OnMapLongClickListener,
-        GetAddressTask.AddressCallback, GoogleMap.OnMarkerDragListener {
+public class SelectLocationActivity extends Activity implements
+        GetAddressTask.AddressCallback, GoogleMap.OnCameraChangeListener {
+
+    public final static String KEY_EXTRA_LATITUDE = "latitude";
+    public final static String KEY_EXTRA_LONGITUDE = "longitude";
+    public final static String KEY_READABLE_ADDRESS = "address";
 
     private MapView mMapView;
+    private TextView mAddressTextView;
 
     /* mMap variables */
     private static final LatLng BANGALORE_LOCATION = new LatLng(12.9539974, 77.6309395);
-    private static final String SELECT_LOCATION = "Select Location";
+    private static final String SELECT_LOCATION = "Click to select Location";
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    private Marker mSelectedLocationMarker;
+//    private Marker mSelectedLocationMarker;
     private GetAddressTask mAddressTask;
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    private CameraPosition mLastCameraPosition;
+    private String mLastFetchedAddress;
 
     @Override
      public void onBackPressed() {
@@ -72,78 +70,76 @@ public class SelectLocationActivity extends Activity implements GoogleMap.OnMapL
             startLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
         else
             startLatLng = BANGALORE_LOCATION;
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(
+        mLastCameraPosition = new CameraPosition.Builder().target(
                 startLatLng)
-                .zoom(11)
+                .zoom(14)
                 .build();
 
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        mMap.setOnMapLongClickListener(this);
-
+        mMap.setOnCameraChangeListener(this);
 
 //        IconGenerator iconGenerator = new IconGenerator(getActivity());
 //        Bitmap markerBitmap = iconGenerator.makeIcon("move me");
 
-        mSelectedLocationMarker = mMap.addMarker(new MarkerOptions()
-                .position(startLatLng)
-                .title(SELECT_LOCATION)
-                .snippet("drag this marker or long click on map\nto select new location")
-//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.instano_logo))
-//                .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                .draggable(true));
-        mSelectedLocationMarker.showInfoWindow();
-        mMap.setOnMarkerDragListener(this);
+//        mSelectedLocationMarker = mMap.addMarker(new MarkerOptions()
+//                .position(startLatLng)
+//                .title(SELECT_LOCATION)
+//                .snippet("Click marker to select new location")
+////                .icon(BitmapDescriptorFactory.fromResource(R.drawable.instano_logo))
+////                .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
+//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+//        mSelectedLocationMarker.showInfoWindow();
+    }
 
+    public void markerButtonClicked(View view) {
+//        LatLng latLng = mSelectedLocationMarker.getPosition();
+        LatLng latLng = mMap.getCameraPosition().target;
+
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra(KEY_EXTRA_LATITUDE, latLng.latitude);
+        resultIntent.putExtra(KEY_EXTRA_LONGITUDE, latLng.longitude);
+        if (mLastFetchedAddress != null)
+            resultIntent.putExtra(KEY_READABLE_ADDRESS, mLastFetchedAddress);
+        setResult(RESULT_OK, resultIntent);
+        finish();
+        Log.d(Log.ADDRESS_UPDATED, "address updated by MapActivity:" + mLastFetchedAddress);
     }
 
     @Override
-    public void onMapLongClick(LatLng latLng) {
-        mSelectedLocationMarker.setPosition(latLng);
+    public void onCameraChange(CameraPosition cameraPosition) {
+        // always keep the marker in the center.
+//        mSelectedLocationMarker.setPosition(cameraPosition.target);
         refreshMarker();
     }
 
     private void refreshMarker() {
 
-        LatLng latLng = mSelectedLocationMarker.getPosition();
+//        LatLng latLng = mSelectedLocationMarker.getPosition();
+        LatLng latLng = mMap.getCameraPosition().target;
 
         if (mAddressTask != null)
             mAddressTask.cancel(true); // to make sure addressFetched is not called
         mAddressTask = new GetAddressTask(this, this);
         mAddressTask.execute(latLng.latitude, latLng.longitude);
-
-        mSelectedLocationMarker.setTitle(SELECT_LOCATION);
-        mSelectedLocationMarker.setSnippet("");
-        resetInfoWindow();
+        mLastFetchedAddress = null;
+        mAddressTextView.setText("Fetching address...");
+//        mSelectedLocationMarker.setTitle(SELECT_LOCATION);
+//        mSelectedLocationMarker.setSnippet("");
+//        resetInfoWindow();
     }
 
     @Override
     public void addressFetched(@Nullable Address address) {
-        if (address != null && address.getMaxAddressLineIndex() > 0)
-            mSelectedLocationMarker.setSnippet(address.getAddressLine(0));
-        resetInfoWindow();
-        sendLocation(address);
-    }
-
-    @Override
-    public void onMarkerDragStart(Marker marker) {
-        mSelectedLocationMarker.setSnippet(null);
-        resetInfoWindow();
-    }
-
-    @Override
-    public void onMarkerDrag(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDragEnd(Marker marker) {
-        refreshMarker();
+        if (address != null && address.getMaxAddressLineIndex() > 0) {
+//            mSelectedLocationMarker.setSnippet(address.getAddressLine(0));
+            mLastFetchedAddress = ServicesSingleton.readableAddress(address);
+            mAddressTextView.setText(mLastFetchedAddress);
+        }
+//        resetInfoWindow();
     }
 
     private void resetInfoWindow() {
-        mSelectedLocationMarker.hideInfoWindow();
-        mSelectedLocationMarker.showInfoWindow();
+//        mSelectedLocationMarker.hideInfoWindow();
+//        mSelectedLocationMarker.showInfoWindow();
     }
 
     @Override
@@ -152,6 +148,7 @@ public class SelectLocationActivity extends Activity implements GoogleMap.OnMapL
         setContentView(R.layout.activity_select_location);
         // Gets the MapView from the XML layout and creates it
         mMapView = (MapView) findViewById(R.id.map);
+        mAddressTextView = (TextView) findViewById(R.id.addressTextView);
 
         mMapView.onCreate(savedInstanceState);
 
@@ -162,21 +159,13 @@ public class SelectLocationActivity extends Activity implements GoogleMap.OnMapL
         MapsInitializer.initialize(this);
 
         setUpMap();
-
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mMapView.onPause();
-    }
-
-    private void sendLocation(Address address) {
-        if (!SELECT_LOCATION.equals(mSelectedLocationMarker.getTitle())) {// i.e. if location has been updated
-            ServicesSingleton.instance().userSelectsLocation(
-                    mSelectedLocationMarker.getPosition(), address);
-            Log.d(Log.ADDRESS_UPDATED, "address updated by MapActivity:" + address);
-        }
+        mLastCameraPosition = mMap.getCameraPosition();
     }
 
     @Override
@@ -184,8 +173,19 @@ public class SelectLocationActivity extends Activity implements GoogleMap.OnMapL
         long start = System.nanoTime();
         super.onResume();
         mMapView.onResume();
-        double timeTaken = (System.nanoTime() - start)/1000000;
-        Log.d("Timing", "MapActivity.onResume took " + timeTaken + "ms");
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(mLastCameraPosition));
+        double timeTaken = (System.nanoTime() - start)/Log.ONE_MILLION;
+        // Get the button view
+        View locationButton = ((View) mMapView.findViewById(1).getParent()).findViewById(2);
+
+        // and next place it, for exemple, on bottom right (as Google Maps app)
+        RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+        // 40 dp in pixels
+        int px40 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
+        // 8 dp in pixels
+        int px8 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
+        rlp.setMargins(0, px40, px8, 0);
+        Log.d(Log.TIMER_TAG, "MapActivity.onResume took " + timeTaken + "ms");
     }
 
     @Override

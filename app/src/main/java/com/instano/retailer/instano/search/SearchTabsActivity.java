@@ -4,23 +4,28 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Quote;
+import com.instano.retailer.instano.utilities.models.Seller;
 
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +33,8 @@ import java.util.List;
 
 public class SearchTabsActivity extends GlobalMenuActivity implements
         NetworkRequestsManager.QuoteCallbacks {
+
+    private static final int RESULT_CODE_LOCATION = 990;
 
     private final static String[] TABS = {"Search", "Constraints"};
     private static final String TAG = "SearchTabsActivity";
@@ -55,8 +62,30 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 
     private ProductCategories.Category mSelectedCategory;
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case RESULT_CODE_LOCATION:
+                if (resultCode == RESULT_OK) {
+                    final LatLng latLng = new LatLng(
+                            data.getDoubleExtra(SelectLocationActivity.KEY_EXTRA_LATITUDE, Seller.INVALID_COORDINATE),
+                            data.getDoubleExtra(SelectLocationActivity.KEY_EXTRA_LONGITUDE, Seller.INVALID_COORDINATE)
+                    );
+                    String address = data.getStringExtra(SelectLocationActivity.KEY_READABLE_ADDRESS);
+                    if (address == null) // try to fetch location again
+                        new GetAddressTask(this, new GetAddressTask.AddressCallback() {
+                            @Override
+                            public void addressFetched(@Nullable Address address) {
+                                String addressString = ServicesSingleton.readableAddress(address);
+                                ServicesSingleton.instance().userSelectsLocation(latLng, addressString);
+                            }
+                        }).execute(latLng.latitude, latLng.longitude);
+                    ServicesSingleton.instance().userSelectsLocation(latLng, address);
+                }
+        }
+    }
     public void locationButtonClicked(View view) {
-        startActivity(new Intent(this, SelectLocationActivity.class));
+        startActivityForResult(new Intent(this, SelectLocationActivity.class), RESULT_CODE_LOCATION);
     }
 
     public void searchButtonClicked(View view) {
