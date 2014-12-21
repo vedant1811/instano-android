@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Query String"
-        android:id="@+id/queryStringTextView"
+        android:id="@+id/mainTextView"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="false" />
@@ -47,7 +47,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="sent to 5 retailers"
         android:id="@+id/sentToTextView"
-        android:layout_below="@+id/queryStringTextView"
+        android:layout_below="@+id/mainTextView"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="@dimen/general_separator_margin" />
 </RelativeLayout>

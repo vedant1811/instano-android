@@ -112,7 +112,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         else
             view = convertView;
 
-        TextView shopNameTextView = (TextView) view.findViewById(R.id.shopNameTextView);
+        TextView shopNameTextView = (TextView) view.findViewById(R.id.sellerNameTextView);
         TextView addressTextView = (TextView) view.findViewById(R.id.addressTextView);
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
         CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox);

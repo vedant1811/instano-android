@@ -4,9 +4,9 @@
     android:id="@+id/quote_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/activity_horizontal_margin"
     android:textIsSelectable="true"
-    tools:context="com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment">
+    tools:context="com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment"
+    android:paddingTop="@dimen/activity_horizontal_margin">
 
     <TextView
         android:layout_width="wrap_content"
@@ -34,5 +34,8 @@
         android:layout_below="@+id/subheadingTextView"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="-8dp"
-        android:layout_marginRight="-8dp" />
+        android:layout_marginRight="-8dp"
+        android:background="@drawable/red_rectangle"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp" />
 </RelativeLayout>

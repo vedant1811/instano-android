@@ -92,7 +92,7 @@ public class QuotationsArrayAdapter extends BaseAdapter {
     }
 
     private void getSeparatorView(Separator separator, View view) {
-        TextView primaryTextView = (TextView) view.findViewById(R.id.queryStringTextView);
+        TextView primaryTextView = (TextView) view.findViewById(R.id.mainTextView);
         TextView timeTextView = (TextView) view.findViewById(R.id.timeTextView);
         TextView responsesTextView = (TextView) view.findViewById(R.id.responsesTextView);
 
@@ -105,9 +105,9 @@ public class QuotationsArrayAdapter extends BaseAdapter {
 
     private void getQuotationView(final Quotation quotation, View view) {
         TextView modelTextView = (TextView) view.findViewById(R.id.queryTextView);
-        TextView timeElapsedTextView = (TextView) view.findViewById(R.id.timeElapsedTextView);
-        TextView priceTextView = (TextView) view.findViewById(R.id.priceTextView);
-        TextView shopTextView = (TextView) view.findViewById(R.id.shopTextView);
+        TextView timeElapsedTextView = (TextView) view.findViewById(R.id.priceTextView);
+        TextView priceTextView = (TextView) view.findViewById(R.id.timeElapsedTextView);
+//        TextView shopTextView = (TextView) view.findViewById(R.id.shopTextView);
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
         final TextView newTextView = (TextView) view.findViewById(R.id.newTextView);
 
@@ -135,7 +135,7 @@ public class QuotationsArrayAdapter extends BaseAdapter {
             distanceTextView.setVisibility(View.INVISIBLE);
         }
 
-        shopTextView.setText(nameOfShop);
+//        shopTextView.setText(nameOfShop);
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override

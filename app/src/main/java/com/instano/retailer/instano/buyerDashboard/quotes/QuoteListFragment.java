@@ -184,7 +184,7 @@ public class QuoteListFragment extends ListFragment {
             if (view == null)
                 view = mInflater.inflate(R.layout.list_item_quote, parent, false);
 
-            TextView primaryTextView = (TextView) view.findViewById(R.id.queryStringTextView);
+            TextView primaryTextView = (TextView) view.findViewById(R.id.mainTextView);
             TextView timeTextView = (TextView) view.findViewById(R.id.timeTextView);
             TextView responsesTextView = (TextView) view.findViewById(R.id.responsesTextView);
             TextView sentToTextView = (TextView) view.findViewById(R.id.sentToTextView);

@@ -26,21 +26,27 @@ public class DataManager {
 
     private static DataManager sInstance;
 
+    // TODO: probably convert Lists to a SortedSet or SortedMap
     private ArrayList<Quote> mQuotes;
     private ArrayList<Quotation> mQuotations;
     private ArrayList<Seller> mSellers;
     private ProductCategories mProductCategories;
 
-    public ArrayList<ProductCategories.Category> getProductCategories() {
+    public List<ProductCategories.Category> getProductCategories() {
         if (mProductCategories != null)
             return mProductCategories.getProductCategories();
         else
             return null;
     }
 
+    /**
+     * modifiable copy of quotations
+     * @param id
+     * @return an {@link ArrayList} of objects
+     */
     @NonNull
-    public List<Quotation> quotationsBySeller(int id) {
-        ArrayList<Quotation> quotations = new ArrayList<Quotation>();
+    public ArrayList<Object> quotationsBySeller(int id) {
+        ArrayList<Object> quotations = new ArrayList<Object>();
 
         for (Quotation quotation : mQuotations) {
             if (quotation.sellerId == id)
@@ -59,7 +65,7 @@ public class DataManager {
 
     @NonNull
     public List<Quote> getQuotes() {
-        return mQuotes;
+        return Collections.unmodifiableList(mQuotes);
     }
 
     @Nullable
@@ -127,12 +133,14 @@ public class DataManager {
     /*package*/ boolean updateQuotations(JSONArray response) {
         long start = System.nanoTime();
         boolean newEntries = false;
+        boolean newUnread = false;
         for (int i = 0; i < response.length(); i++) {
             try {
                 Quotation quotation= new Quotation(response.getJSONObject(i));
                 if (!mQuotations.contains(quotation)) {
                     mQuotations.add(quotation);
                     newEntries = true;
+                    newUnread |= !quotation.isRead();
                 }
             } catch (JSONException e) {
                 Log.e(TAG + ".updateQuotations", String.format("response: %s, i=%d", String.valueOf(response), i), e);
@@ -141,6 +149,8 @@ public class DataManager {
         }
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
         Log.d(Log.TIMER_TAG, String.format("updateQuotations took %.4fms", time));
+        if (newUnread)
+            ServicesSingleton.instance().createNotification();
         return newEntries;
     }
 

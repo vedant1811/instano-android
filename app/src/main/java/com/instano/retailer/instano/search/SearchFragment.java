@@ -25,7 +25,7 @@ import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 
-import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -106,7 +106,7 @@ public class SearchFragment extends Fragment
 
         mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
                 android.R.layout.simple_spinner_item);
-        ArrayList<ProductCategories.Category> categories = DataManager.instance().getProductCategories();
+        List<ProductCategories.Category> categories = DataManager.instance().getProductCategories();
         if (categories != null)
             mCategoryAdapter.addAll(categories);
         mCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -210,7 +210,7 @@ public class SearchFragment extends Fragment
     }
 
     /* package private */
-    void updateProductCategories(ArrayList<ProductCategories.Category> categories) {
+    void updateProductCategories(List<ProductCategories.Category> categories) {
         if (mCategoryAdapter != null) {
             mCategoryAdapter.clear();
             mCategoryAdapter.addAll(categories);

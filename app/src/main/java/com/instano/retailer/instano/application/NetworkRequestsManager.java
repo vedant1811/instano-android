@@ -24,7 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by vedant on 18/12/14.
@@ -32,7 +32,7 @@ import java.util.ArrayList;
 public class NetworkRequestsManager implements Response.ErrorListener{
 
     private static final String TAG = "NetworkRequestsManager";
-    private static final String LOCAL_SERVER_URL = "http://instano.in/";
+    private static final String LOCAL_SERVER_URL = "http://192.168.0.148:3000/";
 
     private final static String API_ERROR_ALREADY_TAKEN = "has already been taken";
     private final static String API_ERROR_IS_BLANK = "can't be blank";
@@ -54,7 +54,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
     }
 
     public interface QuoteCallbacks {
-        public void productCategoriesUpdated(ArrayList<ProductCategories.Category> productCategories);
+        public void productCategoriesUpdated(List<ProductCategories.Category> productCategories);
         public void onQuoteSent(boolean success);
     }
 
@@ -103,8 +103,6 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                     public void onResponse(JSONArray response) {
                         Log.v(TAG, "Quotations response:" + response.toString());
                         boolean dataChanged = DataManager.instance().updateQuotations(response);
-                        if (dataChanged)
-                            ServicesSingleton.instance().createNotification();
                     }
                 },
                 this

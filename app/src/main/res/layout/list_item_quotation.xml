@@ -29,53 +29,29 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="42 min ago"
-        android:id="@+id/timeElapsedTextView"
+        android:textAppearance="@style/TextAppearanceHeading"
+        android:text="₹ 7000"
+        android:id="@+id/priceTextView"
         android:layout_below="@+id/queryTextView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginTop="8dp"
         android:textStyle="italic"
-        android:layout_toLeftOf="@+id/priceTextView"
-        android:layout_toStartOf="@+id/priceTextView" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearanceHeading"
-        android:text="₹ 7000"
-        android:id="@+id/priceTextView"
-        android:textStyle="normal"
-        android:layout_above="@+id/distanceTextView"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Shop name"
-        android:id="@+id/shopTextView"
-        android:layout_below="@+id/timeElapsedTextView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:layout_toLeftOf="@+id/distanceTextView"
-        android:layout_toStartOf="@+id/distanceTextView" />
+        android:layout_toLeftOf="@+id/timeElapsedTextView"
+        android:layout_toStartOf="@+id/timeElapsedTextView" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="4.7 km"
-        android:id="@+id/distanceTextView"
-        android:layout_gravity="right"
-        android:layout_alignBaseline="@+id/shopTextView"
-        android:layout_alignBottom="@+id/shopTextView"
+        android:text="42 min ago"
+        android:id="@+id/timeElapsedTextView"
+        android:textStyle="normal"
+        android:layout_alignTop="@+id/priceTextView"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@+id/priceTextView"
+        android:gravity="center" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -92,8 +68,7 @@
         android:textSize="12sp"
         android:layout_alignBottom="@+id/queryTextView"
         android:gravity="center"
-        android:textStyle="bold|italic"
-        android:visibility="gone" />
+        android:textStyle="bold|italic" />
 
     <!--<ImageButton-->
         <!--android:layout_width="wrap_content"-->

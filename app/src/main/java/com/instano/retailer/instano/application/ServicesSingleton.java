@@ -1,5 +1,6 @@
 package com.instano.retailer.instano.application;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -25,7 +26,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
+import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.PeriodicWorker;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -34,7 +35,6 @@ import com.instano.retailer.instano.utilities.models.Buyer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  *
@@ -141,12 +141,14 @@ public class ServicesSingleton implements
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mApplication)
                 .setSmallIcon(R.drawable.instano_launcher)
                 .setContentTitle("New Quotations")
-                .setContentText("Click to view your new quotations");
+                .setContentText("Click to view your new quotations")
+                .setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL);
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(
                 mApplication,
                 0,
-                new Intent(mApplication, QuotationListActivity.class),
+                new Intent(mApplication, QuoteListActivity.class),
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
@@ -354,10 +356,10 @@ public class ServicesSingleton implements
     public static long dateFromString(String sDate) {
         Date date = null;
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
             date = simpleDateFormat.parse(sDate);
         } catch (ParseException e) {
+            e.printStackTrace();
             return 0;
         }
         return date.getTime();

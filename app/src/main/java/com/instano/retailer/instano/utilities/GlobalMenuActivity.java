@@ -70,7 +70,8 @@ public abstract class GlobalMenuActivity extends Activity {
 
     protected void search() {
         ServicesSingleton instance = ServicesSingleton.instance();
-        if (instance.firstTime() && instance.getBuyer() == null) {
+        // TODO: decide behaviour
+        if ( /* instance.firstTime() && */ instance.getBuyer() == null) {
             Toast.makeText(this, "please create a profile first", Toast.LENGTH_LONG).show();
             profile();
         }
@@ -122,12 +123,5 @@ public abstract class GlobalMenuActivity extends Activity {
         getMenuInflater().inflate(R.menu.global, menu);
 
         return true;
-    }
-
-    protected enum Status {
-        SIGNED_IN,
-        SIGNING_IN,
-        ERROR_SIGN_IN,
-        FIRST_TIME
     }
 }

@@ -3,16 +3,16 @@
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center"
-    android:background="@color/instano_yellow"
+    android:background="@drawable/yellow_with_top_margin"
     android:layout_marginLeft="@dimen/general_separator_margin"
     android:layout_marginRight="@dimen/general_separator_margin"
-    android:layout_marginTop="@dimen/general_separator_margin">
+    android:layout_marginTop="@dimen/general_separator_margin"
+    android:paddingTop="5dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Query String:"
+        android:text="Shop name"
         android:id="@+id/mainTextView"
         android:paddingLeft="16dp"
         android:paddingTop="8dp"
@@ -20,20 +20,12 @@
         android:paddingBottom="8dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="false" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="4 hours ago"
-        android:id="@+id/timeTextView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:paddingRight="4dp"
-        android:paddingTop="2dp"
-        android:textStyle="italic" />
+        android:layout_alignParentStart="false"
+        android:layout_toLeftOf="@+id/responsesTextView"
+        android:layout_toStartOf="@+id/responsesTextView"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/white"
+        android:layout_marginLeft="16dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -44,6 +36,11 @@
         android:layout_alignBottom="@+id/mainTextView"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:padding="4dp"
-        android:textStyle="bold" />
+        android:textColor="@android:color/white"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp" />
 </RelativeLayout>

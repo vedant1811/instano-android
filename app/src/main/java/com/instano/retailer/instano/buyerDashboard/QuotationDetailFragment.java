@@ -8,7 +8,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.utilities.models.Quotation;
+import com.instano.retailer.instano.utilities.models.Quote;
 import com.instano.retailer.instano.utilities.models.Seller;
 
 /**
@@ -52,28 +55,23 @@ public class QuotationDetailFragment extends Fragment {
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_quotation_detail, container, false);
 
-//        Quotation quotation = mServicesSingleton.getQuotationArrayAdapter().getQuotation(mQuotationId);
+        Quotation quotation = DataManager.instance().getQuotation(mQuotationId);
+        Seller seller = DataManager.instance().getSeller(quotation.sellerId);
+        Quote quote = DataManager.instance().getQuote(quotation.quoteId);
 
-        TextView textView = (TextView) rootView.findViewById(R.id.chatTextView);
-        TextView header = (TextView) rootView.findViewById(R.id.headerTextView);
+        TextView shopNameTextView = (TextView) rootView.findViewById(R.id.shopNameTextView);
+        TextView sellerNameTextView = (TextView) rootView.findViewById(R.id.sellerNameTextView);
+        TextView queryTextView = (TextView) rootView.findViewById(R.id.queryTextView);
+        TextView modelTextView = (TextView) rootView.findViewById(R.id.modelTextView);
+        TextView priceTextView = (TextView) rootView.findViewById(R.id.priceTextView);
+        TextView additionalInfoTextView = (TextView) rootView.findViewById(R.id.additionalInfoTextView);
 
-        String productInfo = null; //quotation.toChatString();
-
-        String title;
-//        Seller seller = mServicesSingleton.getSellersArrayAdapter().getSeller(quotation.sellerId);
-        Seller seller = null;
-        if (seller != null) {
-            String distanceFromLocation = seller.getPrettyDistanceFromLocation();
-            if (distanceFromLocation != null)
-                productInfo += distanceFromLocation + " away";
-            productInfo += "\n\nSELLER INFO:" + seller.phone + "\n" + seller.email;
-            title = seller.nameOfSeller + " from \"" + seller.nameOfShop +"\"";
-        } else {
-            title = "INVALID SELLER";
-        }
-
-        textView.setText(productInfo);
-        header.setText(title);
+        shopNameTextView.setText(seller.nameOfShop);
+        sellerNameTextView.setText(seller.nameOfSeller);
+        queryTextView.setText(quote.searchString);
+        modelTextView.setText(quotation.nameOfProduct);
+        priceTextView.setText(String.format("₹%,d", quotation.price));
+        additionalInfoTextView.setText(quotation.description);
 
         return rootView;
     }

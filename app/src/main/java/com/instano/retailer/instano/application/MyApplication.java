@@ -5,6 +5,7 @@ import android.app.Application;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.utilities.library.Log;
 
 import java.util.HashMap;
 
@@ -20,10 +21,11 @@ public class MyApplication extends Application
 
         // Initialize the singletons so their instances
         // are bound to the application process.
+        GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+        Log.init(this);
         DataManager.init();
         NetworkRequestsManager.init(this);
         ServicesSingleton.init(this);
-        GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
     }
 
     public synchronized Tracker getTracker(TrackerName trackerId) {

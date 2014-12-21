@@ -1,6 +1,7 @@
 package com.instano.retailer.instano.utilities.models;
 
 import android.support.annotation.NonNull;
+
 import com.instano.retailer.instano.utilities.library.Log;
 
 import org.json.JSONArray;
@@ -9,6 +10,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by vedant on 8/10/14.
@@ -19,8 +21,9 @@ public class ProductCategories {
 
     private static final String TAG = "ProductCategories";
 
-    public ArrayList<Category> getProductCategories() {
-        return mCategories;
+    @NonNull
+    public List<Category> getProductCategories() {
+        return Collections.unmodifiableList(mCategories);
     }
 
     private ArrayList<Category> mCategories;

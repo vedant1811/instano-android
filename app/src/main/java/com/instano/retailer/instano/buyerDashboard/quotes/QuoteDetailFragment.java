@@ -2,17 +2,22 @@ package com.instano.retailer.instano.buyerDashboard.quotes;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Typeface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
+import com.instano.retailer.instano.application.NetworkRequestsManager;
+import com.instano.retailer.instano.buyerDashboard.QuotationDetailActivity;
+import com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
@@ -82,30 +87,44 @@ public class QuoteDetailFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * Shows the details of {@link Quotation} represented by this {@link QuoteDetailFragment}
+     * an expandable list adapter that shows {@link Seller}.nameOfShop as headers
+     * Each group has 2 types of children: one showing {@link Seller} details, other showing {@link Quotation}
+     * hence even if there are no replies by a seller, a group will have one child view for sure.
+     */
     private class Adapter extends BaseExpandableListAdapter {
-        private Context mContext;
-        private List<String> mListDataHeader; // header titles i.e seller names
-        // child data in format of header title, child title
-        private HashMap<String, List<Quotation>> mListDataChild;
+        private static final int CHILD_TYPE_SELLER = 0;
+        private static final int CHILD_TYPE_QUOTATION = 1;
+        private List<Seller> mHeaders; // header titles i.e seller names
+        /**
+         * child data in format of header title, child title
+         * value `Object` can be of 2 types: {@link Seller} or {@link Quotation}
+         */
+        private HashMap<Seller, List<Object>> mChildrenMap;
+        private final LayoutInflater mInflater;
 
         public Adapter(Context context) {
-            this.mContext = context;
-            this.mListDataHeader = new ArrayList<String>();
-            this.mListDataChild = new HashMap<String, List<Quotation>>();
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mHeaders = new ArrayList<Seller>();
+            mChildrenMap = new HashMap<Seller, List<Object>>();
             dataUpdated();
         }
 
         public void dataUpdated() {
             long start = System.nanoTime();
-            mListDataHeader.clear();
-            mListDataChild.clear();
+            mHeaders.clear();
+            mChildrenMap.clear();
 
             for (Integer id : mItem.sellerIds){
                 DataManager dataManager = DataManager.instance();
                 Seller seller = dataManager.getSeller(id);
                 if (seller != null) {
-                    mListDataHeader.add(0, seller.nameOfShop);
-                    mListDataChild.put(seller.nameOfShop, dataManager.quotationsBySeller(seller.id));
+                    mHeaders.add(0, seller);
+                    ArrayList<Object> groupChildren = dataManager.quotationsBySeller(seller.id);
+                    // put first item, Seller:
+                    groupChildren.add(0, seller);
+                    mChildrenMap.put(seller, groupChildren);
                 }
             }
             notifyDataSetChanged();
@@ -114,9 +133,21 @@ public class QuoteDetailFragment extends Fragment {
         }
 
         @Override
-        public Quotation getChild(int groupPosition, int childPosititon) {
-            return this.mListDataChild.get(this.mListDataHeader.get(groupPosition))
-                    .get(childPosititon);
+        public int getChildType(int groupPosition, int childPosition) {
+            if (childPosition == 0)
+                return CHILD_TYPE_SELLER;
+            else
+                return CHILD_TYPE_QUOTATION;
+        }
+
+        @Override
+        public int getChildTypeCount(){
+            return 2;
+        }
+
+        @Override
+        public Object getChild(int groupPosition, int childPosition) {
+            return mChildrenMap.get(this.mHeaders.get(groupPosition)).get(childPosition);
         }
 
         @Override
@@ -127,59 +158,111 @@ public class QuoteDetailFragment extends Fragment {
         @Override
         public View getChildView(int groupPosition, final int childPosition,
                                  boolean isLastChild, View convertView, ViewGroup parent) {
+            switch (getChildType(groupPosition, childPosition)) {
+            case CHILD_TYPE_SELLER:
+                final Seller seller = (Seller) getChild(groupPosition, childPosition);
+                if (convertView == null)
+                    convertView = mInflater.inflate(R.layout.child_list_item_shop, null);
 
-            Quotation quotation = getChild(groupPosition, childPosition);
-            final String childText = quotation.toChatString();
+                TextView sellerNameTextView = (TextView) convertView.findViewById(R.id.sellerNameTextView);
+                TextView addressTextView = (TextView) convertView.findViewById(R.id.addressTextView);
+                TextView distanceTextView = (TextView) convertView.findViewById(R.id.distanceTextView);
+                ImageButton callImageButton = (ImageButton) convertView.findViewById(R.id.callImageButton);
 
-            if (convertView == null) {
-                LayoutInflater infalInflater = (LayoutInflater) this.mContext
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = infalInflater.inflate(android.R.layout.simple_expandable_list_item_1, null);
+                sellerNameTextView.setText(seller.nameOfSeller);
+                addressTextView.setText(seller.address);
+                String distanceFromLocation = seller.getPrettyDistanceFromLocation();
+                if (distanceFromLocation != null)
+                    distanceTextView.setText(distanceFromLocation);
+                else
+                    distanceTextView.setVisibility(View.INVISIBLE);
+
+                callImageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + seller.phone));
+                        startActivity(callIntent);
+                    }
+                });
+                break;
+
+            case CHILD_TYPE_QUOTATION:
+                final Quotation quotation = (Quotation) getChild(groupPosition, childPosition);
+                if (convertView == null)
+                    convertView = mInflater.inflate(R.layout.list_item_quotation, null);
+
+                TextView modelTextView = (TextView) convertView.findViewById(R.id.queryTextView);
+                TextView timeElapsedTextView = (TextView) convertView.findViewById(R.id.priceTextView);
+                TextView priceTextView = (TextView) convertView.findViewById(R.id.timeElapsedTextView);
+                final TextView newTextView = (TextView) convertView.findViewById(R.id.newTextView);
+                String timeElapsed = quotation.getPrettyTimeElapsed();
+
+                // TODO: also change color alternating-ly
+                modelTextView.setText(quotation.nameOfProduct);
+                timeElapsedTextView.setText(timeElapsed);
+                priceTextView.setText("₹ " + quotation.price);
+
+                // TODO:
+                convertView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent detailIntent = new Intent(getActivity(), QuotationDetailActivity.class);
+                        detailIntent.putExtra(QuotationDetailFragment.ARG_QUOTATION_ID, quotation.id);
+                        startActivity(detailIntent);
+                        if (!quotation.isRead()) {
+                            NetworkRequestsManager.instance().setQuotationStatusReadRequest(quotation.id);
+                            quotation.setStatusRead();
+                            newTextView.setVisibility(View.GONE);
+                            notifyDataSetChanged();
+                            //TODO: optimize if needed. ref: http://stackoverflow.com/a/9987714/1396264
+                        }
+                    }
+                });
+
+                if(quotation.isRead())
+                    newTextView.setVisibility(View.GONE);
+                else
+                    newTextView.setVisibility(View.VISIBLE);
             }
-
-            TextView txtListChild = (TextView) convertView.findViewById(android.R.id.text1);
-
-            txtListChild.setText(childText);
             return convertView;
-        }
-
-        @Override
-        public int getChildrenCount(int groupPosition) {
-            return this.mListDataChild.get(this.mListDataHeader.get(groupPosition))
-                    .size();
-        }
-
-        @Override
-        public Object getGroup(int groupPosition) {
-            return this.mListDataHeader.get(groupPosition);
-        }
-
-        @Override
-        public int getGroupCount() {
-            return this.mListDataHeader.size();
-        }
-
-        @Override
-        public long getGroupId(int groupPosition) {
-            return groupPosition;
         }
 
         @Override
         public View getGroupView(int groupPosition, boolean isExpanded,
                                  View convertView, ViewGroup parent) {
-            String headerTitle = (String) getGroup(groupPosition);
+            Seller seller = getGroup(groupPosition);
             if (convertView == null) {
-                LayoutInflater infalInflater = (LayoutInflater) this.mContext
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = infalInflater.inflate(android.R.layout.simple_expandable_list_item_2, null);
+                convertView = mInflater.inflate(R.layout.header_list_item_shop, null);
+                // TODO: checkout mInflater.inflate(R.layout.list_item_quotation, parent, false);
             }
 
-            TextView lblListHeader = (TextView) convertView
-                    .findViewById(android.R.id.text1);
-            lblListHeader.setTypeface(null, Typeface.BOLD);
-            lblListHeader.setText(headerTitle);
+            TextView mainTextView = (TextView) convertView.findViewById(R.id.mainTextView);
+            TextView responsesTextView = (TextView) convertView.findViewById(R.id.responsesTextView);
+            mainTextView.setText(seller.nameOfShop);
+            int numResponses = getChildrenCount(groupPosition) - 1; // since one child is seller
+            responsesTextView.setText(numResponses + " responses");
 
             return convertView;
+        }
+
+        @Override
+        public int getChildrenCount(int groupPosition) {
+            return this.mChildrenMap.get(this.mHeaders.get(groupPosition)).size();
+        }
+
+        @Override
+        public Seller getGroup(int groupPosition) {
+            return this.mHeaders.get(groupPosition);
+        }
+
+        @Override
+        public int getGroupCount() {
+            return this.mHeaders.size();
+        }
+
+        @Override
+        public long getGroupId(int groupPosition) {
+            return groupPosition;
         }
 
         @Override

@@ -22,8 +22,8 @@ import com.instano.retailer.instano.utilities.models.Buyer;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Quote;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 
 public class SearchTabsActivity extends GlobalMenuActivity implements
@@ -223,7 +223,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //    }
 
     @Override
-    public void productCategoriesUpdated(ArrayList<ProductCategories.Category> productCategories) {
+    public void productCategoriesUpdated(List<ProductCategories.Category> productCategories) {
         mSearchFragment.updateProductCategories(productCategories);
     }
 
