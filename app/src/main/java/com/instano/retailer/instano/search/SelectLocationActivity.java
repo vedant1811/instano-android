@@ -181,9 +181,9 @@ public class SelectLocationActivity extends Activity implements
         // and next place it, for exemple, on bottom right (as Google Maps app)
         RelativeLayout.LayoutParams rlp = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
         // 40 dp in pixels
-        int px40 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
+        int px40 = ServicesSingleton.instance().dpToPixels(40);
         // 8 dp in pixels
-        int px8 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
+        int px8 = ServicesSingleton.instance().dpToPixels(8);
         rlp.setMargins(0, px40, px8, 0);
         Log.d(Log.TIMER_TAG, "MapActivity.onResume took " + timeTaken + "ms");
     }

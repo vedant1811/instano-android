@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
+import android.util.TypedValue;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
@@ -376,6 +377,11 @@ public class ServicesSingleton implements
                 address.getAddressLine(0) : address.getLocality();
 
         return text;
+    }
+
+    public int dpToPixels(int dp) {
+        return (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, dp, mApplication.getResources().getDisplayMetrics());
     }
 
 }

@@ -31,7 +31,7 @@ public class SearchConstraintsFragment extends Fragment
     private MultiSpinner mBrandsMultiSpinner;
     private TextView mPriceRangeTextView;
     private ViewFlipper mSearchButtonViewFlipper;
-    private View[] overlayViews;
+    private View[] mOverlayViews;
 
     private boolean mSending;
 
@@ -65,15 +65,16 @@ public class SearchConstraintsFragment extends Fragment
         mPriceRangeTextView = (TextView) view.findViewById(R.id.priceRangeTextView);
         mSearchButtonViewFlipper = (ViewFlipper) view.findViewById(R.id.searchButtonViewFlipper);
 
-        overlayViews = new View[3];
-        overlayViews[0] = view.findViewById(R.id.overlay);
-        overlayViews[1] = view.findViewById(R.id.overlayTextView);
-        overlayViews[2] = view.findViewById(R.id.overlayTextView2);
+        mOverlayViews = new View[3];
+        mOverlayViews[0] = view.findViewById(R.id.overlay);
+        mOverlayViews[1] = view.findViewById(R.id.overlayTextView);
+        mOverlayViews[2] = view.findViewById(R.id.overlayTextView2);
 
-        if (ServicesSingleton.instance().firstTime())
-            overlayViews[0].setOnClickListener(this);
-        else
-            onClick(overlayViews[0]);
+        if (ServicesSingleton.instance().firstTime()) {
+            for(View overlayView : mOverlayViews)
+                overlayView.setVisibility(View.VISIBLE);
+            mOverlayViews[0].setOnClickListener(this);
+        }
 
         // setup brands multi spinner:
         {
@@ -102,9 +103,9 @@ public class SearchConstraintsFragment extends Fragment
             });
             FrameLayout parent = (FrameLayout) view.findViewById(R.id.priceRangeSeekBarContainer);
 
-//            float scale = getResources().getDisplayMetrics().density;
-//            int dpAsPixels = (int) (132 * scale + 0.5f); // for 16dp padding
-//            seekBar.setPadding(0, 0, dpAsPixels, 0);
+            int px24 = ServicesSingleton.instance().dpToPixels(24);
+            int px8 = ServicesSingleton.instance().dpToPixels(8);
+            seekBar.setPadding(px24, px8, px24, px8);
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             parent.addView(seekBar, params);
@@ -117,8 +118,8 @@ public class SearchConstraintsFragment extends Fragment
      */
     @Override
     public void onClick(View v) {
-        // TODO: fadeout. If fading out, check if it is the first and the views need to be displayed
-        for(View view : overlayViews)
+        // TODO: fadeout.
+        for(View view : mOverlayViews)
             view.setVisibility(View.GONE);
     }
 
