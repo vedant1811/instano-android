@@ -186,7 +186,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         mRequestQueue.add(request);
     }
 
-    public void signInRequest(@NonNull String apiKey, @NonNull final ServicesSingleton.SignInCallbacks callback) {
+    public void signInRequest(@NonNull final String apiKey, @NonNull final ServicesSingleton.SignInCallbacks callback) {
 
         JsonObjectRequest request = null;
         try {
