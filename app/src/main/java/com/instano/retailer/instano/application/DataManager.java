@@ -32,6 +32,22 @@ public class DataManager {
     private ArrayList<Seller> mSellers;
     private ProductCategories mProductCategories;
 
+    private HashSet<Listener> mListeners;
+
+    public interface Listener {
+        public void quotesUpdated();
+        public void quotationsUpdated();
+        public void sellersUpdated();
+    }
+
+    public void registerListener(Listener listener) {
+        mListeners.add(listener);
+    }
+
+    public void unregisterListener(Listener listener) {
+        mListeners.remove(listener);
+    }
+
     public List<ProductCategories.Category> getProductCategories() {
         if (mProductCategories != null)
             return mProductCategories.getProductCategories();
@@ -147,10 +163,13 @@ public class DataManager {
                 e.printStackTrace();
             }
         }
-        double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.d(Log.TIMER_TAG, String.format("updateQuotations took %.4fms", time));
         if (newUnread)
             ServicesSingleton.instance().createNotification();
+        if (newEntries)
+            for (Listener listener : mListeners)
+                listener.quotationsUpdated();
+        double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
+        Log.d(Log.TIMER_TAG, String.format("updateQuotations took %.4fms", time));
         return newEntries;
     }
 
@@ -168,7 +187,10 @@ public class DataManager {
                 Log.e(TAG + ".updateQuotes", String.format("response: %s, i=%d", String.valueOf(response), i), e);
                 e.printStackTrace();
             }
-        }
+
+        if (newEntries)
+            for (Listener listener : mListeners)
+                listener.quotesUpdated();}
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
         Log.d(Log.TIMER_TAG, String.format("updateQuotes took %.4fms", time));
         return newEntries;
@@ -189,6 +211,9 @@ public class DataManager {
                 e.printStackTrace();
             }
         }
+        if (newEntries)
+            for (Listener listener : mListeners)
+                listener.sellersUpdated();
 
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
         Log.d(Log.TIMER_TAG, String.format("updateSellers took %.4fms", time));
@@ -204,6 +229,7 @@ public class DataManager {
         mQuotes = new ArrayList<Quote>();
         mQuotations = new ArrayList<Quotation>();
         mSellers = new ArrayList<Seller>();
+        mListeners = new HashSet<Listener>();
     }
 
 }

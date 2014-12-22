@@ -33,7 +33,7 @@ import java.util.List;
  * in two-pane mode (on tablets) or a {@link QuoteDetailActivity}
  * on handsets.
  */
-public class QuoteDetailFragment extends Fragment {
+public class QuoteDetailFragment extends Fragment implements DataManager.Listener{
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -44,6 +44,7 @@ public class QuoteDetailFragment extends Fragment {
      * The dummy content this fragment is presenting.
      */
     private Quote mItem;
+    private Adapter mAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -83,8 +84,31 @@ public class QuoteDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_quote_detail, container, false);
         ExpandableListView expandableListView = (ExpandableListView) rootView.findViewById(R.id.expandableListView);
-        expandableListView.setAdapter(new Adapter(getActivity()));
+        mAdapter = new Adapter(getActivity());
+        DataManager.instance().registerListener(this);
+        expandableListView.setAdapter(mAdapter);
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        DataManager.instance().unregisterListener(this);
+    }
+
+    @Override
+    public void quotesUpdated() {
+        mAdapter.dataUpdated();
+    }
+
+    @Override
+    public void quotationsUpdated() {
+        mAdapter.dataUpdated();
+    }
+
+    @Override
+    public void sellersUpdated() {
+
     }
 
     /**

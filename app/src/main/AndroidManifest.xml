@@ -12,6 +12,12 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Permissions for OpenGL ES version 2 required for Google Maps Android API v2 -->
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
     <uses-permission
         android:name="android.permission.CALL_PHONE"
         android:required="false" />

@@ -27,7 +27,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class QuoteListFragment extends ListFragment {
+public class QuoteListFragment extends ListFragment implements DataManager.Listener {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -46,6 +46,23 @@ public class QuoteListFragment extends ListFragment {
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
+
+    @Override
+    public void quotesUpdated() {
+        QuotesAdapter adapter = (QuotesAdapter) getListAdapter();
+        adapter.clear();
+        adapter.addAll(DataManager.instance().getQuotes());
+    }
+
+    @Override
+    public void quotationsUpdated() {
+
+    }
+
+    @Override
+    public void sellersUpdated() {
+
+    }
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -80,11 +97,17 @@ public class QuoteListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: replace with a real list adapter.
         QuotesAdapter adapter = new QuotesAdapter(
                 getActivity(),
                 DataManager.instance().getQuotes());
+        DataManager.instance().registerListener(this);
         setListAdapter(adapter);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        DataManager.instance().unregisterListener(this);
     }
 
     @Override
