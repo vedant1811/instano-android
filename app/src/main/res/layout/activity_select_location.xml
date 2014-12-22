@@ -25,7 +25,7 @@
             android:layout_gravity="center"
             style="@style/LinkTypeButton"
             android:onClick="markerButtonClicked"
-            android:background="@drawable/selector_borderless_button" />
+            android:background="@drawable/selector_select_location" />
     </FrameLayout>
 
     <TextView
