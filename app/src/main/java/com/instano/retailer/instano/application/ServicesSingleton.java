@@ -25,6 +25,7 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
+import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
@@ -92,9 +93,9 @@ public class ServicesSingleton implements
     }
 
     public boolean firstTime() {
-//        if (BuildConfig.DEBUG)
-//            return true;
-//        else
+        if (BuildConfig.DEBUG)
+            return true;
+        else
             return mFirstTime;
     }
 

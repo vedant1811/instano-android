@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.MultiSpinner;
 import com.instano.retailer.instano.utilities.library.RangeSeekBar;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
@@ -69,7 +70,10 @@ public class SearchConstraintsFragment extends Fragment
         overlayViews[1] = view.findViewById(R.id.overlayTextView);
         overlayViews[2] = view.findViewById(R.id.overlayTextView2);
 
-        overlayViews[0].setOnClickListener(this);
+        if (ServicesSingleton.instance().firstTime())
+            overlayViews[0].setOnClickListener(this);
+        else
+            onClick(overlayViews[0]);
 
         // setup brands multi spinner:
         {
@@ -113,7 +117,7 @@ public class SearchConstraintsFragment extends Fragment
      */
     @Override
     public void onClick(View v) {
-        // TODO: fadeout
+        // TODO: fadeout. If fading out, check if it is the first and the views need to be displayed
         for(View view : overlayViews)
             view.setVisibility(View.GONE);
     }
