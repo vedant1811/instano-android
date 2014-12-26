@@ -6,6 +6,9 @@
     <item android:id="@+id/action_profile"
         android:title="Profile"
         android:showAsAction="never" />
+    <item android:id="@+id/action_contact_us"
+        android:title="Contact us"
+        android:showAsAction="never" />
     <item android:id="@+id/action_quote_list"
         android:title="Quote list"
         android:showAsAction="never" />
@@ -15,8 +18,8 @@
     <!--<item android:id="@+id/action_feedback"-->
         <!--android:title="Feedback"-->
         <!--android:showAsAction="never" />-->
-    <item android:id="@+id/action_message"
-        android:title="Message"
+    <item android:id="@+id/action_email"
+        android:title="Email"
         android:showAsAction="never" />
     <!--<item android:id="@+id/action_call"-->
         <!--android:title="Call"-->

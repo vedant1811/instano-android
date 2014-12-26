@@ -1,6 +1,7 @@
 <resources>
     <dimen name="button_margin">16dp</dimen>
     <dimen name="general_separator_margin">8dp</dimen>
+    <dimen name="general_min_padding">8dp</dimen>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">8dp</dimen>

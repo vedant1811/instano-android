@@ -145,9 +145,13 @@ public class ProfileActivity extends GlobalMenuActivity
             mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
             mPhoneEditText.requestFocus();
         }
-        else if (NetworkRequestsManager.instance().isOnline(true)) {
-            mErrorToast = Toast.makeText(this, "Server error :(\nplease send us an email", Toast.LENGTH_LONG);
+        else if (NetworkRequestsManager.instance().isOnline(false)) {
+//            contactUs("Server Error. Let us know", HOW_DO_YOU_WANT_TO_CONTACT_US);
+            mErrorToast = Toast.makeText(this, "Server error :(\nplease contact us using the " +
+                    "menu on the top-right", Toast.LENGTH_LONG);
             mErrorToast.show();
-        } // if it is not not online a toast is already shown. see link{NetworkRequestsManager#isOnline(true)}
+        } // if it is not online a toast is not shown. see link{NetworkRequestsManager#isOnline(true)}
+        else
+            noInternetDialog();
     }
 }

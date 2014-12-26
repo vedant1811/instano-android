@@ -31,6 +31,7 @@ public class CheatSheet {
      * android.view.View.OnLongClickListener}. When the view is long-pressed, a {@link Toast} with
      * the view's {@link android.view.View#getContentDescription() content description} will be
      * shown either above (default) or below the view (if there isn't room above it).
+     * Use {@link View#performLongClick()} on @param view to programmatically show the cheat sheet.
      *
      * @param view The view to add a cheat sheet for.
      */
@@ -48,6 +49,7 @@ public class CheatSheet {
      * android.view.View.OnLongClickListener}. When the view is long-pressed, a {@link Toast} with
      * the given text will be shown either above (default) or below the view (if there isn't room
      * above it).
+     * Use {@link View#performLongClick()} on @param view to programmatically show the cheat sheet.
      *
      * @param view      The view to add a cheat sheet for.
      * @param textResId The string resource containing the text to show on long-press.
@@ -130,6 +132,7 @@ public class CheatSheet {
         }
 
         cheatSheet.show();
+        // TODO: decide behaviour
         return false; // so as to no eat up the long click events
     }
 }
