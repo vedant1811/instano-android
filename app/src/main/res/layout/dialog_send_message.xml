@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/general_separator_margin">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Heading"
+        android:id="@+id/headingTextView"
+        style="@style/TextAppearanceHeading"
+        android:gravity="center" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="How do want to contact us"
+        android:id="@+id/textView2"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/general_separator_margin" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send sms"
+        android:drawableLeft="@drawable/sms"
+        android:id="@+id/buttonSendSms"
+        android:layout_gravity="center_horizontal"
+        style="@style/LinkTypeButton"
+        android:layout_margin="2dp" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send whatsapp"
+        android:drawableLeft="@drawable/wa"
+        android:id="@+id/buttonSendWhatsapp"
+        android:layout_gravity="center_horizontal"
+        style="@style/LinkTypeButton"
+        android:layout_margin="2dp" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add 'Instano' contact"
+        android:contentDescription="In case WhatsApp doesn't let you send a msg to a anonymous number"
+        android:drawableLeft="@drawable/contact"
+        android:id="@+id/addContactInstano"
+        android:layout_gravity="center_horizontal"
+        style="@style/LinkTypeButton"
+        android:layout_margin="2dp" />
+
+</LinearLayout>
