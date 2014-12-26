@@ -50,6 +50,7 @@ public class ServicesSingleton implements
 
     private final static String KEY_BUYER_API_KEY = "com.instano.retailer.instano.application.ServicesSingleton.buyer_api_key";
     private final static String KEY_FIRST_TIME = "com.instano.retailer.instano.application.ServicesSingleton.first_time";
+    private final static String KEY_WHATSAPP_ID = "com.instano.retailer.instano.application.ServicesSingleton.whatsapp_id";
 
     public static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
 
@@ -319,6 +320,11 @@ public class ServicesSingleton implements
 
     public void registerCallback (AddressCallbacks addressCallbacks) {
         mAddressCallbacks = addressCallbacks;
+    }
+
+    public String getInstanoWhatsappId() {
+        // TODO: set based on fetched data online
+        return mSharedPreferences.getString(KEY_WHATSAPP_ID, "918981125715");
     }
 
     public interface SignInCallbacks {

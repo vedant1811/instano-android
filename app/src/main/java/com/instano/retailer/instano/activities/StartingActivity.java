@@ -63,9 +63,12 @@ public class StartingActivity extends GlobalMenuActivity implements ServicesSing
 
     @Override
     public void signedIn(boolean success) {
-        if (!success && NetworkRequestsManager.instance().isOnline(true))
-            Toast.makeText(this, "sign in error!\ncreate a new profile or contact us", Toast.LENGTH_LONG).show();
-
+        if (!success){
+            if (NetworkRequestsManager.instance().isOnline())
+                serverErrorDialog();
+            else
+                noInternetDialog();
+        }
     }
 
     /**

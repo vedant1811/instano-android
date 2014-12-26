@@ -111,8 +111,10 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
         }
 
         if (buyer == null) {
-            if (NetworkRequestsManager.instance().isOnline(true))
+            if (NetworkRequestsManager.instance().isOnline())
                 Toast.makeText(this, "Error! check your profile", Toast.LENGTH_LONG).show();
+            else
+                noInternetDialog();
             Log.e(TAG, "buyer is null but a search button has been clicked");
             return;
         }

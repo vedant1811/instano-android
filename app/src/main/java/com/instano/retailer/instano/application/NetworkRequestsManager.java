@@ -413,15 +413,15 @@ public class NetworkRequestsManager implements Response.ErrorListener{
      * @param showToast if true, this method shows a toast if the app is not connected
      * @return
      */
-    public boolean isOnline(boolean showToast) {
+    public boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) mApplication.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         if (netInfo != null && netInfo.isConnectedOrConnecting()) {
             return true;
         }
-        if (showToast)
-            Toast.makeText(mApplication, "you are not connected to the internet", Toast.LENGTH_LONG).show();
+//        if (showToast)
+//            Toast.makeText(mApplication, "you are not connected to the internet", Toast.LENGTH_LONG).show();
         return false;
     }
 

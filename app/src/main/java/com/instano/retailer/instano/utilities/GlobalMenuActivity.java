@@ -26,11 +26,14 @@ import com.instano.retailer.instano.search.SearchTabsActivity;
  * Created by vedant on 15/12/14.
  */
 public abstract class GlobalMenuActivity extends Activity {
+    public static final int PICK_CONTACT_REQUEST_CODE = 996;
+    public static final int SEND_SMS_REQUEST_CODE = 995;
 
     private static final int SHARE_REQUEST_CODE = 998;
     private static final int MESSAGE_REQUEST_CODE = 997;
 
     protected static final String HOW_DO_YOU_WANT_TO_CONTACT_US = "How do you want to contact us";
+    private static final String TEXT_OFFILE_QUERY = "You can send a query directly by any of the following";
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -38,6 +41,8 @@ public abstract class GlobalMenuActivity extends Activity {
             // TODO: handle separately
             case SHARE_REQUEST_CODE:
             case MESSAGE_REQUEST_CODE:
+            case PICK_CONTACT_REQUEST_CODE:
+            case SEND_SMS_REQUEST_CODE:
                 if (resultCode == RESULT_OK)
                     Toast.makeText(this, "success", Toast.LENGTH_SHORT).show();
         }
@@ -47,7 +52,7 @@ public abstract class GlobalMenuActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        if (!NetworkRequestsManager.instance().isOnline(false))
+        if (!NetworkRequestsManager.instance().isOnline())
             noInternetDialog();
     }
 
@@ -89,8 +94,12 @@ public abstract class GlobalMenuActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    protected void serverErrorDialog() {
+        contactUs("Server error :(", TEXT_OFFILE_QUERY);
+    }
+
     protected void noInternetDialog() {
-        contactUs("No internet", "You can send a query directly by any of the following");
+        contactUs("No internet", TEXT_OFFILE_QUERY);
     }
 
     protected void contactUs(String heading, String title) {
