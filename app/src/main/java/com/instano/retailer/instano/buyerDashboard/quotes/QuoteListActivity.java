@@ -1,10 +1,11 @@
 package com.instano.retailer.instano.buyerDashboard.quotes;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 
 /**
  * An activity representing a list of Quotes. This activity
@@ -22,7 +23,7 @@ import com.instano.retailer.instano.R;
  * {@link QuoteListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class QuoteListActivity extends Activity
+public class QuoteListActivity extends GlobalMenuActivity
         implements QuoteListFragment.Callbacks {
 
     /**

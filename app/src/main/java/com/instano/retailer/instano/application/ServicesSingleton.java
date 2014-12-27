@@ -116,7 +116,7 @@ public class ServicesSingleton implements
         editor.apply();
 
         if (buyer != null) {
-            Toast.makeText(mApplication, String.format("you are %d user to sign in", mBuyer.id), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mApplication, String.format("Welcome %s", mBuyer.name), Toast.LENGTH_SHORT).show();
 
             Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
             appTracker.setClientId(String.valueOf(mBuyer.id));
@@ -324,7 +324,7 @@ public class ServicesSingleton implements
 
     public String getInstanoWhatsappId() {
         // TODO: set based on fetched data online
-        return mSharedPreferences.getString(KEY_WHATSAPP_ID, "918981125715");
+        return mSharedPreferences.getString(KEY_WHATSAPP_ID, "917602631663");
     }
 
     public interface SignInCallbacks {

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -45,6 +46,9 @@ public class QuoteDetailFragment extends Fragment implements DataManager.Listene
      */
     private Quote mItem;
     private Adapter mAdapter;
+    private TextView mSubheadingTextView;
+    private TextView mHeadingTextView;
+    private Button mContactUsButton;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -84,9 +88,15 @@ public class QuoteDetailFragment extends Fragment implements DataManager.Listene
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_quote_detail, container, false);
         ExpandableListView expandableListView = (ExpandableListView) rootView.findViewById(R.id.expandableListView);
+        mHeadingTextView = (TextView) rootView.findViewById(R.id.headingTextView);
+        mSubheadingTextView = (TextView) rootView.findViewById(R.id.subheadingTextView);
+        mContactUsButton = (Button) rootView.findViewById(R.id.contactUsButton);
+
+        mHeadingTextView.setText(String.format("\"%s\"", mItem.searchString));
         mAdapter = new Adapter(getActivity());
         DataManager.instance().registerListener(this);
         expandableListView.setAdapter(mAdapter);
+
         return rootView;
     }
 
@@ -152,6 +162,20 @@ public class QuoteDetailFragment extends Fragment implements DataManager.Listene
                 }
             }
             notifyDataSetChanged();
+            int numOfSellers = getGroupCount();
+            String subheading;
+            if (numOfSellers > 0) {
+                subheading = String.format("sent to %d sellers", numOfSellers);
+                mContactUsButton.setVisibility(View.GONE);
+            }
+            else {
+                subheading = "We have received your query and will forward to sellers." +
+                        " You will see those sellers below soon.\nOr you can";
+                mContactUsButton.setVisibility(View.VISIBLE);
+            }
+
+            mSubheadingTextView.setText(subheading);
+
             double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
             Log.d(Log.TIMER_TAG, String.format("Adapter.dataUpdated took %.4fms", time));
         }

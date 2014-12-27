@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GetAddressTask;
@@ -60,7 +59,8 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //    private SellersListFragment mSellersListFragment;
 //    private SellersMapFragment mSellersMapFragment;
 
-    private ProductCategories.Category mSelectedCategory;
+    // should never be null
+    private ProductCategories.Category mSelectedCategory = ProductCategories.Category.undefinedCategory();
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -119,7 +119,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
             return;
         }
 
-        HashSet <Integer> sellerIds = DataManager.instance().get5NearbySellers(mSelectedCategory);
+        HashSet <Integer> sellerIds = null;
 
         Quote quote = new Quote(
                 buyer.id,

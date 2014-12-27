@@ -72,7 +72,7 @@ public abstract class GlobalMenuActivity extends Activity {
                 return true;
 
             case R.id.action_contact_us:
-                contactUs("Contact us", HOW_DO_YOU_WANT_TO_CONTACT_US);
+                contactUs();
                 return true;
 
             case R.id.action_quote_list:
@@ -100,6 +100,10 @@ public abstract class GlobalMenuActivity extends Activity {
 
     protected void noInternetDialog() {
         contactUs("No internet", TEXT_OFFILE_QUERY);
+    }
+
+    protected void contactUs() {
+        contactUs("Contact us", HOW_DO_YOU_WANT_TO_CONTACT_US);
     }
 
     protected void contactUs(String heading, String title) {

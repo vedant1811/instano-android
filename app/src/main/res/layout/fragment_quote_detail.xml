@@ -1,4 +1,4 @@
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/quote_detail"
@@ -6,26 +6,39 @@
     android:layout_height="match_parent"
     android:textIsSelectable="true"
     tools:context="com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment"
-    android:paddingTop="@dimen/activity_horizontal_margin">
+    android:paddingTop="@dimen/activity_horizontal_margin"
+    android:orientation="vertical"
+    android:gravity="center">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Search for Quote"
+        android:text="&quot;Search string&quot;"
         android:id="@+id/headingTextView"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Sent to 5 Retailers (out of 27) in 4 hours"
         android:id="@+id/subheadingTextView"
         android:layout_below="@+id/headingTextView"
         android:layout_centerHorizontal="true"
-        android:layout_margin="@dimen/general_separator_margin" />
+        android:layout_margin="@dimen/general_separator_margin"
+        android:gravity="center" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Contact Us"
+        android:id="@+id/contactUsButton"
+        android:onClick="contactUsClicked"
+        android:layout_marginLeft="@dimen/general_separator_margin"
+        android:layout_marginRight="@dimen/general_separator_margin"
+        android:layout_marginBottom="@dimen/general_separator_margin" />
 
     <ExpandableListView
         android:layout_width="match_parent"
@@ -38,4 +51,4 @@
         android:background="@drawable/red_rectangle"
         android:paddingLeft="4dp"
         android:paddingRight="4dp" />
-</RelativeLayout>
+</LinearLayout>
