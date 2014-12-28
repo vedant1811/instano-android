@@ -25,8 +25,9 @@ import com.instano.retailer.instano.utilities.models.ProductCategories;
 public class SearchConstraintsFragment extends Fragment
         implements MultiSpinner.MultiSpinnerListener, View.OnClickListener {
 
-    private final int MIN_OF_RANGE_SEEK_BAR = 1;
-    private final int MAX_OF_RANGE_SEEK_BAR = 10;
+    private static final int SEEK_BAR_MULTIPLIER = 1000;
+    private static final int MIN_OF_RANGE_SEEK_BAR = 0;
+    private static final int MAX_OF_RANGE_SEEK_BAR = 100;
 
     private MultiSpinner mBrandsMultiSpinner;
     private TextView mPriceRangeTextView;
@@ -96,8 +97,8 @@ public class SearchConstraintsFragment extends Fragment
             seekBar.setOnRangeSeekBarChangeListener(new RangeSeekBar.OnRangeSeekBarChangeListener<Integer>() {
                 @Override
                 public void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, Integer minValue, Integer maxValue) {
-                    minValue *= 5000;
-                    maxValue *= 5000;
+                    minValue *= SEEK_BAR_MULTIPLIER;
+                    maxValue *= SEEK_BAR_MULTIPLIER;
                     mPriceRangeTextView.setText(String.format("₹%,d to ₹%,d", minValue, maxValue));
                 }
             });

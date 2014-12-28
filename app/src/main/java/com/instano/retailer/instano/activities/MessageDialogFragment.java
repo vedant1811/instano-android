@@ -87,7 +87,7 @@ public class MessageDialogFragment extends DialogFragment implements View.OnClic
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.dialog_send_message, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_message_dialog, container, false);
 
         Button sendSmsButton = (Button) rootView.findViewById(R.id.buttonSendSms);
         Button sendWhatsAppButton = (Button) rootView.findViewById(R.id.buttonSendWhatsapp);

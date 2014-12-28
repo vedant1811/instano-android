@@ -69,22 +69,15 @@
         android:onClick="locationButtonClicked"
         android:gravity="left|center_vertical" />
 
-    <FrameLayout
+    <Button
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        android:id="@+id/searchButton"
+        android:layout_gravity="bottom|center"
+        android:onClick="nextButtonClicked"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/locationButton">
-
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Next"
-            android:id="@+id/searchButton"
-            android:layout_gravity="bottom|center"
-            android:onClick="nextButtonClicked"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-    </FrameLayout>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
