@@ -38,6 +38,17 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Send E-Mail"
+        android:drawableLeft="@drawable/email"
+        android:id="@+id/buttonSendMail"
+        android:layout_gravity="center_horizontal"
+        style="@style/LinkTypeButton"
+        android:layout_margin="2dp"
+        android:padding="@dimen/general_min_padding" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="Add 'Instano' contact"
         android:contentDescription="In case WhatsApp doesn't let you send a msg to a anonymous number"
         android:drawableLeft="@drawable/contact"

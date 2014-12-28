@@ -18,9 +18,9 @@
     <!--<item android:id="@+id/action_feedback"-->
         <!--android:title="Feedback"-->
         <!--android:showAsAction="never" />-->
-    <item android:id="@+id/action_email"
-        android:title="Email"
-        android:showAsAction="never" />
+    <!--<item android:id="@+id/action_email"-->
+        <!--android:title="Email"-->
+        <!--android:showAsAction="never" />-->
     <!--<item android:id="@+id/action_call"-->
         <!--android:title="Call"-->
         <!--android:showAsAction="never" />-->

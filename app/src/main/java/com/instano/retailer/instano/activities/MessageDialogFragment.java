@@ -10,10 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.utilities.models.Buyer;
 
 /**
  * Created by vedant on 26/12/14.
@@ -51,7 +53,28 @@ public class MessageDialogFragment extends DialogFragment implements View.OnClic
                 Intent whatsApp = new Intent(Intent.ACTION_SENDTO, mUri);
                 whatsApp.putExtra("chat", true);
                 whatsApp.setPackage("com.whatsapp");
-                startActivity(whatsApp);
+                try {
+                    startActivity(whatsApp);
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(getActivity(), "WhatsApp not installed", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case R.id.buttonSendMail:
+                Intent mailIntent;
+                mailIntent = new Intent(Intent.ACTION_SEND);
+                mailIntent.setType("message/rfc822");
+                mailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"contact@instano.in"});
+                mailIntent.putExtra(Intent.EXTRA_SUBJECT, "Contacting instano");
+                Buyer buyer = ServicesSingleton.instance().getBuyer();
+                String append = "";
+                if (buyer != null)
+                    mailIntent.putExtra(Intent.EXTRA_TEXT, "\n\nRegards,\n" + buyer.name);
+                try {
+                    startActivity(Intent.createChooser(mailIntent, "Send mail..."));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(getActivity(), "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                }
                 break;
 
             case R.id.buttonAddContact:
@@ -89,16 +112,18 @@ public class MessageDialogFragment extends DialogFragment implements View.OnClic
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_message_dialog, container, false);
 
+        TextView titleTextView = (TextView) rootView.findViewById(R.id.titleTextView);
         Button sendSmsButton = (Button) rootView.findViewById(R.id.buttonSendSms);
         Button sendWhatsAppButton = (Button) rootView.findViewById(R.id.buttonSendWhatsapp);
+        Button sendEmailButton = (Button) rootView.findViewById(R.id.buttonSendMail);
         Button addContactButton = (Button) rootView.findViewById(R.id.buttonAddContact);
-        TextView titleTextView = (TextView) rootView.findViewById(R.id.titleTextView);
 
         getDialog().setTitle(mHeading);
         titleTextView.setText(mTitle);
         sendSmsButton.setOnClickListener(this);
         sendWhatsAppButton.setOnClickListener(this);
         addContactButton.setOnClickListener(this);
+        sendEmailButton.setOnClickListener(this);
         return rootView;
     }
 }

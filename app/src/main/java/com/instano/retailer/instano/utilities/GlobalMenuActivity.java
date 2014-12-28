@@ -86,10 +86,6 @@ public abstract class GlobalMenuActivity extends Activity {
             case R.id.action_share:
                 share();
                 return true;
-
-            case R.id.action_email:
-                email();
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -139,20 +135,6 @@ public abstract class GlobalMenuActivity extends Activity {
 
     protected void profile() {
         startActivity(new Intent(this, ProfileActivity.class));
-    }
-
-    protected void email() {
-        Intent intent;
-        intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("message/rfc822");
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"contact@instano.in"});
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Contacting instano");
-        intent = Intent.createChooser(intent, "Send mail");
-        try {
-            startActivityForResult(intent, MESSAGE_REQUEST_CODE);
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(this, "There are no email clients installed", Toast.LENGTH_SHORT).show();
-        }
     }
 
     protected void share() {
