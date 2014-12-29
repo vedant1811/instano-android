@@ -1,6 +1,5 @@
 package com.instano.retailer.instano.buyerDashboard;
 
-import android.app.Activity;
 import android.os.Bundle;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -8,10 +7,11 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.BaseActivity;
 
 import java.util.List;
 
-public class QueriesMapActivity extends Activity {
+public class QueriesMapActivity extends BaseActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 

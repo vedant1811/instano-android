@@ -1,13 +1,13 @@
 package com.instano.retailer.instano.buyerDashboard;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import com.instano.retailer.instano.utilities.library.Log;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.utilities.library.Log;
 
 /**
  * An activity representing a list of Quotations. This activity
@@ -25,7 +25,7 @@ import com.instano.retailer.instano.R;
  * {@link QuotationListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class QuotationListActivity extends Activity
+public class QuotationListActivity extends GlobalMenuActivity
         implements QuotationListFragment.Callbacks {
 
     /**

@@ -1,15 +1,15 @@
 package com.instano.retailer.instano.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.BaseActivity;
 
 
-public class LauncherActivity extends Activity {
+public class LauncherActivity extends BaseActivity {
 
     // Splash screen timer
     private static int SPLASH_TIME_OUT = 1500;

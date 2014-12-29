@@ -374,7 +374,7 @@ public class ServicesSingleton implements
     }
 
     @Nullable
-    public static String readableAddress(@Nullable Address address) {
+    public final static String readableAddress(@Nullable Address address) {
         String text;
         if (address == null)
             text = null;

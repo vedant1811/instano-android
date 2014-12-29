@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.MessageDialogFragment;
 import com.instano.retailer.instano.activities.ProfileActivity;
+import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
@@ -25,7 +26,7 @@ import com.instano.retailer.instano.search.SearchTabsActivity;
  *
  * Created by vedant on 15/12/14.
  */
-public abstract class GlobalMenuActivity extends Activity {
+public abstract class GlobalMenuActivity extends BaseActivity {
     public static final int PICK_CONTACT_REQUEST_CODE = 996;
     public static final int SEND_SMS_REQUEST_CODE = 995;
 

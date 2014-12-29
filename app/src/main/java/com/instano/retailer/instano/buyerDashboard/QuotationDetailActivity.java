@@ -2,11 +2,11 @@ package com.instano.retailer.instano.buyerDashboard;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 
 /**
  * An activity representing a single Quotation detail screen. This
@@ -17,7 +17,7 @@ import com.instano.retailer.instano.R;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link QuotationDetailFragment}.
  */
-public class QuotationDetailActivity extends Activity {
+public class QuotationDetailActivity extends GlobalMenuActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

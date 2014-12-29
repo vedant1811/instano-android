@@ -120,7 +120,8 @@ public class QuoteListFragment extends ListFragment implements DataManager.Liste
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
 
-        setEmptyText("Wait while sellers reply to your query");
+        setEmptyText("Your searches appear here. Seems you have not searched anything yet" +
+                "\n\nuse the menu (top-right) to contact us if this is an error");
     }
 
     @Override

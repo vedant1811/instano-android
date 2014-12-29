@@ -19,6 +19,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -26,7 +27,7 @@ import com.instano.retailer.instano.utilities.library.Log;
 /**
  * A simple {@link android.app.Fragment} subclass.
  */
-public class SelectLocationActivity extends Activity implements
+public class SelectLocationActivity extends BaseActivity implements
         GetAddressTask.AddressCallback, GoogleMap.OnCameraChangeListener {
 
     public final static String KEY_EXTRA_LATITUDE = "latitude";
