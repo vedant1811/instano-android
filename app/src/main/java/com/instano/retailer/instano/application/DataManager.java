@@ -84,6 +84,11 @@ public class DataManager {
         return Collections.unmodifiableList(mQuotes);
     }
 
+    @NonNull
+    public List<Quotation> getQuotations() {
+        return Collections.unmodifiableList(mQuotations);
+    }
+
     @Nullable
     public Quotation getQuotation(int id) {
         for (Quotation quotation : mQuotations)
@@ -178,19 +183,31 @@ public class DataManager {
         boolean newEntries = false;
         for (int i = 0; i < response.length(); i++) {
             try {
-                Quote quote = new Quote(response.getJSONObject(i));
-                if (!mQuotes.contains(quote)) {
-                    mQuotes.add(quote);
+                Quote quoteInResponse = new Quote(response.getJSONObject(i));
+                Quote matchingQuote = null;
+                for (Quote quote : mQuotes)
+                    if (quote.equals(quoteInResponse))
+                        matchingQuote = quote;
+                // else matching quote is null
+
+                if (matchingQuote == null) {
+                    mQuotes.add(quoteInResponse);
+                    newEntries = true;
+                } else if (matchingQuote.updatedAt != quoteInResponse.updatedAt) { // means quote has been updated
+                    mQuotes.remove(matchingQuote);
+                    mQuotes.add(quoteInResponse);
                     newEntries = true;
                 }
+
             } catch (JSONException e) {
                 Log.e(TAG + ".updateQuotes", String.format("response: %s, i=%d", String.valueOf(response), i), e);
                 e.printStackTrace();
             }
+        }
 
         if (newEntries)
             for (Listener listener : mListeners)
-                listener.quotesUpdated();}
+                listener.quotesUpdated();
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
         Log.d(Log.TIMER_TAG, String.format("updateQuotes took %.4fms", time));
         return newEntries;

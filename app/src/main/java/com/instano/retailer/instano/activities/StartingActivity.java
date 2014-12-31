@@ -13,11 +13,11 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 
-public class StartingActivity extends GlobalMenuActivity implements ServicesSingleton.SignInCallbacks {
+public class StartingActivity extends GlobalMenuActivity implements NetworkRequestsManager.SignInCallbacks {
 
     private static final String SEARCH_ICON_HELP = "You can Search for products by clicking the icon in the action bar";
     private static final int SETUP_REQUEST_CODE = 1001;
-    private static final int EXIT_DELAY = 1000; // in ms
+    private static final int EXIT_DELAY = 2000; // in ms
     private static final String WELCOME_BACK = "Welcome back! ";
 
     TextView mTextView;
@@ -53,7 +53,8 @@ public class StartingActivity extends GlobalMenuActivity implements ServicesSing
         ServicesSingleton instance = ServicesSingleton.instance();
 
         // in case buyer already has signed in (activity was killed for some reason) do not sign in again
-        if (instance.getBuyer() != null || instance.signIn(this)) {
+        NetworkRequestsManager.instance().registerCallback(this);
+        if (instance.getBuyer() != null || instance.signIn()) {
             mText = WELCOME_BACK + SEARCH_ICON_HELP;
         }
         else {

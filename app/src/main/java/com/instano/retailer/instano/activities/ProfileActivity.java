@@ -4,11 +4,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.models.Buyer;
@@ -22,8 +21,6 @@ public class ProfileActivity extends GlobalMenuActivity
     EditText mPhoneEditText;
     ViewFlipper mSetUpViewFlipper;
     Button mSetUpButton;
-
-    private Toast mErrorToast;
 
     CharSequence mName;
     CharSequence mPhone;
@@ -43,6 +40,8 @@ public class ProfileActivity extends GlobalMenuActivity
         mNameEditText.setText(mName);
         mPhoneEditText.setText(mPhone);
         mSetUpViewFlipper.setDisplayedChild(mViewFlipperState);
+
+        NetworkRequestsManager.instance().registerCallback(this);
     }
 
     @Override
@@ -54,8 +53,6 @@ public class ProfileActivity extends GlobalMenuActivity
         mPhoneEditText = (EditText) findViewById(R.id.phoneEditText);
         mSetUpViewFlipper = (ViewFlipper) findViewById(R.id.setUpViewFlipper);
         mSetUpButton = (Button) findViewById(R.id.setUpButton);
-
-        NetworkRequestsManager.instance().registerCallback(this);
 
         mPhoneEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -128,15 +125,13 @@ public class ProfileActivity extends GlobalMenuActivity
     public void phoneExists(boolean exists) {
         if (exists) {
             mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
-            if (mErrorToast != null)
-                mErrorToast.cancel();
         }
     }
 
     @Override
     public void onRegistration(Result result) {
         mSetUpViewFlipper.setDisplayedChild(0); // button
-        mViewFlipperState = 0; // so as update it if activity is not resumed
+        mViewFlipperState = 0; // so as to update it if activity is not resumed
         if (result == Result.NO_ERROR) {
             setResult(RESULT_OK);
             finish();

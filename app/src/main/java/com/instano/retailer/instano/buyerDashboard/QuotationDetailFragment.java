@@ -2,6 +2,7 @@ package com.instano.retailer.instano.buyerDashboard;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,7 @@ import com.instano.retailer.instano.utilities.models.Seller;
 
 /**
  * A fragment representing a single Quotation detail screen.
- * This fragment is either contained in a {@link QuotationListActivity}
+ * This fragment is either contained in a {@link com.instano.retailer.instano.utilities.library.old.QuotationListActivity}
  * in two-pane mode (on tablets) or a {@link QuotationDetailActivity}
  * on handsets.
  */
@@ -65,13 +66,19 @@ public class QuotationDetailFragment extends Fragment {
         TextView modelTextView = (TextView) rootView.findViewById(R.id.modelTextView);
         TextView priceTextView = (TextView) rootView.findViewById(R.id.priceTextView);
         TextView additionalInfoTextView = (TextView) rootView.findViewById(R.id.additionalInfoTextView);
+//        Button acceptDealButton = (Button) rootView.findViewById(R.id.acceptDealButton);
 
         shopNameTextView.setText(seller.nameOfShop);
         sellerNameTextView.setText(seller.nameOfSeller);
         queryTextView.setText(quote.searchString);
         modelTextView.setText(quotation.nameOfProduct);
         priceTextView.setText(String.format("₹%,d", quotation.price));
-        additionalInfoTextView.setText(quotation.description);
+        if (TextUtils.isEmpty(quotation.description))
+            additionalInfoTextView.setVisibility(View.GONE);
+        else {
+            additionalInfoTextView.setVisibility(View.VISIBLE);
+            additionalInfoTextView.setText("Additional Info:\n" + quotation.description);
+        }
 
         return rootView;
     }

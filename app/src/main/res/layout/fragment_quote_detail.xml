@@ -11,13 +11,16 @@
     android:gravity="center">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="&quot;Search string&quot;"
         android:id="@+id/headingTextView"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="@dimen/general_separator_margin"
+        android:layout_marginRight="@dimen/general_separator_margin"
+        android:gravity="center_horizontal" />
 
     <TextView
         android:layout_width="match_parent"

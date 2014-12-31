@@ -78,7 +78,7 @@
                 android:value="com.instano.retailer.instano.search.SearchTabsActivity" />
         </activity>
         <activity
-            android:name=".buyerDashboard.QuotationListActivity"
+            android:name=".utilities.library.old.QuotationListActivity"
             android:label="@string/title_quotation_list"
             android:parentActivityName=".utilities.library.old.HomeActivity" >
             <meta-data
@@ -86,15 +86,7 @@
                 android:value=".utilities.library.old.HomeActivity" />
         </activity>
         <activity
-            android:name=".buyerDashboard.QuotationDetailActivity"
-            android:label="@string/title_quotation_detail"
-            android:parentActivityName=".buyerDashboard.QuotationListActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.instano.retailer.instano.buyerDashboard.QuotationListActivity" />
-        </activity>
-        <activity
-            android:name=".buyerDashboard.QueriesMapActivity"
+            android:name=".utilities.library.old.QueriesMapActivity"
             android:label="@string/title_activity_queries_map" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -121,6 +113,14 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity" />
+        </activity>
+        <activity
+            android:name=".buyerDashboard.QuotationDetailActivity"
+            android:label="@string/title_quotation_detail"
+            android:parentActivityName=".buyerDashboard.quotes.QuoteDetailActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailActivity" />
         </activity>
     </application>
 

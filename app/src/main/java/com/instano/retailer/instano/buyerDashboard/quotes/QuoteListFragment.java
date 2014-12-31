@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
 
 import java.util.List;
@@ -49,14 +50,20 @@ public class QuoteListFragment extends ListFragment implements DataManager.Liste
 
     @Override
     public void quotesUpdated() {
+        long start = System.nanoTime();
+
         QuotesAdapter adapter = (QuotesAdapter) getListAdapter();
         adapter.clear();
         adapter.addAll(DataManager.instance().getQuotes());
+
+        double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
+        Log.d(Log.TIMER_TAG, String.format("QuotesAdapter.dataUpdated took %.4fms", time));
     }
 
     @Override
     public void quotationsUpdated() {
-
+        QuotesAdapter adapter = (QuotesAdapter) getListAdapter();
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -97,11 +104,11 @@ public class QuoteListFragment extends ListFragment implements DataManager.Liste
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        QuotesAdapter adapter = new QuotesAdapter(
-                getActivity(),
-                DataManager.instance().getQuotes());
-        DataManager.instance().registerListener(this);
+        QuotesAdapter adapter = new QuotesAdapter(getActivity());
         setListAdapter(adapter);
+        // call after setting the adapter so that the adapter is not null
+        quotesUpdated();
+        DataManager.instance().registerListener(this);
     }
 
     @Override
@@ -193,11 +200,9 @@ public class QuoteListFragment extends ListFragment implements DataManager.Liste
          * Constructor
          *
          * @param context  The current context.
-         * @param objects  The objects to represent in the ListView.
          */
-        public QuotesAdapter(Context context, List<Quote> objects) {
+        public QuotesAdapter(Context context) {
             super(context, -1);
-            addAll(objects); // so that they are copied
 
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -218,8 +223,12 @@ public class QuoteListFragment extends ListFragment implements DataManager.Liste
             primaryTextView.setText(quote.searchString);
             timeTextView.setText(quote.getPrettyTimeElapsed());
 
-            // TODO: fix:
-            responsesTextView.setText("0 responses");
+            int numResponses = 0;
+            List<Quotation> quotations = DataManager.instance().getQuotations();
+            for (Quotation quotation : quotations)
+                if (quotation.quoteId == quote.id)
+                    numResponses++;
+            responsesTextView.setText(numResponses + " responses");
             sentToTextView.setText(String.format("sent to %d retailers", quote.sellerIds.size()));
 
             // to behave as a button i.e. have a "pressed" state

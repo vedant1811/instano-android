@@ -1,8 +1,6 @@
 package com.instano.retailer.instano.buyerDashboard;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
@@ -12,7 +10,7 @@ import com.instano.retailer.instano.utilities.GlobalMenuActivity;
  * An activity representing a single Quotation detail screen. This
  * activity is only used on handset devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link QuotationListActivity}.
+ * in a {@link com.instano.retailer.instano.utilities.library.old.QuotationListActivity}.
  * <p>
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link QuotationDetailFragment}.
@@ -62,7 +60,8 @@ public class QuotationDetailActivity extends GlobalMenuActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            NavUtils.navigateUpTo(this, new Intent(this, QuotationListActivity.class));
+            // so that a new fragment is not created
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);

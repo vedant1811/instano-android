@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.buyerDashboard;
+package com.instano.retailer.instano.utilities.library.old;
 
 import android.os.Bundle;
 

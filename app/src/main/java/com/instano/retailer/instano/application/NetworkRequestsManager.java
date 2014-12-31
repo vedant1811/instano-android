@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -32,7 +31,7 @@ import java.util.List;
 public class NetworkRequestsManager implements Response.ErrorListener{
 
     private static final String TAG = "NetworkRequestsManager";
-    private static final String LOCAL_SERVER_URL = "http://instano.in/";
+    private static final String LOCAL_SERVER_URL = "http://192.168.1.21:3000/";
 
     private final static String API_ERROR_ALREADY_TAKEN = "has already been taken";
     private final static String API_ERROR_IS_BLANK = "can't be blank";
@@ -43,6 +42,8 @@ public class NetworkRequestsManager implements Response.ErrorListener{
 
     private QuoteCallbacks mQuoteCallbacks;
     private RegistrationCallback mRegistrationCallback;
+    private SignInCallbacks mSignInCallbacks;
+
     private RequestQueue mRequestQueue;
 
     public void registerCallback (QuoteCallbacks quoteCallbacks) {
@@ -51,6 +52,10 @@ public class NetworkRequestsManager implements Response.ErrorListener{
 
     public void registerCallback(RegistrationCallback registrationCallback) {
         this.mRegistrationCallback = registrationCallback;
+    }
+
+    public void registerCallback(SignInCallbacks signInCallbacks) {
+        this.mSignInCallbacks = signInCallbacks;
     }
 
     public interface QuoteCallbacks {
@@ -66,6 +71,10 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         }
         public void phoneExists (boolean exists);
         public void onRegistration(Result result);
+    }
+
+    public interface SignInCallbacks {
+        public void signedIn(boolean success);
     }
 
     private NetworkRequestsManager(MyApplication application) {
@@ -186,7 +195,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         mRequestQueue.add(request);
     }
 
-    public void signInRequest(@NonNull final String apiKey, @NonNull final ServicesSingleton.SignInCallbacks callback) {
+    public void signInRequest(@NonNull final String apiKey) {
 
         JsonObjectRequest request = null;
         try {
@@ -203,16 +212,19 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                                 if (response.getInt("id") != -1) {
                                     Buyer buyer = new Buyer(response);
                                     ServicesSingleton.instance().afterSignIn(buyer, response.getString("api_key"));
-                                    callback.signedIn(true);
+                                    if (mSignInCallbacks != null)
+                                        mSignInCallbacks.signedIn(true);
                                 }
                                 else {
                                     ServicesSingleton.instance().afterSignIn(null, null);
-                                    callback.signedIn(false);
+                                    if (mSignInCallbacks != null)
+                                        mSignInCallbacks.signedIn(false);
                                 }
                             } catch (JSONException e) {
                                 Log.e(TAG + "signInRequest.onResponse", response.toString(), e);
                                 ServicesSingleton.instance().afterSignIn(null, null);
-                                callback.signedIn(false);
+                                if (mSignInCallbacks != null)
+                                    mSignInCallbacks.signedIn(false);
                             }
                         }
                     },
@@ -408,11 +420,6 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         PATCH_QUOTATION_STATUS
     }
 
-    /**
-     *
-     * @param showToast if true, this method shows a toast if the app is not connected
-     * @return
-     */
     public boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) mApplication.getSystemService(Context.CONNECTIVITY_SERVICE);

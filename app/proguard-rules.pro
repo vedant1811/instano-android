@@ -16,6 +16,9 @@
 #   public *;
 #}
 
+-keep class com.facebook.** { *; }
+-keepattributes Signature
+
 -keep class * extends java.util.ListResourceBundle {
     protected Object[][] getContents();
 }

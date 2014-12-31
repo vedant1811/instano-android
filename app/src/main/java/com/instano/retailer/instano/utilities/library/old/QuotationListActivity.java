@@ -1,11 +1,11 @@
-package com.instano.retailer.instano.buyerDashboard;
+package com.instano.retailer.instano.utilities.library.old;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
-import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.buyerDashboard.QuotationDetailActivity;
+import com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 
@@ -13,13 +13,13 @@ import com.instano.retailer.instano.utilities.library.Log;
  * An activity representing a list of Quotations. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link QuotationDetailActivity} representing
+ * lead to a {@link com.instano.retailer.instano.buyerDashboard.QuotationDetailActivity} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  * <p>
  * The activity makes heavy use of fragments. The list of items is a
  * {@link QuotationListFragment} and the item details
- * (if present) is a {@link QuotationDetailFragment}.
+ * (if present) is a {@link com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment}.
  * <p>
  * This activity also implements the required
  * {@link QuotationListFragment.Callbacks} interface
@@ -61,23 +61,6 @@ public class QuotationListActivity extends GlobalMenuActivity
     @Override
     public void onResume() {
         super.onResume();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. Use NavUtils to allow users
-            // to navigate up one level in the application structure. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            NavUtils.navigateUpFromSameTask(this);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**

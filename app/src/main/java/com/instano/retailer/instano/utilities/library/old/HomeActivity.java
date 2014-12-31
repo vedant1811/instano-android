@@ -8,7 +8,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.buyerDashboard.QuotationListActivity;
 import com.instano.retailer.instano.search.SearchTabsActivity;
 
 public class HomeActivity extends Activity {

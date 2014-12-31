@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.buyerDashboard;
+package com.instano.retailer.instano.utilities.library.old;
 
 import android.app.Activity;
 import android.app.ListFragment;
@@ -10,7 +10,7 @@ import android.widget.ListView;
  * A list fragment representing a list of Quotations. This fragment
  * also supports tablet devices by allowing list items to be given an
  * 'activated' state upon selection. This helps indicate which item is
- * currently being viewed in a {@link QuotationDetailFragment}.
+ * currently being viewed in a {@link com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment}.
  * <p>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.

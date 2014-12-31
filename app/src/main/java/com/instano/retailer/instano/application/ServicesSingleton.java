@@ -83,11 +83,11 @@ public class ServicesSingleton implements
      * tries to sign in if login details are saved
      * @return true if login details are saved
      */
-    public boolean signIn(@NonNull SignInCallbacks callbacks) {
+    public boolean signIn() {
         String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, null);
 
         if (apiKey != null) {
-            NetworkRequestsManager.instance().signInRequest(apiKey, callbacks);
+            NetworkRequestsManager.instance().signInRequest(apiKey);
             return true;
         }
         else
@@ -123,7 +123,6 @@ public class ServicesSingleton implements
             appTracker.send(new HitBuilders.AppViewBuilder().build());
 
             DataManager.instance().onNewBuyer();
-            mPeriodicWorker.start();
         }
         // TODO: else
     }
@@ -133,6 +132,11 @@ public class ServicesSingleton implements
         {
             NetworkRequestsManager.instance().getQuotesRequest(mBuyer); // also fetches quotations once quotes are fetched
             NetworkRequestsManager.instance().getSellersRequest();
+        }
+        else {
+            String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, null);
+            if (apiKey != null)
+                NetworkRequestsManager.instance().signInRequest(apiKey);
         }
         if (DataManager.instance().getProductCategories() == null)
             NetworkRequestsManager.instance().getProductCategoriesRequest();
@@ -191,7 +195,7 @@ public class ServicesSingleton implements
         // see http://www.androiddesignpatterns.com/2013/01/google-play-services-setup.html
 
         mPeriodicWorker = new PeriodicWorker(this);
-//        signIn();
+        mPeriodicWorker.start();
     }
 
     public boolean checkPlayServices() {
@@ -325,10 +329,6 @@ public class ServicesSingleton implements
     public String getInstanoWhatsappId() {
         // TODO: set based on fetched data online
         return mSharedPreferences.getString(KEY_WHATSAPP_ID, "917602631663");
-    }
-
-    public interface SignInCallbacks {
-        public void signedIn(boolean success);
     }
 
     public interface InitialDataCallbacks {

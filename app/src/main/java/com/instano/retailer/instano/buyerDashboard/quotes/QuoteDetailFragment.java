@@ -165,11 +165,11 @@ public class QuoteDetailFragment extends Fragment implements DataManager.Listene
             int numOfSellers = getGroupCount();
             String subheading;
             if (numOfSellers > 0) {
-                subheading = String.format("sent to %d sellers", numOfSellers);
+                subheading = String.format("sent to %d retailers", numOfSellers);
                 mContactUsButton.setVisibility(View.GONE);
             }
             else {
-                subheading = "We have received your query and will forward to sellers." +
+                subheading = "We have received your query and will forward to retailers." +
                         " You will see those sellers below soon.\nOr you can";
                 mContactUsButton.setVisibility(View.VISIBLE);
             }
@@ -240,8 +240,8 @@ public class QuoteDetailFragment extends Fragment implements DataManager.Listene
                     convertView = mInflater.inflate(R.layout.list_item_quotation, null);
 
                 TextView modelTextView = (TextView) convertView.findViewById(R.id.queryTextView);
-                TextView timeElapsedTextView = (TextView) convertView.findViewById(R.id.priceTextView);
-                TextView priceTextView = (TextView) convertView.findViewById(R.id.timeElapsedTextView);
+                TextView timeElapsedTextView = (TextView) convertView.findViewById(R.id.timeElapsedTextView);
+                TextView priceTextView = (TextView) convertView.findViewById(R.id.priceTextView);
                 final TextView newTextView = (TextView) convertView.findViewById(R.id.newTextView);
                 String timeElapsed = quotation.getPrettyTimeElapsed();
 

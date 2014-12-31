@@ -70,8 +70,7 @@
         android:layout_below="@+id/queryTextView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginLeft="24dp"
-        android:layout_marginBottom="@dimen/general_separator_margin" />
+        android:layout_marginLeft="24dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -80,11 +79,10 @@
         android:text="model TextView"
         android:id="@+id/modelTextView"
         android:textColor="@color/instano_red"
-        android:layout_alignTop="@+id/textView10"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="24dp"
-        android:layout_marginBottom="@dimen/general_separator_margin" />
+        android:layout_below="@+id/textView10"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="48dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -92,11 +90,10 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Price"
         android:id="@+id/textView11"
-        android:layout_below="@+id/textView10"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="24dp"
-        android:layout_marginBottom="@dimen/general_separator_margin" />
+        android:layout_below="@+id/modelTextView"
+        android:layout_alignLeft="@+id/textView10"
+        android:layout_alignStart="@+id/textView10"
+        android:layout_marginTop="@dimen/general_separator_margin" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -104,42 +101,35 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="₹7000"
         android:id="@+id/priceTextView"
-        android:layout_below="@+id/modelTextView"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="24dp"
-        android:textColor="@color/instano_red" />
+        android:textColor="@color/instano_red"
+        android:layout_below="@+id/textView11"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="48dp"
+        android:layout_marginBottom="@dimen/general_separator_margin" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Addtional Info:\nLine 1\nLine 2"
+        android:text="Additional Info:\nLine 1\nLine 2"
         android:id="@+id/additionalInfoTextView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView11"
         android:background="@drawable/red_rectangle"
         android:padding="@dimen/general_separator_margin"
         android:minLines="4"
-        android:layout_marginTop="@dimen/general_separator_margin"
-        android:layout_marginBottom="@dimen/general_separator_margin" />
+        android:layout_below="@+id/priceTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
-    <FrameLayout
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/additionalInfoTextView"
-        android:layout_alignParentBottom="true">
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Accept Deal"
-            android:id="@+id/button"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_gravity="bottom" />
-    </FrameLayout>
+        android:text="Accept Deal"
+        android:id="@+id/acceptDealButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_gravity="bottom"
+        android:visibility="gone" />
 
 </RelativeLayout>
