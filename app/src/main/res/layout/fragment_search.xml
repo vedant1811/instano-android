@@ -80,9 +80,15 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <com.nhaarman.supertooltips.ToolTipRelativeLayout
-        android:id="@+id/tooltipRelativeLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Click above button to change location"
+        android:id="@+id/textView2"
+        android:layout_below="@+id/locationButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:textColor="@color/instano_grey" />
 
 </RelativeLayout>
