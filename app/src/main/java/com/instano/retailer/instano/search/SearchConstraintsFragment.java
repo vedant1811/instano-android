@@ -52,8 +52,11 @@ public class SearchConstraintsFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        onCategorySelected(((SearchTabsActivity) getActivity()).getSelectedCategory());
+        if (getView() == null) // view hasn't been created as yet
+            return;
         sendingQuote(mSending);
+        SearchTabsActivity searchTabsActivity = (SearchTabsActivity) getActivity();
+        refreshSelectedCategory(searchTabsActivity.getSelectedCategory(), searchTabsActivity.getSearchString());
     }
 
     @Override
@@ -127,17 +130,19 @@ public class SearchConstraintsFragment extends Fragment
     @Override
     public void onItemsSelected(boolean[] selected) {
         ProductCategories.Category selectedCategory = ((SearchTabsActivity)getActivity()).getSelectedCategory();
-        selectedCategory.setSelected(selected);
+        selectedCategory.setSelected(selected, true);
 //        ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(selectedCategory);
     }
 
-    public void onCategorySelected(ProductCategories.Category selectedCategory) {
+    public void refreshSelectedCategory(ProductCategories.Category selectedCategory, String searchString) {
         if (mBrandsMultiSpinner == null)
             return;
-        mBrandsMultiSpinner.setItems(selectedCategory.brands, selectedCategory.getSelected());
         if (selectedCategory.name.equals(ProductCategories.UNDEFINED)) {
             mBrandsMultiSpinner.setEnabled(false);
-        } else {
+        }
+        else {
+            selectedCategory.guessBrands(searchString);
+            mBrandsMultiSpinner.setItems(selectedCategory.brands, selectedCategory.getSelected());
             mBrandsMultiSpinner.setEnabled(true);
         }
     }

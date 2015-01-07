@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -23,6 +22,7 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.library.Spinner;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 
 import java.util.List;
@@ -95,7 +95,6 @@ public class SearchFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final ServicesSingleton servicesSingleton = ServicesSingleton.instance();
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
         mSearchEditText = (EditText) view.findViewById(R.id.searchEditText);
@@ -106,7 +105,7 @@ public class SearchFragment extends Fragment
 
         mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
                 android.R.layout.simple_spinner_item);
-        List<ProductCategories.Category> categories = DataManager.instance().getProductCategories();
+        List<ProductCategories.Category> categories = DataManager.instance().getProductCategories(true);
         if (categories != null)
             mCategoryAdapter.addAll(categories);
         mCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -130,11 +129,12 @@ public class SearchFragment extends Fragment
         });
 
         mProductCategorySpinner.setAdapter(mCategoryAdapter);
-        mProductCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mProductCategorySpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
 
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mUserSelectedCategory = true;
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id, boolean userSelected) {
+                if (userSelected)
+                    mUserSelectedCategory = true;
                 ((SearchTabsActivity) getActivity()).onCategorySelected(mCategoryAdapter.getItem(position));
             }
 
@@ -147,6 +147,8 @@ public class SearchFragment extends Fragment
     }
 
     public String getSearchString() {
+        if (mSearchEditText == null)
+            return null;
         String s = mSearchEditText.getText().toString();
         if (s.equals("")) {
             return null;
@@ -160,11 +162,11 @@ public class SearchFragment extends Fragment
         String search = mSearchEditText.getText().toString().toLowerCase();
         for (int i = 0; i < mCategoryAdapter.getCount(); i++) {
             if (mCategoryAdapter.getItem(i).matches(search)) {
-                mProductCategorySpinner.setSelection(i);
+                mProductCategorySpinner.programmaticallySetPosition(i, true);
                 return;
             }
         }
-        mProductCategorySpinner.setSelection(0); // setting to undefined
+        mProductCategorySpinner.programmaticallySetPosition(0, true); // setting to undefined
         double time = (System.nanoTime() - start)/Log.ONE_MILLION;
         Log.v(Log.TIMER_TAG, "guessCategory took " + time + "ms");
     }
@@ -204,13 +206,11 @@ public class SearchFragment extends Fragment
 //        }
 //    }
 
-    /* package private */
-    void showSearchEmptyError() {
+    /* package */ void showSearchEmptyError() {
         mSearchEditText.setError("enter something");
     }
 
-    /* package private */
-    void updateProductCategories(List<ProductCategories.Category> categories) {
+    /* package */ void updateProductCategories(List<ProductCategories.Category> categories) {
         if (mCategoryAdapter != null) {
             mCategoryAdapter.clear();
             mCategoryAdapter.addAll(categories);
@@ -230,7 +230,7 @@ public class SearchFragment extends Fragment
         mSearchEditText.setText(mSearchString);
         int position = mCategoryAdapter.getPosition(
                 ((SearchTabsActivity)getActivity()).getSelectedCategory());
-        mProductCategorySpinner.setSelection(position);
+        mProductCategorySpinner.programmaticallySetPosition(position, false);
 
         mLocationButton.setText(mLocationButtonText);
     }

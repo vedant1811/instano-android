@@ -48,9 +48,12 @@ public class DataManager {
         mListeners.remove(listener);
     }
 
-    public List<ProductCategories.Category> getProductCategories() {
-        if (mProductCategories != null)
+    public List<ProductCategories.Category> getProductCategories(boolean clearSelected) {
+        if (mProductCategories != null) {
+            if (clearSelected)
+                mProductCategories.clearSelected();
             return mProductCategories.getProductCategories();
+        }
         else
             return null;
     }
@@ -135,6 +138,11 @@ public class DataManager {
         sInstance = new DataManager();
     }
 
+    /**
+     * also clears selected brands in product categories in case it is updated
+     * @param response
+     * @return
+     */
     /*package*/ boolean updateProductCategories(JSONObject response) {
         long start = System.nanoTime();
         ProductCategories productCategories = new ProductCategories(response, true);

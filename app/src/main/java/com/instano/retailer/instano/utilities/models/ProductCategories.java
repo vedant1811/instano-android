@@ -20,13 +20,17 @@ public class ProductCategories {
     public static final String UNDEFINED = "Select Category";
 
     private static final String TAG = "ProductCategories";
+    private ArrayList<Category> mCategories;
 
     @NonNull
     public List<Category> getProductCategories() {
         return Collections.unmodifiableList(mCategories);
     }
 
-    private ArrayList<Category> mCategories;
+    public void clearSelected() {
+        for (Category category : mCategories)
+            category.setSelected(null, false);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -89,8 +93,9 @@ public class ProductCategories {
     public static class Category implements Comparable<Category> {
         public final String name;
         public final ArrayList<String> brands;
-        private boolean[] selected;
 
+        private boolean[] selected;
+        private boolean mUserSelected = false;
         private final ArrayList<String> nameVariants;
 
         public boolean matches(String lowerCaseString) {
@@ -98,6 +103,29 @@ public class ProductCategories {
                 if(lowerCaseString.contains(variant))
                     return true;
             return false;
+        }
+
+        public void guessBrands(String searchString) {
+            if (!mUserSelected) {
+                boolean[] selectedBrands = null;
+                boolean anythingSelected = false;
+                if (searchString != null) {
+                    String lowerCaseSearch = searchString.toLowerCase();
+                    // so guess brands:
+                    selectedBrands = new boolean[brands.size()];
+                    anythingSelected = false;
+                    for (int i = 0; i < selectedBrands.length; i++) {
+                        String brand = brands.get(i);
+                        selectedBrands[i] = lowerCaseSearch.contains(brand.toLowerCase());
+                        anythingSelected |= selectedBrands[i]; // becomes true if something is selected in any iteration
+                    }
+                }
+                if (anythingSelected)
+                    setSelected(selectedBrands, false);
+                else
+                    setSelected(null, false);
+                // in case no brands are guessed, selectedCategory.getSelected() is set to null (i.e. all is selected)
+            }
         }
 
         public Category(JSONObject params) {
@@ -146,10 +174,11 @@ public class ProductCategories {
             else {
                 builder.append("brands: ");
                 for (int i = 0; i < selected.length; i++) {
-                    if (selected[i])
+                    if (selected[i]) {
                         builder.append(brands.get(i));
-                    if (i < selected.length - 1)
-                        builder.append(", ");
+                        if (i < selected.length - 1)
+                            builder.append(", ");
+                    }
                 }
             }
             return builder.toString();
@@ -214,7 +243,14 @@ public class ProductCategories {
             return true;
         }
 
-        public void setSelected(boolean[] selected) {
+        /**
+         * also sets user selected to true
+         * @param selected
+         */
+        public void setSelected(boolean[] selected, boolean byUser) {
+            Log.d(getClass().getSimpleName(), String.format(
+                    "Setting %s to %b, null:%b", name, byUser, selected==null));
+            mUserSelected = byUser;
             this.selected = selected;
         }
     }

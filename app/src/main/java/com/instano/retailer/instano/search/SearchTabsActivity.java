@@ -187,9 +187,11 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
                     InputMethodManager keyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     keyboard.hideSoftInputFromWindow(focusedView.getWindowToken(), InputMethodManager.HIDE_IMPLICIT_ONLY);
                 }
-                double timeTaken = (System.nanoTime() - start)/1000000;
+                if (i == 1)
+                    mSearchConstraintsFragment.refreshSelectedCategory(mSelectedCategory, mSearchFragment.getSearchString());
 
-                Log.d("Timing", "onPageSelected took " + timeTaken + "ms");
+                double timeTaken = (System.nanoTime() - start)/Log.ONE_MILLION;
+                Log.d(Log.TIMER_TAG, "onPageSelected took " + timeTaken + "ms");
             }
 
             @Override
@@ -271,10 +273,11 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
     }
 
     public void onCategorySelected(ProductCategories.Category selectedCategory) {
-
         mSelectedCategory = selectedCategory;
+    }
 
-        mSearchConstraintsFragment.onCategorySelected(selectedCategory);
+    public String getSearchString() {
+        return mSearchFragment.getSearchString();
     }
 
     public ProductCategories.Category getSelectedCategory() {

@@ -138,7 +138,7 @@ public class ServicesSingleton implements
             if (apiKey != null)
                 NetworkRequestsManager.instance().signInRequest(apiKey);
         }
-        if (DataManager.instance().getProductCategories() == null)
+        if (DataManager.instance().getProductCategories(false) == null)
             NetworkRequestsManager.instance().getProductCategoriesRequest();
 
     }
