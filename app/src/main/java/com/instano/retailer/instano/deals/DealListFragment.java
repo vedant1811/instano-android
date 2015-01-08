@@ -2,13 +2,23 @@ package com.instano.retailer.instano.deals;
 
 import android.app.Activity;
 import android.app.ListFragment;
+import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
+import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Deal;
+import com.instano.retailer.instano.utilities.models.Seller;
+
+import java.util.HashSet;
 
 /**
  * A list fragment representing a list of Deals. This fragment
@@ -62,9 +72,26 @@ public class DealListFragment extends ListFragment implements DataManager.DealsL
 
     @Override
     public void dealsUpdated() {
-        ArrayAdapter<Deal> adapter = (ArrayAdapter<Deal>) getListAdapter();
+        DealsAdapter adapter = (DealsAdapter) getListAdapter();
         adapter.clear();
-        adapter.addAll(DataManager.instance().getDeals());
+        HashSet<Deal> validDeals = new HashSet<Deal>();
+        // add only valid deals:
+        for(Deal deal : DataManager.instance().getDeals()) {
+            Seller seller = DataManager.instance().getSeller(deal.sellerId);
+            // can happen if sever feeds wrong data
+            if (seller != null && System.currentTimeMillis() < deal.expiresAt) {
+                validDeals.add(deal);
+            }
+            else
+                Log.e("dealsUpdated", "no seller for id: " + deal.sellerId);
+        }
+        adapter.addAll(validDeals);
+    }
+
+    @Override
+    public void sellersUpdated() {
+        DealsAdapter adapter = (DealsAdapter) getListAdapter();
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -78,12 +105,9 @@ public class DealListFragment extends ListFragment implements DataManager.DealsL
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: replace with a real list adapter.
-        setListAdapter(new ArrayAdapter<Deal>(
-                getActivity(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1));
-
+        setListAdapter(new DealsAdapter(getActivity()));
+        // call after setting the adapter so that the adapter is not null
+        dealsUpdated();
         DataManager.instance().registerListener(this);
     }
 
@@ -163,5 +187,50 @@ public class DealListFragment extends ListFragment implements DataManager.DealsL
         }
 
         mActivatedPosition = position;
+    }
+
+    private class DealsAdapter extends ArrayAdapter<Deal> {
+        private LayoutInflater mInflater;
+
+        public DealsAdapter(Context context) {
+            super(context, -1);
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            if (view == null)
+                view = mInflater.inflate(R.layout.list_item_deal, parent, false);
+
+            Deal deal = getItem(position);
+            Seller seller = DataManager.instance().getSeller(deal.sellerId);
+
+//            if (seller == null || System.currentTimeMillis() >= deal.expiresAt) {
+//                throw new IllegalStateException("Invalid deal should have not entered the adapter");
+//            }
+
+            TextView headingTextView = (TextView) view.findViewById(R.id.headingTextView);
+            TextView subheadingTextView = (TextView) view.findViewById(R.id.subheadingTextView);
+            TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
+            TextView expiresAtTextView = (TextView) view.findViewById(R.id.expiresAtTextView);
+
+            headingTextView.setText(deal.heading);
+            subheadingTextView.setText(deal.subheading);
+            if (seller != null)
+                distanceTextView.setText(seller.getPrettyDistanceFromLocation());
+            else {
+                Log.e("DealsAdapter", "no seller for id: " + deal.sellerId);
+                distanceTextView.setVisibility(View.GONE);
+            }
+            expiresAtTextView.setText("expires " + ServicesSingleton.instance().getPrettyTimeElapsed(deal.expiresAt));
+
+            // to behave as a button i.e. have a "pressed" state
+            view.setBackgroundResource(R.drawable.selector_list_item);
+
+            return view;
+        }
+
     }
 }

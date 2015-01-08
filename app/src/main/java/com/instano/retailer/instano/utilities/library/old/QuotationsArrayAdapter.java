@@ -103,9 +103,9 @@ public class QuotationsArrayAdapter extends BaseAdapter {
     }
 
     private void getQuotationView(final Quotation quotation, View view) {
-        TextView modelTextView = (TextView) view.findViewById(R.id.queryTextView);
+        TextView modelTextView = (TextView) view.findViewById(R.id.headingTextView);
         TextView timeElapsedTextView = (TextView) view.findViewById(R.id.priceTextView);
-        TextView priceTextView = (TextView) view.findViewById(R.id.timeElapsedTextView);
+        TextView priceTextView = (TextView) view.findViewById(R.id.expiresAtTextView);
 //        TextView shopTextView = (TextView) view.findViewById(R.id.shopTextView);
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
         final TextView newTextView = (TextView) view.findViewById(R.id.newTextView);

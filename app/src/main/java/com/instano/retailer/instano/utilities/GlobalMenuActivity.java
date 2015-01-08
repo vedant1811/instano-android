@@ -35,7 +35,7 @@ public abstract class GlobalMenuActivity extends BaseActivity {
     private static final int MESSAGE_REQUEST_CODE = 997;
 
     protected static final String HOW_DO_YOU_WANT_TO_CONTACT_US = "How do you want to contact us";
-    private static final String TEXT_OFFILE_QUERY = "You can send a query directly by any of the following";
+    private static final String TEXT_OFFLINE_QUERY = "You can send a query directly by any of the following";
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -97,11 +97,11 @@ public abstract class GlobalMenuActivity extends BaseActivity {
     }
 
     protected void serverErrorDialog() {
-        contactUs("Server error :(", TEXT_OFFILE_QUERY);
+        contactUs("Server error :(", TEXT_OFFLINE_QUERY);
     }
 
     protected void noInternetDialog() {
-        contactUs("No internet", TEXT_OFFILE_QUERY);
+        contactUs("No internet", TEXT_OFFLINE_QUERY);
     }
 
     protected void contactUs() {

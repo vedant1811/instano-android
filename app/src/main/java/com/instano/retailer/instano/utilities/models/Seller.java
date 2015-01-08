@@ -3,6 +3,7 @@ package com.instano.retailer.instano.utilities.models;
 import android.graphics.PointF;
 import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.instano.retailer.instano.application.ServicesSingleton;
 
@@ -137,6 +138,7 @@ public class Seller {
     }
 
     // get distance between to two points given as latitude and longitude or null on error
+    @Nullable
     public String getPrettyDistanceFromLocation() {
         int distanceFromLocation = getDistanceFromLocation();
         if (distanceFromLocation == -1)

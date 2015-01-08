@@ -45,6 +45,7 @@ public class DataManager {
 
     public interface DealsListener {
         public void dealsUpdated();
+        public void sellersUpdated();
     }
 
     public void registerListener(@NonNull QuotesListener quotesListener) {
@@ -272,6 +273,8 @@ public class DataManager {
         if (newEntries) {
             for (QuotesListener quotesListener : mQuotesListeners)
                 quotesListener.sellersUpdated();
+            for (DealsListener dealsListener : mDealsListeners)
+                dealsListener.sellersUpdated();
         }
 
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;

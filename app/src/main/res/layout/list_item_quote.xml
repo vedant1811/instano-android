@@ -27,10 +27,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="4 hours ago"
+        android:textAppearance="@style/TextAppearanceListItemTimeElapsed"
         android:id="@+id/timeTextView"
         android:paddingRight="4dp"
         android:paddingTop="4dp"
-        android:textStyle="italic"
         android:layout_below="@+id/mainTextView"
         android:layout_alignRight="@+id/responsesTextView"
         android:layout_alignEnd="@+id/responsesTextView" />
@@ -38,10 +38,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearancePrice"
         android:text="0 responses"
         android:id="@+id/responsesTextView"
         android:padding="4dp"
-        android:textStyle="bold"
         android:layout_below="@+id/timeTextView"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
@@ -49,7 +49,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="@style/TextAppearancePrice"
         android:text="sent to 5 retailers"
         android:id="@+id/sentToTextView"
         android:layout_below="@+id/mainTextView"
@@ -58,6 +58,5 @@
         android:layout_toLeftOf="@+id/responsesTextView"
         android:layout_toStartOf="@+id/responsesTextView"
         android:layout_alignBottom="@+id/responsesTextView"
-        android:gravity="center_vertical"
-        android:textSize="16sp" />
+        android:gravity="center_vertical" />
 </RelativeLayout>

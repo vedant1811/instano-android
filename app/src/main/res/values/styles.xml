@@ -65,4 +65,20 @@
         <item name="android:textSize">24sp</item>
     </style>
 
+    <style name="TextAppearanceListItemHeading" parent="TextAppearanceHeading">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="TextAppearancePrice" parent="TextAppearanceMedium">
+    </style>
+
+    <style name="TextAppearanceListItemSingleLine" parent="TextAppearanceMedium">
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextAppearanceListItemTimeElapsed" parent="TextAppearanceMedium">
+        <item name="android:textStyle">italic</item>
+    </style>
+
 </resources>

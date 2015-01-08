@@ -239,8 +239,8 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
                 if (convertView == null)
                     convertView = mInflater.inflate(R.layout.list_item_quotation, null);
 
-                TextView modelTextView = (TextView) convertView.findViewById(R.id.queryTextView);
-                TextView timeElapsedTextView = (TextView) convertView.findViewById(R.id.timeElapsedTextView);
+                TextView modelTextView = (TextView) convertView.findViewById(R.id.headingTextView);
+                TextView timeElapsedTextView = (TextView) convertView.findViewById(R.id.expiresAtTextView);
                 TextView priceTextView = (TextView) convertView.findViewById(R.id.priceTextView);
                 final TextView newTextView = (TextView) convertView.findViewById(R.id.newTextView);
                 String timeElapsed = quotation.getPrettyTimeElapsed();
