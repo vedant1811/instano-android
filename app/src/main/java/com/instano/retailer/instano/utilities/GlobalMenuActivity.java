@@ -16,6 +16,7 @@ import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
+import com.instano.retailer.instano.deals.DealListActivity;
 import com.instano.retailer.instano.search.SearchTabsActivity;
 
 /**
@@ -80,6 +81,10 @@ public abstract class GlobalMenuActivity extends BaseActivity {
                 quoteList();
                 return true;
 
+            case R.id.action_deals:
+                deals();
+                return true;
+
             case R.id.action_profile:
                 profile();
                 return true;
@@ -128,6 +133,10 @@ public abstract class GlobalMenuActivity extends BaseActivity {
         }
         else
             startActivity(new Intent(this, SearchTabsActivity.class));
+    }
+
+    protected void deals() {
+        startActivity(new Intent(this, DealListActivity.class));
     }
 
     protected void quoteList() {

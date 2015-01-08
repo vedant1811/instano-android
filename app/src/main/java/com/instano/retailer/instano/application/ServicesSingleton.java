@@ -141,6 +141,8 @@ public class ServicesSingleton implements
         if (DataManager.instance().getProductCategories(false) == null)
             NetworkRequestsManager.instance().getProductCategoriesRequest();
 
+        // always get deals:
+        NetworkRequestsManager.instance().getDealsRequest();
     }
 
     public void createNotification() {

@@ -51,4 +51,5 @@ dependencies {
     compile 'com.android.support:support-v13:21.0.3'
     compile 'com.facebook.android:facebook-android-sdk:3.21.1'
     compile 'com.nhaarman.supertooltips:library:3.0.0'
+    compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
 }

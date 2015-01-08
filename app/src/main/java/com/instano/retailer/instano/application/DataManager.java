@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.models.Deal;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
@@ -30,22 +31,36 @@ public class DataManager {
     private ArrayList<Quote> mQuotes;
     private ArrayList<Quotation> mQuotations;
     private ArrayList<Seller> mSellers;
+    private ArrayList<Deal> mDeals;
     private ProductCategories mProductCategories;
 
-    private HashSet<Listener> mListeners;
+    private HashSet<QuotesListener> mQuotesListeners;
+    private HashSet<DealsListener> mDealsListeners;
 
-    public interface Listener {
+    public interface QuotesListener {
         public void quotesUpdated();
         public void quotationsUpdated();
         public void sellersUpdated();
     }
 
-    public void registerListener(Listener listener) {
-        mListeners.add(listener);
+    public interface DealsListener {
+        public void dealsUpdated();
     }
 
-    public void unregisterListener(Listener listener) {
-        mListeners.remove(listener);
+    public void registerListener(@NonNull QuotesListener quotesListener) {
+        mQuotesListeners.add(quotesListener);
+    }
+
+    public void unregisterListener(@Nullable QuotesListener quotesListener) {
+        mQuotesListeners.remove(quotesListener);
+    }
+
+    public void registerListener(@NonNull DealsListener dealsListener) {
+        mDealsListeners.add(dealsListener);
+    }
+
+    public void unregisterListener(@Nullable DealsListener dealsListener) {
+        mDealsListeners.remove(dealsListener);
     }
 
     public List<ProductCategories.Category> getProductCategories(boolean clearSelected) {
@@ -82,6 +97,14 @@ public class DataManager {
         return null;
     }
 
+    @Nullable
+    public Deal getDeal(int id) {
+        for (Deal deal : mDeals)
+            if (deal.id == id)
+                return deal;
+        return null;
+    }
+
     @NonNull
     public List<Quote> getQuotes() {
         return Collections.unmodifiableList(mQuotes);
@@ -90,6 +113,16 @@ public class DataManager {
     @NonNull
     public List<Quotation> getQuotations() {
         return Collections.unmodifiableList(mQuotations);
+    }
+
+    @NonNull
+    public List<Seller> getSellers() {
+        return Collections.unmodifiableList(mSellers);
+    }
+
+    @NonNull
+    public  List<Deal> getDeals() {
+        return Collections.unmodifiableList(mDeals);
     }
 
     @Nullable
@@ -179,8 +212,8 @@ public class DataManager {
         if (newUnread)
             ServicesSingleton.instance().createNotification();
         if (newEntries)
-            for (Listener listener : mListeners)
-                listener.quotationsUpdated();
+            for (QuotesListener quotesListener : mQuotesListeners)
+                quotesListener.quotationsUpdated();
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
         Log.d(Log.TIMER_TAG, String.format("updateQuotations took %.4fms", time));
         return newEntries;
@@ -214,8 +247,8 @@ public class DataManager {
         }
 
         if (newEntries)
-            for (Listener listener : mListeners)
-                listener.quotesUpdated();
+            for (QuotesListener quotesListener : mQuotesListeners)
+                quotesListener.quotesUpdated();
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
         Log.d(Log.TIMER_TAG, String.format("updateQuotes took %.4fms", time));
         return newEntries;
@@ -236,12 +269,37 @@ public class DataManager {
                 e.printStackTrace();
             }
         }
-        if (newEntries)
-            for (Listener listener : mListeners)
-                listener.sellersUpdated();
+        if (newEntries) {
+            for (QuotesListener quotesListener : mQuotesListeners)
+                quotesListener.sellersUpdated();
+        }
 
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
         Log.d(Log.TIMER_TAG, String.format("updateSellers took %.4fms", time));
+        return newEntries;
+    }
+
+    /*package*/ boolean updateDeals(JSONArray response) {
+        long start = System.nanoTime();
+        boolean newEntries = false;
+        for (int i = 0; i < response.length(); i++) {
+            try {
+                Deal deal = new Deal(response.getJSONObject(i));
+                if (!mDeals.contains(deal)) {
+                    mDeals.add(deal);
+                    newEntries = true;
+                }
+            } catch (JSONException e) {
+                Log.e(TAG + ".updateSellers", String.format("response: %s, i=%d", String.valueOf(response), i), e);
+                e.printStackTrace();
+            }
+        }
+        if (newEntries)
+            for (DealsListener dealsListener : mDealsListeners)
+                dealsListener.dealsUpdated();
+
+        double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
+        Log.d(Log.TIMER_TAG, String.format("updateDeals took %.4fms", time));
         return newEntries;
     }
 
@@ -254,7 +312,9 @@ public class DataManager {
         mQuotes = new ArrayList<Quote>();
         mQuotations = new ArrayList<Quotation>();
         mSellers = new ArrayList<Seller>();
-        mListeners = new HashSet<Listener>();
+        mDeals = new ArrayList<Deal>();
+        mQuotesListeners = new HashSet<QuotesListener>();
+        mDealsListeners = new HashSet<DealsListener>();
     }
 
 }

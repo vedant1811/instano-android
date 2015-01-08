@@ -34,7 +34,7 @@ import java.util.List;
  * in two-pane mode (on tablets) or a {@link QuoteDetailActivity}
  * on handsets.
  */
-public class QuoteDetailFragment extends Fragment implements DataManager.Listener{
+public class QuoteDetailFragment extends Fragment implements DataManager.QuotesListener {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.

@@ -31,7 +31,7 @@ import java.util.List;
 public class NetworkRequestsManager implements Response.ErrorListener{
 
     private static final String TAG = "NetworkRequestsManager";
-    private static final String LOCAL_SERVER_URL = "http://192.168.15.67:3000/";
+    private static final String LOCAL_SERVER_URL = "http://192.168.0.60:3000/";
 
     private final static String API_ERROR_ALREADY_TAKEN = "has already been taken";
     private final static String API_ERROR_IS_BLANK = "can't be blank";
@@ -162,6 +162,21 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                     public void onResponse(JSONArray response) {
                         Log.v(TAG, "Sellers response:" + response.toString());
                         DataManager.instance().updateSellers(response);
+                    }
+                },
+                this
+        );
+        mRequestQueue.add(request);
+    }
+
+    public void getDealsRequest() {
+        JsonArrayRequest request = new JsonArrayRequest(
+                getRequestUrl(RequestType.GET_DEALS, -1),
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.v(TAG, "Deals response:" + response.toString());
+                        DataManager.instance().updateDeals(response);
                     }
                 },
                 this
@@ -399,6 +414,8 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                 return url + "sellers";
             case GET_PRODUCT_CATEGORIES:
                 return url + "brands_categories";
+            case GET_DEALS:
+                return url + "deals";
 
             case PATCH_QUOTATION_STATUS:
                 return url + "quotations/" + id;
@@ -415,6 +432,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         SEND_QUOTE,
         GET_PRODUCT_CATEGORIES,
         GET_SELLERS,
+        GET_DEALS,
 
         BUYER_EXISTS,
         PATCH_QUOTATION_STATUS

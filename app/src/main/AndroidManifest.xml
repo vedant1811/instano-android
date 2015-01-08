@@ -17,7 +17,10 @@
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
-    <uses-feature android:name="android.hardware.telephony" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
     <uses-permission
         android:name="android.permission.CALL_PHONE"
         android:required="false" />
@@ -121,6 +124,18 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailActivity" />
+        </activity>
+        <activity
+            android:name=".deals.DealListActivity"
+            android:label="@string/title_deal_list" >
+        </activity>
+        <activity
+            android:name=".deals.DealDetailActivity"
+            android:label="@string/title_deal_detail"
+            android:parentActivityName=".deals.DealListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.instano.retailer.instano.deals.DealListActivity" />
         </activity>
     </application>
 

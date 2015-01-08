@@ -1,41 +1,31 @@
-package com.instano.retailer.instano.buyerDashboard.quotes;
+package com.instano.retailer.instano.deals;
 
 import android.app.Activity;
 import android.app.ListFragment;
-import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
-import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Quotation;
-import com.instano.retailer.instano.utilities.models.Quote;
-
-import java.util.List;
+import com.instano.retailer.instano.utilities.models.Deal;
 
 /**
- * A list fragment representing a list of Quotes. This fragment
+ * A list fragment representing a list of Deals. This fragment
  * also supports tablet devices by allowing list items to be given an
  * 'activated' state upon selection. This helps indicate which item is
- * currently being viewed in a {@link QuoteDetailFragment}.
+ * currently being viewed in a {@link DealDetailFragment}.
  * <p/>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class QuoteListFragment extends ListFragment implements DataManager.QuotesListener {
+public class DealListFragment extends ListFragment implements DataManager.DealsListener {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
-    private static final String TAG = "QuotesListFragment";
 
     /**
      * The fragment's current callback object, which is notified of list item
@@ -47,29 +37,6 @@ public class QuoteListFragment extends ListFragment implements DataManager.Quote
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
-
-    @Override
-    public void quotesUpdated() {
-        long start = System.nanoTime();
-
-        QuotesAdapter adapter = (QuotesAdapter) getListAdapter();
-        adapter.clear();
-        adapter.addAll(DataManager.instance().getQuotes());
-
-        double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.d(Log.TIMER_TAG, String.format("QuotesAdapter.dataUpdated took %.4fms", time));
-    }
-
-    @Override
-    public void quotationsUpdated() {
-        QuotesAdapter adapter = (QuotesAdapter) getListAdapter();
-        adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void sellersUpdated() {
-
-    }
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -93,21 +60,30 @@ public class QuoteListFragment extends ListFragment implements DataManager.Quote
         }
     };
 
+    @Override
+    public void dealsUpdated() {
+        ArrayAdapter<Deal> adapter = (ArrayAdapter<Deal>) getListAdapter();
+        adapter.clear();
+        adapter.addAll(DataManager.instance().getDeals());
+    }
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public QuoteListFragment() {
+    public DealListFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        QuotesAdapter adapter = new QuotesAdapter(getActivity());
-        setListAdapter(adapter);
-        // call after setting the adapter so that the adapter is not null
-        quotesUpdated();
+        // TODO: replace with a real list adapter.
+        setListAdapter(new ArrayAdapter<Deal>(
+                getActivity(),
+                android.R.layout.simple_list_item_activated_1,
+                android.R.id.text1));
+
         DataManager.instance().registerListener(this);
     }
 
@@ -126,9 +102,6 @@ public class QuoteListFragment extends ListFragment implements DataManager.Quote
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
-
-        setEmptyText("Your searches appear here. Seems you have not searched anything yet" +
-                "\n\nuse the menu (top-right) to contact us if this is an error");
     }
 
     @Override
@@ -157,9 +130,8 @@ public class QuoteListFragment extends ListFragment implements DataManager.Quote
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        Quote quote = (Quote) getListAdapter().getItem(position);
-        mCallbacks.onItemSelected(quote.id);
-        Log.d(TAG, "Quote clicked, id: " + quote.id);
+        Deal deal = (Deal) getListAdapter().getItem(position);
+        mCallbacks.onItemSelected(deal.id);
     }
 
     @Override
@@ -191,50 +163,5 @@ public class QuoteListFragment extends ListFragment implements DataManager.Quote
         }
 
         mActivatedPosition = position;
-    }
-
-    private class QuotesAdapter extends ArrayAdapter<Quote> {
-        private LayoutInflater mInflater;
-
-        /**
-         * Constructor
-         *
-         * @param context  The current context.
-         */
-        public QuotesAdapter(Context context) {
-            super(context, -1);
-
-            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView;
-            if (view == null)
-                view = mInflater.inflate(R.layout.list_item_quote, parent, false);
-
-            TextView primaryTextView = (TextView) view.findViewById(R.id.mainTextView);
-            TextView timeTextView = (TextView) view.findViewById(R.id.timeTextView);
-            TextView responsesTextView = (TextView) view.findViewById(R.id.responsesTextView);
-            TextView sentToTextView = (TextView) view.findViewById(R.id.sentToTextView);
-
-            Quote quote = getItem(position);
-
-            primaryTextView.setText(quote.searchString);
-            timeTextView.setText(quote.getPrettyTimeElapsed());
-
-            int numResponses = 0;
-            List<Quotation> quotations = DataManager.instance().getQuotations();
-            for (Quotation quotation : quotations)
-                if (quotation.quoteId == quote.id)
-                    numResponses++;
-            responsesTextView.setText(numResponses + " responses");
-            sentToTextView.setText(String.format("sent to %d retailers", quote.sellerIds.size()));
-
-            // to behave as a button i.e. have a "pressed" state
-            view.setBackgroundResource(R.drawable.selector_list_item);
-
-            return view;
-        }
     }
 }
