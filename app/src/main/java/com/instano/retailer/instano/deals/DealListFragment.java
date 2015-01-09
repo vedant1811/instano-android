@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
-import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Deal;
 import com.instano.retailer.instano.utilities.models.Seller;
@@ -221,10 +220,9 @@ public class DealListFragment extends ListFragment implements DataManager.DealsL
             if (seller != null)
                 distanceTextView.setText(seller.getPrettyDistanceFromLocation());
             else {
-                Log.e("DealsAdapter", "no seller for id: " + deal.sellerId);
-                distanceTextView.setVisibility(View.GONE);
+                throw new IllegalStateException("Invalid deal should have not entered the adapter");
             }
-            expiresAtTextView.setText("expires " + ServicesSingleton.instance().getPrettyTimeElapsed(deal.expiresAt));
+            expiresAtTextView.setText(deal.expiresAt());
 
             // to behave as a button i.e. have a "pressed" state
             view.setBackgroundResource(R.drawable.selector_list_item);

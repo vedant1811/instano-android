@@ -241,7 +241,7 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
 
                 TextView modelTextView = (TextView) convertView.findViewById(R.id.headingTextView);
                 TextView timeElapsedTextView = (TextView) convertView.findViewById(R.id.expiresAtTextView);
-                TextView priceTextView = (TextView) convertView.findViewById(R.id.priceTextView);
+                TextView priceTextView = (TextView) convertView.findViewById(R.id.dealHeadingTextView);
                 final TextView newTextView = (TextView) convertView.findViewById(R.id.newTextView);
                 String timeElapsed = quotation.getPrettyTimeElapsed();
 

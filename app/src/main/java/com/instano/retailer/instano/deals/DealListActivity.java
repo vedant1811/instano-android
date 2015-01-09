@@ -2,10 +2,9 @@ package com.instano.retailer.instano.deals;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
-
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 
 /**
  * An activity representing a list of Deals. This activity
@@ -23,7 +22,7 @@ import com.instano.retailer.instano.R;
  * {@link DealListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class DealListActivity extends Activity
+public class DealListActivity extends GlobalMenuActivity
         implements DealListFragment.Callbacks {
 
     /**

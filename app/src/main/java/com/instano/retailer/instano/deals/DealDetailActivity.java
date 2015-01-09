@@ -2,11 +2,10 @@ package com.instano.retailer.instano.deals;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
-
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 
 /**
  * An activity representing a single Deal detail screen. This
@@ -17,7 +16,7 @@ import com.instano.retailer.instano.R;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link DealDetailFragment}.
  */
-public class DealDetailActivity extends Activity {
+public class DealDetailActivity extends GlobalMenuActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

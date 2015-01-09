@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="₹ 7000"
-        android:id="@+id/priceTextView"
+        android:id="@+id/dealHeadingTextView"
         android:layout_below="@+id/headingTextView"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -44,10 +44,10 @@
         android:textAppearance="@style/TextAppearanceListItemTimeElapsed"
         android:text="42 min ago"
         android:id="@+id/expiresAtTextView"
-        android:layout_alignTop="@+id/priceTextView"
+        android:layout_alignTop="@+id/dealHeadingTextView"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignBottom="@+id/priceTextView"
+        android:layout_alignBottom="@+id/dealHeadingTextView"
         android:gravity="center" />
 
     <TextView

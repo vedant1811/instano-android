@@ -1,15 +1,19 @@
 package com.instano.retailer.instano.deals;
 
 import android.app.Fragment;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.utilities.models.Deal;
+import com.instano.retailer.instano.utilities.models.Seller;
 
 /**
  * A fragment representing a single Deal detail screen.
@@ -59,13 +63,39 @@ public class DealDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_deal_detail, container, false);
+        View view = inflater.inflate(R.layout.fragment_deal_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.deal_detail)).setText(mItem.heading);
-        }
+        final Seller seller = DataManager.instance().getSeller(mItem.sellerId);
 
-        return rootView;
+        TextView shopNameTextView = (TextView) view.findViewById(R.id.shopNameTextView);
+        TextView sellerNameTextView = (TextView) view.findViewById(R.id.sellerNameTextView);
+        TextView addressTextView = (TextView) view.findViewById(R.id.addressTextView);
+        TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
+        ImageButton callImageButton = (ImageButton) view.findViewById(R.id.callImageButton);
+        TextView dealHeadingTextView = (TextView) view.findViewById(R.id.dealHeadingTextView);
+        TextView dealSubheadingTextView = (TextView) view.findViewById(R.id.dealSubheadingTextView);
+        TextView expiresAtTextView = (TextView) view.findViewById(R.id.expiresAtTextView);
+
+        dealHeadingTextView.setText(mItem.heading);
+        dealSubheadingTextView.setText(mItem.subheading);
+        expiresAtTextView.setText(mItem.expiresAt());
+
+        // TODO: maybe handle more gracefully
+        if (seller == null)
+            return view;
+
+        shopNameTextView.setText(seller.nameOfShop);
+        sellerNameTextView.setText(seller.nameOfSeller);
+        addressTextView.setText(seller.address);
+        distanceTextView.setText(seller.getPrettyDistanceFromLocation());
+        callImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + seller.phone));
+                startActivity(callIntent);
+            }
+        });
+
+        return view;
     }
 }

@@ -39,6 +39,10 @@ public class Deal {
         this.sellerId = json.getInt("seller_id");
     }
 
+    public String expiresAt() {
+        return "expires " + ServicesSingleton.instance().getPrettyTimeElapsed(expiresAt);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

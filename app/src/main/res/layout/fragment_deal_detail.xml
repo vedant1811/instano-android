@@ -1,5 +1,132 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/deal_detail"
-    style="?android:attr/textAppearanceLarge" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:padding="16dp" android:textIsSelectable="true"
-    tools:context="com.instano.retailer.instano.deals.DealDetailFragment" />
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/activity_horizontal_margin">
+
+    <!--TODO: implement this-->
+    <!--<ListView-->
+    <!--android:id="@+id/listView1"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginBottom="80dp">-->
+    <!--</ListView>-->
+
+    <!--TODO: and remove this LinearLayout-->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Shop Name"
+        android:id="@+id/shopNameTextView"
+        android:layout_gravity="center_horizontal"
+        style="@style/TextAppearanceHeading"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="@dimen/general_separator_margin"
+        android:gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Seller Name"
+        android:id="@+id/sellerNameTextView"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/shopNameTextView"
+        android:layout_centerHorizontal="true"
+        style="@style/TextAppearanceMedium"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_horizontal"
+        android:textSize="20sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/addressTextView"
+        android:textAppearance="?android:textAppearanceSmall"
+        android:text="Address1\nAddress2"
+        android:lines="2"
+        android:layout_gravity="left"
+        android:layout_alignBottom="@+id/callImageButton"
+        android:layout_toStartOf="@+id/distanceTextView"
+        android:layout_toLeftOf="@+id/distanceTextView"
+        android:layout_alignParentLeft="true"
+        android:textColor="@color/instano_red"
+        android:textSize="20sp"
+        android:layout_alignTop="@+id/callImageButton"
+        android:gravity="bottom" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearancePrice"
+        android:text="2.40 km"
+        android:id="@+id/distanceTextView"
+        android:layout_alignBottom="@+id/callImageButton"
+        android:layout_toLeftOf="@+id/callImageButton"
+        android:layout_toStartOf="@+id/callImageButton"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp" />
+
+    <ImageButton
+        android:id="@+id/callImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:clickable="true"
+        android:layout_below="@+id/sellerNameTextView"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/selector_dial_image"
+        style="@style/LinkTypeButton"
+        android:layout_marginBottom="16dp"
+        android:layout_alignParentEnd="false" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Deal Heading"
+        android:id="@+id/dealHeadingTextView"
+        android:textColor="@color/instano_red"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="4dp"
+        android:layout_below="@+id/callImageButton" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Deal details:\nLine 1\nLine 2"
+        android:id="@+id/dealSubheadingTextView"
+        android:background="@drawable/red_rectangle"
+        android:padding="@dimen/general_separator_margin"
+        android:minLines="4"
+        android:layout_below="@+id/dealHeadingTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Accept Deal"
+        android:id="@+id/acceptDealButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_gravity="bottom"
+        android:visibility="gone" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Expires in 19 hours"
+        android:id="@+id/expiresAtTextView"
+        android:layout_below="@+id/dealSubheadingTextView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textAppearance="@style/TextAppearanceListItemTimeElapsed"
+        android:layout_margin="@dimen/general_separator_margin" />
+
+</RelativeLayout>
