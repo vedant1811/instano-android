@@ -23,6 +23,7 @@ public class Seller {
     public final String nameOfShop;
     public final String nameOfSeller;
     public final String address; // newline separated
+    // TODO: convert to Pointer Double that can be null instead of being INVALID_COORDINATE
     public final double latitude;
     public final double longitude;
     public final String phone; // TODO: maybe make it a list of Strings
@@ -182,12 +183,15 @@ public class Seller {
     }
 
     // TODO: cache this value
-    // get distance between to two points in 10x meters or -1
+    /**
+     * get distance between to two points in 10x meters or -1 if last location is null or
+     * seller's coordinates are invalid
+     */
     public int getDistanceFromLocation() {
 
         Location lastLocation = ServicesSingleton.instance().getUserLocation();
 
-        if (lastLocation == null)
+        if (lastLocation == null || latitude == INVALID_COORDINATE || longitude == INVALID_COORDINATE)
             return -1;
 
         PointF p1 = new PointF((float) lastLocation.getLatitude(), (float) lastLocation.getLongitude());

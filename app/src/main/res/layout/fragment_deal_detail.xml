@@ -44,18 +44,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/addressTextView"
-        android:textAppearance="?android:textAppearanceSmall"
-        android:text="Address1\nAddress2"
-        android:lines="2"
+        android:textAppearance="@style/TextAppearanceMedium"
+        android:text="Address1\nAddress2\ncity\npin"
         android:layout_gravity="left"
-        android:layout_alignBottom="@+id/callImageButton"
-        android:layout_toStartOf="@+id/distanceTextView"
-        android:layout_toLeftOf="@+id/distanceTextView"
         android:layout_alignParentLeft="true"
-        android:textColor="@color/instano_red"
-        android:textSize="20sp"
-        android:layout_alignTop="@+id/callImageButton"
-        android:gravity="bottom" />
+        android:gravity="bottom"
+        android:layout_below="@+id/sellerNameTextView"
+        android:layout_toLeftOf="@+id/distanceTextView"
+        android:layout_toStartOf="@+id/distanceTextView"
+        android:layout_marginBottom="@dimen/general_separator_margin" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -63,24 +60,9 @@
         android:textAppearance="@style/TextAppearancePrice"
         android:text="2.40 km"
         android:id="@+id/distanceTextView"
-        android:layout_alignBottom="@+id/callImageButton"
-        android:layout_toLeftOf="@+id/callImageButton"
-        android:layout_toStartOf="@+id/callImageButton"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp" />
-
-    <ImageButton
-        android:id="@+id/callImageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="center"
-        android:clickable="true"
-        android:layout_below="@+id/sellerNameTextView"
+        android:layout_alignBottom="@+id/addressTextView"
         android:layout_alignParentRight="true"
-        android:src="@drawable/selector_dial_image"
-        style="@style/LinkTypeButton"
-        android:layout_marginBottom="16dp"
-        android:layout_alignParentEnd="false" />
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -92,7 +74,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginBottom="4dp"
-        android:layout_below="@+id/callImageButton" />
+        android:layout_below="@+id/addressTextView" />
 
     <TextView
         android:layout_width="match_parent"
@@ -128,5 +110,23 @@
         android:layout_alignParentEnd="true"
         android:textAppearance="@style/TextAppearanceListItemTimeElapsed"
         android:layout_margin="@dimen/general_separator_margin" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Call Retailer"
+        android:id="@+id/callRetailerButton"
+        android:layout_below="@+id/expiresAtTextView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Share Deal"
+        android:id="@+id/shareDealButton"
+        android:layout_below="@+id/expiresAtTextView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

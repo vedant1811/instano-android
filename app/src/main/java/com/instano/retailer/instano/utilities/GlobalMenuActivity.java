@@ -30,12 +30,16 @@ import com.instano.retailer.instano.search.SearchTabsActivity;
 public abstract class GlobalMenuActivity extends BaseActivity {
     public static final int PICK_CONTACT_REQUEST_CODE = 996;
     public static final int SEND_SMS_REQUEST_CODE = 995;
+    /**
+     * used by subclasses as well
+     */
+    public static final int MESSAGE_REQUEST_CODE = 997;
 
     private static final int SHARE_REQUEST_CODE = 998;
-    private static final int MESSAGE_REQUEST_CODE = 997;
 
     protected static final String HOW_DO_YOU_WANT_TO_CONTACT_US = "How do you want to contact us";
     private static final String TEXT_OFFLINE_QUERY = "You can send a query directly by any of the following";
+    public static final String PLAY_STORE_LINK = "http://play.google.com/store/apps/details?id=com.instano.buyer";
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -151,9 +155,9 @@ public abstract class GlobalMenuActivity extends BaseActivity {
         Intent intent;
         intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Instano Retailer");
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Instano");
         String sAux = "Let me recommend you this application\n";
-        sAux = sAux + "http://play.google.com/store/apps/details?id=com.instano.buyer";
+        sAux = sAux + PLAY_STORE_LINK;
         intent.putExtra(Intent.EXTRA_TEXT, sAux);
         intent = Intent.createChooser(intent, "choose one");
         try {

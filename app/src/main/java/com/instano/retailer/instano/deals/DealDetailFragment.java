@@ -7,11 +7,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
+import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.models.Deal;
 import com.instano.retailer.instano.utilities.models.Seller;
 
@@ -71,14 +73,35 @@ public class DealDetailFragment extends Fragment {
         TextView sellerNameTextView = (TextView) view.findViewById(R.id.sellerNameTextView);
         TextView addressTextView = (TextView) view.findViewById(R.id.addressTextView);
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
-        ImageButton callImageButton = (ImageButton) view.findViewById(R.id.callImageButton);
-        TextView dealHeadingTextView = (TextView) view.findViewById(R.id.dealHeadingTextView);
+        final TextView dealHeadingTextView = (TextView) view.findViewById(R.id.dealHeadingTextView);
         TextView dealSubheadingTextView = (TextView) view.findViewById(R.id.dealSubheadingTextView);
         TextView expiresAtTextView = (TextView) view.findViewById(R.id.expiresAtTextView);
+        Button callImageButton = (Button) view.findViewById(R.id.callRetailerButton);
+        Button shareDealButton = (Button) view.findViewById(R.id.shareDealButton);
 
         dealHeadingTextView.setText(mItem.heading);
         dealSubheadingTextView.setText(mItem.subheading);
         expiresAtTextView.setText(mItem.expiresAt());
+        shareDealButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent;
+                intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Deal from Instano");
+                String message = String.format("Instano has a deal that %s\n\n%s- %s." +
+                                "\nDownload instano to get it- %s",
+                        mItem.expiresAt().toLowerCase(), mItem.heading, mItem.subheading,
+                        GlobalMenuActivity.PLAY_STORE_LINK);
+                intent.putExtra(Intent.EXTRA_TEXT, message);
+                intent = Intent.createChooser(intent, "choose one");
+                try {
+                    startActivityForResult(intent, GlobalMenuActivity.MESSAGE_REQUEST_CODE);
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(getActivity(), "There are no clients to share links", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         // TODO: maybe handle more gracefully
         if (seller == null)
