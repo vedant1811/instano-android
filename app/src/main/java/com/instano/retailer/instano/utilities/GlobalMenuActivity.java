@@ -153,7 +153,7 @@ public abstract class GlobalMenuActivity extends BaseActivity {
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_SUBJECT, "Instano Retailer");
         String sAux = "Let me recommend you this application\n";
-        sAux = sAux + "http://play.google.com/store/apps/details?id=com.instano.retailer";
+        sAux = sAux + "http://play.google.com/store/apps/details?id=com.instano.buyer";
         intent.putExtra(Intent.EXTRA_TEXT, sAux);
         intent = Intent.createChooser(intent, "choose one");
         try {
