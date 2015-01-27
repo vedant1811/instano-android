@@ -88,7 +88,7 @@ public class SearchFragment extends Fragment
         else
             mLocationButtonText = NEAR_YOUR_LOCATION; // we have location but no address
 
-        // we updating it right now in case it is resumed
+        // update it right now in case it is resumed
         mLocationButton.setText(mLocationButtonText);
     }
 

@@ -1,7 +1,9 @@
 package com.instano.retailer.instano.search;
 
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -31,12 +33,14 @@ import java.util.List;
 
 
 public class SearchTabsActivity extends GlobalMenuActivity implements
-        NetworkRequestsManager.QuoteCallbacks {
+        NetworkRequestsManager.QuoteCallbacks,
+        NoLocationErrorDialogFragment.Callbacks {
 
     private static final int RESULT_CODE_LOCATION = 990;
 
     private final static String[] TABS = {"Search", "Constraints"};
     private static final String TAG = "SearchTabsActivity";
+    private static final String NO_LOCATION_ERROR_DIALOG_FRAGMENT = "NoLocationErrorDialogFragment";
     //    private enum TABS {Search, Constraints, Sellers_list, Sellers_Map};
 
     /**
@@ -142,8 +146,31 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
      * @return true if the error should be ignored
      */
     private boolean noLocationError() {
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag(NO_LOCATION_ERROR_DIALOG_FRAGMENT);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = NoLocationErrorDialogFragment.newInstance();
+        newFragment.show(ft, NO_LOCATION_ERROR_DIALOG_FRAGMENT);
         Log.e(TAG, "continuing to send quote without location");
         return true;
+    }
+
+    @Override
+    public void selectLocationClicked() {
+
+    }
+
+    @Override
+    public void addressEntered(String address) {
+
     }
 
     public void nextButtonClicked(View view) {

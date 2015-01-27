@@ -97,7 +97,10 @@ public class MessageDialogFragment extends DialogFragment implements View.OnClic
                 // callback is handled by {@link GlobalMenuActivity#onActivityResult}
                 getActivity().startActivityForResult(intent, GlobalMenuActivity.PICK_CONTACT_REQUEST_CODE);
                 break;
+            default:
+                return; // we do not know what to do with this click
         }
+        dismiss();
     }
 
     @Override

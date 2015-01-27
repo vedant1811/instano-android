@@ -39,6 +39,8 @@ public abstract class GlobalMenuActivity extends BaseActivity {
 
     protected static final String HOW_DO_YOU_WANT_TO_CONTACT_US = "How do you want to contact us";
     private static final String TEXT_OFFLINE_QUERY = "You can send a query directly by any of the following";
+    private static final String MESSAGE_DIALOG_FRAGMENT = "MessageDialogFragment";
+
     public static final String PLAY_STORE_LINK = "http://play.google.com/store/apps/details?id=com.instano.buyer";
 
     @Override
@@ -117,7 +119,7 @@ public abstract class GlobalMenuActivity extends BaseActivity {
         // in a transaction.  We also want to remove any currently showing
         // dialog, so make our own transaction and take care of that here.
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+        Fragment prev = getFragmentManager().findFragmentByTag(MESSAGE_DIALOG_FRAGMENT);
         if (prev != null) {
             ft.remove(prev);
         }
@@ -125,7 +127,7 @@ public abstract class GlobalMenuActivity extends BaseActivity {
 
         // Create and show the dialog.
         DialogFragment newFragment = MessageDialogFragment.newInstance(heading, title);
-        newFragment.show(ft, "dialog");
+        newFragment.show(ft, MESSAGE_DIALOG_FRAGMENT);
     }
 
     protected void search() {
