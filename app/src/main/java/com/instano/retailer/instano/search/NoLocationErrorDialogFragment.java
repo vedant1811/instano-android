@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -33,7 +34,7 @@ public class NoLocationErrorDialogFragment extends DialogFragment implements Vie
 
     public interface Callbacks {
         public void selectLocationClicked();
-        public void addressEntered(String address);
+        public void addressEntered(@NonNull String address);
     }
 
     /**
@@ -45,7 +46,7 @@ public class NoLocationErrorDialogFragment extends DialogFragment implements Vie
         public void selectLocationClicked() {
         }
         @Override
-        public void addressEntered(String address) {
+        public void addressEntered(@NonNull String address) {
         }
     };
 
@@ -66,10 +67,12 @@ public class NoLocationErrorDialogFragment extends DialogFragment implements Vie
                     Toast.makeText(getActivity(), "Cannot start settings. Try doing it manually",
                             Toast.LENGTH_LONG).show();
                 }
+                dismiss();
                 break;
 
             case R.id.selectLocationButton:
                 mCallbacks.selectLocationClicked();
+                dismiss();
                 break;
 
             case R.id.enterAddressButton:
@@ -77,17 +80,16 @@ public class NoLocationErrorDialogFragment extends DialogFragment implements Vie
                     Editable text = mAddressEditText.getText();
                     if(TextUtils.isEmpty(text))
                         mAddressEditText.setError("Cannot be empty");
-                    else
+                    else {
                         mCallbacks.addressEntered(text.toString());
+                        dismiss();
+                    }
                 }
                 else {
                     setEnterAddressState(true);
                 }
                 break;
-            default:
-                return; // we do not know what to do with this click
         }
-        dismiss();
     }
 
     @Override
@@ -127,11 +129,13 @@ public class NoLocationErrorDialogFragment extends DialogFragment implements Vie
 
     @Override
     public void onResume(){
+        super.onResume();
         setEnterAddressState(mAddressEditTextVisible);
     }
 
     @Override
     public void onPause() {
+        super.onPause();
         if (mAddressEditText.getVisibility() == View.VISIBLE) {
             mAddressEditTextVisible = true;
             mAddress = mAddressEditText.getText();
@@ -143,6 +147,7 @@ public class NoLocationErrorDialogFragment extends DialogFragment implements Vie
     }
 
     private void setEnterAddressState(boolean shown) {
+        mAddressEditTextVisible = shown;
         if (shown) {
             mAddressEditText.setVisibility(View.VISIBLE);
             mAddressEditText.setText(mAddress);

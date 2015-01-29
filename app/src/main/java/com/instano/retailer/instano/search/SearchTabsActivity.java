@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -89,7 +90,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
         }
     }
     public void locationButtonClicked(View view) {
-        startActivityForResult(new Intent(this, SelectLocationActivity.class), RESULT_CODE_LOCATION);
+        selectLocationClicked();
     }
 
     public void searchButtonClicked(View view) {
@@ -99,21 +100,36 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
             mSearchFragment.showSearchEmptyError();
             return;
         }
-        Buyer buyer = ServicesSingleton.instance().getBuyer();
 
         Location userLocation = ServicesSingleton.instance().getUserLocation();
         double latitude, longitude;
         if (userLocation == null) {
-            if (!noLocationError())
-                return;
-            latitude = Quote.INVALID_COORDINATE;
-            longitude = Quote.INVALID_COORDINATE;
+            // show the NoLocationErrorDialogFragment
+
+            // DialogFragment.show() will take care of adding the fragment
+            // in a transaction.  We also want to remove any currently showing
+            // dialog, so make our own transaction and take care of that here.
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            Fragment prev = getFragmentManager().findFragmentByTag(NO_LOCATION_ERROR_DIALOG_FRAGMENT);
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
+
+            // Create and show the dialog.
+            DialogFragment newFragment = NoLocationErrorDialogFragment.newInstance();
+            newFragment.show(ft, NO_LOCATION_ERROR_DIALOG_FRAGMENT);
+            Log.e(TAG, "continuing to send quote without location");
         }
         else {
             latitude = userLocation.getLatitude();
             longitude = userLocation.getLongitude();
+            sendQuote(searchString, latitude, longitude, ServicesSingleton.instance().getUserAddress());
         }
+    }
 
+    private void sendQuote(String searchString, double latitude, double longitude, String address) {
+        Buyer buyer = ServicesSingleton.instance().getBuyer();
         if (buyer == null) {
             if (NetworkRequestsManager.instance().isOnline())
                 Toast.makeText(this, "Error! check your profile", Toast.LENGTH_LONG).show();
@@ -123,7 +139,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
             return;
         }
 
-        HashSet <Integer> sellerIds = null;
+        HashSet<Integer> sellerIds = null;
 
         Quote quote = new Quote(
                 buyer.id,
@@ -132,7 +148,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
                 mSelectedCategory,
                 mSelectedCategory.asAdditionalInfo(),
                 sellerIds, // seller Ids
-                ServicesSingleton.instance().getUserAddress(), // address
+                address, // address
                 latitude,
                 longitude
         );
@@ -141,36 +157,22 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
         mSearchConstraintsFragment.sendingQuote(true);
     }
 
-    /**
-     * Handles the case of no location selected
-     * @return true if the error should be ignored
-     */
-    private boolean noLocationError() {
-        // DialogFragment.show() will take care of adding the fragment
-        // in a transaction.  We also want to remove any currently showing
-        // dialog, so make our own transaction and take care of that here.
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        Fragment prev = getFragmentManager().findFragmentByTag(NO_LOCATION_ERROR_DIALOG_FRAGMENT);
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
-
-        // Create and show the dialog.
-        DialogFragment newFragment = NoLocationErrorDialogFragment.newInstance();
-        newFragment.show(ft, NO_LOCATION_ERROR_DIALOG_FRAGMENT);
-        Log.e(TAG, "continuing to send quote without location");
-        return true;
-    }
-
     @Override
     public void selectLocationClicked() {
-
+        startActivityForResult(new Intent(this, SelectLocationActivity.class), RESULT_CODE_LOCATION);
     }
 
     @Override
-    public void addressEntered(String address) {
+    public void addressEntered(@NonNull String address) {
+        // TODO: remove this code duplication:
+        String searchString = mSearchFragment.getSearchString();
+        if (searchString == null) {
+            mViewPager.setCurrentItem(0);
+            mSearchFragment.showSearchEmptyError();
+            return;
+        }
 
+        sendQuote(searchString, Seller.INVALID_COORDINATE, Seller.INVALID_COORDINATE, address);
     }
 
     public void nextButtonClicked(View view) {
