@@ -36,6 +36,8 @@ public class MessageDialogFragment extends DialogFragment implements View.OnClic
         return fragment;
     }
 
+
+
     @Override
     public void onClick(View v) {
         String whatsAppId = ServicesSingleton.instance().getInstanoWhatsappId();

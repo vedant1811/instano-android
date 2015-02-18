@@ -9,10 +9,10 @@ android {
             keyAlias 'retailer'
         }
         debug {
-            keyPassword 'hello123'
-            storeFile file('/home/vedant/.android/debug.keystore')
-            storePassword 'hello123'
-            keyAlias 'retailer'
+            keyPassword 'qwerty'
+            storeFile file('C:/Users/ROHIT/.android/keystore.jks')
+            storePassword 'qwerty'
+            keyAlias 'Key'
         }
     }
     compileSdkVersion 19
@@ -40,7 +40,7 @@ android {
         }
     }
 }
-
+repositories { mavenCentral() }
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     // You must install or update the Support Repository through the SDK manager to use this dependency.
