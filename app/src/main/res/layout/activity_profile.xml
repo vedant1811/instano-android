@@ -73,7 +73,7 @@
         android:gravity="center"/>
 
 
-    <Button
+    <com.facebook.widget.LoginButton
         android:id="@+id/connect"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
