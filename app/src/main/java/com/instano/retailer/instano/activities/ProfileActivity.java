@@ -9,8 +9,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ViewFlipper;
 
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
+import com.facebook.model.GraphUser;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
@@ -34,6 +37,7 @@ public class ProfileActivity extends GlobalMenuActivity
     CharSequence mName;
     CharSequence mPhone;
     int mViewFlipperState;
+    String mFbId,mFbName;
     private Session.StatusCallback callback = new Session.StatusCallback() {
         @Override
         public void call(Session session, SessionState state, Exception exception) {
@@ -44,6 +48,7 @@ public class ProfileActivity extends GlobalMenuActivity
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
+
         } else if (state.isClosed()) {
             Log.i(TAG, "Logged out...");
         }
@@ -116,6 +121,35 @@ public class ProfileActivity extends GlobalMenuActivity
             public void call(Session session, SessionState state, Exception exception) {
                 if (state.isOpened()) {
                     Log.i(TAG, "Logged in...");
+                    Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
+                        public void onCompleted(GraphUser user, Response response) {
+                            if (response != null) {
+                                // do something with <response> now
+                                try {
+                                    mFbId = user.getUsername();
+                                    mFbName = user.getName();
+                            /*get_gender = (String) user.getProperty("gender");
+                            get_email = (String) user.getProperty("email");
+                            get_birthday = user.getBirthday();
+                            get_locale = (String) user.getProperty("locale");
+                            get_location = user.getLocation().toString();
+                            */
+                                    Log.d(TAG, user.getId() + "; " +
+                                            user.getName() + "; " +
+                                            (String) user.getProperty("gender") + "; " +
+                                            (String) user.getProperty("email") + "; " +
+                                            user.getBirthday() + "; " +
+                                            (String) user.getProperty("locale") + "; " +
+                                            user.getLocation());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    Log.d(TAG, "Exception e");
+                                }
+
+                            }
+                        }
+                    });
+
                 } else if (state.isClosed()) {
                     Log.i(TAG, "Logged out...");
                 }
