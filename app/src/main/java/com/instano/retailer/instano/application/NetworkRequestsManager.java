@@ -23,6 +23,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -251,48 +252,48 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         mRequestQueue.add(request);
     }
 
-    public void registerRequest(final Buyer buyer) {
+    public void registerRequest(final Buyer buyer) throws IOException {
 
         try {
-            JSONObject jsonRequest = buyer.toJsonObject();
-            Log.v(TAG + ".registerRequest", jsonRequest.toString(4));
-            JsonObjectRequest request = new JsonObjectRequest(
-                    getRequestUrl(RequestType.REGISTER_BUYER, -1), // String url
-                    jsonRequest, // JSONObject jsonRequest
-                    // Listener<JSONObject> listener: since jsonRequest is not null, method defaults to POST
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            Log.v(TAG + ".onResponse", response.toString());
+            String jsonRequest = buyer.toJsonObject();
+            Log.v(TAG + ".registerRequest", jsonRequest);
+ //           JsonObjectRequest request = new JsonObjectRequest(
+//                    getRequestUrl(RequestType.REGISTER_BUYER, -1), // String url
+//                    jsonRequest, // JSONObject jsonRequest
+//                    // Listener<JSONObject> listener: since jsonRequest is not null, method defaults to POST
+//                    new Response.Listener<JSONObject>() {
+//                        @Override
+//                        public void onResponse(JSONObject response) {
+//                            Log.v(TAG + ".onResponse", response.toString());
+//
+//                            RegistrationCallback.Result result = RegistrationCallback.Result.UNKNOWN_ERROR;
+//                            try {
+//                                Buyer buyer = new Buyer(response);
+//                                result = RegistrationCallback.Result.NO_ERROR;
+//                                ServicesSingleton.instance().afterSignIn(buyer, response.getString("api_key"));
+//                            } catch (JSONException e) {
+//                                try {
+//                                    if (API_ERROR_ALREADY_TAKEN.equals(response.getJSONArray("phone").getString(0)))
+//                                        result = RegistrationCallback.Result.PHONE_EXISTS;
+//                                } catch (JSONException e1) {
+//                                    Log.e (TAG + ".onResponse", response.toString(), e);
+//                                }
+//                            }
+//                            if (mRegistrationCallback != null)
+//                                mRegistrationCallback.onRegistration(result);
+//                        }
+//                    },
+//                    new Response.ErrorListener() {
+//                        @Override
+//                        public void onErrorResponse(VolleyError error) {
+//                            if (mRegistrationCallback != null)
+//                                mRegistrationCallback.onRegistration(RegistrationCallback.Result.UNKNOWN_ERROR);
+//                            NetworkRequestsManager.this.onErrorResponse(error);
+//                        }
+//                    }); // ErrorListener
 
-                            RegistrationCallback.Result result = RegistrationCallback.Result.UNKNOWN_ERROR;
-                            try {
-                                Buyer buyer = new Buyer(response);
-                                result = RegistrationCallback.Result.NO_ERROR;
-                                ServicesSingleton.instance().afterSignIn(buyer, response.getString("api_key"));
-                            } catch (JSONException e) {
-                                try {
-                                    if (API_ERROR_ALREADY_TAKEN.equals(response.getJSONArray("phone").getString(0)))
-                                        result = RegistrationCallback.Result.PHONE_EXISTS;
-                                } catch (JSONException e1) {
-                                    Log.e (TAG + ".onResponse", response.toString(), e);
-                                }
-                            }
-                            if (mRegistrationCallback != null)
-                                mRegistrationCallback.onRegistration(result);
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            if (mRegistrationCallback != null)
-                                mRegistrationCallback.onRegistration(RegistrationCallback.Result.UNKNOWN_ERROR);
-                            NetworkRequestsManager.this.onErrorResponse(error);
-                        }
-                    }); // ErrorListener
-
-            mRequestQueue.add(request);
-        } catch (JSONException e) {
+//            mRequestQueue.add(request);
+            } catch (JSONException e) {
             Log.e(TAG, "RegisterRequest exception", e);
         }
     }
