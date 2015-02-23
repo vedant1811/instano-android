@@ -11,6 +11,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.utilities.library.JsonArrayRequest;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -46,6 +49,9 @@ public class NetworkRequestsManager implements Response.ErrorListener{
     private SignInCallbacks mSignInCallbacks;
 
     private RequestQueue mRequestQueue;
+    private ObjectMapper mJsonObjectMapper;
+
+
 
     public void registerCallback (QuoteCallbacks quoteCallbacks) {
         mQuoteCallbacks = quoteCallbacks;
@@ -81,6 +87,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
     private NetworkRequestsManager(MyApplication application) {
         this.mApplication = application;
         mRequestQueue = Volley.newRequestQueue(application);
+        mJsonObjectMapper = new ObjectMapper();
     }
 
     /*package*/ static void init(MyApplication application) {
@@ -99,7 +106,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         JSONObject postData;
         try {
             postData = new JSONObject()
-                    .put("id", buyer.id);
+                    .put("id", buyer.getId());
         } catch (JSONException e) {
             Log.e(TAG, "getQuotationsRequest", e);
             return;
@@ -125,7 +132,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         JSONObject requestData;
         try {
             requestData = new JSONObject()
-                    .put("id", buyer.id);
+                    .put("id", buyer.getId());
         } catch (JSONException e) {
             Log.e(TAG, "getQuotesRequest exception", e);
             return;
@@ -252,12 +259,22 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         mRequestQueue.add(request);
     }
 
-    public void registerRequest(final Buyer buyer) throws IOException {
-
+    public void registerRequest(final Buyer buyer) {
+        String jsonRequest = null;
         try {
-            String jsonRequest = buyer.toJsonObject();
-            Log.v(TAG + ".registerRequest", jsonRequest);
- //           JsonObjectRequest request = new JsonObjectRequest(
+            mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE,true);
+            jsonRequest = mJsonObjectMapper.writeValueAsString(buyer);
+
+            } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.v(TAG + ".registerRequest", jsonRequest);
+
+
+
+        //           JsonObjectRequest request = new JsonObjectRequest(
 //                    getRequestUrl(RequestType.REGISTER_BUYER, -1), // String url
 //                    jsonRequest, // JSONObject jsonRequest
 //                    // Listener<JSONObject> listener: since jsonRequest is not null, method defaults to POST
@@ -293,9 +310,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
 //                    }); // ErrorListener
 
 //            mRequestQueue.add(request);
-            } catch (JSONException e) {
-            Log.e(TAG, "RegisterRequest exception", e);
-        }
+
     }
 
     public void buyerExistsRequest(String phone) {

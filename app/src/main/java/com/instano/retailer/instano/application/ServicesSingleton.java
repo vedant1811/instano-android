@@ -116,10 +116,10 @@ public class ServicesSingleton implements
         editor.apply();
 
         if (buyer != null) {
-            Toast.makeText(mApplication, String.format("Welcome %s", mBuyer.name), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mApplication, String.format("Welcome %s", mBuyer.getName()), Toast.LENGTH_SHORT).show();
 
             Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
-            appTracker.setClientId(String.valueOf(mBuyer.id));
+            appTracker.setClientId(String.valueOf(mBuyer.getId()));
             appTracker.send(new HitBuilders.AppViewBuilder().build());
 
             DataManager.instance().onNewBuyer();
