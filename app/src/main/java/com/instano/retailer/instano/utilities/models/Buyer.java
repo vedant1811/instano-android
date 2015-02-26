@@ -11,7 +11,7 @@ import org.json.JSONObject;
 @JsonRootName(value = "buyer")
 public class Buyer {
 
-    private Integer id;
+    private Integer id ;
     private String name;
     private String phone;
 
@@ -24,11 +24,19 @@ public class Buyer {
     }
 
     public Integer getId() {
+
         return id;
     }
 
     public void setId(Integer id) {
-        this.id = id;
+
+        if(this.id != -1)
+        {
+            this.id = id;
+        }
+        else
+            this.id = -1;
+
     }
 
     public String getPhone() {

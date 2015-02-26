@@ -260,56 +260,58 @@ public class NetworkRequestsManager implements Response.ErrorListener{
     }
 
     public void registerRequest(final Buyer buyer) {
-        String jsonRequest = null;
+        JSONObject jsonRequest = null;
         try {
             mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE,true);
-            jsonRequest = mJsonObjectMapper.writeValueAsString(buyer);
+           // jsonRequest = mJsonObjectMapper.writeValueAsString(buyer);
+             jsonRequest = new JSONObject(mJsonObjectMapper.writeValueAsString(buyer));
 
             } catch (JsonProcessingException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        Log.v(TAG + ".registerRequest", jsonRequest);
+        Log.v(TAG + ".registerRequest", jsonRequest.toString());
 
 
+             JsonObjectRequest request = new JsonObjectRequest(
+                getRequestUrl(RequestType.REGISTER_BUYER, -1), // String url
+                jsonRequest, // JSONObject jsonRequest
+                // Listener<JSONObject> listener: since jsonRequest is not null, method defaults to POST
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.v(TAG + ".onResponse", response.toString());
 
-        //           JsonObjectRequest request = new JsonObjectRequest(
-//                    getRequestUrl(RequestType.REGISTER_BUYER, -1), // String url
-//                    jsonRequest, // JSONObject jsonRequest
-//                    // Listener<JSONObject> listener: since jsonRequest is not null, method defaults to POST
-//                    new Response.Listener<JSONObject>() {
-//                        @Override
-//                        public void onResponse(JSONObject response) {
-//                            Log.v(TAG + ".onResponse", response.toString());
-//
-//                            RegistrationCallback.Result result = RegistrationCallback.Result.UNKNOWN_ERROR;
-//                            try {
-//                                Buyer buyer = new Buyer(response);
-//                                result = RegistrationCallback.Result.NO_ERROR;
-//                                ServicesSingleton.instance().afterSignIn(buyer, response.getString("api_key"));
-//                            } catch (JSONException e) {
-//                                try {
-//                                    if (API_ERROR_ALREADY_TAKEN.equals(response.getJSONArray("phone").getString(0)))
-//                                        result = RegistrationCallback.Result.PHONE_EXISTS;
-//                                } catch (JSONException e1) {
-//                                    Log.e (TAG + ".onResponse", response.toString(), e);
-//                                }
-//                            }
-//                            if (mRegistrationCallback != null)
-//                                mRegistrationCallback.onRegistration(result);
-//                        }
-//                    },
-//                    new Response.ErrorListener() {
-//                        @Override
-//                        public void onErrorResponse(VolleyError error) {
-//                            if (mRegistrationCallback != null)
-//                                mRegistrationCallback.onRegistration(RegistrationCallback.Result.UNKNOWN_ERROR);
-//                            NetworkRequestsManager.this.onErrorResponse(error);
-//                        }
-//                    }); // ErrorListener
+                        RegistrationCallback.Result result = RegistrationCallback.Result.UNKNOWN_ERROR;
+                        try {
+                            Buyer buyer = new Buyer(response);
+                            result = RegistrationCallback.Result.NO_ERROR;
+                            ServicesSingleton.instance().afterSignIn(buyer, response.getString("api_key"));
+                        } catch (JSONException e) {
+                            try {
+                                if (API_ERROR_ALREADY_TAKEN.equals(response.getJSONArray("phone").getString(0)))
+                                    result = RegistrationCallback.Result.PHONE_EXISTS;
+                            } catch (JSONException e1) {
+                                Log.e (TAG + ".onResponse", response.toString(), e);
+                            }
+                        }
+                        if (mRegistrationCallback != null)
+                            mRegistrationCallback.onRegistration(result);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (mRegistrationCallback != null)
+                            mRegistrationCallback.onRegistration(RegistrationCallback.Result.UNKNOWN_ERROR);
+                        NetworkRequestsManager.this.onErrorResponse(error);
+                    }
+                }); // ErrorListener
 
-//            mRequestQueue.add(request);
+       mRequestQueue.add(request);
 
     }
 
@@ -406,7 +408,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
 
         String SERVER_URL;
         if (BuildConfig.DEBUG)
-            SERVER_URL = LOCAL_SERVER_URL;
+            SERVER_URL = "http://instano.in/";
         else
             SERVER_URL = "http://instano.in/";
 //        final String SERVER_URL = "http://10.42.0.1:3000/";
