@@ -14,6 +14,7 @@ public class Buyer {
     private Integer id ;
     private String name;
     private String phone;
+   // private JSONObject response;
 
     public Buyer(JSONObject response) {
 
@@ -54,4 +55,12 @@ public class Buyer {
     public void setName(String name) {
         this.name = name;
     }
+
+    public JSONObject getResponse(JSONObject response) {
+        return response;
+    }
+
+   /* public void setResponse(JSONObject response) {
+        this.response = response;
+    }*/
 }

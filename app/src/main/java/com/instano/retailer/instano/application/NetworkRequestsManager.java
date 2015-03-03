@@ -50,6 +50,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
 
     private RequestQueue mRequestQueue;
     private ObjectMapper mJsonObjectMapper;
+    private Buyer buyer;
 
 
 
@@ -287,7 +288,10 @@ public class NetworkRequestsManager implements Response.ErrorListener{
 
                         RegistrationCallback.Result result = RegistrationCallback.Result.UNKNOWN_ERROR;
                         try {
-                            Buyer buyer = new Buyer(response);
+ //                           Buyer buyer = new Buyer(response);
+ //                           buyer.setResponse(response);
+                            response = buyer.getResponse(response);
+
                             result = RegistrationCallback.Result.NO_ERROR;
                             ServicesSingleton.instance().afterSignIn(buyer, response.getString("api_key"));
                         } catch (JSONException e) {
