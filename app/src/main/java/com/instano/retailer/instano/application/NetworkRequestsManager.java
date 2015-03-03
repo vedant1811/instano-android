@@ -50,7 +50,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
 
     private RequestQueue mRequestQueue;
     private ObjectMapper mJsonObjectMapper;
-    private Buyer buyer;
+    private Buyer mBuyer;
 
 
 
@@ -234,8 +234,14 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                             Log.d(TAG + "signInRequest.onResponse", response.toString());
                             try {
                                 if (response.getInt("id") != -1) {
-                                    Buyer buyer = new Buyer(response);
-                                    ServicesSingleton.instance().afterSignIn(buyer, response.getString("api_key"));
+                                    Log.d(TAG + "check", response.toString());
+                                    mBuyer = new Buyer();
+                                    Log.d(TAG + "check", mBuyer.toString());
+                                    mBuyer.setId(response.getInt("id"));
+                                    mBuyer.setName(response.getString("name"));
+                                    mBuyer.setPhone(response.getString("phone"));
+
+                                    ServicesSingleton.instance().afterSignIn(mBuyer, response.getString("api_key"));
                                     if (mSignInCallbacks != null)
                                         mSignInCallbacks.signedIn(true);
                                 }
