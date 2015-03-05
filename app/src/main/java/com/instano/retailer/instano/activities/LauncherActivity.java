@@ -13,10 +13,14 @@ public class LauncherActivity extends BaseActivity {
 
     // Splash screen timer
     private static int SPLASH_TIME_OUT = 1500;
+    boolean mCancelled = false;
 
     @Override
     public void onBackPressed() {
-        // ignore the press
+        // make sure the next activity is not started
+        mCancelled = true;
+        // finish the activity
+        super.onBackPressed();
     }
 
     @Override
@@ -42,12 +46,14 @@ public class LauncherActivity extends BaseActivity {
     }
 
     private void onSplashTimeOut() {
-        // initialize:
-        Intent i = null;
+        // initialize the app if it wasn't cancelled (like due to back button being pressed):
+        if (!mCancelled) {
+            Intent i = null;
 //        if (ServicesSingleton.getInstance(this).firstTime())
             i = new Intent(this, StartingActivity.class);
 
-        startActivity(i);
+            startActivity(i);
+        }
 
         // close this activity
         finish();
