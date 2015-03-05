@@ -2,9 +2,6 @@ package com.instano.retailer.instano.utilities.models;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * Created by vedant on 18/12/14.
  */
@@ -15,53 +12,25 @@ public class Buyer {
     private Integer id ;
     private String name;
     private String phone;
-   // private JSONObject response;
+    private String api_key;
+    private String created_at;
+    private String updated_at;
 
-    /*public Buyer(JSONObject response) {
-
-    }*/
-
-    /*public Buyer() {
-
-    }*/
 
     public Integer getId() {
-
         return id;
     }
 
     public void setId(Integer id) {
-
-        if(this.id != -1)
-        {
-            this.id = id;
-        }
-        else
-            this.id = -1;
-
+       this.id=id;
     }
 
-    public void setId(JSONObject jsonObject) throws JSONException {
-
-        if(this.id != -1)
-        {
-            this.id = jsonObject.getInt("id");
-        }
-        else
-            this.id = -1;
-
-    }
-
-    public String getPhone() {
+     public String getPhone() {
         return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public void setPhone(JSONObject jsonObject) throws JSONException {
-        this.phone = jsonObject.getString("phone");
     }
 
     public String getName() {
@@ -72,23 +41,27 @@ public class Buyer {
         this.name = name;
     }
 
-    public void setName(JSONObject jsonObject) throws JSONException {
-        this.name = jsonObject.getString("name");
+    public String getApi_key() {
+        return api_key;
     }
 
-    public JSONObject getResponse(JSONObject response) {
-        return response;
+    public void setApi_key(String api_key) {
+        this.api_key = api_key;
     }
 
-   /* public Buyer signInRequest(JSONObject jObject) throws JSONException {
-        id= jObject.getInt("id");
-        name = jObject.getString("name");
-        phone = jObject.getString("phone");
-        Buyer buyer = new Buyer();
-        return buyer;
-    }*/
+    public String getCreated_at() {
+        return created_at;
+    }
 
-   /* public void setResponse(JSONObject response) {
-        this.response = response;
-    }*/
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
+    public String getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
+    }
 }

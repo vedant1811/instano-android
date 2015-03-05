@@ -12,6 +12,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.instano.retailer.instano.BuildConfig;
@@ -89,6 +90,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         this.mApplication = application;
         mRequestQueue = Volley.newRequestQueue(application);
         mJsonObjectMapper = new ObjectMapper();
+        mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE,true);
     }
 
     /*package*/ static void init(MyApplication application) {
@@ -266,17 +268,12 @@ public class NetworkRequestsManager implements Response.ErrorListener{
         mRequestQueue.add(request);
     }
 
-    public void registerRequest(final Buyer buyer) {
+    public void registerRequest(final Buyer requestBuyer) {
         JSONObject jsonRequest = null;
         try {
-            mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE,true);
-           // jsonRequest = mJsonObjectMapper.writeValueAsString(buyer);
-             jsonRequest = new JSONObject(mJsonObjectMapper.writeValueAsString(buyer));
-
-            } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+             jsonRequest = new JSONObject(mJsonObjectMapper.writeValueAsString(requestBuyer));
+        } catch (JsonProcessingException e) {
+             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -294,19 +291,23 @@ public class NetworkRequestsManager implements Response.ErrorListener{
 
                         RegistrationCallback.Result result = RegistrationCallback.Result.UNKNOWN_ERROR;
                         try {
- //                           Buyer buyer = new Buyer(response);
- //                           buyer.setResponse(response);
-                            response = buyer.getResponse(response);
-
+                            Log.v(TAG + ".onResponseInsideTry", response.toString());
+                            Buyer responseBuyer= mJsonObjectMapper.readValue(response.toString(),Buyer.class);
+                            Log.e(TAG + ".onResponseFromJson", responseBuyer.toString());
                             result = RegistrationCallback.Result.NO_ERROR;
-                            ServicesSingleton.instance().afterSignIn(buyer, response.getString("api_key"));
-                        } catch (JSONException e) {
+                            ServicesSingleton.instance().afterSignIn(responseBuyer, response.getString("api_key"));
+                            Log.e (TAG + ".onResponse", response.getString("api_key"));
+                        } catch (JsonMappingException e) {
                             try {
                                 if (API_ERROR_ALREADY_TAKEN.equals(response.getJSONArray("phone").getString(0)))
                                     result = RegistrationCallback.Result.PHONE_EXISTS;
                             } catch (JSONException e1) {
                                 Log.e (TAG + ".onResponse", response.toString(), e);
                             }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                         if (mRegistrationCallback != null)
                             mRegistrationCallback.onRegistration(result);
