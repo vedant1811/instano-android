@@ -293,6 +293,7 @@ public class NetworkRequestsManager implements Response.ErrorListener{
                         try {
                             Log.v(TAG + ".onResponseInsideTry", response.toString());
                             Buyer responseBuyer= mJsonObjectMapper.readValue(response.toString(),Buyer.class);
+                            //response value is stored in Buyer object
                             Log.e(TAG + ".onResponseFromJson", responseBuyer.toString());
                             result = RegistrationCallback.Result.NO_ERROR;
                             ServicesSingleton.instance().afterSignIn(responseBuyer, response.getString("api_key"));
