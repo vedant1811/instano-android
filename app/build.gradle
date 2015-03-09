@@ -2,15 +2,9 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        release {
-            keyPassword 'hello123'
-            storeFile file('/home/vedant/android/instano/keyStrore.jks')
-            storePassword 'hello123'
-            keyAlias 'retailer'
-        }
         debug {
             keyPassword 'hello123'
-            storeFile file('/home/vedant/.android/debug.keystore')
+            storeFile file('debug.keystore')
             storePassword 'hello123'
             keyAlias 'retailer'
         }
@@ -30,7 +24,7 @@ android {
             resValue "string", "app_name", "Instano"
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
         }
         debug {
             resValue "string", "app_name", "Instano Debug"
