@@ -9,8 +9,10 @@
     <!-- GCM Permissions -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <permission android:name="com.instano.retailer.instano.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
+    <uses-permission android:name="com.instano.retailer.instano.permission.C2D_MESSAGE" />
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but are recommended.
@@ -48,6 +50,17 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+
+
+        <receiver
+            android:name=".application.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.instano.retailer.instano" />
+            </intent-filter>
+        </receiver>
+        <service android:name=".application.GcmIntentService" />
 
 
 
