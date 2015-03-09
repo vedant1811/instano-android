@@ -31,7 +31,7 @@ import java.util.List;
 public class NetworkRequestsManager implements Response.ErrorListener{
 
     private static final String TAG = "NetworkRequestsManager";
-    private static final String LOCAL_SERVER_URL = "http://10.42.0.1:3000/";
+    private static final String LOCAL_SERVER_URL = "http://instano.in/";
 
     private final static String API_ERROR_ALREADY_TAKEN = "has already been taken";
     private final static String API_ERROR_IS_BLANK = "can't be blank";

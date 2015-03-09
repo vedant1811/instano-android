@@ -140,7 +140,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
         }
 
         HashSet <Integer> sellerIds = new HashSet<Integer>();
-        sellerIds.add(188); // instano retail.
+        sellerIds.add(287); // instano retail.
 
         Quote quote = new Quote(
                 buyer.id,
