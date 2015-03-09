@@ -64,6 +64,7 @@ dependencies {
     compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
     compile 'com.fasterxml.jackson.core:jackson-core:2.5.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.5.0'
+    compile "com.google.android.gms:play-services:3.1.+"
 
 
 }
