@@ -1,33 +1,21 @@
 package com.instano.retailer.instano.activities;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ViewFlipper;
 
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.model.GraphUser;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.models.Buyer;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class ProfileActivity extends GlobalMenuActivity
         implements NetworkRequestsManager.RegistrationCallback {
 
     private static final String ALREADY_TAKEN_ERROR = "already taken. Contact us if this is an error";
-    private static final String TAG = "Fb Login";
 
     EditText mNameEditText;
     EditText mPhoneEditText;
@@ -37,22 +25,6 @@ public class ProfileActivity extends GlobalMenuActivity
     CharSequence mName;
     CharSequence mPhone;
     int mViewFlipperState;
-    String mFbId,mFbName;
-    private Session.StatusCallback callback = new Session.StatusCallback() {
-        @Override
-        public void call(Session session, SessionState state, Exception exception) {
-            onSessionStateChange(session, state, exception);
-        }
-    };
-
-    private void onSessionStateChange(Session session, SessionState state, Exception exception) {
-        if (state.isOpened()) {
-            Log.i(TAG, "Logged in...");
-
-        } else if (state.isClosed()) {
-            Log.i(TAG, "Logged out...");
-        }
-    }
 
     @Override
     protected void onPause() {
@@ -81,17 +53,6 @@ public class ProfileActivity extends GlobalMenuActivity
         mPhoneEditText = (EditText) findViewById(R.id.phoneEditText);
         mSetUpViewFlipper = (ViewFlipper) findViewById(R.id.setUpViewFlipper);
         mSetUpButton = (Button) findViewById(R.id.setUpButton);
-        Button connect = (Button) findViewById(R.id.connect);
-
-
-        connect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openFacebookSession();
-            }
-        });
-
-
 
         mPhoneEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -112,61 +73,6 @@ public class ProfileActivity extends GlobalMenuActivity
             // TODO: this and other things, including saving state onPause
 //            mSetUpButton.setText("Update");
         }
-    }
-
-    private void openFacebookSession(){
-        String[] list={"user_likes", "user_status"};
-        Session.openActiveSession(this, true, Arrays.asList( list   ), new Session.StatusCallback() {
-            @Override
-            public void call(Session session, SessionState state, Exception exception) {
-                if (state.isOpened()) {
-                    Log.i(TAG, "Logged in...");
-                    Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
-                        public void onCompleted(GraphUser user, Response response) {
-                            if (response != null) {
-                                // do something with <response> now
-                                try {
-                                    mFbId = user.getUsername();
-                                    mFbName = user.getName();
-                            /*get_gender = (String) user.getProperty("gender");
-                            get_email = (String) user.getProperty("email");
-                            get_birthday = user.getBirthday();
-                            get_locale = (String) user.getProperty("locale");
-                            get_location = user.getLocation().toString();
-                            */
-                                    Log.d(TAG, user.getId() + "; " +
-                                            user.getName() + "; " +
-                                            (String) user.getProperty("gender") + "; " +
-                                            (String) user.getProperty("email") + "; " +
-                                            user.getBirthday() + "; " +
-                                            (String) user.getProperty("locale") + "; " +
-                                            user.getLocation());
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    Log.d(TAG, "Exception e");
-                                }
-
-                            }
-                        }
-                    });
-
-                } else if (state.isClosed()) {
-                    Log.i(TAG, "Logged out...");
-                }
-                // you can make request to the /me API or do other stuff like post, etc. here
-            }
-        });
-    }
-
-    private static Session openActiveSession(Activity activity, boolean allowLoginUI, List permissions, Session.StatusCallback callback) {
-        Session.OpenRequest openRequest = new Session.OpenRequest(activity).setPermissions(permissions).setCallback(callback);
-        Session session = new Session.Builder(activity).build();
-        if (SessionState.CREATED_TOKEN_LOADED.equals(session.getState()) || allowLoginUI) {
-            Session.setActiveSession(session);
-            session.openForRead(openRequest);
-            return session;
-        }
-        return null;
     }
 
     private boolean checkPhoneNumber() {
@@ -238,11 +144,5 @@ public class ProfileActivity extends GlobalMenuActivity
         }
         else
             noInternetDialog();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
     }
 }
