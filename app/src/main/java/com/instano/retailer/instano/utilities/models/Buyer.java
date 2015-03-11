@@ -1,36 +1,77 @@
 package com.instano.retailer.instano.utilities.models;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonRootName;
 
 /**
  * Created by vedant on 18/12/14.
  */
-public class Buyer {
-    public final int id;
-    public final String name;
-    public final String phone;
 
-    public Buyer(String name, String phone) {
-        id = -1;
-        this.name = name;
+@JsonRootName(value = "buyer")
+public class Buyer {
+
+    private Integer id ;
+    private String name;
+    private String phone;
+    private String api_key;
+    private String created_at;
+    private String updated_at;
+    private String facebook_id;
+
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+       this.id=id;
+    }
+
+     public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 
-    public Buyer(JSONObject jsonObject) throws JSONException {
-        id = jsonObject.getInt("id");
-        name = jsonObject.getString("name");
-        phone = jsonObject.getString("phone");
+    public String getName() {
+        return name;
     }
 
-    public JSONObject toJsonObject() throws JSONException {
-        JSONObject data = new JSONObject()
-                .put("name", name)
-                .put("phone", phone);
-        if (id != -1)
-            data.put("id", id);
-        JSONObject buyer = new JSONObject()
-                .put("buyer", data);
-        return buyer;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getApi_key() {
+        return api_key;
+    }
+
+    public void setApi_key(String api_key) {
+        this.api_key = api_key;
+    }
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
+    public String getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
+    }
+
+    public String getFacebook_id() {
+        return facebook_id;
+    }
+
+    public void setFacebook_id(String facebook_id) {
+        this.facebook_id = facebook_id;
     }
 }

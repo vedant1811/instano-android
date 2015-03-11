@@ -142,7 +142,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
         HashSet<Integer> sellerIds = null;
 
         Quote quote = new Quote(
-                buyer.id,
+                buyer.getId(),
                 searchString,
                 mSearchConstraintsFragment.getPriceRange(),
                 mSelectedCategory,

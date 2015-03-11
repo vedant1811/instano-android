@@ -68,8 +68,8 @@ public class ProfileActivity extends GlobalMenuActivity
         // check if a user exists:
         Buyer buyer = ServicesSingleton.instance().getBuyer();
         if (buyer != null) {
-            mName = buyer.name;
-            mPhone = buyer.phone;
+            mName = buyer.getName();
+            mPhone = buyer.getPhone();
             // TODO: this and other things, including saving state onPause
 //            mSetUpButton.setText("Update");
         }
@@ -114,10 +114,9 @@ public class ProfileActivity extends GlobalMenuActivity
 
         // all is good so proceed:
         mSetUpViewFlipper.showNext(); // progressbar
-        Buyer buyer = new Buyer(
-                mNameEditText.getText().toString(),
-                mPhoneEditText.getText().toString()
-        ) ;
+        Buyer buyer = new Buyer();
+        buyer.setName(mNameEditText.getText().toString());
+        buyer.setPhone(mPhoneEditText.getText().toString()) ;
         NetworkRequestsManager.instance().registerRequest(buyer);
     }
 

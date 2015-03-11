@@ -36,6 +36,8 @@ public class MessageDialogFragment extends DialogFragment implements View.OnClic
         return fragment;
     }
 
+
+
     @Override
     public void onClick(View v) {
         String whatsAppId = ServicesSingleton.instance().getInstanoWhatsappId();
@@ -69,7 +71,7 @@ public class MessageDialogFragment extends DialogFragment implements View.OnClic
                 Buyer buyer = ServicesSingleton.instance().getBuyer();
                 String append = "";
                 if (buyer != null)
-                    mailIntent.putExtra(Intent.EXTRA_TEXT, "\n\nRegards,\n" + buyer.name);
+                    mailIntent.putExtra(Intent.EXTRA_TEXT, "\n\nRegards,\n" + buyer.getName());
                 try {
                     startActivity(Intent.createChooser(mailIntent, "Send mail..."));
                 } catch (android.content.ActivityNotFoundException ex) {
