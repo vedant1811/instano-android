@@ -38,7 +38,7 @@ import java.util.List;
 public class NetworkRequestsManager implements Response.ErrorListener {
 
     private static final String TAG = "NetworkRequestsManager";
-    private static final String LOCAL_SERVER_URL = "http://ec2-52-1-202-4.compute-1.amazonaws.com/";
+    private static final String LOCAL_SERVER_URL = "http://52.1.202.4/";
 
     private final static String API_ERROR_ALREADY_TAKEN = "has already been taken";
     private final static String API_ERROR_IS_BLANK = "can't be blank";

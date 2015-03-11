@@ -1,5 +1,7 @@
 package com.instano.retailer.instano.activities;
 
+import com.instano.retailer.instano.utilities.library.Log;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -9,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -28,6 +29,8 @@ public class LauncherActivity extends BaseActivity {
 
     // Splash screen timer
     private static int SPLASH_TIME_OUT = 1500;
+
+    boolean mCancelled = false;
     public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
@@ -51,7 +54,10 @@ public class LauncherActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        // ignore the press
+        // make sure the next activity is not started
+        mCancelled = true;
+        // finish the activity
+        super.onBackPressed();
     }
 
     @Override
@@ -60,8 +66,7 @@ public class LauncherActivity extends BaseActivity {
         setContentView(R.layout.activity_launcher);
 
         context = getApplicationContext();
-        Log.i(TAG, "Received: " + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("session_id",""));
-
+        Log.v(TAG, "Received: " + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("session_id",""));
 
         // Check device for Play Services APK. If check succeeds, proceed with
         //  GCM registration.
@@ -73,7 +78,7 @@ public class LauncherActivity extends BaseActivity {
                 registerInBackground();
             }
         } else {
-            Log.i(TAG, "No valid Google Play Services APK found.");
+            Log.v(TAG, "No valid Google Play Services APK found.");
         }
 
         new Handler().postDelayed(new Runnable() {
@@ -97,7 +102,7 @@ public class LauncherActivity extends BaseActivity {
         final SharedPreferences prefs = getGCMPreferences(context);
         String registrationId = prefs.getString(PROPERTY_REG_ID, "");
         if (registrationId.isEmpty()) {
-            Log.i(TAG, "Registration not found.");
+            Log.v(TAG, "Registration not found.");
             return "";
         }
         // Check if app was updated; if so, it must clear the registration ID
@@ -106,7 +111,7 @@ public class LauncherActivity extends BaseActivity {
         int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
         int currentVersion = getAppVersion(context);
         if (registeredVersion != currentVersion) {
-            Log.i(TAG, "App version changed.");
+            Log.v(TAG, "App version changed.");
             return "";
         }
         return registrationId;
@@ -172,7 +177,7 @@ public class LauncherActivity extends BaseActivity {
 
             @Override
             protected void onPostExecute(String msg) {
-                Log.i(TAG, "onPost " + msg);
+                Log.v(TAG, "onPost " + msg);
             }
 
 
@@ -188,8 +193,7 @@ public class LauncherActivity extends BaseActivity {
      */
     private void sendRegistrationIdToBackend() {
         // Your implementation here.
-        Log.i(TAG, "Send regId  " + regid);
-
+        Log.v(TAG, "Send regId  " + regid);
         mDevice = new Device();
         mDevice.setGcm_registration_id(regid);
         NetworkRequestsManager.instance().getDeviceId(mDevice);
@@ -197,7 +201,7 @@ public class LauncherActivity extends BaseActivity {
     private void storeRegistrationId(Context context, String regId) {
         final SharedPreferences prefs = getGCMPreferences(context);
         int appVersion = getAppVersion(context);
-        Log.i(TAG, "Saving regId on app version " + appVersion);
+        Log.v(TAG, "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, regId);
         editor.putInt(PROPERTY_APP_VERSION, appVersion);
@@ -205,13 +209,15 @@ public class LauncherActivity extends BaseActivity {
     }
 
 
-            private void onSplashTimeOut() {
-        // initialize:
-        Intent i = null;
+    private void onSplashTimeOut() {
+        // initialize the app if it wasn't cancelled (like due to back button being pressed):
+        if (!mCancelled) {
+            Intent i = null;
 //        if (ServicesSingleton.getInstance(this).firstTime())
             i = new Intent(this, StartingActivity.class);
 
-        startActivity(i);
+            startActivity(i);
+        }
 
         // close this activity
         finish();
@@ -236,7 +242,7 @@ public class LauncherActivity extends BaseActivity {
                 GooglePlayServicesUtil.getErrorDialog(resultCode, this,
                         PLAY_SERVICES_RESOLUTION_REQUEST).show();
             } else {
-                Log.i(TAG, "This device is not supported.");
+                Log.v(TAG, "This device is not supported.");
                 finish();
             }
             return false;
