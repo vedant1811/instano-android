@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -16,6 +17,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.BaseActivity;
+import com.instano.retailer.instano.application.GcmIntentService;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.models.Device;
 
@@ -30,6 +32,8 @@ public class LauncherActivity extends BaseActivity {
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private static final String PROPERTY_SESSION_ID = "session_id";
+    private GcmIntentService mGcmIntentService;
 
     String SENDER_ID = "187047464172";
 
@@ -56,6 +60,8 @@ public class LauncherActivity extends BaseActivity {
         setContentView(R.layout.activity_launcher);
 
         context = getApplicationContext();
+        Log.i(TAG, "Received: " + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("session_id",""));
+
 
         // Check device for Play Services APK. If check succeeds, proceed with
         //  GCM registration.
@@ -153,6 +159,7 @@ public class LauncherActivity extends BaseActivity {
                     // message using the 'from' address in the message.
 
                     // Persist the registration ID - no need to register again.
+                    mGcmIntentService = new GcmIntentService();
                     storeRegistrationId(context, regid);
                 } catch (IOException ex) {
                     msg = "Error :" + ex;

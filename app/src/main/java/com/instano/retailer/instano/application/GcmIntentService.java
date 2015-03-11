@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -21,10 +22,14 @@ public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
     private NotificationManager mNotificationManager;
     NotificationCompat.Builder builder;
+    public String session_id;
+
     private static final String TAG = "GcmIntentService";
 
     public GcmIntentService() {
         super("GcmIntentService");
+
+
     }
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -63,7 +68,12 @@ public class GcmIntentService extends IntentService {
                 Log.i(TAG, "Completed work @ " + SystemClock.elapsedRealtime());
                 // Post notification of received message.
                 sendNotification("Received: " + extras.toString());
-                Log.i(TAG, "Received: " + extras.toString());
+                Log.i(TAG, "Received: " + extras.getString("session_id"));
+//                Log.i(TAG, "Received: " + extras.getString("buyer"));
+                session_id = extras.getString("session_id");
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("session_id",session_id).commit();
+                Log.i(TAG, "Received: " + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("session_id",""));
+
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
@@ -73,7 +83,8 @@ public class GcmIntentService extends IntentService {
     // Put the message into a notification and post it.
     // This is just one simple example of what you might choose to do with
     // a GCM message.
-    private void sendNotification(String msg) {
+    private void sendNotification(String msg
+    ) {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -91,4 +102,6 @@ public class GcmIntentService extends IntentService {
         mBuilder.setContentIntent(contentIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
+
+
 }
