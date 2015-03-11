@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 public class Device {
 
     private String gcm_registration_id;
-    private String sessionId = "sklksal";
+    private String session_id;
 
     public String getGcm_registration_id() {
         return gcm_registration_id;
@@ -20,11 +20,11 @@ public class Device {
         this.gcm_registration_id = gcm_registration_id;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getSession_id() {
+        return session_id;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setSession_id(String session_id) {
+        this.session_id = session_id;
     }
 }

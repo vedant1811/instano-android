@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -21,6 +22,7 @@ public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
     private NotificationManager mNotificationManager;
     NotificationCompat.Builder builder;
+    public String session_id;
     private static final String TAG = "GcmIntentService";
 
     public GcmIntentService() {
@@ -63,6 +65,11 @@ public class GcmIntentService extends IntentService {
                 Log.i(TAG, "Completed work @ " + SystemClock.elapsedRealtime());
                 // Post notification of received message.
                 sendNotification("Received: " + extras.toString());
+                Log.i(TAG, "Received: " + extras.getString("session_id"));
+//                Log.i(TAG, "Received: " + extras.getString("buyer"));
+                session_id = extras.getString("session_id");
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("session_id",session_id).commit();
+                Log.i(TAG, "Received: " + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("session_id",""));
                 Log.i(TAG, "Received: " + extras.toString());
             }
         }

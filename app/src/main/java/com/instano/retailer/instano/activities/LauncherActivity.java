@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -17,6 +18,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.BaseActivity;
+import com.instano.retailer.instano.application.GcmIntentService;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.models.Device;
 
@@ -27,11 +29,14 @@ public class LauncherActivity extends BaseActivity {
 
     // Splash screen timer
     private static int SPLASH_TIME_OUT = 1500;
+
     boolean mCancelled = false;
     public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private static final String PROPERTY_SESSION_ID = "session_id";
+    private GcmIntentService mGcmIntentService;
 
     String SENDER_ID = "187047464172";
 
@@ -61,6 +66,7 @@ public class LauncherActivity extends BaseActivity {
         setContentView(R.layout.activity_launcher);
 
         context = getApplicationContext();
+        Log.v(TAG, "Received: " + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("session_id",""));
 
         // Check device for Play Services APK. If check succeeds, proceed with
         //  GCM registration.
@@ -139,7 +145,6 @@ public class LauncherActivity extends BaseActivity {
         new AsyncTask<Void,Void,String>() {
             @Override
             protected String doInBackground(Void... params) {
-                long start = System.nanoTime();
                 String msg = "";
                 try {
                     if (gcm == null) {
@@ -159,6 +164,7 @@ public class LauncherActivity extends BaseActivity {
                     // message using the 'from' address in the message.
 
                     // Persist the registration ID - no need to register again.
+                    mGcmIntentService = new GcmIntentService();
                     storeRegistrationId(context, regid);
                 } catch (IOException ex) {
                     msg = "Error :" + ex;
@@ -166,9 +172,6 @@ public class LauncherActivity extends BaseActivity {
                     // Require the user to click a button again, or perform
                     // exponential back-off.
                 }
-
-                double time = (System.nanoTime() - start)/ com.instano.retailer.instano.utilities.library.Log.ONE_MILLION;
-                Log.d(Log.TIMER_TAG, String.format("registerInBackground took %.4fms", time));
                 return msg;
             }
 
@@ -191,7 +194,6 @@ public class LauncherActivity extends BaseActivity {
     private void sendRegistrationIdToBackend() {
         // Your implementation here.
         Log.v(TAG, "Send regId  " + regid);
-
         mDevice = new Device();
         mDevice.setGcm_registration_id(regid);
         NetworkRequestsManager.instance().getDeviceId(mDevice);
