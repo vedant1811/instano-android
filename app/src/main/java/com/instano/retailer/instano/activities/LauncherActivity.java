@@ -9,22 +9,23 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.application.GcmIntentService;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
+import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Device;
 
 import java.io.IOException;
 
 
-public class LauncherActivity extends BaseActivity {
+public class LauncherActivity extends GlobalMenuActivity {
 
     // Splash screen timer
     private static int SPLASH_TIME_OUT = 1500;
@@ -64,6 +65,11 @@ public class LauncherActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         context= getApplicationContext();
         Log.v(TAG, "Received: " + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(GcmIntentService.SESSION_ID,""));
 
@@ -81,7 +87,9 @@ public class LauncherActivity extends BaseActivity {
                     registerNewSession();
             }
         } else {
+            noPlayServicesDialog();
             Log.v(TAG, "No valid Google Play Services APK found.");
+            return;
         }
 
         new Handler().postDelayed(new Runnable() {
@@ -98,7 +106,6 @@ public class LauncherActivity extends BaseActivity {
                 onSplashTimeOut();
             }
         }, SPLASH_TIME_OUT);
-
     }
 
     private String getRegistrationId(Context context) {
@@ -249,11 +256,14 @@ public class LauncherActivity extends BaseActivity {
                         PLAY_SERVICES_RESOLUTION_REQUEST).show();
             } else {
                 Log.v(TAG, "This device is not supported.");
-                finish();
             }
             return false;
         }
         return true;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return false;
+    }
 }

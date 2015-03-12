@@ -330,7 +330,7 @@ public class ServicesSingleton implements
 
     public String getInstanoWhatsappId() {
         // TODO: set based on fetched data online
-        return mSharedPreferences.getString(KEY_WHATSAPP_ID, "917602631663");
+        return mSharedPreferences.getString(KEY_WHATSAPP_ID, "919916782444");
     }
 
     public interface InitialDataCallbacks {

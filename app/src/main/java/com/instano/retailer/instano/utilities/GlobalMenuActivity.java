@@ -110,14 +110,20 @@ public abstract class GlobalMenuActivity extends BaseActivity {
         contactUs("No internet", TEXT_OFFLINE_QUERY);
     }
 
+    protected void noPlayServicesDialog() {
+        contactUs("No Play Services", "Google Play Services is needed for the app. " +
+                "Contact us directly instead.",false);
+    }
+
     protected void contactUs() {
         contactUs("Contact us", HOW_DO_YOU_WANT_TO_CONTACT_US);
     }
 
     protected void contactUs(String heading, String title) {
-        // DialogFragment.show() will take care of adding the fragment
-        // in a transaction.  We also want to remove any currently showing
-        // dialog, so make our own transaction and take care of that here.
+        contactUs(heading, title, true);
+    }
+
+    protected void contactUs(String heading, String title, boolean cancelable) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         Fragment prev = getFragmentManager().findFragmentByTag(MESSAGE_DIALOG_FRAGMENT);
         if (prev != null) {
@@ -127,6 +133,8 @@ public abstract class GlobalMenuActivity extends BaseActivity {
 
         // Create and show the dialog.
         DialogFragment newFragment = MessageDialogFragment.newInstance(heading, title);
+
+        newFragment.setCancelable(cancelable);
         newFragment.show(ft, MESSAGE_DIALOG_FRAGMENT);
     }
 

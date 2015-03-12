@@ -25,7 +25,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.instano.retailer.instano.BuildConfig;
-import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.utilities.library.JsonArrayRequest;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.library.StringRequest;
@@ -336,7 +335,7 @@ public class NetworkRequestsManager implements Response.ErrorListener {
                         Context context = new Application();
                         if (error instanceof TimeoutError || error instanceof NoConnectionError) {
                             Toast.makeText(context,
-                                    context.getString(R.string.error_network_timeout),
+                                    "timeout",
                                     Toast.LENGTH_LONG).show();
                         } else if (error instanceof AuthFailureError) {
                             //TODO
