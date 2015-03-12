@@ -1,13 +1,21 @@
 package com.instano.retailer.instano.application;
 
+import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -17,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.instano.retailer.instano.BuildConfig;
+import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.utilities.library.JsonArrayRequest;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.library.StringRequest;
@@ -324,6 +333,20 @@ public class NetworkRequestsManager implements Response.ErrorListener {
                         if (mRegistrationCallback != null)
                             mRegistrationCallback.onRegistration(RegistrationCallback.Result.UNKNOWN_ERROR);
                         NetworkRequestsManager.this.onErrorResponse(error);
+                        Context context = new Application();
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(context,
+                                    context.getString(R.string.error_network_timeout),
+                                    Toast.LENGTH_LONG).show();
+                        } else if (error instanceof AuthFailureError) {
+                            //TODO
+                        } else if (error instanceof ServerError) {
+                            //TODO
+                        } else if (error instanceof NetworkError) {
+                            //TODO
+                        } else if (error instanceof ParseError) {
+                            //TODO
+                        }
                     }
                 }); // ErrorListener
 
@@ -494,7 +517,7 @@ public class NetworkRequestsManager implements Response.ErrorListener {
         Log.e(TAG + ".onErrorResponse", "", error);
     }
 
-    public void getDeviceId(Device device) {
+    public void sendDeviceRegisterRequest(Device device) {
         Log.v(TAG,"device object"+device);
         JSONObject jsonRequest = null;
         android.util.Log.i(TAG, "Device object  " + device.toString());

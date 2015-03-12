@@ -9,11 +9,12 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
+
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.LauncherActivity;
+import com.instano.retailer.instano.utilities.library.Log;
 
 /**
  * Created by ROHIT on 09-Mar-15.
@@ -21,9 +22,8 @@ import com.instano.retailer.instano.activities.LauncherActivity;
 public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
     private NotificationManager mNotificationManager;
-    NotificationCompat.Builder builder;
-    public String session_id;
     private static final String TAG = "GcmIntentService";
+    public static final String SESSION_ID = "session_id";
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -55,22 +55,22 @@ public class GcmIntentService extends IntentService {
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 // This loop represents the service doing some work.
                 for (int i=0; i<5; i++) {
-                    Log.i(TAG, "Working... " + (i+1)
+                    Log.v(TAG, "Working... " + (i + 1)
                             + "/5 @ " + SystemClock.elapsedRealtime());
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {
                     }
                 }
-                Log.i(TAG, "Completed work @ " + SystemClock.elapsedRealtime());
+                Log.v(TAG, "Completed work @ " + SystemClock.elapsedRealtime());
                 // Post notification of received message.
                 sendNotification("Received: " + extras.toString());
-                Log.i(TAG, "Received: " + extras.getString("session_id"));
 //                Log.i(TAG, "Received: " + extras.getString("buyer"));
-                session_id = extras.getString("session_id");
-                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("session_id",session_id).commit();
-                Log.i(TAG, "Received: " + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("session_id",""));
-                Log.i(TAG, "Received: " + extras.toString());
+                String session_id = extras.getString("session_id");
+                Log.v(TAG, "Received: " + session_id);
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit()
+                        .putString(SESSION_ID,session_id).commit();
+                Log.v(TAG, "Received: " + extras.toString());
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.

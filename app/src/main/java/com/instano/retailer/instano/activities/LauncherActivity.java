@@ -1,7 +1,5 @@
 package com.instano.retailer.instano.activities;
 
-import com.instano.retailer.instano.utilities.library.Log;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +18,7 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.application.GcmIntentService;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
+import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Device;
 
 import java.io.IOException;
@@ -40,7 +39,7 @@ public class LauncherActivity extends BaseActivity {
 
     String SENDER_ID = "187047464172";
 
-    static final String TAG = "GCMDemo";
+    static final String TAG = "GCM in Launcher ";
 
  //   TextView mDisplay;
     GoogleCloudMessaging gcm;
@@ -51,6 +50,7 @@ public class LauncherActivity extends BaseActivity {
     private Device mDevice;
 
     String regid;
+    String sesid;
 
     @Override
     public void onBackPressed() {
@@ -64,18 +64,21 @@ public class LauncherActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
-
-        context = getApplicationContext();
-        Log.v(TAG, "Received: " + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("session_id",""));
+        context= getApplicationContext();
+        Log.v(TAG, "Received: " + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(GcmIntentService.SESSION_ID,""));
 
         // Check device for Play Services APK. If check succeeds, proceed with
         //  GCM registration.
         if (checkPlayServices()) {
             gcm = GoogleCloudMessaging.getInstance(this);
             regid = getRegistrationId(context);
+            sesid = getSessionId(context);
 
-            if (regid.isEmpty()) {
-                registerInBackground();
+            if (sesid.isEmpty()) {
+                if (regid.isEmpty())
+                    registerInBackground();
+                else
+                    registerNewSession();
             }
         } else {
             Log.v(TAG, "No valid Google Play Services APK found.");
@@ -117,6 +120,17 @@ public class LauncherActivity extends BaseActivity {
         return registrationId;
     }
 
+    private String getSessionId(Context context){
+        String sessionId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .getString(GcmIntentService.SESSION_ID, "");
+        if (sessionId.isEmpty()) {
+            Log.v(TAG, "Session not found.");
+            return "";
+        }
+        Log.v(TAG, "Session id (sesid)"+sessionId);
+        return sessionId;
+    }
+
     /**
      * @return Application's {@code SharedPreferences}.
      */
@@ -151,21 +165,11 @@ public class LauncherActivity extends BaseActivity {
                         gcm = GoogleCloudMessaging.getInstance(context);
                     }
                     regid = gcm.register(SENDER_ID);
-                    msg = "Device registered, registration ID=" + regid;
-
-                    // You should send the registration ID to your server over HTTP,
-                    // so it can use GCM/HTTP or CCS to send messages to your app.
-                    // The request to your server should be authenticated if your app
-                    // is using accounts.
-                    sendRegistrationIdToBackend();
-
-                    // For this demo: we don't need to send it because the device
-                    // will send upstream messages to a server that echo back the
-                    // message using the 'from' address in the message.
+                    msg = "Device registered, registration ID=" + regid+" ,Session ID ="+sesid;
 
                     // Persist the registration ID - no need to register again.
                     mGcmIntentService = new GcmIntentService();
-                    storeRegistrationId(context, regid);
+                    storeRegistrationId(context, regid,sesid);
                 } catch (IOException ex) {
                     msg = "Error :" + ex;
                     // If there is an error, don't just keep trying to register.
@@ -177,6 +181,7 @@ public class LauncherActivity extends BaseActivity {
 
             @Override
             protected void onPostExecute(String msg) {
+                registerNewSession();
                 Log.v(TAG, "onPost " + msg);
             }
 
@@ -191,20 +196,21 @@ public class LauncherActivity extends BaseActivity {
      * device sends upstream messages to a server that echoes back the message
      * using the 'from' address in the message.
      */
-    private void sendRegistrationIdToBackend() {
+    private void registerNewSession() {
         // Your implementation here.
         Log.v(TAG, "Send regId  " + regid);
         mDevice = new Device();
         mDevice.setGcm_registration_id(regid);
-        NetworkRequestsManager.instance().getDeviceId(mDevice);
+        NetworkRequestsManager.instance().sendDeviceRegisterRequest(mDevice);
     }
-    private void storeRegistrationId(Context context, String regId) {
+    private void storeRegistrationId(Context context, String regId, String sesid) {
         final SharedPreferences prefs = getGCMPreferences(context);
         int appVersion = getAppVersion(context);
         Log.v(TAG, "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, regId);
         editor.putInt(PROPERTY_APP_VERSION, appVersion);
+        editor.putString(PROPERTY_SESSION_ID,sesid);
         editor.commit();
     }
 
