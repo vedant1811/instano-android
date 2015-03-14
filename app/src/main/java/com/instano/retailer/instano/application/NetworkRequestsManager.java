@@ -1,21 +1,14 @@
 package com.instano.retailer.instano.application;
 
-import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
-import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.ParseError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -33,6 +26,7 @@ import com.instano.retailer.instano.utilities.models.Device;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Quote;
 
+import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,6 +52,7 @@ public class NetworkRequestsManager implements Response.ErrorListener {
     private QuoteCallbacks mQuoteCallbacks;
     private RegistrationCallback mRegistrationCallback;
     private SignInCallbacks mSignInCallbacks;
+    private SessionIdCallback mSessionIdCallback;
 
     private RequestQueue mRequestQueue;
     private ObjectMapper mJsonObjectMapper;
@@ -74,6 +69,10 @@ public class NetworkRequestsManager implements Response.ErrorListener {
 
     public void registerCallback(SignInCallbacks signInCallbacks) {
         this.mSignInCallbacks = signInCallbacks;
+    }
+
+    public void registerCallback(SessionIdCallback sessionIdCallback) {
+        mSessionIdCallback = sessionIdCallback;
     }
 
     public interface QuoteCallbacks {
@@ -96,6 +95,10 @@ public class NetworkRequestsManager implements Response.ErrorListener {
 
     public interface SignInCallbacks {
         public void signedIn(boolean success);
+    }
+
+    public interface SessionIdCallback {
+        public void onSessionResponse(Device device);
     }
 
     private NetworkRequestsManager(MyApplication application) {
@@ -332,20 +335,18 @@ public class NetworkRequestsManager implements Response.ErrorListener {
                         if (mRegistrationCallback != null)
                             mRegistrationCallback.onRegistration(RegistrationCallback.Result.UNKNOWN_ERROR);
                         NetworkRequestsManager.this.onErrorResponse(error);
-                        Context context = new Application();
-                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                            Toast.makeText(context,
-                                    "timeout",
-                                    Toast.LENGTH_LONG).show();
-                        } else if (error instanceof AuthFailureError) {
-                            //TODO
-                        } else if (error instanceof ServerError) {
-                            //TODO
-                        } else if (error instanceof NetworkError) {
-                            //TODO
-                        } else if (error instanceof ParseError) {
-                            //TODO
+                        NetworkResponse networkResponse = error.networkResponse;
+                        Log.v(TAG,"networkResonse in Register Request :"+networkResponse.statusCode);
+                        if (networkResponse != null) {
+                            if (networkResponse.statusCode == HttpStatus.SC_UNAUTHORIZED) {
+                                // HTTP Status Code: 401 Unauthorized
+                            }
+                            else if (networkResponse.statusCode == HttpStatus.SC_BAD_REQUEST) {
+
+                            }
+
                         }
+
                     }
                 }); // ErrorListener
 
@@ -538,6 +539,8 @@ public class NetworkRequestsManager implements Response.ErrorListener {
                         try{
                             Device responseDevice = mJsonObjectMapper.readValue(response.toString(), Device.class);
                             Log.v(TAG + "check deviceid ",responseDevice.toString());
+                            if(mSessionIdCallback !=null)
+                                mSessionIdCallback.onSessionResponse(responseDevice);
                         } catch (JsonMappingException e) {
                             e.printStackTrace();
                         } catch (JsonParseException e) {

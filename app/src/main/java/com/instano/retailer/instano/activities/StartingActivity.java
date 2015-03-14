@@ -1,5 +1,6 @@
 package com.instano.retailer.instano.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +14,8 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 
-public class StartingActivity extends GlobalMenuActivity implements NetworkRequestsManager.SignInCallbacks {
+public class StartingActivity extends GlobalMenuActivity
+        implements NetworkRequestsManager.SignInCallbacks {
 
     private static final String SEARCH_ICON_HELP = "You can Search for products by clicking the icon in the action bar";
     private static final int SETUP_REQUEST_CODE = 1001;
@@ -53,7 +55,10 @@ public class StartingActivity extends GlobalMenuActivity implements NetworkReque
         ServicesSingleton instance = ServicesSingleton.instance();
 
         // in case buyer already has signed in (activity was killed for some reason) do not sign in again
-        NetworkRequestsManager.instance().registerCallback(this);
+        NetworkRequestsManager.instance().registerCallback((NetworkRequestsManager.SignInCallbacks) this);
+        NetworkRequestsManager.instance().registerCallback((NetworkRequestsManager.SessionIdCallback) this);
+
+
         if (instance.getBuyer() != null || instance.signIn()) {
             mText = WELCOME_BACK + SEARCH_ICON_HELP;
         }

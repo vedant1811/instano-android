@@ -4,20 +4,34 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.AsyncTask;
+import android.preference.PreferenceManager;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.MessageDialogFragment;
 import com.instano.retailer.instano.activities.ProfileActivity;
 import com.instano.retailer.instano.application.BaseActivity;
+import com.instano.retailer.instano.application.GcmIntentService;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.deals.DealListActivity;
 import com.instano.retailer.instano.search.SearchTabsActivity;
+import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.models.Device;
+
+import java.io.IOException;
 
 /**
  * Base class for activities with a common menu (menu.global)
@@ -27,9 +41,21 @@ import com.instano.retailer.instano.search.SearchTabsActivity;
  *
  * Created by vedant on 15/12/14.
  */
-public abstract class GlobalMenuActivity extends BaseActivity {
+public abstract class GlobalMenuActivity extends BaseActivity implements NetworkRequestsManager.SessionIdCallback {
+    private static final String TAG = "GlobalMenuActivity";
     public static final int PICK_CONTACT_REQUEST_CODE = 996;
     public static final int SEND_SMS_REQUEST_CODE = 995;
+
+    public static final String EXTRA_MESSAGE = "message";
+    public static final String PROPERTY_REG_ID = "registration_id";
+    private static final String PROPERTY_APP_VERSION = "appVersion";
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private static final String PROPERTY_SESSION_ID = "session_id";
+    private GcmIntentService mGcmIntentService;
+    private boolean mRegId = false;
+    private boolean mSesId = false;
+
+    String SENDER_ID = "187047464172";
     /**
      * used by subclasses as well
      */
@@ -42,6 +68,7 @@ public abstract class GlobalMenuActivity extends BaseActivity {
     private static final String MESSAGE_DIALOG_FRAGMENT = "MessageDialogFragment";
 
     public static final String PLAY_STORE_LINK = "http://play.google.com/store/apps/details?id=com.instano.buyer";
+    private GoogleCloudMessaging mGcm;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -62,6 +89,170 @@ public abstract class GlobalMenuActivity extends BaseActivity {
 
         if (!NetworkRequestsManager.instance().isOnline())
             noInternetDialog();
+    }
+
+    protected void authorizeSession(boolean refreshRegistrationId, boolean refreshSessionId) {
+        String registrationId = getRegistrationId();
+        String sessionId = getSessionId();
+        if (refreshSessionId || sessionId.isEmpty()) {
+            if (refreshRegistrationId || registrationId.isEmpty())
+                registerInBackground();
+            else
+                registerNewSession(registrationId);
+        }
+        else {
+            Device device = new Device();
+            device.setSession_id(sessionId);
+            onSessionResponse(device);
+        }
+    }
+
+    protected String getRegistrationId() {
+        Context context = getApplicationContext();
+        final SharedPreferences prefs = getGCMPreferences(context);
+        String registrationId = prefs.getString(PROPERTY_REG_ID, "");
+        if (registrationId.isEmpty()) {
+            Log.v(TAG, "Registration not found.");
+            return "";
+        }
+        // Check if app was updated; if so, it must clear the registration ID
+        // since the existing registration ID is not guaranteed to work with
+        // the new app version.
+        int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
+        int currentVersion = getAppVersion(context);
+        if (registeredVersion != currentVersion) {
+            Log.v(TAG, "App version changed.");
+            return "";
+        }
+        return registrationId;
+    }
+
+    protected String getSessionId(){
+        String sessionId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                .getString(GcmIntentService.SESSION_ID, "");
+        if (sessionId.isEmpty()) {
+            Log.v(TAG, "Session not found.");
+            return "";
+        }
+        Log.v(TAG, "Session id (mSesid)"+sessionId);
+        return sessionId;
+    }
+
+    public void onSessionResponse(Device device) {
+        String sessionId = device.getSession_id();
+        storeSessionId(sessionId);
+
+        if(sessionId.isEmpty()) {
+            MessageDialogFragment messageDialogFragment = new MessageDialogFragment();
+            messageDialogFragment.newInstance("Trouble connecting", "Please wait we are trying to connect or contact us");
+            registerInBackground();
+        }
+
+        else {}
+            //if dialog fragment is not null thn cancel
+    }
+
+    /**
+     * @return Application's {@code SharedPreferences}.
+     */
+    private SharedPreferences getGCMPreferences(Context context) {
+        // This sample app persists the registration ID in shared preferences, but
+        // how you store the registration ID in your app is up to you.
+        return getSharedPreferences(GlobalMenuActivity.class.getSimpleName(),
+                Context.MODE_PRIVATE);
+    }
+
+    /**
+     * @return Application's version code from the {@code PackageManager}.
+     */
+    private static int getAppVersion(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager()
+                    .getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            // should never happen
+            throw new RuntimeException("Could not get package name: " + e);
+        }
+    }
+
+    protected void registerInBackground() {
+        new AsyncTask<Void,Void,String>() {
+
+            ProgressDialog progress = new ProgressDialog(GlobalMenuActivity.this);
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+
+                progress.setTitle("Registering");
+                progress.setMessage("Please Wait while loading...");
+                progress.show();
+                progress.getWindow().setGravity(Gravity.BOTTOM);
+            }
+
+            @Override
+            protected String doInBackground(Void... params) {
+                String regid = "";
+                try {
+                    if (mGcm == null) {
+                        mGcm = GoogleCloudMessaging.getInstance(getApplicationContext());
+                    }
+                    regid = mGcm.register(SENDER_ID);
+                    // Persist the registration ID - no need to register again.
+                    storeRegistrationId(regid);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                return regid;
+            }
+
+            @Override
+            protected void onPostExecute(String registrationId) {
+                if(!registrationId.isEmpty())
+                    registerNewSession(registrationId);
+                progress.dismiss();
+            }
+
+
+        }.execute();
+
+    }
+
+    /**
+     * Sends the registration ID to your server over HTTP, so it can use GCM/HTTP
+     * or CCS to send messages to your app. Not needed for this demo since the
+     * device sends upstream messages to a server that echoes back the message
+     * using the 'from' address in the message.
+     * @param registrationId
+     */
+    private void registerNewSession(String registrationId) {
+        // Your implementation here.
+        Log.v(TAG, "Send regId  " + registrationId);
+        Device device = new Device();
+        device.setGcm_registration_id(registrationId);
+        NetworkRequestsManager.instance().registerCallback(this);
+        NetworkRequestsManager.instance().sendDeviceRegisterRequest(device);
+    }
+    private void storeRegistrationId(String regId) {
+        Context context = getApplicationContext();
+        final SharedPreferences prefs = getGCMPreferences(context);
+        int appVersion = getAppVersion(context);
+        Log.v(TAG, "Saving regId on app version " + appVersion);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PROPERTY_REG_ID, regId);
+        editor.putInt(PROPERTY_APP_VERSION, appVersion);
+        editor.apply();
+    }
+
+    protected void storeSessionId(String sesId) {
+        Context context = getApplicationContext();
+        final SharedPreferences prefs = getGCMPreferences(context);
+        int appVersion = getAppVersion(context);
+        Log.v(TAG, "Saving regId on app version " + appVersion);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(PROPERTY_SESSION_ID, sesId);
+        editor.putInt(PROPERTY_APP_VERSION, appVersion);
+        editor.apply();
     }
 
     @Override

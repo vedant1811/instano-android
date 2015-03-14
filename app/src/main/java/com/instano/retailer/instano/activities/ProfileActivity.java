@@ -41,7 +41,7 @@ public class ProfileActivity extends GlobalMenuActivity
         mPhoneEditText.setText(mPhone);
         mSetUpViewFlipper.setDisplayedChild(mViewFlipperState);
 
-        NetworkRequestsManager.instance().registerCallback(this);
+        NetworkRequestsManager.instance().registerCallback((NetworkRequestsManager.RegistrationCallback) this);
     }
 
     @Override
