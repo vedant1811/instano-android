@@ -8,8 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
@@ -20,12 +18,12 @@ import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Seller;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 /**
@@ -108,7 +106,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         else
             view = convertView;
 
-        TextView shopNameTextView = (TextView) view.findViewById(R.id.sellerNameTextView);
+        TextView shopNameTextView = (TextView) view.findViewById(R.id.shopNameTextView);
         TextView addressTextView = (TextView) view.findViewById(R.id.addressTextView);
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
         ImageButton callImageButton = (ImageButton) view.findViewById(R.id.callImageButton);
@@ -118,10 +116,13 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         shopNameTextView.setText(seller.nameOfShop);
         addressTextView.setText(seller.address);
         String distanceFromLocation = seller.getPrettyDistanceFromLocation();
-        if (distanceFromLocation != null)
+        if (distanceFromLocation != null) {
+            distanceTextView.setVisibility(View.VISIBLE);
             distanceTextView.setText(distanceFromLocation);
-        else
+        } else
             distanceTextView.setVisibility(View.INVISIBLE);
+
+        Log.d(getClass().getSimpleName(), String.format("setting distance to: %s for %s", distanceFromLocation, seller.nameOfShop));
 
         callImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -262,6 +263,8 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                     filteredList.add(seller);
                 }
             }
+
+            Collections.sort(filteredList, new Seller.DistanceComparator());
 
             FilterResults filterResults = new FilterResults();
             filterResults.count = filteredList.size();

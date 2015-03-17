@@ -2,13 +2,18 @@ package com.instano.retailer.instano.sellers;
 
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -36,7 +41,7 @@ import java.util.Map;
  * A simple {@link Fragment} subclass.
  */
 public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongClickListener,
-        GetAddressTask.AddressCallback, GoogleMap.OnMarkerDragListener {
+        GetAddressTask.AddressCallback, GoogleMap.OnMarkerDragListener, GoogleMap.OnMarkerClickListener {
 
     private static BitmapDescriptor BLUE_MARKER;
     private MapView mMapView;
@@ -47,6 +52,13 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Marker mSelectedLocationMarker;
     private GetAddressTask mAddressTask;
+
+    /* seller's info included layout*/
+    private Seller mSelectedSeller;
+    private View mTopmostSellerInfoView;
+    private TextView mShopName;
+    private TextView mShopAddress;
+    private TextView mDistanceTextView;
 
     private HashMap<Marker, Seller> mSellerMarkers;
     private String mCategory = ProductCategories.UNDEFINED;
@@ -79,17 +91,12 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
 
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(bangalore));
         mMap.setOnMapLongClickListener(this);
-
-
-//        IconGenerator iconGenerator = new IconGenerator(getActivity());
-//        Bitmap markerBitmap = iconGenerator.makeIcon("move me");
+        mMap.setOnMarkerClickListener(this);
 
         mSelectedLocationMarker = mMap.addMarker(new MarkerOptions()
                 .position(startLatLng)
                 .title(SELECT_LOCATION)
                 .snippet("drag this marker or long click on map to select new location")
-//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.instano_logo))
-//                .icon(BitmapDescriptorFactory.fromBitmap(markerBitmap))
                 .icon(BLUE_MARKER)
                 .draggable(true));
         mSelectedLocationMarker.showInfoWindow();
@@ -136,11 +143,12 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
     }
 
     public void addSeller(Seller seller) {
+        if (seller.latitude == Seller.INVALID_COORDINATE || seller.longitude == Seller.INVALID_COORDINATE)
+            return;
         Marker newMarker = mMap.addMarker(
                 new MarkerOptions()
                         .position(new LatLng(seller.latitude, seller.longitude))
                         .title(seller.nameOfShop)
-                        .snippet(seller.address)
         );
         mSellerMarkers.put(newMarker, seller);
     }
@@ -151,6 +159,19 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         refreshMarker();
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Seller seller = mSellerMarkers.get(marker);
+        if (seller != null) { // can be another marker
+            mSelectedSeller = seller;
+            mTopmostSellerInfoView.setVisibility(View.VISIBLE);
+            mShopName.setText(mSelectedSeller.nameOfShop);
+            mDistanceTextView.setText(mSelectedSeller.getPrettyDistanceFromLocation());
+            mShopAddress.setText(mSelectedSeller.address);
+        }
+        return false;
+    }
+
     private void refreshMarker() {
 
         LatLng latLng = mSelectedLocationMarker.getPosition();
@@ -159,6 +180,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
             mAddressTask.cancel(true); // to make sure addressFetched is not called
         mAddressTask = new GetAddressTask(getActivity(), this);
         mAddressTask.execute(latLng.latitude, latLng.longitude);
+        sendLocation(null);
 
         mSelectedLocationMarker.setTitle("Selected Location");
         mSelectedLocationMarker.setSnippet("");
@@ -204,16 +226,28 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
 
         // Gets the MapView from the XML layout and creates it
         mMapView = (MapView) view.findViewById(R.id.map);
-
         mMapView.onCreate(savedInstanceState);
-
         // Gets to GoogleMap from the MapView and does initialization stuff
         mMap = mMapView.getMap();
 
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
         MapsInitializer.initialize(this.getActivity());
-
         setUpMap();
+
+        // set up seller info:
+        mTopmostSellerInfoView = view.findViewById(R.id.includedListItem);
+        mShopName = (TextView) view.findViewById(R.id.shopNameTextView);
+        mShopAddress = (TextView) view.findViewById(R.id.addressTextView);
+        mDistanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
+
+        ImageButton callImageButton = (ImageButton) view.findViewById(R.id.callImageButton);
+        callImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mSelectedSeller.phone));
+                startActivity(callIntent);
+            }
+        });
 
         return view;
     }
@@ -225,11 +259,11 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
     }
 
     private void sendLocation(Address address) {
-//        if (!SELECT_LOCATION.equals(mSelectedLocationMarker.getTitle())) {// i.e. if location has been updated
-//            ServicesSingleton.instance().userSelectsLocation(
-//                    mSelectedLocationMarker.getPosition(), address);
-//            Log.d("address", "address updated by SellersMapFragment:" + address);
-//        }
+        if (!SELECT_LOCATION.equals(mSelectedLocationMarker.getTitle())) {// i.e. if location has been updated
+            ServicesSingleton.instance().userSelectsLocation(
+                    mSelectedLocationMarker.getPosition(), ServicesSingleton.readableAddress(address));
+            Log.d("address", "address updated by SellersMapFragment:" + address);
+        }
     }
 
     @Override

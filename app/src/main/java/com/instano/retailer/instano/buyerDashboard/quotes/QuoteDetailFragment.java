@@ -207,7 +207,7 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
                 if (convertView == null)
                     convertView = mInflater.inflate(R.layout.child_list_item_shop, null);
 
-                TextView sellerNameTextView = (TextView) convertView.findViewById(R.id.sellerNameTextView);
+                TextView sellerNameTextView = (TextView) convertView.findViewById(R.id.shopNameTextView);
                 TextView addressTextView = (TextView) convertView.findViewById(R.id.addressTextView);
                 TextView distanceTextView = (TextView) convertView.findViewById(R.id.distanceTextView);
                 ImageButton callImageButton = (ImageButton) convertView.findViewById(R.id.callImageButton);

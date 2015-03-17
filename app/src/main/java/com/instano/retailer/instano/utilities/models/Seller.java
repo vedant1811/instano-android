@@ -173,7 +173,17 @@ public class Seller {
             if (lhs.equals(rhs))
                 return 0;
 
-            return lhs.getDistanceFromLocation() - rhs.getDistanceFromLocation();
+            int lhsDistance = lhs.getDistanceFromLocation();
+            int rhsDistance = rhs.getDistanceFromLocation();
+
+            if (lhsDistance == rhsDistance) // happens if distance is unavailable
+                // compare alphabetically
+                return lhs.nameOfShop.compareTo(rhs.nameOfShop);
+            if (lhsDistance == -1)
+                return 1;
+            if (rhsDistance == -1)
+                return -1;
+            return lhsDistance - rhsDistance;
         }
 
         @Override

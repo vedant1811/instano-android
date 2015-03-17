@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:roboto="http://schemas.android.com/apk/lib/co.raveesh.robototext"
+    android:id="@+id/parentLayout"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
@@ -12,13 +12,13 @@
     android:paddingBottom="@dimen/general_separator_margin"
     android:layout_margin="@dimen/general_separator_margin">
 
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:id="@+id/checkBox"
-        android:layout_weight="0"
-        android:checked="true"
-        android:minWidth="45dp" />
+    <!--<CheckBox-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="fill_parent"-->
+        <!--android:id="@+id/checkBox"-->
+        <!--android:layout_weight="0"-->
+        <!--android:checked="true"-->
+        <!--android:minWidth="45dp" />-->
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -29,7 +29,7 @@
         android:layout_weight="1">
 
         <TextView
-            android:id="@+id/sellerNameTextView"
+            android:id="@+id/shopNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Shop name"
@@ -42,11 +42,10 @@
             android:id="@+id/addressTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:textAppearanceSmall"
             android:text="Address1\nAddress2"
             android:lines="2"
             android:layout_gravity="left"
-            android:layout_below="@+id/sellerNameTextView"
+            android:layout_below="@+id/shopNameTextView"
             android:layout_toStartOf="@+id/distanceTextView"
             android:layout_toLeftOf="@+id/distanceTextView"
             android:layout_alignParentLeft="true"
@@ -55,13 +54,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="2.40 km"
             android:id="@+id/distanceTextView"
             android:layout_alignParentEnd="false"
             android:layout_alignParentRight="true"
             android:layout_alignBottom="@+id/addressTextView"
-            style="@style/TextAppearanceHeading"
+            style="@style/TextAppearanceListItemTimeElapsed"
             android:textStyle="normal" />
     </RelativeLayout>
 

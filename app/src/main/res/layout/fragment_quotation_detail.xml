@@ -30,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Seller Name"
-        android:id="@+id/sellerNameTextView"
+        android:id="@+id/shopNameTextView"
         android:layout_gravity="center_horizontal"
         android:layout_below="@+id/shopNameTextView"
         android:layout_centerHorizontal="true"
@@ -45,7 +45,7 @@
         style="@style/TextAppearanceHeading"
         android:textStyle="normal"
         android:textColor="@android:color/black"
-        android:layout_below="@+id/sellerNameTextView"
+        android:layout_below="@+id/shopNameTextView"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp" />
 
