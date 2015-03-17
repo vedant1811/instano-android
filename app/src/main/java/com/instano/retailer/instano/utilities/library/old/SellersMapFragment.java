@@ -96,7 +96,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
 //        sellersArrayAdapter.setListener(this);
 //        SparseArray<Seller> sellers = sellersArrayAdapter.getAllSellers();
 //        for (int i = 0; i < sellers.size(); i++)
-//            sellerAdded(sellers.valueAt(i));
+//            addSeller(sellers.valueAt(i));
         updateMarkersIfNeeded();
 
     }

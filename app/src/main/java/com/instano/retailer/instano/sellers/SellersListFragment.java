@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+
+import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +20,10 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.utilities.models.Seller;
 
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -36,12 +40,6 @@ public class SellersListFragment extends Fragment implements
      * The fragment's ListView
      */
     private ListView mListView;
-
-    /**
-     * The Adapter which will be used to populate the ListView/GridView with
-     * Views.
-     */
-    private SellersArrayAdapter mAdapter;
 
     private RelativeLayout.LayoutParams mDistTextLayoutParams;
 //    private Animation mAnimationFadeOut;
@@ -70,13 +68,14 @@ public class SellersListFragment extends Fragment implements
 
 //        setEmptyText("No sellers nearby. Try relaxing location/categories/brands constraints");
 
-        mAdapter = new SellersArrayAdapter(getActivity());
+        SellersActivity activity = (SellersActivity) getActivity();
+        SellersArrayAdapter adapter = activity.getAdapter();
 
         // Set the adapter
         mListView = (ListView) view.findViewById(R.id.listView);
-        mListView.setAdapter(mAdapter);
+        mListView.setAdapter(adapter);
         mListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-        mAdapter.setListener(this);
+        adapter.setListener(this);
 
         return view;
     }
@@ -96,16 +95,8 @@ public class SellersListFragment extends Fragment implements
     }
 
     @Override
-    public void itemCheckedStateChanged(int selected) {
-    }
-
-    @Override
     public void callButtonClicked(String number) {
         Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number));
         startActivity(callIntent);
-    }
-
-    public HashSet<Integer> getSellerIds() {
-        return mAdapter.getSelectedSellerIds();
     }
 }
