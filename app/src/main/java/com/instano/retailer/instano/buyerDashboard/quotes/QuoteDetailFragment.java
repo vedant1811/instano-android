@@ -116,11 +116,6 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
         mAdapter.dataUpdated();
     }
 
-    @Override
-    public void sellersUpdated() {
-
-    }
-
     /**
      * Shows the details of {@link Quotation} represented by this {@link QuoteDetailFragment}
      * an expandable list adapter that shows {@link Seller}.nameOfShop as headers

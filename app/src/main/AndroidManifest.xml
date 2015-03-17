@@ -137,6 +137,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.instano.retailer.instano.deals.DealListActivity" />
         </activity>
+        <activity
+            android:name=".sellers.SellersActivity"
+            android:label="@string/title_activity_sellers" >
+        </activity>
     </application>
 
 </manifest>

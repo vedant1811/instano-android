@@ -36,15 +36,18 @@ public class DataManager {
 
     private HashSet<QuotesListener> mQuotesListeners;
     private HashSet<DealsListener> mDealsListeners;
+    private HashSet<SellersListener> mSellersListeners;
 
     public interface QuotesListener {
         public void quotesUpdated();
         public void quotationsUpdated();
-        public void sellersUpdated();
     }
 
     public interface DealsListener {
         public void dealsUpdated();
+    }
+
+    public interface SellersListener {
         public void sellersUpdated();
     }
 
@@ -62,6 +65,14 @@ public class DataManager {
 
     public void unregisterListener(@Nullable DealsListener dealsListener) {
         mDealsListeners.remove(dealsListener);
+    }
+
+    public void registerListener(@NonNull SellersListener sellersListener) {
+        mSellersListeners.add(sellersListener);
+    }
+
+    public void unregisterListener(@Nullable SellersListener sellersListener) {
+        mSellersListeners.remove(sellersListener);
     }
 
     public List<ProductCategories.Category> getProductCategories(boolean clearSelected) {
@@ -271,10 +282,8 @@ public class DataManager {
             }
         }
         if (newEntries) {
-            for (QuotesListener quotesListener : mQuotesListeners)
-                quotesListener.sellersUpdated();
-            for (DealsListener dealsListener : mDealsListeners)
-                dealsListener.sellersUpdated();
+            for (SellersListener listener : mSellersListeners)
+                listener.sellersUpdated();
         }
 
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
@@ -318,6 +327,6 @@ public class DataManager {
         mDeals = new ArrayList<Deal>();
         mQuotesListeners = new HashSet<QuotesListener>();
         mDealsListeners = new HashSet<DealsListener>();
+        mSellersListeners = new HashSet<SellersListener>();
     }
-
 }
