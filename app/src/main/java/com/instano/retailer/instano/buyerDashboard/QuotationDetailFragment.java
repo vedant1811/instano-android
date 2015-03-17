@@ -61,7 +61,7 @@ public class QuotationDetailFragment extends Fragment {
         Quote quote = DataManager.instance().getQuote(quotation.quoteId);
 
         TextView shopNameTextView = (TextView) rootView.findViewById(R.id.shopNameTextView);
-        TextView sellerNameTextView = (TextView) rootView.findViewById(R.id.sellerNameTextView);
+        TextView sellerNameTextView = (TextView) rootView.findViewById(R.id.shopNameTextView);
         TextView queryTextView = (TextView) rootView.findViewById(R.id.headingTextView);
         TextView modelTextView = (TextView) rootView.findViewById(R.id.modelTextView);
         TextView priceTextView = (TextView) rootView.findViewById(R.id.dealHeadingTextView);

@@ -10,7 +10,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/include2" />
+        android:layout_above="@+id/includedListItem" />
 
     <include
         android:layout_width="wrap_content"
@@ -19,6 +19,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/include2" />
+        android:id="@+id/includedListItem"
+        android:visibility="invisible"/>
 
 </RelativeLayout>
