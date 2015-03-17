@@ -66,11 +66,6 @@ public class QuoteListFragment extends ListFragment implements DataManager.Quote
         adapter.notifyDataSetChanged();
     }
 
-    @Override
-    public void sellersUpdated() {
-
-    }
-
     /**
      * A callback interface that all activities containing this fragment must
      * implement. This mechanism allows activities to be notified of item

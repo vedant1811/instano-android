@@ -18,6 +18,7 @@ import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.deals.DealListActivity;
 import com.instano.retailer.instano.search.SearchTabsActivity;
+import com.instano.retailer.instano.sellers.SellersActivity;
 
 /**
  * Base class for activities with a common menu (menu.global)
@@ -77,6 +78,10 @@ public abstract class GlobalMenuActivity extends BaseActivity {
 
             case R.id.action_search:
                 search();
+                return true;
+
+            case R.id.action_sellers_list:
+                sellersList();
                 return true;
 
             case R.id.action_contact_us:
@@ -139,6 +144,10 @@ public abstract class GlobalMenuActivity extends BaseActivity {
         }
         else
             startActivity(new Intent(this, SearchTabsActivity.class));
+    }
+
+    protected void sellersList() {
+        startActivity(new Intent(this, SellersActivity.class));
     }
 
     protected void deals() {
