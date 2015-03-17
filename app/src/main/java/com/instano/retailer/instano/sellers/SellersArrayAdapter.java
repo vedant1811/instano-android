@@ -46,7 +46,6 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
     private Context mContext;
 
     private ItemInteractionListener mItemInteractionListener;
-    private SellersListener mSellersListener;
 
     public SellersArrayAdapter(Context context) {
         mContext = context;
@@ -59,10 +58,6 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
 
     public void setListener(ItemInteractionListener listener) {
         this.mItemInteractionListener = listener;
-    }
-
-    public void setListener(SellersListener sellersListener) {
-        mSellersListener = sellersListener;
     }
 
     public SparseArray<Seller> getAllSellers() {
@@ -159,31 +154,10 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         return true;
     }
 
-    // TODO: equality of sellers is checked based on seller ID (i.e.seller.hashCode() ). In case a seller has updated details
-    // the seller will be skipped. Fix this.
-    /**
-     * Add a seller to this adapter if it does not already exist
-     * @param seller to be added
-     * @return true if the seller was successfully added, false if it already existed
-     */
-    private boolean add(Seller seller) {
-        int hash = seller.hashCode();
-        if (mCompleteSet.get(hash) == null) {
-            mCompleteSet.put(hash, seller);
-            if (mSellersListener != null)
-                mSellersListener.sellerAdded(seller);
-            // initially setting all sellers to checked
-            mCheckedItems.put(hash, true);
-            Log.d("mCheckedItems", String.format("added %s (%d,%b)",seller.nameOfShop,hash,true));
-            return true;
-        } else
-            return false;
-
-    }
-
-    public void addAll(Collection<Seller> collection) throws JSONException {
+    public void addAll(Collection<Seller> collection) {
+        mCompleteSet.clear();
         for (Seller seller : collection){
-            add(seller);
+            mCompleteSet.put(seller.id, seller);
         }
         filter();
     }
@@ -206,8 +180,6 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
             notifyDataSetInvalidated();
         else
             notifyDataSetChanged();
-        if (mItemInteractionListener != null)
-            mItemInteractionListener.itemCheckedStateChanged(getSelectedSellerIds().size());
     }
 
     /**
@@ -225,17 +197,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
     }
 
     public interface ItemInteractionListener {
-        /**
-         *
-         * @param selected number of selected items
-         */
-        public void itemCheckedStateChanged(int selected);
         public void callButtonClicked(String number);
-    }
-
-    public interface SellersListener {
-
-        public void sellerAdded(Seller seller);
     }
 
     private class DistanceAndCategoryFilter extends Filter {

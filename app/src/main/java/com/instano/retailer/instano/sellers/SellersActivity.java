@@ -9,18 +9,37 @@ import android.view.MenuItem;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.models.Seller;
+
+import java.util.List;
 
 public class SellersActivity extends GlobalMenuActivity implements DataManager.SellersListener{
+    private static final String CURRENT_FRAGMENT = "current fragment";
+    private SellersListFragment mSellersListFragment;
+    private SellersMapFragment mSellersMapFragment;
 
-    SellersListFragment mSellersListFragment;
-    SellersMapFragment mSellersMapFragment;
+    /**
+     * The Adapter which will be used to populate the ListView/GridView with
+     * Views.
+     */
+    private SellersArrayAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sellers);
-        startRequiredFragment(R.id.action_list);
+        mSellersListFragment = new SellersListFragment();
+        mSellersMapFragment = new SellersMapFragment();
+        getFragmentManager().beginTransaction()
+                .add(R.id.fragment_container, mSellersListFragment, CURRENT_FRAGMENT)
+                .commit();
         DataManager.instance().registerListener(this);
+
+        mAdapter = new SellersArrayAdapter(this);
+        List<Seller> sellers = DataManager.instance().getSellers();
+        Log.d(getClass().getSimpleName(), "no of sellers being added: " + sellers.size());
+        mAdapter.addAll(sellers);
     }
 
     @Override
@@ -44,10 +63,15 @@ public class SellersActivity extends GlobalMenuActivity implements DataManager.S
         int id = item.getItemId();
         switch (id) {
             case R.id.action_list:
-            case R.id.action_map:
-                item.setVisible(false);
+                onBackPressed();
                 invalidateOptionsMenu();
-                startRequiredFragment(id);
+                return true;
+            case R.id.action_map:
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, mSellersMapFragment, CURRENT_FRAGMENT)
+                        .addToBackStack(null)
+                        .commit();
+                invalidateOptionsMenu();
                 return true;
             case R.id.action_filter:
 
@@ -56,32 +80,37 @@ public class SellersActivity extends GlobalMenuActivity implements DataManager.S
         return super.onOptionsItemSelected(item);
     }
 
-    private void startRequiredFragment(int id) {
-        Fragment fragment = null;
-        switch (id) {
-            case R.id.action_list:
-                if (mSellersListFragment == null) {
-                    mSellersListFragment = new SellersListFragment();
-                }
-                fragment = mSellersListFragment;
-                break;
-            case R.id.action_map:
-                if (mSellersMapFragment == null) {
-                    mSellersMapFragment = new SellersMapFragment();
-                }
-                fragment = mSellersMapFragment;
-                break;
-            default:
-                throw new IllegalArgumentException("no fragment for id:" + id);
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        Fragment currentFragment = getFragmentManager().findFragmentByTag(CURRENT_FRAGMENT);
+        if (currentFragment.equals(mSellersListFragment)) {
+            menu.findItem(R.id.action_list).setVisible(false);
+            menu.findItem(R.id.action_map).setVisible(true);
         }
-        getFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit();
+        else {
+            menu.findItem(R.id.action_list).setVisible(true);
+            menu.findItem(R.id.action_map).setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        invalidateOptionsMenu();
     }
 
     @Override
     public void sellersUpdated() {
+        List<Seller> sellers = DataManager.instance().getSellers();
+        mAdapter.addAll(sellers);
+        if (mSellersMapFragment != null)
+            mSellersMapFragment.addSellers(sellers);
+    }
 
+    /* package private */
+    SellersArrayAdapter getAdapter() {
+        return mAdapter;
     }
 }

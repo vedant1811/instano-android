@@ -16,7 +16,8 @@
         android:id="@android:id/empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center" />
+        android:gravity="center"
+        android:layout_margin="@dimen/general_separator_margin" />
 
     <!--<ViewFlipper-->
         <!--android:layout_width="match_parent"-->
