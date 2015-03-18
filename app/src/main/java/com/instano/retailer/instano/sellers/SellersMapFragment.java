@@ -107,6 +107,8 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
 
     /* package private */
     void addSellers(Collection<Seller> sellers) {
+        if (mMap == null)
+            return;
         mMap.clear();
         mSelectedLocationMarker = mMap.addMarker(new MarkerOptions()
                 .position(mSelectedLocationMarker.getPosition())
@@ -142,7 +144,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         Log.d("Timing", "updateMarkers took " + timeTaken + "ms");
     }
 
-    public void addSeller(Seller seller) {
+    private void addSeller(Seller seller) {
         if (seller.latitude == Seller.INVALID_COORDINATE || seller.longitude == Seller.INVALID_COORDINATE)
             return;
         Marker newMarker = mMap.addMarker(

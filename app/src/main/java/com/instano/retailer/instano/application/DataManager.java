@@ -168,7 +168,7 @@ public class DataManager {
             }
         }
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.d(Log.TIMER_TAG, String.format("getNearbySellers took %.4fms", time));
+        Log.v(Log.TIMER_TAG, String.format("getNearbySellers took %.4fms", time));
         return nearbySellers;
     }
 
@@ -193,13 +193,13 @@ public class DataManager {
         ProductCategories productCategories = new ProductCategories(response, true);
         if (productCategories.equals(mProductCategories)) {
             double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-            Log.d(Log.TIMER_TAG, String.format("updateProductCategories took %.4fms", time));
+            Log.v(Log.TIMER_TAG, String.format("updateProductCategories took %.4fms", time));
             return false;
         }
         else {
             mProductCategories = productCategories;
             double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-            Log.d(Log.TIMER_TAG, String.format("updateProductCategories took %.4fms", time));
+            Log.v(Log.TIMER_TAG, String.format("updateProductCategories took %.4fms", time));
             return true;
         }
     }
@@ -227,7 +227,7 @@ public class DataManager {
             for (QuotesListener quotesListener : mQuotesListeners)
                 quotesListener.quotationsUpdated();
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.d(Log.TIMER_TAG, String.format("updateQuotations took %.4fms", time));
+        Log.v(Log.TIMER_TAG, String.format("updateQuotations took %.4fms", time));
         return newEntries;
     }
 
@@ -262,7 +262,7 @@ public class DataManager {
             for (QuotesListener quotesListener : mQuotesListeners)
                 quotesListener.quotesUpdated();
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.d(Log.TIMER_TAG, String.format("updateQuotes took %.4fms", time));
+        Log.v(Log.TIMER_TAG, String.format("updateQuotes took %.4fms", time));
         return newEntries;
     }
 
@@ -287,7 +287,7 @@ public class DataManager {
         }
 
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.d(Log.TIMER_TAG, String.format("updateSellers took %.4fms", time));
+        Log.v(Log.TIMER_TAG, String.format("updateSellers took %.4fms", time));
         return newEntries;
     }
 
@@ -311,7 +311,7 @@ public class DataManager {
                 dealsListener.dealsUpdated();
 
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.d(Log.TIMER_TAG, String.format("updateDeals took %.4fms", time));
+        Log.v(Log.TIMER_TAG, String.format("updateDeals took %.4fms", time));
         return newEntries;
     }
 

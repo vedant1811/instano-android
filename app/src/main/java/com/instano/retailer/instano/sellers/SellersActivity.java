@@ -1,21 +1,26 @@
 package com.instano.retailer.instano.sellers;
 
+import android.app.DialogFragment;
 import android.app.Fragment;
-import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.activities.MessageDialogFragment;
 import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Seller;
 
 import java.util.List;
 
 public class SellersActivity extends GlobalMenuActivity implements DataManager.SellersListener{
     private static final String CURRENT_FRAGMENT = "current fragment";
+    private static final String FILTERS_DIALOG_FRAGMENT = "Filters Dialog Fragment";
     private SellersListFragment mSellersListFragment;
     private SellersMapFragment mSellersMapFragment;
 
@@ -24,6 +29,7 @@ public class SellersActivity extends GlobalMenuActivity implements DataManager.S
      * Views.
      */
     private SellersArrayAdapter mAdapter;
+    private ProductCategories.Category mSelectedCategory = ProductCategories.Category.undefinedCategory();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +70,6 @@ public class SellersActivity extends GlobalMenuActivity implements DataManager.S
         switch (id) {
             case R.id.action_list:
                 onBackPressed();
-                invalidateOptionsMenu();
                 return true;
             case R.id.action_map:
                 getFragmentManager().beginTransaction()
@@ -74,10 +79,30 @@ public class SellersActivity extends GlobalMenuActivity implements DataManager.S
                 invalidateOptionsMenu();
                 return true;
             case R.id.action_filter:
+                // DialogFragment.show() will take care of adding the fragment
+                // in a transaction.  We also want to remove any currently showing
+                // dialog, so make our own transaction and take care of that here.
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                Fragment prev = getFragmentManager().findFragmentByTag(FILTERS_DIALOG_FRAGMENT);
+                if (prev != null) {
+                    ft.remove(prev);
+                }
+                ft.addToBackStack(null);
 
+                // Create and show the dialog.
+                DialogFragment dialogFragment = FiltersDialogFragment.newInstance(mSelectedCategory);
+
+                dialogFragment.show(ft, FILTERS_DIALOG_FRAGMENT);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /* package private */
+    void onCategorySelected(ProductCategories.Category category) {
+        mSelectedCategory = category;
+        mSellersMapFragment.setCategory(category.toString());
+        mAdapter.filter(category);
     }
 
     @Override

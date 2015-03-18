@@ -81,7 +81,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 Log.d("mCheckedItems", String.format("getSelectedSellerIds %s (%d,%b)",seller.nameOfShop,seller.hashCode(),true));
             }
         double timeTaken = (System.nanoTime() - start)/1000;
-        Log.d("Timing", "updateSelectedSellers took " + timeTaken + "μs");
+        Log.v(Log.TIMER_TAG, "updateSelectedSellers took " + timeTaken + "μs");
     }
 
     @Override
@@ -121,8 +121,6 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
             distanceTextView.setText(distanceFromLocation);
         } else
             distanceTextView.setVisibility(View.INVISIBLE);
-
-        Log.d(getClass().getSimpleName(), String.format("setting distance to: %s for %s", distanceFromLocation, seller.nameOfShop));
 
         callImageButton.setOnClickListener(new View.OnClickListener() {
             @Override

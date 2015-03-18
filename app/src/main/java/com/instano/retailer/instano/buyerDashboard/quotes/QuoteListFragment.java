@@ -57,7 +57,7 @@ public class QuoteListFragment extends ListFragment implements DataManager.Quote
         adapter.addAll(DataManager.instance().getQuotes());
 
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.d(Log.TIMER_TAG, String.format("QuotesAdapter.dataUpdated took %.4fms", time));
+        Log.v(Log.TIMER_TAG, String.format("QuotesAdapter.dataUpdated took %.4fms", time));
     }
 
     @Override

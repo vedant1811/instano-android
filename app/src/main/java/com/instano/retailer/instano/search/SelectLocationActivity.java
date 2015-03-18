@@ -186,7 +186,7 @@ public class SelectLocationActivity extends BaseActivity implements
         // 8 dp in pixels
         int px8 = ServicesSingleton.instance().dpToPixels(8);
         rlp.setMargins(0, px40, px8, 0);
-        Log.d(Log.TIMER_TAG, "MapActivity.onResume took " + timeTaken + "ms");
+        Log.v(Log.TIMER_TAG, "MapActivity.onResume took " + timeTaken + "ms");
     }
 
     @Override

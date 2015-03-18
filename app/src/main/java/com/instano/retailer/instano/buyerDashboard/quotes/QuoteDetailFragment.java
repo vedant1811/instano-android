@@ -172,7 +172,7 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
             mSubheadingTextView.setText(subheading);
 
             double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-            Log.d(Log.TIMER_TAG, String.format("Adapter.dataUpdated took %.4fms", time));
+            Log.v(Log.TIMER_TAG, String.format("Adapter.dataUpdated took %.4fms", time));
         }
 
         @Override
