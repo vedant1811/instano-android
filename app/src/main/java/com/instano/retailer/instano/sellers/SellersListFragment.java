@@ -54,11 +54,6 @@ public class SellersListFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        mAdapter = ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter();
-//        mAdapter.filter();
-
-//        ServicesSingleton.getInstance(getActivity()).registerCallback(this);
     }
 
     @Override

@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context="com.instano.retailer.instano.sellers.FiltersDialogFragment"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="To narrow your results"
+        android:id="@+id/textView4"
+        style="@style/TextAppearanceMedium"
+        android:layout_margin="@dimen/general_separator_margin" />
+
+    <com.instano.retailer.instano.utilities.library.Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/categoriesSpinner"
+        android:spinnerMode="dialog" />
+</LinearLayout>

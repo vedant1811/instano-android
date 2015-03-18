@@ -220,7 +220,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
                     mSearchConstraintsFragment.refreshSelectedCategory(mSelectedCategory, mSearchFragment.getSearchString());
 
                 double timeTaken = (System.nanoTime() - start)/Log.ONE_MILLION;
-                Log.d(Log.TIMER_TAG, "onPageSelected took " + timeTaken + "ms");
+                Log.v(Log.TIMER_TAG, "onPageSelected took " + timeTaken + "ms");
             }
 
             @Override
