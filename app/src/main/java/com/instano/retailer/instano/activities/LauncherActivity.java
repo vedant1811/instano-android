@@ -9,9 +9,9 @@ import android.view.MenuItem;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Device;
 
 
 public class LauncherActivity extends GlobalMenuActivity {
@@ -37,7 +37,7 @@ public class LauncherActivity extends GlobalMenuActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
-        if (!getSessionId().isEmpty() && !getRegistrationId().isEmpty())
+        if (!getRegistrationId().isEmpty())
             mTimedOut = true;
     }
 
@@ -69,14 +69,14 @@ public class LauncherActivity extends GlobalMenuActivity {
     }
 
     @Override
-    public void onSessionResponse(Device device) {
-        String sessionId = device.getSession_id();
-        if (!sessionId.isEmpty()) {
-            super.onSessionResponse(device);
+    public void onSessionResponse(NetworkRequestsManager.ResponseError error) {
+        Log.v(TAG, "Response Error in Launcher "+error);
+        if (error == NetworkRequestsManager.ResponseError.NO_SESSION_ID ||
+                error == NetworkRequestsManager.ResponseError.INCORRECT_SESSION_ID) {
+            super.onSessionResponse(error);
             mError = false;
         }
         else {
-            storeSessionId(sessionId);
             closeIfPossible();
         }
     }

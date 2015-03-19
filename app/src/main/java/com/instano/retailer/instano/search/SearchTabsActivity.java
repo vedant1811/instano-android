@@ -251,7 +251,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //                            .setTabListener(this));
 //        }
 
-        NetworkRequestsManager.instance().registerCallback((NetworkRequestsManager.RegistrationCallback) this);
+        NetworkRequestsManager.instance().registerCallback((NetworkRequestsManager.SessionIdCallback) this);
 
     }
 

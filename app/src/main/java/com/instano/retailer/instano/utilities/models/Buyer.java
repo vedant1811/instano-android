@@ -15,7 +15,6 @@ public class Buyer {
     private String api_key;
     private String created_at;
     private String updated_at;
-    private String facebook_id;
 
 
 
@@ -65,13 +64,5 @@ public class Buyer {
 
     public void setUpdated_at(String updated_at) {
         this.updated_at = updated_at;
-    }
-
-    public String getFacebook_id() {
-        return facebook_id;
-    }
-
-    public void setFacebook_id(String facebook_id) {
-        this.facebook_id = facebook_id;
     }
 }

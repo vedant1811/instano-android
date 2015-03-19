@@ -11,8 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
-import android.view.Gravity;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -50,7 +49,7 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private static final String PROPERTY_SESSION_ID = "session_id";
+    public static final int ERROR_DIALOG_DELAY_MILLIS = 5000;
     private GcmIntentService mGcmIntentService;
     private boolean mRegId = false;
     private boolean mSesId = false;
@@ -91,21 +90,22 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
             noInternetDialog();
     }
 
-    protected void authorizeSession(boolean refreshRegistrationId, boolean refreshSessionId) {
+    public void authorizeSession(boolean refreshRegistrationId, boolean refreshSessionId) {
         String registrationId = getRegistrationId();
-        String sessionId = getSessionId();
-        if (refreshSessionId || sessionId.isEmpty()) {
-            if (refreshRegistrationId || registrationId.isEmpty())
-                registerInBackground();
-            else
-                registerNewSession(registrationId);
+        if (refreshSessionId &&(refreshRegistrationId || registrationId.isEmpty())) {
+            fetchGcmRegIdAsync();
         }
-        else {
+        else if(refreshSessionId)
+                registerNewSession(registrationId);
+        else onSessionResponse(NetworkRequestsManager.ResponseError.NO_SESSION_ID);
+        }
+
+        /*else {
             Device device = new Device();
             device.setSession_id(sessionId);
-            onSessionResponse(device);
-        }
-    }
+            onSessionResponse();
+        }*/
+
 
     protected String getRegistrationId() {
         Context context = getApplicationContext();
@@ -127,31 +127,19 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
         return registrationId;
     }
 
-    protected String getSessionId(){
-        String sessionId = PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
-                .getString(GcmIntentService.SESSION_ID, "");
-        if (sessionId.isEmpty()) {
-            Log.v(TAG, "Session not found.");
-            return "";
+
+
+    public void onSessionResponse(NetworkRequestsManager.ResponseError error) {
+        Log.v(TAG, "Response Error in Global "+error);
+        if(error == NetworkRequestsManager.ResponseError.NO_SESSION_ID ||
+                error ==NetworkRequestsManager.ResponseError.INCORRECT_SESSION_ID) {
+            contactUs("Trouble connecting", "Please wait we are trying to connect or contact us",false);
+            authorizeSession(false, true);
         }
-        Log.v(TAG, "Session id (mSesid)"+sessionId);
-        return sessionId;
-    }
-
-    public void onSessionResponse(Device device) {
-        String sessionId = device.getSession_id();
-        storeSessionId(sessionId);
-
-        if(sessionId.isEmpty()) {
-            MessageDialogFragment messageDialogFragment = new MessageDialogFragment();
-            messageDialogFragment.newInstance("Trouble connecting", "Please wait we are trying to connect or contact us");
-            registerInBackground();
+        else {
+            cancelDialog();
         }
-
-        else {}
-            //if dialog fragment is not null thn cancel
     }
-
     /**
      * @return Application's {@code SharedPreferences}.
      */
@@ -176,18 +164,13 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
         }
     }
 
-    protected void registerInBackground() {
+    protected void fetchGcmRegIdAsync() {
         new AsyncTask<Void,Void,String>() {
 
             ProgressDialog progress = new ProgressDialog(GlobalMenuActivity.this);
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
-
-                progress.setTitle("Registering");
-                progress.setMessage("Please Wait while loading...");
-                progress.show();
-                progress.getWindow().setGravity(Gravity.BOTTOM);
             }
 
             @Override
@@ -244,16 +227,7 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
         editor.apply();
     }
 
-    protected void storeSessionId(String sesId) {
-        Context context = getApplicationContext();
-        final SharedPreferences prefs = getGCMPreferences(context);
-        int appVersion = getAppVersion(context);
-        Log.v(TAG, "Saving regId on app version " + appVersion);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(PROPERTY_SESSION_ID, sesId);
-        editor.putInt(PROPERTY_APP_VERSION, appVersion);
-        editor.apply();
-    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -306,15 +280,14 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
                 "Contact us directly instead.",false);
     }
 
-    protected void contactUs() {
-        contactUs("Contact us", HOW_DO_YOU_WANT_TO_CONTACT_US);
+    protected MessageDialogFragment contactUs() {
+        return contactUs("Contact us", HOW_DO_YOU_WANT_TO_CONTACT_US);
+    }
+    protected MessageDialogFragment contactUs(String heading, String title) {
+        return contactUs(heading, title, true);
     }
 
-    protected void contactUs(String heading, String title) {
-        contactUs(heading, title, true);
-    }
-
-    protected void contactUs(String heading, String title, boolean cancelable) {
+    protected MessageDialogFragment contactUs(String heading, String title, boolean cancelable) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         Fragment prev = getFragmentManager().findFragmentByTag(MESSAGE_DIALOG_FRAGMENT);
         if (prev != null) {
@@ -324,9 +297,31 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
 
         // Create and show the dialog.
         DialogFragment newFragment = MessageDialogFragment.newInstance(heading, title);
-
         newFragment.setCancelable(cancelable);
         newFragment.show(ft, MESSAGE_DIALOG_FRAGMENT);
+        return (MessageDialogFragment) newFragment;
+    }
+
+    protected void nonCancelableError(String heading, String title) {
+        final MessageDialogFragment messageDialogFragment = contactUs(heading,title,false);
+        messageDialogFragment.showNext();
+        new Handler().postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        messageDialogFragment.showNext();
+                    }
+                },
+                ERROR_DIALOG_DELAY_MILLIS
+        );
+    }
+
+    protected void cancelDialog() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        MessageDialogFragment prev = (MessageDialogFragment) getFragmentManager().findFragmentByTag(MESSAGE_DIALOG_FRAGMENT);
+        if(prev !=null) {
+            prev.dismiss();
+        }
     }
 
     protected void search() {

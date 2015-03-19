@@ -10,13 +10,14 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
 
 public class ProfileActivity extends GlobalMenuActivity
         implements NetworkRequestsManager.RegistrationCallback {
 
     private static final String ALREADY_TAKEN_ERROR = "already taken. Contact us if this is an error";
-
+    private static final String TAG ="ProfileActivity";
     EditText mNameEditText;
     EditText mPhoneEditText;
     ViewFlipper mSetUpViewFlipper;
@@ -40,7 +41,7 @@ public class ProfileActivity extends GlobalMenuActivity
         mNameEditText.setText(mName);
         mPhoneEditText.setText(mPhone);
         mSetUpViewFlipper.setDisplayedChild(mViewFlipperState);
-
+        Log.v(TAG,".onResume");
         NetworkRequestsManager.instance().registerCallback((NetworkRequestsManager.RegistrationCallback) this);
     }
 
@@ -100,7 +101,7 @@ public class ProfileActivity extends GlobalMenuActivity
 
         // TODO: add feature of updating profile
         if (ServicesSingleton.instance().getBuyer() != null)
-            onRegistration(Result.NO_ERROR);
+            onRegistration(NetworkRequestsManager.ResponseError.NO_ERROR);
 
         if ("".contentEquals(mNameEditText.getText())) {
             mNameEditText.setError("Cannot be empty");
@@ -117,6 +118,7 @@ public class ProfileActivity extends GlobalMenuActivity
         Buyer buyer = new Buyer();
         buyer.setName(mNameEditText.getText().toString());
         buyer.setPhone(mPhoneEditText.getText().toString()) ;
+        Log.v(TAG,"Buyer in setup clicked"+buyer);
         NetworkRequestsManager.instance().registerRequest(buyer);
     }
 
@@ -128,21 +130,53 @@ public class ProfileActivity extends GlobalMenuActivity
     }
 
     @Override
-    public void onRegistration(Result result) {
+    public void onRegistration(NetworkRequestsManager.ResponseError result) {
         mSetUpViewFlipper.setDisplayedChild(0); // button
         mViewFlipperState = 0; // so as to update it if activity is not resumed
-        if (result == Result.NO_ERROR) {
+        if (result == NetworkRequestsManager.ResponseError.NO_ERROR) {
             setResult(RESULT_OK);
             finish();
         }
-        else if (result == Result.PHONE_EXISTS) {
+        else if (result == NetworkRequestsManager.ResponseError.PHONE_EXISTS) {
             mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
             mPhoneEditText.requestFocus();
         }
+        else if(result == NetworkRequestsManager.ResponseError.AUTHENTICATION_ERROR) {
+            authorizeSession(false,true);
+            nonCancelableError("Authenticating","Syncing");
+        }
+
         else if (NetworkRequestsManager.instance().isOnline()) {
             serverErrorDialog();
         }
+        else if (result == NetworkRequestsManager.ResponseError.TIME_OUT) {
+            nonCancelableError("Timed out","Trying again");
+            onResume();
+        }
         else
             noInternetDialog();
+
+/*
+
+        switch (result) {
+            case NO_ERROR:
+                setResult(RESULT_OK);
+                finish();
+                break;
+            case PHONE_EXISTS:
+                mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
+                mPhoneEditText.requestFocus();
+                break;
+            case AUTHENTICATION_ERROR:
+                authorizeSession(false,true);
+                nonCancelableError("Authenticating","Syncing");
+                break;
+            case TIME_OUT:
+
+                break;
+        }
+*/
     }
+
+
 }

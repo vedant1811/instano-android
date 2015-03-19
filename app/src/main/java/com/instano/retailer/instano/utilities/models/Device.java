@@ -1,5 +1,6 @@
 package com.instano.retailer.instano.utilities.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 /**
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
  */
 
 @JsonRootName(value = "device")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Device {
 
     private String gcm_registration_id;

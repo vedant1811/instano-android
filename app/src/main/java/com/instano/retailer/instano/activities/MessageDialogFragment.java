@@ -9,8 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
@@ -26,6 +28,8 @@ public class MessageDialogFragment extends DialogFragment implements View.OnClic
     private static final String KEY_ARG_TITLE = "ArgumentTitle";
     private CharSequence mHeading;
     private CharSequence mTitle;
+    public int mViewFlipperState;
+    public ViewFlipper mViewFlipper;
 
     public static MessageDialogFragment newInstance(String heading, String title) {
         Bundle arguments = new Bundle();
@@ -122,6 +126,8 @@ public class MessageDialogFragment extends DialogFragment implements View.OnClic
         Button sendWhatsAppButton = (Button) rootView.findViewById(R.id.buttonSendWhatsapp);
         Button sendEmailButton = (Button) rootView.findViewById(R.id.buttonSendMail);
         Button addContactButton = (Button) rootView.findViewById(R.id.buttonAddContact);
+        mViewFlipper = (ViewFlipper) rootView.findViewById(R.id.messageDialogFragmentViewFlipper);
+        ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.messageDialogProgressBar);
 
         getDialog().setTitle(mHeading);
         titleTextView.setText(mTitle);
@@ -130,5 +136,21 @@ public class MessageDialogFragment extends DialogFragment implements View.OnClic
         addContactButton.setOnClickListener(this);
         sendEmailButton.setOnClickListener(this);
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mViewFlipper.setDisplayedChild(mViewFlipperState);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mViewFlipperState = mViewFlipper.getDisplayedChild();
+    }
+
+    public void showNext() {
+        mViewFlipper.showNext();
     }
 }

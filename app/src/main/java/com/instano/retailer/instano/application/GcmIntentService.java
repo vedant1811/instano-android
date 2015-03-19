@@ -23,7 +23,6 @@ public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
     private NotificationManager mNotificationManager;
     private static final String TAG = "GcmIntentService";
-    public static final String SESSION_ID = "session_id";
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -69,7 +68,7 @@ public class GcmIntentService extends IntentService {
                 String session_id = extras.getString("session_id");
                 Log.v(TAG, "Received: " + session_id);
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit()
-                        .putString(SESSION_ID,session_id).commit();
+                        .putString(NetworkRequestsManager.SESSION_ID,session_id).commit();
                 Log.v(TAG, "Received: " + extras.toString());
             }
         }
