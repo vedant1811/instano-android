@@ -53,6 +53,7 @@ public class ServicesSingleton implements
     private final static String KEY_WHATSAPP_ID = "com.instano.retailer.instano.application.ServicesSingleton.whatsapp_id";
 
     public static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
+    public static final String SHARED_PREFERENCES_FILE = "com.instano.SHARED_PREFERENCES_FILE";
 
     private static ServicesSingleton sInstance;
 
@@ -94,7 +95,7 @@ public class ServicesSingleton implements
             return false;
     }
 
-    public boolean firstTime() {
+    public boolean isFirstTime() {
         if (BuildConfig.DEBUG)
             return true;
         else
@@ -180,9 +181,8 @@ public class ServicesSingleton implements
 
     private ServicesSingleton(MyApplication application) {
         mApplication = application;
-        mSharedPreferences = mApplication.getSharedPreferences(
-                "com.instano.SHARED_PREFERENCES_FILE", Context.MODE_PRIVATE);
-        mFirstTime = mSharedPreferences.getBoolean(KEY_FIRST_TIME, false);
+        mSharedPreferences = mApplication.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE);
+        mFirstTime = mSharedPreferences.getBoolean(KEY_FIRST_TIME, true);
         mUserAddress = null;
         mLastLocation = null;
         mBuyer = null;

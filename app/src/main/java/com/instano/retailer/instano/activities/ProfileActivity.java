@@ -130,52 +130,19 @@ public class ProfileActivity extends GlobalMenuActivity
     }
 
     @Override
-    public void onRegistration(NetworkRequestsManager.ResponseError result) {
+    public void onRegistration(NetworkRequestsManager.ResponseError error) {
         mSetUpViewFlipper.setDisplayedChild(0); // button
         mViewFlipperState = 0; // so as to update it if activity is not resumed
-        if (result == NetworkRequestsManager.ResponseError.NO_ERROR) {
+        if (error == NetworkRequestsManager.ResponseError.NO_ERROR) {
             setResult(RESULT_OK);
             finish();
         }
-        else if (result == NetworkRequestsManager.ResponseError.PHONE_EXISTS) {
+        else if (error == NetworkRequestsManager.ResponseError.PHONE_EXISTS) {
             mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
             mPhoneEditText.requestFocus();
         }
-        else if(result == NetworkRequestsManager.ResponseError.AUTHENTICATION_ERROR) {
-            authorizeSession(false,true);
-            nonCancelableError("Authenticating","Syncing");
-        }
-
-        else if (NetworkRequestsManager.instance().isOnline()) {
-            serverErrorDialog();
-        }
-        else if (result == NetworkRequestsManager.ResponseError.TIME_OUT) {
-            nonCancelableError("Timed out","Trying again");
-            onResume();
-        }
         else
-            noInternetDialog();
-
-/*
-
-        switch (result) {
-            case NO_ERROR:
-                setResult(RESULT_OK);
-                finish();
-                break;
-            case PHONE_EXISTS:
-                mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
-                mPhoneEditText.requestFocus();
-                break;
-            case AUTHENTICATION_ERROR:
-                authorizeSession(false,true);
-                nonCancelableError("Authenticating","Syncing");
-                break;
-            case TIME_OUT:
-
-                break;
-        }
-*/
+            onSessionResponse(error);
     }
 
 

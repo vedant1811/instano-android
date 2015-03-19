@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
+import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 
@@ -19,16 +19,16 @@ public class LauncherActivity extends GlobalMenuActivity {
     // Splash screen timer
     private static int SPLASH_TIME_OUT = 2500;
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-    private static final String TAG = "GCM in Launcher ";
+    private final String TAG = getClass().getSimpleName();
 
-    boolean mCancelled = false;
+    boolean mBackPressed = false;
     boolean mTimedOut = false;
-    boolean mError = false;
+    boolean mErrorOccurred = true;
 
     @Override
     public void onBackPressed() {
         // make sure the next activity is not started
-        mCancelled = true;
+        mBackPressed = true;
         // finish the activity
         super.onBackPressed();
     }
@@ -37,15 +37,15 @@ public class LauncherActivity extends GlobalMenuActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
-        if (!getRegistrationId().isEmpty())
-            mTimedOut = true;
+        if (!ServicesSingleton.instance().isFirstTime())
+            mTimedOut = true; // do not wait for timeout if app is not being used for first time
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (checkPlayServices()) {
-            authorizeSession(false, false);
+            NetworkRequestsManager.instance().authorizeSession(false);
         } else {
             noPlayServicesDialog();
             Log.v(TAG, "No valid Google Play Services APK found.");
@@ -71,14 +71,14 @@ public class LauncherActivity extends GlobalMenuActivity {
     @Override
     public void onSessionResponse(NetworkRequestsManager.ResponseError error) {
         Log.v(TAG, "Response Error in Launcher "+error);
-        if (error == NetworkRequestsManager.ResponseError.NO_SESSION_ID ||
-                error == NetworkRequestsManager.ResponseError.INCORRECT_SESSION_ID) {
-            super.onSessionResponse(error);
-            mError = false;
-        }
-        else {
+        if (error == NetworkRequestsManager.ResponseError.NO_ERROR) {
+            mErrorOccurred = false;
             closeIfPossible();
         }
+        else if (!mBackPressed) {
+            super.onSessionResponse(error);
+        }
+        // do nothing if back was pressed
     }
 
     protected boolean checkPlayServices() {
@@ -96,30 +96,17 @@ public class LauncherActivity extends GlobalMenuActivity {
     }
 
     private void closeIfPossible() {
-        if (!mTimedOut || mError)
+        if (!mTimedOut || mErrorOccurred)
             return;
         // initialize the app if it wasn't cancelled (like due to back button being pressed):
-        if (!mCancelled) {
+        if (!mBackPressed) {
             Intent i = null;
-//        if (ServicesSingleton.getInstance(this).firstTime())
+//        if (ServicesSingleton.getInstance(this).isFirstTime())
             i = new Intent(this, StartingActivity.class);
             startActivity(i);
         }
-
         // close this activity
         finish();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 

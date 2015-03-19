@@ -74,7 +74,7 @@ public class SearchConstraintsFragment extends Fragment
         mOverlayViews[1] = view.findViewById(R.id.overlayTextView);
         mOverlayViews[2] = view.findViewById(R.id.overlayTextView2);
 
-        if (ServicesSingleton.instance().firstTime()) {
+        if (ServicesSingleton.instance().isFirstTime()) {
             for(View overlayView : mOverlayViews)
                 overlayView.setVisibility(View.VISIBLE);
             mOverlayViews[0].setOnClickListener(this);
