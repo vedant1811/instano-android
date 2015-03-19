@@ -28,7 +28,7 @@ import java.util.HashSet;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class DealListFragment extends ListFragment implements DataManager.DealsListener {
+public class DealListFragment extends ListFragment implements DataManager.DealsListener, DataManager.SellersListener {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -107,13 +107,15 @@ public class DealListFragment extends ListFragment implements DataManager.DealsL
         setListAdapter(new DealsAdapter(getActivity()));
         // call after setting the adapter so that the adapter is not null
         dealsUpdated();
-        DataManager.instance().registerListener(this);
+        DataManager.instance().registerListener((DataManager.DealsListener) this);
+        DataManager.instance().registerListener((DataManager.SellersListener) this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        DataManager.instance().unregisterListener(this);
+        DataManager.instance().unregisterListener((DataManager.SellersListener) this);
+        DataManager.instance().unregisterListener((DataManager.DealsListener) this);
     }
 
     @Override

@@ -116,11 +116,6 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
         mAdapter.dataUpdated();
     }
 
-    @Override
-    public void sellersUpdated() {
-
-    }
-
     /**
      * Shows the details of {@link Quotation} represented by this {@link QuoteDetailFragment}
      * an expandable list adapter that shows {@link Seller}.nameOfShop as headers
@@ -177,7 +172,7 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
             mSubheadingTextView.setText(subheading);
 
             double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-            Log.d(Log.TIMER_TAG, String.format("Adapter.dataUpdated took %.4fms", time));
+            Log.v(Log.TIMER_TAG, String.format("Adapter.dataUpdated took %.4fms", time));
         }
 
         @Override
@@ -212,7 +207,7 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
                 if (convertView == null)
                     convertView = mInflater.inflate(R.layout.child_list_item_shop, null);
 
-                TextView sellerNameTextView = (TextView) convertView.findViewById(R.id.sellerNameTextView);
+                TextView sellerNameTextView = (TextView) convertView.findViewById(R.id.shopNameTextView);
                 TextView addressTextView = (TextView) convertView.findViewById(R.id.addressTextView);
                 TextView distanceTextView = (TextView) convertView.findViewById(R.id.distanceTextView);
                 ImageButton callImageButton = (ImageButton) convertView.findViewById(R.id.callImageButton);

@@ -78,14 +78,20 @@ public class ProductCategories {
         return false;
     }
 
-    public boolean containsCategoryAndOneBrand(ProductCategories.Category category) {
+    public boolean containsCategoryAndOneBrand(ProductCategories.Category categoryToMatch) {
 
-        if (category.name.equals(UNDEFINED))
+        if (categoryToMatch.name.equals(UNDEFINED))
             return true;
 
-        for (Category c : mCategories)
-            if (c.name.equals(category.name)) {
-                return !Collections.disjoint(c.brands, category.brands); // true if atleast one brand is common
+        for (Category oneCategory : mCategories)
+            if (oneCategory.name.equals(categoryToMatch.name)) { // category is matched
+
+                // if no brands specified either category, then consider it matched
+                if (categoryToMatch.brands.isEmpty() || oneCategory.brands.isEmpty())
+                    return true;
+
+                // true if atleast one brand is common
+                return !Collections.disjoint(oneCategory.brands, categoryToMatch.brands);
             }
         return false;
     }

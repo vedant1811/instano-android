@@ -70,7 +70,7 @@ public class DealDetailFragment extends Fragment {
         final Seller seller = DataManager.instance().getSeller(mItem.sellerId);
 
         TextView shopNameTextView = (TextView) view.findViewById(R.id.shopNameTextView);
-        TextView sellerNameTextView = (TextView) view.findViewById(R.id.sellerNameTextView);
+        TextView sellerNameTextView = (TextView) view.findViewById(R.id.shopNameTextView);
         TextView addressTextView = (TextView) view.findViewById(R.id.addressTextView);
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
         final TextView dealHeadingTextView = (TextView) view.findViewById(R.id.dealHeadingTextView);
