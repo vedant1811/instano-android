@@ -218,7 +218,7 @@ public class DataManager {
                 }
             } catch (JSONException e) {
                 Log.e(TAG + ".updateQuotations", String.format("response: %s, i=%d", String.valueOf(response), i), e);
-                e.printStackTrace();
+                Log.fatalError(e);
             }
         }
         if (newUnread)
@@ -254,7 +254,7 @@ public class DataManager {
 
             } catch (JSONException e) {
                 Log.e(TAG + ".updateQuotes", String.format("response: %s, i=%d", String.valueOf(response), i), e);
-                e.printStackTrace();
+                Log.fatalError(e);
             }
         }
 
@@ -278,7 +278,7 @@ public class DataManager {
                 }
             } catch (JSONException e) {
                 Log.e(TAG + ".updateSellers", String.format("response: %s, i=%d", String.valueOf(response), i), e);
-                e.printStackTrace();
+                Log.fatalError(e);
             }
         }
         if (newEntries) {
@@ -303,7 +303,7 @@ public class DataManager {
                 }
             } catch (JSONException e) {
                 Log.e(TAG + ".updateSellers", String.format("response: %s, i=%d", String.valueOf(response), i), e);
-                e.printStackTrace();
+                Log.fatalError(e);
             }
         }
         if (newEntries)

@@ -87,6 +87,8 @@ public class ServicesSingleton implements
     public boolean signIn() {
         String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, null);
 
+        Log.v(TAG, "api key: " + String.valueOf(apiKey));
+
         if (apiKey != null) {
             NetworkRequestsManager.instance().sendSignInRequest(apiKey);
             return true;
@@ -112,21 +114,22 @@ public class ServicesSingleton implements
 
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
-        editor.apply();
 
         // start periodic worker whether signed in successfully or not
         mPeriodicWorker.start();
 
         if (buyer != null) {
-            Log.d(TAG, "saving buyer api key: " + mBuyer.getApi_key());
+            Log.d(TAG, "saving buyer api key: " + buyer.getApi_key());
             Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
-            appTracker.setClientId(String.valueOf(mBuyer.getId()));
+            appTracker.setClientId(String.valueOf(buyer.getId()));
             appTracker.send(new HitBuilders.AppViewBuilder().build());
             editor.putString(KEY_BUYER_API_KEY, buyer.getApi_key());
 
             DataManager.instance().onNewBuyer();
         }
         // TODO: do more on else
+
+        editor.apply();
     }
 
     public void runPeriodicTasks() {
@@ -309,7 +312,7 @@ public class ServicesSingleton implements
                  */
             } catch (IntentSender.SendIntentException e) {
                 // Log the error
-                e.printStackTrace();
+                Log.fatalError(e);
             }
         } else {
             /*
@@ -368,7 +371,7 @@ public class ServicesSingleton implements
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
             date = simpleDateFormat.parse(sDate);
         } catch (ParseException e) {
-            e.printStackTrace();
+            Log.fatalError(e);
             return 0;
         }
         return date.getTime();

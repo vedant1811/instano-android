@@ -313,7 +313,7 @@ public class NetworkRequestsManager implements Response.ErrorListener {
                                     ServicesSingleton.instance().afterSignIn(responseBuyer);
                                     Log.v(TAG + "registerRequest.onResponse", responseBuyer.getApi_key());
                                 } catch (JsonMappingException e) {
-                                    e.printStackTrace();
+                                    Log.fatalError(e);
                                     try {
                                         if (API_ERROR_ALREADY_TAKEN.equals(response.getJSONArray("phone").getString(0)))
                                             responseError = ResponseError.PHONE_EXISTS;
@@ -332,10 +332,10 @@ public class NetworkRequestsManager implements Response.ErrorListener {
                     });
             mRequestQueue.add(request);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            Log.fatalError(e);
             Log.v(TAG ,".registerRequest Error" + e.toString());
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.fatalError(e);
             Log.v(TAG ,".registerRequest Error" + e.toString());
         }
 
@@ -361,7 +361,7 @@ public class NetworkRequestsManager implements Response.ErrorListener {
             );
             mRequestQueue.add(request);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.fatalError(e);
         }
     }
 
@@ -394,30 +394,16 @@ public class NetworkRequestsManager implements Response.ErrorListener {
             return;
         }
         Log.d(TAG, "setQuotationStatusReadRequest requestData" + requestData);
-        StringRequest request = new StringRequest(
+        Request request = new AuthenticatedJsonRequest(
                 Request.Method.PUT,
                 getRequestUrl(RequestType.PATCH_QUOTATION_STATUS, quotationId),
                 requestData,
-                new Response.Listener<String>() {
+                new ResponseListener() {
                     @Override
-                    public void onResponse(String response) {
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, ".setQuotationStatusReadRequest networkResponse: " + error.networkResponse, error);
+                    public void onResponse(ResponseError error, JSONObject jsonResponse) {
                     }
                 }
-        ){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers = new HashMap<String,String>();
-                headers.put("Session-Id",getSessionId() );
-                return headers;
-            }
-        };
+        );
         mRequestQueue.add(request);
     }
 
@@ -437,7 +423,6 @@ public class NetworkRequestsManager implements Response.ErrorListener {
         String url = SERVER_URL + API_VERSION;
         switch (requestType) {
             case REGISTER_BUYER:
-                Log.v(TAG,"SessionId in getUrl"+ getSessionId());
                 return url + "buyers";
             case SIGN_IN:
                 return url + "buyers/sign_in";
@@ -455,8 +440,8 @@ public class NetworkRequestsManager implements Response.ErrorListener {
             case GET_DEALS:
                 return url + "buyers/deals";
 
-//            case PATCH_QUOTATION_STATUS:
-//                return url + "buyers/quotations/" + id;
+            case PATCH_QUOTATION_STATUS:
+                return url + "buyers/quotations/" + id;
             case REGISTER_DEVICE:
                 return  url + "devices/";
         }
@@ -549,7 +534,7 @@ public class NetworkRequestsManager implements Response.ErrorListener {
                 responseString = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
                 Log.v(TAG, ".getResponseError body :" + responseString);
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                Log.fatalError(e);
             }
             switch (networkResponse.statusCode) {
                 case HttpStatus.SC_UNAUTHORIZED: // volley fails for 401
@@ -644,7 +629,7 @@ public class NetworkRequestsManager implements Response.ErrorListener {
                             ResponseError error = ResponseError.UNKNOWN_ERROR;
                             try{
                                 Device responseDevice = mJsonObjectMapper.readValue(response.toString(), Device.class);
-                                Log.v(TAG + "check deviceid device: ",responseDevice.toString());
+                                Log.v(TAG + "sendDeviceRegisterRequest response: ",responseDevice.toString());
                                 String session_id = responseDevice.getSession_id();
                                 storeSessionId(session_id);
                                 if(session_id == null || session_id.isEmpty())
@@ -652,14 +637,11 @@ public class NetworkRequestsManager implements Response.ErrorListener {
                                 else
                                     error = ResponseError.NO_ERROR;
                             } catch (JsonMappingException e) {
-                                e.printStackTrace();
-                                Log.v(TAG + "check deviceid error ",e.toString());
+                                Log.fatalError(e);
                             } catch (JsonParseException e) {
-                                e.printStackTrace();
-                                Log.v(TAG + "check deviceid error ",e.toString());
+                                Log.fatalError(e);
                             } catch (IOException e) {
-                                e.printStackTrace();
-                                Log.v(TAG + "check deviceid error ",e.toString());
+                                Log.fatalError(e);
                             }
                             if(mSessionIdCallback !=null)
                                 mSessionIdCallback.onSessionResponse(error);
@@ -668,7 +650,6 @@ public class NetworkRequestsManager implements Response.ErrorListener {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError volleyError) {
-                            Log.v(TAG + "check deviceid error ", volleyError.toString());
                             if(mSessionIdCallback !=null)
                                 mSessionIdCallback.onSessionResponse(getResponseError(volleyError));
                         }
@@ -676,9 +657,9 @@ public class NetworkRequestsManager implements Response.ErrorListener {
             );
             mRequestQueue.add(request);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            Log.fatalError(e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.fatalError(e);
         }
 
     }
@@ -704,9 +685,21 @@ public class NetworkRequestsManager implements Response.ErrorListener {
      */
     private class AuthenticatedJsonRequest extends JsonObjectRequest {
 
+        /**
+         * either GET or POST
+         * @param url
+         * @param request
+         * @param responseListener
+         */
         public AuthenticatedJsonRequest(String url, final JSONObject request,
                                         final ResponseListener responseListener) {
-            super(url, request, new Response.Listener<JSONObject>() {
+            this(request == null ? Method.GET : Method.POST, url, request,
+                    responseListener);
+        }
+
+        public AuthenticatedJsonRequest(int method, String url, final JSONObject request,
+                                        final ResponseListener responseListener) {
+            super(method, url, request, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     responseListener.onResponse(ResponseError.NO_ERROR, response);

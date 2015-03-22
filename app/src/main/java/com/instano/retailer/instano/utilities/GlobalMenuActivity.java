@@ -155,7 +155,7 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
                     return dialogFragment; // the same dialog is already showing
             } catch (ClassCastException e) {
                 ft.remove(prev);
-                e.printStackTrace();
+                Log.fatalError(e);
             }
         }
         ft.addToBackStack(null);

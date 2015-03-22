@@ -286,7 +286,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 mLastConstraint = (new JSONObject(mLastConstraint.toString())
                         .put(MIN_DIST, minDist)).toString();
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.fatalError(e);
                 mLastConstraint = getConstraint(minDist, ProductCategories.Category.undefinedCategory());
             }
             filter(mLastConstraint);
@@ -298,7 +298,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 mLastConstraint = (new JSONObject(mLastConstraint.toString())
                         .put(PRODUCT_CATEGORY, category.toJsonObject())).toString();
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.fatalError(e);
                 mLastConstraint = getConstraint(INITIAL_MIN_DIST, category);
             }
             filter(mLastConstraint);
@@ -360,7 +360,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                         .put(PRODUCT_CATEGORY, category.toJsonObject());
                 constraint = jsonObject.toString();
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.fatalError(e);
                 constraint = null;
             }
             return constraint;

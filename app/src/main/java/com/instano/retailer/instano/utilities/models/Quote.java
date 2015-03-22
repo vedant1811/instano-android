@@ -3,6 +3,7 @@ package com.instano.retailer.instano.utilities.models;
 import android.support.annotation.Nullable;
 
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.utilities.library.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -183,7 +184,7 @@ public class Quote {
                     .put("quote", params);
             return quoteJsonObject;
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.fatalError(e);
         }
         return null;
     }
