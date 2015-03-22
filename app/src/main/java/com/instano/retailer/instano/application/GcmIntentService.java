@@ -51,9 +51,8 @@ public class GcmIntentService extends IntentService {
                 // If it's a regular GCM message, do some work.
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
-                Log.v(TAG, "Completed work @ " + SystemClock.elapsedRealtime());
                 // Post notification of received message.
-                sendNotification("Received: " + extras.toString());
+//                sendNotification("Received: " + extras.toString());
 //                Log.i(TAG, "Received: " + extras.getString("buyer"));
                 String session_id = extras.getString("session_id");
                 Log.v(TAG, "Received: " + session_id);

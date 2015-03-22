@@ -13,6 +13,8 @@ import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.models.Buyer;
 
 public class StartingActivity extends GlobalMenuActivity
         implements NetworkRequestsManager.SignInCallbacks {
@@ -68,13 +70,18 @@ public class StartingActivity extends GlobalMenuActivity
     }
 
     @Override
-    public void signedIn(boolean success) {
-        if (!success){
-            if (NetworkRequestsManager.instance().isOnline())
-                serverErrorDialog();
+    public void signedIn(NetworkRequestsManager.ResponseError error) {
+        if (error == NetworkRequestsManager.ResponseError.NO_ERROR) {
+            Buyer buyer = ServicesSingleton.instance().getBuyer();
+            if (buyer != null)
+                Toast.makeText(this, String.format("Welcome %s", buyer.getName()), Toast.LENGTH_SHORT).show();
             else
-                noInternetDialog();
+                Log.e(getClass().getSimpleName(), "Buyer is NULL but no error in signed in");
         }
+        else if (error == NetworkRequestsManager.ResponseError.INCORRECT_API_KEY)
+            ; // TODO: do something. currently treating as no signed in info present
+        else
+            onSessionResponse(error);
     }
 
     /**

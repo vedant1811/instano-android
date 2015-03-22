@@ -53,7 +53,7 @@ public class NetworkRequestsManager implements Response.ErrorListener {
 
     private static final String TAG = "NetworkRequestsManager";
 //    private static final String LOCAL_SERVER_URL = "http://52.1.202.4/";
-    private static final String LOCAL_SERVER_URL = "http://192.168.0.105:3000/";
+    private static final String LOCAL_SERVER_URL = "http://192.168.1.36:3000/";
 
     private final static String API_ERROR_ALREADY_TAKEN = "has already been taken";
     private final static String API_ERROR_IS_BLANK = "can't be blank";
@@ -74,7 +74,6 @@ public class NetworkRequestsManager implements Response.ErrorListener {
 
     private RequestQueue mRequestQueue;
     private ObjectMapper mJsonObjectMapper;
-    private Buyer mBuyer;
 
 
     public void registerCallback(QuoteCallbacks quoteCallbacks) {
@@ -106,7 +105,7 @@ public class NetworkRequestsManager implements Response.ErrorListener {
     }
 
     public interface SignInCallbacks {
-        public void signedIn(boolean success);
+        public void signedIn(ResponseError error);
     }
 
     public interface SessionIdCallback {
@@ -132,20 +131,10 @@ public class NetworkRequestsManager implements Response.ErrorListener {
         return sInstance;
     }
 
-    public void getQuotationsRequest(@NonNull Buyer buyer) {
-
-        JSONObject postData;
-        try {
-            postData = new JSONObject()
-                    .put("id", buyer.getId());
-        } catch (JSONException e) {
-            Log.e(TAG, "getQuotationsRequest", e);
-            return;
-        }
+    public void getQuotationsRequest() {
 
         JsonArrayRequest request = new JsonArrayRequest(
                 getRequestUrl(RequestType.GET_QUOTATIONS, -1),
-                postData,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
@@ -165,28 +154,17 @@ public class NetworkRequestsManager implements Response.ErrorListener {
         mRequestQueue.add(request);
     }
 
-    public void getQuotesRequest(@NonNull final Buyer buyer) {
-
-        JSONObject requestData;
-        try {
-            requestData = new JSONObject()
-                    .put("id", buyer.getId());
-        } catch (JSONException e) {
-            Log.e(TAG, "getQuotesRequest exception", e);
-            return;
-        }
-        Log.v(TAG, "getQuotesRequest requestData" + requestData);
+    public void getQuotesRequest() {
 
         JsonArrayRequest request = new JsonArrayRequest(
                 getRequestUrl(RequestType.GET_QUOTES, -1),
-                requestData,
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
                         Log.v(TAG, "Quotes response:" + response.toString());
                         DataManager.instance().updateQuotes(response);
                         // fetch quotations once quotes are fetched:
-                        getQuotationsRequest(buyer);
+                        getQuotationsRequest();
 
                     }
                 },
@@ -273,7 +251,7 @@ public class NetworkRequestsManager implements Response.ErrorListener {
         mRequestQueue.add(request);
     }
 
-    public void signInRequest(@NonNull final String apiKey) {
+    public void sendSignInRequest(@NonNull final String apiKey) {
 
         JsonObjectRequest request = null;
         try {
@@ -285,36 +263,30 @@ public class NetworkRequestsManager implements Response.ErrorListener {
                     new ResponseListener() {
                         @Override
                         public void onResponse(ResponseError error, JSONObject response) {
+                            Log.d(TAG + "sendSignInRequest.onResponse", String.valueOf(response));
+                            Buyer responseBuyer = null;
                             if (error == ResponseError.NO_ERROR) {
                                 try {
-                                    if (response.getInt("id") != -1) {
-                                        Log.d(TAG + "check", response.toString());
-                                        mBuyer = new Buyer();
-                                        Log.d(TAG + "check", mBuyer.toString());
-                                        mBuyer.setId(response.getInt("id"));
-                                        mBuyer.setName(response.getString("name"));
-                                        mBuyer.setPhone(response.getString("phone"));
-
-                                        ServicesSingleton.instance().afterSignIn(mBuyer, response.getString("api_key"));
-                                        if (mSignInCallbacks != null)
-                                            mSignInCallbacks.signedIn(true);
-                                    } else {
-                                        ServicesSingleton.instance().afterSignIn(null, null);
-                                        if (mSignInCallbacks != null)
-                                            mSignInCallbacks.signedIn(false);
-                                    }
-                                } catch (JSONException e) {
-                                    Log.e(TAG + "signInRequest.onResponse", response.toString(), e);
-                                    ServicesSingleton.instance().afterSignIn(null, null);
-                                    if (mSignInCallbacks != null)
-                                        mSignInCallbacks.signedIn(false);
+                                    responseBuyer = mJsonObjectMapper.readValue(response.toString(), Buyer.class);
+                                } catch (JsonMappingException e) {
+                                    error = ResponseError.UNKNOWN_ERROR;
+                                    Log.fatalError(e);
+                                } catch (JsonParseException e) {
+                                    error = ResponseError.UNKNOWN_ERROR;
+                                    Log.fatalError(e);
+                                } catch (IOException e) {
+                                    error = ResponseError.UNKNOWN_ERROR;
+                                    Log.fatalError(e);
                                 }
                             }
+                            ServicesSingleton.instance().afterSignIn(responseBuyer);
+                            if (mSignInCallbacks != null)
+                                mSignInCallbacks.signedIn(error);
                         }
                     }
             );
         } catch (JSONException e) {
-            Log.e(TAG, "signInRequest.onResponse", e);
+            Log.e(TAG, "sendSignInRequest.onResponse", e);
         }
         mRequestQueue.add(request);
     }
@@ -331,27 +303,27 @@ public class NetworkRequestsManager implements Response.ErrorListener {
                     new ResponseListener() {
                         @Override
                         public void onResponse(ResponseError responseError, JSONObject response) {
-                            Log.v(TAG + ".onResponse", response.toString());
+                            Log.v(TAG + "registerRequest.onResponse", response.toString());
 
                             if (responseError == ResponseError.NO_ERROR) {
                                 try {
-                                    Log.v(TAG + ".onResponseInsideTry", response.toString());
                                     Buyer responseBuyer = mJsonObjectMapper.readValue(response.toString(), Buyer.class);
                                     //response value is stored in Buyer object
-                                    Log.v(TAG + ".onResponseFromJson", responseBuyer.toString());
-                                    responseError = ResponseError.NO_ERROR;
-                                    ServicesSingleton.instance().afterSignIn(responseBuyer, responseBuyer.getApi_key());
-                                    Log.v(TAG + ".onResponse", responseBuyer.getApi_key());
+                                    Log.v(TAG + "registerRequest.onResponseFromJson", responseBuyer.toString());
+                                    ServicesSingleton.instance().afterSignIn(responseBuyer);
+                                    Log.v(TAG + "registerRequest.onResponse", responseBuyer.getApi_key());
                                 } catch (JsonMappingException e) {
+                                    e.printStackTrace();
                                     try {
                                         if (API_ERROR_ALREADY_TAKEN.equals(response.getJSONArray("phone").getString(0)))
                                             responseError = ResponseError.PHONE_EXISTS;
                                     } catch (JSONException e1) {
-                                        Log.v(TAG ,".onResponse Error"+ response.toString()+ " " +e);
+                                        responseError = ResponseError.UNKNOWN_ERROR;
+                                        Log.fatalError(e1);
                                     }
                                 } catch (IOException e) {
-                                    e.printStackTrace();
-                                    Log.v(TAG ,".onResponse Error"+ response.toString()+ " " +e);
+                                    Log.fatalError(e);
+                                    responseError = ResponseError.UNKNOWN_ERROR;
                                 }
                             }
                             if (mRegistrationCallback != null)
@@ -521,11 +493,18 @@ public class NetworkRequestsManager implements Response.ErrorListener {
         NO_BUYER_ASSOCIATED,
         SOME_OTHER_401,
         SIGN_IN_FAILED,
+
+        // Not acceptable (406):
+        INCORRECT_API_KEY,
+        SOME_OTHER_406,
+
         // network errors:
-        SERVER_HANG_UP,
+        SERVER_HANG_UP, // 502 a.k.a. bad gateway
         NETWORK_RESPONSE_NULL,
         VOLLEY_TIMEOUT,
 
+        // fatal
+        BAD_REQUEST, // 400
         SERVER_ERROR,
         // 422 specific errors:
         PHONE_EXISTS,
@@ -551,8 +530,84 @@ public class NetworkRequestsManager implements Response.ErrorListener {
             else
                 return false;
         }
+
+        public boolean isFatal() {
+            if (this == BAD_REQUEST || this == SERVER_ERROR || this == SERVER_HANG_UP)
+                return true;
+            else
+                return false;
+        }
     }
 
+    private static ResponseError getResponseError(VolleyError volleyError) {
+        ResponseError error = ResponseError.UNKNOWN_ERROR;
+        NetworkResponse networkResponse = volleyError.networkResponse;
+        String responseString="";
+        if (networkResponse != null) {
+            try {
+                Log.v(TAG , ".getResponseError code :"+networkResponse.statusCode);
+                responseString = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
+                Log.v(TAG, ".getResponseError body :" + responseString);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            switch (networkResponse.statusCode) {
+                case HttpStatus.SC_UNAUTHORIZED: // volley fails for 401
+                case HttpStatus.SC_FORBIDDEN:
+                    if (responseString.contains("incorrect session_id"))
+                        error = ResponseError.INCORRECT_SESSION_ID;
+                    else if (responseString.contains("no buyer associated"))
+                        error = ResponseError.NO_BUYER_ASSOCIATED;
+                    else
+                        error = ResponseError.SOME_OTHER_401;
+                    break;
+
+                case HttpStatus.SC_NOT_ACCEPTABLE:
+                    if (responseString.contains("incorrect api_key"))
+                        error = ResponseError.INCORRECT_API_KEY;
+                    else
+                        error = ResponseError.SOME_OTHER_406;
+                    break;
+
+                case HttpStatus.SC_UNPROCESSABLE_ENTITY:
+                    if (responseString.contains("GCM errors")) {
+                        if (responseString.contains("NotRegistered"))
+                            error = ResponseError.GCM_NOT_REGISTERED;
+                        else if (responseString.contains("InvalidRegistration"))
+                            error = ResponseError.INVALID_GCM_ID;
+                        else
+                            error = ResponseError.OTHER_GCM_ERROR;
+                    }
+                    else
+                        error = ResponseError.SOME_OTHER_422;
+                    break;
+
+                case HttpStatus.SC_BAD_REQUEST:
+                    error = ResponseError.BAD_REQUEST;
+                    break;
+
+                case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+                    error = ResponseError.SERVER_ERROR;
+                    break;
+
+                case HttpStatus.SC_BAD_GATEWAY:
+                    error = ResponseError.SERVER_HANG_UP;
+                    break;
+            }
+        }
+        else if (volleyError instanceof TimeoutError)
+            error = ResponseError.VOLLEY_TIMEOUT;
+        else
+            error = ResponseError.NETWORK_RESPONSE_NULL;
+
+        if (error.isFatal())
+            Log.e(TAG, ".getResponseError returned " + error);
+        else
+            Log.v(TAG, ".getResponseError returned " + error);
+        return error;
+    }
+
+    // DEPRECATED:
     public boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) mApplication.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -579,56 +634,57 @@ public class NetworkRequestsManager implements Response.ErrorListener {
         Log.v(TAG, "Device object  " + device.toString());
         try {
             jsonRequest = new JSONObject(mJsonObjectMapper.writeValueAsString(device));
+            Log.v(TAG + ".DeviceId in request", jsonRequest.toString());
+
+            JsonObjectRequest request = new JsonObjectRequest(getRequestUrl(RequestType.REGISTER_DEVICE,-1),
+                    jsonRequest,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            ResponseError error = ResponseError.UNKNOWN_ERROR;
+                            try{
+                                Device responseDevice = mJsonObjectMapper.readValue(response.toString(), Device.class);
+                                Log.v(TAG + "check deviceid device: ",responseDevice.toString());
+                                String session_id = responseDevice.getSession_id();
+                                storeSessionId(session_id);
+                                if(session_id == null || session_id.isEmpty())
+                                    error = ResponseError.NO_SESSION_ID;
+                                else
+                                    error = ResponseError.NO_ERROR;
+                            } catch (JsonMappingException e) {
+                                e.printStackTrace();
+                                Log.v(TAG + "check deviceid error ",e.toString());
+                            } catch (JsonParseException e) {
+                                e.printStackTrace();
+                                Log.v(TAG + "check deviceid error ",e.toString());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                Log.v(TAG + "check deviceid error ",e.toString());
+                            }
+                            if(mSessionIdCallback !=null)
+                                mSessionIdCallback.onSessionResponse(error);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError volleyError) {
+                            Log.v(TAG + "check deviceid error ", volleyError.toString());
+                            if(mSessionIdCallback !=null)
+                                mSessionIdCallback.onSessionResponse(getResponseError(volleyError));
+                        }
+                    }
+            );
+            mRequestQueue.add(request);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.v(TAG + ".DeviceId in request", jsonRequest.toString());
-
-        JsonObjectRequest request = new JsonObjectRequest(getRequestUrl(RequestType.REGISTER_DEVICE,-1),
-                jsonRequest,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ResponseError error = ResponseError.UNKNOWN_ERROR;
-                        try{
-                            Device responseDevice = mJsonObjectMapper.readValue(response.toString(), Device.class);
-                            Log.v(TAG + "check deviceid device: ",responseDevice.toString());
-                            String session_id = responseDevice.getSession_id();
-                            storeSessionId(session_id);
-                            if(session_id == null || session_id.isEmpty())
-                                error = ResponseError.NO_SESSION_ID;
-                            else
-                                error = ResponseError.NO_ERROR;
-                        } catch (JsonMappingException e) {
-                            e.printStackTrace();
-                            Log.v(TAG + "check deviceid error ",e.toString());
-                        } catch (JsonParseException e) {
-                            e.printStackTrace();
-                            Log.v(TAG + "check deviceid error ",e.toString());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            Log.v(TAG + "check deviceid error ",e.toString());
-                        }
-                        if(mSessionIdCallback !=null)
-                            mSessionIdCallback.onSessionResponse(error);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        Log.v(TAG + "check deviceid error ", volleyError.toString());
-                        if(mSessionIdCallback !=null)
-                            mSessionIdCallback.onSessionResponse(getResponseError(volleyError));
-                    }
-                }
-        );
-        mRequestQueue.add(request);
 
     }
 
     private void storeSessionId(String sessionId) {
+        Log.v(TAG, "saving Session id: "+sessionId);
         getAppSharedPreferences().edit().putString(SESSION_ID, sessionId).commit();
     }
 
@@ -675,55 +731,6 @@ public class NetworkRequestsManager implements Response.ErrorListener {
             headers.put("Session-Id", sessionId);
             return headers;
         }
-    }
-
-    private static ResponseError getResponseError(VolleyError volleyError) {
-        ResponseError error = ResponseError.UNKNOWN_ERROR;
-        NetworkResponse networkResponse = volleyError.networkResponse;
-        String responseString="";
-        if (networkResponse != null) {
-            try {
-                Log.v(TAG , ".getResponseError code :"+networkResponse.statusCode);
-                responseString = new String(networkResponse.data, HttpHeaderParser.parseCharset(networkResponse.headers));
-                Log.v(TAG, ".getResponseError body :" + responseString);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            switch (networkResponse.statusCode) {
-                case HttpStatus.SC_UNAUTHORIZED: // volley fails for 401
-                case HttpStatus.SC_FORBIDDEN:
-                    if (responseString.contains("incorrect session_id"))
-                        error = ResponseError.INCORRECT_SESSION_ID;
-                    else if (responseString.contains("no buyer associated"))
-                        error = ResponseError.NO_BUYER_ASSOCIATED;
-                    else
-                        error = ResponseError.SOME_OTHER_401;
-                    break;
-
-                case HttpStatus.SC_UNPROCESSABLE_ENTITY:
-                    if (responseString.contains("GCM errors")) {
-                        if (responseString.contains("NotRegistered"))
-                            error = ResponseError.GCM_NOT_REGISTERED;
-                        else if (responseString.contains("InvalidRegistration"))
-                            error = ResponseError.INVALID_GCM_ID;
-                        else
-                            error = ResponseError.OTHER_GCM_ERROR;
-                    }
-                    else
-                        error = ResponseError.SOME_OTHER_422;
-                    break;
-
-                case HttpStatus.SC_BAD_GATEWAY: // 502 a.k.a. server hangup
-                    error = ResponseError.SERVER_HANG_UP;
-                    break;
-            }
-        }
-        else if (volleyError instanceof TimeoutError)
-            error = ResponseError.VOLLEY_TIMEOUT;
-        else
-            error = ResponseError.NETWORK_RESPONSE_NULL;
-        Log.e(TAG, ".getResponseError returned " + error);
-        return error;
     }
 
     public void authorizeSession(boolean refreshGcmId) {
