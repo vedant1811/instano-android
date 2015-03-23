@@ -55,8 +55,8 @@ public class NetworkRequestsManager implements Response.ErrorListener {
 //    private static final String LOCAL_SERVER_URL = "http://52.1.202.4/";
     private static final String LOCAL_SERVER_URL = "http://192.168.1.36:3000/";
 
-    private final static String API_ERROR_ALREADY_TAKEN = "has already been taken";
-    private final static String API_ERROR_IS_BLANK = "can't be blank";
+    private static final String API_ERROR_ALREADY_TAKEN = "has already been taken";
+    private static final String API_ERROR_IS_BLANK = "can't be blank";
     public static final String SESSION_ID = "session_id";
 
     private static final String PROPERTY_GCM_ID = "GCM_id";
