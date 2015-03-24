@@ -18,6 +18,7 @@
 
 -keep class com.facebook.** { *; }
 -keepattributes Signature
+-keepattributes *Annotation*,EnclosingMethod,Signature
 -keepnames class com.fasterxml.jackson.** { *; }
 -dontwarn com.fasterxml.jackson.databind.**
 -keep class org.codehaus.** { *; }

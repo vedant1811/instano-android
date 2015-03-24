@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.android.volley.AuthFailureError;
@@ -22,6 +21,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -29,7 +29,6 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.utilities.library.JsonArrayRequest;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.library.StringRequest;
 import com.instano.retailer.instano.utilities.models.Buyer;
 import com.instano.retailer.instano.utilities.models.Device;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
@@ -52,8 +51,8 @@ import java.util.Map;
 public class NetworkRequestsManager implements Response.ErrorListener {
 
     private static final String TAG = "NetworkRequestsManager";
-//    private static final String LOCAL_SERVER_URL = "http://52.1.202.4/";
-    private static final String LOCAL_SERVER_URL = "http://192.168.1.36:3000/";
+    private static final String LOCAL_SERVER_URL = "http://52.1.202.4/";
+//    private static final String LOCAL_SERVER_URL = "http://192.168.1.36:3000/";
 
     private static final String API_ERROR_ALREADY_TAKEN = "has already been taken";
     private static final String API_ERROR_IS_BLANK = "can't be blank";
@@ -117,6 +116,7 @@ public class NetworkRequestsManager implements Response.ErrorListener {
         mRequestQueue = Volley.newRequestQueue(application);
         mJsonObjectMapper = new ObjectMapper();
         mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
+        mJsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     /*package*/
@@ -619,7 +619,8 @@ public class NetworkRequestsManager implements Response.ErrorListener {
         Log.v(TAG, "Device object  " + device.toString());
         try {
             jsonRequest = new JSONObject(mJsonObjectMapper.writeValueAsString(device));
-            Log.v(TAG + ".DeviceId in request", jsonRequest.toString());
+            Log.v(TAG + ".sendDeviceRegisterRequest GcmId in Device", device.getGcm_registration_id());
+            Log.v(TAG + ".DeviceId in Json request", jsonRequest.toString());
 
             JsonObjectRequest request = new JsonObjectRequest(getRequestUrl(RequestType.REGISTER_DEVICE,-1),
                     jsonRequest,
@@ -767,7 +768,7 @@ public class NetworkRequestsManager implements Response.ErrorListener {
     private void registerNewSession(String gcmId) {
         if (!gcmId.isEmpty()) {
             // Your implementation here.
-            Log.v(TAG, "Send regId  " + gcmId);
+            Log.v(TAG, ".registerNewSession Send regId  " + gcmId);
             Device device = new Device();
             device.setGcm_registration_id(gcmId);
             sendDeviceRegisterRequest(device);
