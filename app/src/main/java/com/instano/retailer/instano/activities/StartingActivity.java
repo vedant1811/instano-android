@@ -1,5 +1,6 @@
 package com.instano.retailer.instano.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,8 +13,11 @@ import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.models.Buyer;
 
-public class StartingActivity extends GlobalMenuActivity implements NetworkRequestsManager.SignInCallbacks {
+public class StartingActivity extends GlobalMenuActivity
+        implements NetworkRequestsManager.SignInCallbacks {
 
     private static final String SEARCH_ICON_HELP = "You can Search for products by clicking the icon in the action bar";
     private static final int SETUP_REQUEST_CODE = 1001;
@@ -53,7 +57,10 @@ public class StartingActivity extends GlobalMenuActivity implements NetworkReque
         ServicesSingleton instance = ServicesSingleton.instance();
 
         // in case buyer already has signed in (activity was killed for some reason) do not sign in again
-        NetworkRequestsManager.instance().registerCallback(this);
+        NetworkRequestsManager.instance().registerCallback((NetworkRequestsManager.SignInCallbacks) this);
+        NetworkRequestsManager.instance().registerCallback((NetworkRequestsManager.SessionIdCallback) this);
+
+
         if (instance.getBuyer() != null || instance.signIn()) {
             mText = WELCOME_BACK + SEARCH_ICON_HELP;
         }
@@ -63,13 +70,18 @@ public class StartingActivity extends GlobalMenuActivity implements NetworkReque
     }
 
     @Override
-    public void signedIn(boolean success) {
-        if (!success){
-            if (NetworkRequestsManager.instance().isOnline())
-                serverErrorDialog();
+    public void signedIn(NetworkRequestsManager.ResponseError error) {
+        if (error == NetworkRequestsManager.ResponseError.NO_ERROR) {
+            Buyer buyer = ServicesSingleton.instance().getBuyer();
+            if (buyer != null)
+                Toast.makeText(this, String.format("Welcome %s", buyer.getName()), Toast.LENGTH_SHORT).show();
             else
-                noInternetDialog();
+                Log.e(getClass().getSimpleName(), "Buyer is NULL but no error in signed in");
         }
+        else if (error == NetworkRequestsManager.ResponseError.INCORRECT_API_KEY)
+            ; // TODO: do something. currently treating as no signed in info present
+        else
+            onSessionResponse(error);
     }
 
     /**

@@ -36,15 +36,18 @@ public class DataManager {
 
     private HashSet<QuotesListener> mQuotesListeners;
     private HashSet<DealsListener> mDealsListeners;
+    private HashSet<SellersListener> mSellersListeners;
 
     public interface QuotesListener {
         public void quotesUpdated();
         public void quotationsUpdated();
-        public void sellersUpdated();
     }
 
     public interface DealsListener {
         public void dealsUpdated();
+    }
+
+    public interface SellersListener {
         public void sellersUpdated();
     }
 
@@ -62,6 +65,14 @@ public class DataManager {
 
     public void unregisterListener(@Nullable DealsListener dealsListener) {
         mDealsListeners.remove(dealsListener);
+    }
+
+    public void registerListener(@NonNull SellersListener sellersListener) {
+        mSellersListeners.add(sellersListener);
+    }
+
+    public void unregisterListener(@Nullable SellersListener sellersListener) {
+        mSellersListeners.remove(sellersListener);
     }
 
     public List<ProductCategories.Category> getProductCategories(boolean clearSelected) {
@@ -157,7 +168,7 @@ public class DataManager {
             }
         }
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.d(Log.TIMER_TAG, String.format("getNearbySellers took %.4fms", time));
+        Log.v(Log.TIMER_TAG, String.format("getNearbySellers took %.4fms", time));
         return nearbySellers;
     }
 
@@ -182,13 +193,13 @@ public class DataManager {
         ProductCategories productCategories = new ProductCategories(response, true);
         if (productCategories.equals(mProductCategories)) {
             double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-            Log.d(Log.TIMER_TAG, String.format("updateProductCategories took %.4fms", time));
+            Log.v(Log.TIMER_TAG, String.format("updateProductCategories took %.4fms", time));
             return false;
         }
         else {
             mProductCategories = productCategories;
             double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-            Log.d(Log.TIMER_TAG, String.format("updateProductCategories took %.4fms", time));
+            Log.v(Log.TIMER_TAG, String.format("updateProductCategories took %.4fms", time));
             return true;
         }
     }
@@ -207,7 +218,7 @@ public class DataManager {
                 }
             } catch (JSONException e) {
                 Log.e(TAG + ".updateQuotations", String.format("response: %s, i=%d", String.valueOf(response), i), e);
-                e.printStackTrace();
+                Log.fatalError(e);
             }
         }
         if (newUnread)
@@ -216,7 +227,7 @@ public class DataManager {
             for (QuotesListener quotesListener : mQuotesListeners)
                 quotesListener.quotationsUpdated();
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.d(Log.TIMER_TAG, String.format("updateQuotations took %.4fms", time));
+        Log.v(Log.TIMER_TAG, String.format("updateQuotations took %.4fms", time));
         return newEntries;
     }
 
@@ -243,7 +254,7 @@ public class DataManager {
 
             } catch (JSONException e) {
                 Log.e(TAG + ".updateQuotes", String.format("response: %s, i=%d", String.valueOf(response), i), e);
-                e.printStackTrace();
+                Log.fatalError(e);
             }
         }
 
@@ -251,7 +262,7 @@ public class DataManager {
             for (QuotesListener quotesListener : mQuotesListeners)
                 quotesListener.quotesUpdated();
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.d(Log.TIMER_TAG, String.format("updateQuotes took %.4fms", time));
+        Log.v(Log.TIMER_TAG, String.format("updateQuotes took %.4fms", time));
         return newEntries;
     }
 
@@ -267,18 +278,16 @@ public class DataManager {
                 }
             } catch (JSONException e) {
                 Log.e(TAG + ".updateSellers", String.format("response: %s, i=%d", String.valueOf(response), i), e);
-                e.printStackTrace();
+                Log.fatalError(e);
             }
         }
         if (newEntries) {
-            for (QuotesListener quotesListener : mQuotesListeners)
-                quotesListener.sellersUpdated();
-            for (DealsListener dealsListener : mDealsListeners)
-                dealsListener.sellersUpdated();
+            for (SellersListener listener : mSellersListeners)
+                listener.sellersUpdated();
         }
 
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.d(Log.TIMER_TAG, String.format("updateSellers took %.4fms", time));
+        Log.v(Log.TIMER_TAG, String.format("updateSellers took %.4fms", time));
         return newEntries;
     }
 
@@ -294,7 +303,7 @@ public class DataManager {
                 }
             } catch (JSONException e) {
                 Log.e(TAG + ".updateSellers", String.format("response: %s, i=%d", String.valueOf(response), i), e);
-                e.printStackTrace();
+                Log.fatalError(e);
             }
         }
         if (newEntries)
@@ -302,7 +311,7 @@ public class DataManager {
                 dealsListener.dealsUpdated();
 
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.d(Log.TIMER_TAG, String.format("updateDeals took %.4fms", time));
+        Log.v(Log.TIMER_TAG, String.format("updateDeals took %.4fms", time));
         return newEntries;
     }
 
@@ -318,6 +327,6 @@ public class DataManager {
         mDeals = new ArrayList<Deal>();
         mQuotesListeners = new HashSet<QuotesListener>();
         mDealsListeners = new HashSet<DealsListener>();
+        mSellersListeners = new HashSet<SellersListener>();
     }
-
 }

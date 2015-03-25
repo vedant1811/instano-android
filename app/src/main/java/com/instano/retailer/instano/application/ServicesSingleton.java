@@ -53,6 +53,7 @@ public class ServicesSingleton implements
     private final static String KEY_WHATSAPP_ID = "com.instano.retailer.instano.application.ServicesSingleton.whatsapp_id";
 
     public static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
+    public static final String SHARED_PREFERENCES_FILE = "com.instano.SHARED_PREFERENCES_FILE";
 
     private static ServicesSingleton sInstance;
 
@@ -86,15 +87,17 @@ public class ServicesSingleton implements
     public boolean signIn() {
         String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, null);
 
+        Log.v(TAG, "api key: " + String.valueOf(apiKey));
+
         if (apiKey != null) {
-            NetworkRequestsManager.instance().signInRequest(apiKey);
+            NetworkRequestsManager.instance().sendSignInRequest(apiKey);
             return true;
         }
         else
             return false;
     }
 
-    public boolean firstTime() {
+    public boolean isFirstTime() {
         if (BuildConfig.DEBUG)
             return true;
         else
@@ -104,45 +107,46 @@ public class ServicesSingleton implements
     /**
      * called after a signIn request
      * @param buyer null if no buyer with given api key
-     * @param apiKey null if no buyer with given api key
      */
-    /*package*/ void afterSignIn(@Nullable Buyer buyer, @Nullable String apiKey) {
+    /*package*/ void afterSignIn(@Nullable Buyer buyer) {
         mBuyer = buyer;
         Log.d(TAG, "buyer ID: " + mBuyer);
 
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putString(KEY_BUYER_API_KEY, apiKey); // clear saved API key if null
         editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
-        editor.apply();
+
+        // start periodic worker whether signed in successfully or not
+        mPeriodicWorker.start();
 
         if (buyer != null) {
-            Toast.makeText(mApplication, String.format("Welcome %s", mBuyer.getName()), Toast.LENGTH_SHORT).show();
-
+            Log.d(TAG, "saving buyer api key: " + buyer.getApi_key());
             Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
-            appTracker.setClientId(String.valueOf(mBuyer.getId()));
+            appTracker.setClientId(String.valueOf(buyer.getId()));
             appTracker.send(new HitBuilders.AppViewBuilder().build());
+            editor.putString(KEY_BUYER_API_KEY, buyer.getApi_key());
 
             DataManager.instance().onNewBuyer();
         }
-        // TODO: else
+        // TODO: do more on else
+
+        editor.apply();
     }
 
     public void runPeriodicTasks() {
         if (mBuyer != null) // i.e. if user is signed in
         {
-            NetworkRequestsManager.instance().getQuotesRequest(mBuyer); // also fetches quotations once quotes are fetched
+            NetworkRequestsManager.instance().getQuotesRequest(); // also fetches quotations once quotes are fetched
             NetworkRequestsManager.instance().getSellersRequest();
+            NetworkRequestsManager.instance().getDealsRequest();
         }
         else {
             String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, null);
             if (apiKey != null)
-                NetworkRequestsManager.instance().signInRequest(apiKey);
+                NetworkRequestsManager.instance().sendSignInRequest(apiKey);
         }
         if (DataManager.instance().getProductCategories(false) == null)
             NetworkRequestsManager.instance().getProductCategoriesRequest();
 
-        // always get deals:
-        NetworkRequestsManager.instance().getDealsRequest();
     }
 
     public void createNotification() {
@@ -180,9 +184,8 @@ public class ServicesSingleton implements
 
     private ServicesSingleton(MyApplication application) {
         mApplication = application;
-        mSharedPreferences = mApplication.getSharedPreferences(
-                "com.instano.SHARED_PREFERENCES_FILE", Context.MODE_PRIVATE);
-        mFirstTime = mSharedPreferences.getBoolean(KEY_FIRST_TIME, false);
+        mSharedPreferences = mApplication.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE);
+        mFirstTime = mSharedPreferences.getBoolean(KEY_FIRST_TIME, true);
         mUserAddress = null;
         mLastLocation = null;
         mBuyer = null;
@@ -197,7 +200,6 @@ public class ServicesSingleton implements
         // see http://www.androiddesignpatterns.com/2013/01/google-play-services-setup.html
 
         mPeriodicWorker = new PeriodicWorker(this);
-        mPeriodicWorker.start();
     }
 
     public boolean checkPlayServices() {
@@ -310,7 +312,7 @@ public class ServicesSingleton implements
                  */
             } catch (IntentSender.SendIntentException e) {
                 // Log the error
-                e.printStackTrace();
+                Log.fatalError(e);
             }
         } else {
             /*
@@ -330,7 +332,7 @@ public class ServicesSingleton implements
 
     public String getInstanoWhatsappId() {
         // TODO: set based on fetched data online
-        return mSharedPreferences.getString(KEY_WHATSAPP_ID, "917602631663");
+        return mSharedPreferences.getString(KEY_WHATSAPP_ID, "919916782444");
     }
 
     public interface InitialDataCallbacks {
@@ -369,7 +371,7 @@ public class ServicesSingleton implements
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
             date = simpleDateFormat.parse(sDate);
         } catch (ParseException e) {
-            e.printStackTrace();
+            Log.fatalError(e);
             return 0;
         }
         return date.getTime();

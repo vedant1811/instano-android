@@ -4,13 +4,17 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.ContactsContract;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
@@ -21,22 +25,37 @@ import com.instano.retailer.instano.utilities.models.Buyer;
  * Created by vedant on 26/12/14.
  */
 public class MessageDialogFragment extends DialogFragment implements View.OnClickListener {
+    private static final int ERROR_DIALOG_DELAY_MILLIS = 3500;
 
     private static final String KEY_ARG_HEADING = "ArgumentHeading";
-    private static final String KEY_ARG_TITLE = "ArgumentTitle";
+    private static final String KEY_ARG_SUBHEADING = "ArgumentTitle";
+    public static final String KEY_ARG_TYPE = "ArgumentType";
     private CharSequence mHeading;
-    private CharSequence mTitle;
+    private CharSequence mSubheading;
+    public int mViewFlipperState;
+    public ViewFlipper mViewFlipper;
+    private TextView mTitleTextView;
+    private Type dialogType;
 
-    public static MessageDialogFragment newInstance(String heading, String title) {
+    public enum Type{
+        CANCELLABLE,
+        NON_CANCELLABLE_WITH_TIMEOUTABLE_PROGRESSBAR,
+        NON_CANCELLABLE_WITHOUT_PROGRESSBAR
+    }
+
+    public static MessageDialogFragment newInstance(String heading, String subheading, Type type) {
         Bundle arguments = new Bundle();
         arguments.putString(KEY_ARG_HEADING, heading);
-        arguments.putString(KEY_ARG_TITLE, title);
+        arguments.putString(KEY_ARG_SUBHEADING, subheading);
+        arguments.putInt(KEY_ARG_TYPE, type.ordinal());
         MessageDialogFragment fragment = new MessageDialogFragment();
         fragment.setArguments(arguments);
         return fragment;
     }
 
-
+    public boolean isHeadingSameAs(CharSequence sequence) {
+        return TextUtils.equals(sequence, mHeading);
+    }
 
     @Override
     public void onClick(View v) {
@@ -108,27 +127,62 @@ public class MessageDialogFragment extends DialogFragment implements View.OnClic
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mHeading = getArguments().getString(KEY_ARG_HEADING);
-        mTitle = getArguments().getString(KEY_ARG_TITLE);
+        mSubheading = getArguments().getString(KEY_ARG_SUBHEADING);
+        dialogType = Type.values()[getArguments().getInt(KEY_ARG_TYPE)];
+        switch (dialogType) {
+            case CANCELLABLE:
+                break;
+            case NON_CANCELLABLE_WITH_TIMEOUTABLE_PROGRESSBAR:
+                mViewFlipperState = 1;
+                new Handler().postDelayed(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                if (isResumed() && mViewFlipper !=null) // unlikely but dont take chances
+                                    mViewFlipper.setDisplayedChild(0);
+                                else
+                                    mViewFlipperState = 0;
+                            }
+                        },
+                        ERROR_DIALOG_DELAY_MILLIS
+                );
+                // fall through to set cancellable false
+            case NON_CANCELLABLE_WITHOUT_PROGRESSBAR:
+                setCancelable(false);
+        }
     }
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_message_dialog, container, false);
 
-        TextView titleTextView = (TextView) rootView.findViewById(R.id.titleTextView);
+        mTitleTextView = (TextView) rootView.findViewById(R.id.titleTextView);
         Button sendSmsButton = (Button) rootView.findViewById(R.id.buttonSendSms);
         Button sendWhatsAppButton = (Button) rootView.findViewById(R.id.buttonSendWhatsapp);
         Button sendEmailButton = (Button) rootView.findViewById(R.id.buttonSendMail);
         Button addContactButton = (Button) rootView.findViewById(R.id.buttonAddContact);
-
-        getDialog().setTitle(mHeading);
-        titleTextView.setText(mTitle);
+        mViewFlipper = (ViewFlipper) rootView.findViewById(R.id.messageDialogFragmentViewFlipper);
+        ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.messageDialogProgressBar);
         sendSmsButton.setOnClickListener(this);
         sendWhatsAppButton.setOnClickListener(this);
         addContactButton.setOnClickListener(this);
         sendEmailButton.setOnClickListener(this);
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mViewFlipper.setDisplayedChild(mViewFlipperState);
+        getDialog().setTitle(mHeading);
+        mTitleTextView.setText(mSubheading);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mViewFlipperState = mViewFlipper.getDisplayedChild();
+        // headings do not change after creation so we do not need to save state for them
     }
 }

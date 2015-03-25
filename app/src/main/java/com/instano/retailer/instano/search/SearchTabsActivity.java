@@ -220,7 +220,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
                     mSearchConstraintsFragment.refreshSelectedCategory(mSelectedCategory, mSearchFragment.getSearchString());
 
                 double timeTaken = (System.nanoTime() - start)/Log.ONE_MILLION;
-                Log.d(Log.TIMER_TAG, "onPageSelected took " + timeTaken + "ms");
+                Log.v(Log.TIMER_TAG, "onPageSelected took " + timeTaken + "ms");
             }
 
             @Override
@@ -251,7 +251,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //                            .setTabListener(this));
 //        }
 
-        NetworkRequestsManager.instance().registerCallback(this);
+        NetworkRequestsManager.instance().registerCallback((NetworkRequestsManager.QuoteCallbacks) this);
 
     }
 
@@ -291,6 +291,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 
     @Override
     public void onQuoteSent(boolean success) {
+        Log.d(TAG, "onQuoteSent success=" + success);
         if (success) {
             quoteList();
             Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT).show();

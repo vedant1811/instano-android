@@ -18,6 +18,8 @@ import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.deals.DealListActivity;
 import com.instano.retailer.instano.search.SearchTabsActivity;
+import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.sellers.SellersActivity;
 
 /**
  * Base class for activities with a common menu (menu.global)
@@ -27,9 +29,11 @@ import com.instano.retailer.instano.search.SearchTabsActivity;
  *
  * Created by vedant on 15/12/14.
  */
-public abstract class GlobalMenuActivity extends BaseActivity {
+public abstract class GlobalMenuActivity extends BaseActivity implements NetworkRequestsManager.SessionIdCallback {
+    private static final String TAG = "GlobalMenuActivity";
     public static final int PICK_CONTACT_REQUEST_CODE = 996;
     public static final int SEND_SMS_REQUEST_CODE = 995;
+
     /**
      * used by subclasses as well
      */
@@ -59,9 +63,24 @@ public abstract class GlobalMenuActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        // register this callback each time an activity is resumed
+        NetworkRequestsManager.instance().registerCallback(this);
         if (!NetworkRequestsManager.instance().isOnline())
             noInternetDialog();
+    }
+
+    public void onSessionResponse(NetworkRequestsManager.ResponseError error) {
+        Log.v(TAG, "Response Error in Global "+error);
+        if (error == NetworkRequestsManager.ResponseError.NO_ERROR) {
+            cancelDialog();
+        } else {
+            MessageDialogFragment.Type type = error.isLongWaiting() ?
+                    MessageDialogFragment.Type.NON_CANCELLABLE_WITHOUT_PROGRESSBAR: // don't make user wait more
+                    MessageDialogFragment.Type.NON_CANCELLABLE_WITH_TIMEOUTABLE_PROGRESSBAR;
+
+            contactUs("Trouble connecting", "Please wait we are trying to connect or contact us", type);
+            NetworkRequestsManager.instance().authorizeSession(error.shouldRefreshGcmId());
+        }
     }
 
     @Override
@@ -77,6 +96,10 @@ public abstract class GlobalMenuActivity extends BaseActivity {
 
             case R.id.action_search:
                 search();
+                return true;
+
+            case R.id.action_sellers_list:
+                sellersList();
                 return true;
 
             case R.id.action_contact_us:
@@ -110,35 +133,59 @@ public abstract class GlobalMenuActivity extends BaseActivity {
         contactUs("No internet", TEXT_OFFLINE_QUERY);
     }
 
-    protected void contactUs() {
-        contactUs("Contact us", HOW_DO_YOU_WANT_TO_CONTACT_US);
+    protected void noPlayServicesDialog() {
+        contactUs("No Play Services", "Google Play Services is needed for the app. " +
+                "Contact us directly instead.", MessageDialogFragment.Type.NON_CANCELLABLE_WITHOUT_PROGRESSBAR);
     }
 
-    protected void contactUs(String heading, String title) {
-        // DialogFragment.show() will take care of adding the fragment
-        // in a transaction.  We also want to remove any currently showing
-        // dialog, so make our own transaction and take care of that here.
+    protected MessageDialogFragment contactUs() {
+        return contactUs("Contact us", HOW_DO_YOU_WANT_TO_CONTACT_US);
+    }
+    protected MessageDialogFragment contactUs(String heading, String title) {
+        return contactUs(heading, title, MessageDialogFragment.Type.CANCELLABLE);
+    }
+
+    protected MessageDialogFragment contactUs(String heading, String subheading, MessageDialogFragment.Type type) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         Fragment prev = getFragmentManager().findFragmentByTag(MESSAGE_DIALOG_FRAGMENT);
         if (prev != null) {
-            ft.remove(prev);
+            try {
+                MessageDialogFragment dialogFragment = (MessageDialogFragment) prev;
+                if (dialogFragment.isHeadingSameAs(heading))
+                    return dialogFragment; // the same dialog is already showing
+            } catch (ClassCastException e) {
+                ft.remove(prev);
+                Log.fatalError(e);
+            }
         }
         ft.addToBackStack(null);
 
         // Create and show the dialog.
-        DialogFragment newFragment = MessageDialogFragment.newInstance(heading, title);
+        DialogFragment newFragment = MessageDialogFragment.newInstance(heading, subheading, type);
         newFragment.show(ft, MESSAGE_DIALOG_FRAGMENT);
+        return (MessageDialogFragment) newFragment;
+    }
+
+    protected void cancelDialog() {
+        MessageDialogFragment prev = (MessageDialogFragment) getFragmentManager().findFragmentByTag(MESSAGE_DIALOG_FRAGMENT);
+        if(prev !=null) {
+            prev.dismiss();
+        }
     }
 
     protected void search() {
         ServicesSingleton instance = ServicesSingleton.instance();
         // TODO: decide behaviour
-        if ( /* instance.firstTime() && */ instance.getBuyer() == null) {
+        if ( /* instance.isFirstTime() && */ instance.getBuyer() == null) {
             Toast.makeText(this, "please create a profile first", Toast.LENGTH_LONG).show();
             profile();
         }
         else
             startActivity(new Intent(this, SearchTabsActivity.class));
+    }
+
+    protected void sellersList() {
+        startActivity(new Intent(this, SellersActivity.class));
     }
 
     protected void deals() {

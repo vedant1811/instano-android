@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.utilities.library.old;
+package com.instano.retailer.instano.sellers;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -8,8 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
@@ -20,11 +18,12 @@ import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Seller;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 /**
@@ -45,7 +44,6 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
     private Context mContext;
 
     private ItemInteractionListener mItemInteractionListener;
-    private SellersListener mSellersListener;
 
     public SellersArrayAdapter(Context context) {
         mContext = context;
@@ -58,10 +56,6 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
 
     public void setListener(ItemInteractionListener listener) {
         this.mItemInteractionListener = listener;
-    }
-
-    public void setListener(SellersListener sellersListener) {
-        mSellersListener = sellersListener;
     }
 
     public SparseArray<Seller> getAllSellers() {
@@ -87,7 +81,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 Log.d("mCheckedItems", String.format("getSelectedSellerIds %s (%d,%b)",seller.nameOfShop,seller.hashCode(),true));
             }
         double timeTaken = (System.nanoTime() - start)/1000;
-        Log.d("Timing", "updateSelectedSellers took " + timeTaken + "μs");
+        Log.v(Log.TIMER_TAG, "updateSelectedSellers took " + timeTaken + "μs");
     }
 
     @Override
@@ -115,32 +109,17 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         TextView shopNameTextView = (TextView) view.findViewById(R.id.shopNameTextView);
         TextView addressTextView = (TextView) view.findViewById(R.id.addressTextView);
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
-        CheckBox checkBox = null;
         ImageButton callImageButton = (ImageButton) view.findViewById(R.id.callImageButton);
 
         final Seller seller = getItem(position);
 
-        boolean checked = mCheckedItems.get(seller.hashCode(), true);
-        checkBox.setChecked(checked);
-        Log.d("mCheckedItems", String.format("initialized %s (%d,%b)", seller.nameOfShop, seller.hashCode(), checked));
-
-        checkBox.setOnCheckedChangeListener (new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mCheckedItems.put(seller.hashCode(), isChecked);
-                mSelectedSellerIDs = null;
-                if (mItemInteractionListener != null)
-                    mItemInteractionListener.itemCheckedStateChanged(getSelectedSellerIds().size());
-                Log.d("mCheckedItems", String.format("changed %s (%d,%b)",seller.nameOfShop,seller.hashCode(),isChecked));
-            }
-        });
-
         shopNameTextView.setText(seller.nameOfShop);
         addressTextView.setText(seller.address);
         String distanceFromLocation = seller.getPrettyDistanceFromLocation();
-        if (distanceFromLocation != null)
+        if (distanceFromLocation != null) {
+            distanceTextView.setVisibility(View.VISIBLE);
             distanceTextView.setText(distanceFromLocation);
-        else
+        } else
             distanceTextView.setVisibility(View.INVISIBLE);
 
         callImageButton.setOnClickListener(new View.OnClickListener() {
@@ -174,47 +153,12 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         return true;
     }
 
-    // TODO: equality of sellers is checked based on seller ID (i.e.seller.hashCode() ). In case a seller has updated details
-    // the seller will be skipped. Fix this.
-    /**
-     * Add a seller to this adapter if it does not already exist
-     * @param seller to be added
-     * @return true if the seller was successfully added, false if it already existed
-     */
-    private boolean add(Seller seller) {
-        int hash = seller.hashCode();
-        if (mCompleteSet.get(hash) == null) {
-            mCompleteSet.put(hash, seller);
-            if (mSellersListener != null)
-                mSellersListener.sellerAdded(seller);
-            // initially setting all sellers to checked
-            mCheckedItems.put(hash, true);
-            Log.d("mCheckedItems", String.format("added %s (%d,%b)",seller.nameOfShop,hash,true));
-            return true;
-        } else
-            return false;
-
-    }
-
-    public boolean addAll(JSONArray sellersJsonArray) throws JSONException {
-
-        boolean newAdded = false;
-
-        for (int i = 0; i < sellersJsonArray.length(); i++){
-            JSONObject sellerJsonObject = sellersJsonArray.getJSONObject(i);
-            try {
-                newAdded |= add(new Seller(sellerJsonObject));
-            } catch (JSONException e) {
-                Log.d(TAG, "", e);
-            }
+    public void addAll(Collection<Seller> collection) {
+        mCompleteSet.clear();
+        for (Seller seller : collection){
+            mCompleteSet.put(seller.id, seller);
         }
-
-        Log.d(TAG, "newAdded = " + newAdded);
-
-        if (newAdded) {
-            filter();
-        }
-        return newAdded;
+        filter();
     }
 
     public void filter() {
@@ -235,8 +179,6 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
             notifyDataSetInvalidated();
         else
             notifyDataSetChanged();
-        if (mItemInteractionListener != null)
-            mItemInteractionListener.itemCheckedStateChanged(getSelectedSellerIds().size());
     }
 
     /**
@@ -254,17 +196,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
     }
 
     public interface ItemInteractionListener {
-        /**
-         *
-         * @param selected number of selected items
-         */
-        public void itemCheckedStateChanged(int selected);
         public void callButtonClicked(String number);
-    }
-
-    public interface SellersListener {
-
-        public void sellerAdded(Seller seller);
     }
 
     private class DistanceAndCategoryFilter extends Filter {
@@ -329,6 +261,8 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                     filteredList.add(seller);
                 }
             }
+
+            Collections.sort(filteredList, new Seller.DistanceComparator());
 
             FilterResults filterResults = new FilterResults();
             filterResults.count = filteredList.size();

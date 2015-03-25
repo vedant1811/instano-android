@@ -15,6 +15,7 @@ public class PeriodicWorker {
 
     private Handler mHandler;
     private Runnable mRunnable;
+    private boolean mIsRunning = false;
 
     public PeriodicWorker(final ServicesSingleton services) {
         mHandler = new Handler();
@@ -28,11 +29,20 @@ public class PeriodicWorker {
         };
     }
 
+    /**
+     * idempotent
+     */
     public void start() {
-        mHandler.post(mRunnable);
+        if (!mIsRunning) {
+            mHandler.post(mRunnable);
+            mIsRunning = true;
+        }
     }
 
     public void stop() {
-        mHandler.removeCallbacks(mRunnable);
+        if (mIsRunning) {
+            mHandler.removeCallbacks(mRunnable);
+            mIsRunning = false;
+        }
     }
 }
