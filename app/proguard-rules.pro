@@ -15,6 +15,7 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-printmapping mapping.txt
 
 -keep class com.facebook.** { *; }
 -keepattributes Signature
