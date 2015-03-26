@@ -436,7 +436,7 @@ public class NetworkRequestsManager implements Response.ErrorListener {
             case GET_SELLERS:
                 return url + "buyers/sellers";
             case GET_PRODUCT_CATEGORIES:
-                return url + "buyers/brands_categories";
+                return url + "brands_categories";
             case GET_DEALS:
                 return url + "buyers/deals";
 
