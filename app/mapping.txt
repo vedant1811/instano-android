@@ -23505,6 +23505,8 @@ com.google.maps.android.ui.RotationLayout -> com.google.maps.android.ui.Rotation
     int mRotation -> a
     void onMeasure(int,int) -> onMeasure
     void dispatchDraw(android.graphics.Canvas) -> dispatchDraw
+com.instano.retailer.instano.BuildConfig -> com.instano.retailer.instano.a:
+    boolean DEBUG -> a
 com.instano.retailer.instano.activities.LauncherActivity -> com.instano.retailer.instano.activities.LauncherActivity:
     int SPLASH_TIME_OUT -> d
     java.lang.String TAG -> e

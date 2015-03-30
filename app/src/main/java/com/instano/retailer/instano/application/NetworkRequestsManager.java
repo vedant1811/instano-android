@@ -51,7 +51,7 @@ import java.util.Map;
 public class NetworkRequestsManager implements Response.ErrorListener {
 
     private static final String TAG = "NetworkRequestsManager";
-    private static final String LOCAL_SERVER_URL = "http://52.1.202.4/";
+    private static final String LOCAL_SERVER_URL = "http://staging.instano.in/";
 //    private static final String LOCAL_SERVER_URL = "http://192.168.1.36:3000/";
 
     private final static String API_ERROR_ALREADY_TAKEN = "has already been taken";
