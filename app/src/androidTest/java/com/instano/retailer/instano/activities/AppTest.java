@@ -48,7 +48,7 @@ public class AppTest extends ActivityInstrumentationTestCase2<LauncherActivity> 
             solo.clearEditText(1);
             solo.enterText(1, "" + phno);
             solo.clickOnButton("Set Up");
-            solo.wait(1500);
+//            solo.wait(1500);
             textExist = solo.waitForText("already taken. Contact us if this is an error",1,1000)||
                     solo.waitForText("Enter 10 digits",1,1000);
         }

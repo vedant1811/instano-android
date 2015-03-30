@@ -16,6 +16,11 @@
 #   public *;
 #}
 
+-printmapping proguard-mapping.txt
+#-useuniqueclassmembernames
+#-keepattributes SourceFile,LineNumberTable
+#-allowaccessmodification
+
 -keep class com.facebook.** { *; }
 -keepattributes Signature
 -keepattributes *Annotation*,EnclosingMethod,Signature
