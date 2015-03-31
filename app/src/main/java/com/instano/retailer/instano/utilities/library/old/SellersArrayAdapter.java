@@ -84,7 +84,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         for (Seller seller : mFilteredList)
             if (mCheckedItems.get(seller.hashCode())) {
                 mSelectedSellerIDs.add(seller.hashCode());
-                Log.d("mCheckedItems", String.format("getSelectedSellerIds %s (%d,%b)",seller.nameOfShop,seller.hashCode(),true));
+                Log.d("mCheckedItems", String.format("getSelectedSellerIds %s (%d,%b)",seller.name_of_shop,seller.hashCode(),true));
             }
         double timeTaken = (System.nanoTime() - start)/1000;
         Log.d("Timing", "updateSelectedSellers took " + timeTaken + "μs");
@@ -122,7 +122,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
 
         boolean checked = mCheckedItems.get(seller.hashCode(), true);
         checkBox.setChecked(checked);
-        Log.d("mCheckedItems", String.format("initialized %s (%d,%b)", seller.nameOfShop, seller.hashCode(), checked));
+        Log.d("mCheckedItems", String.format("initialized %s (%d,%b)", seller.name_of_shop, seller.hashCode(), checked));
 
         checkBox.setOnCheckedChangeListener (new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -131,11 +131,11 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 mSelectedSellerIDs = null;
                 if (mItemInteractionListener != null)
                     mItemInteractionListener.itemCheckedStateChanged(getSelectedSellerIds().size());
-                Log.d("mCheckedItems", String.format("changed %s (%d,%b)",seller.nameOfShop,seller.hashCode(),isChecked));
+                Log.d("mCheckedItems", String.format("changed %s (%d,%b)",seller.name_of_shop,seller.hashCode(),isChecked));
             }
         });
 
-        shopNameTextView.setText(seller.nameOfShop);
+        shopNameTextView.setText(seller.name_of_shop);
         addressTextView.setText(seller.address);
         String distanceFromLocation = seller.getPrettyDistanceFromLocation();
         if (distanceFromLocation != null)
@@ -189,7 +189,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 mSellersListener.sellerAdded(seller);
             // initially setting all sellers to checked
             mCheckedItems.put(hash, true);
-            Log.d("mCheckedItems", String.format("added %s (%d,%b)",seller.nameOfShop,hash,true));
+            Log.d("mCheckedItems", String.format("added %s (%d,%b)",seller.name_of_shop,hash,true));
             return true;
         } else
             return false;

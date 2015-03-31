@@ -5,6 +5,7 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.instano.retailer.instano.application.ServicesSingleton;
 
 import org.json.JSONArray;
@@ -17,24 +18,39 @@ import java.util.Comparator;
  * Represents a single immutable Seller
  */
 public class Seller {
-    public final static double INVALID_COORDINATE = -1000; // an invalid coordinate
+    public  static double INVALID_COORDINATE = -1000; // an invalid coordinate
 
-    public final int id; // server generated
-    public final String nameOfShop;
-    public final String nameOfSeller;
-    public final String address; // newline separated
+    @JsonProperty("id")
+    public  int id; // server generated
+    @JsonProperty("name_of_shop")
+    public  String name_of_shop;
+    @JsonProperty("name_of_seller")
+    public  String name_of_seller;
+    @JsonProperty("address")
+    public  String address; // newline separated
     // TODO: convert to Pointer Double that can be null instead of being INVALID_COORDINATE
-    public final double latitude;
-    public final double longitude;
-    public final String phone; // TODO: maybe make it a list of Strings
-    public final int rating; // rating is out of 50, displayed out of 5.0
-    public final String email;
-    public final ProductCategories productCategories;
+    @JsonProperty("latitude")
+    public  double latitude;
+    @JsonProperty("longitude")
+    public  double longitude;
+    @JsonProperty("phone")
+    public  String phone; // TODO: maybe make it a list of Strings
+    @JsonProperty("status")
+    public String status;
+    public  int rating; // rating is out of 50, displayed out of 5.0
+    @JsonProperty("email")
+    public  String email;
+//    @JsonProperty("categories")
+    public  ProductCategories productCategories;
+
+    public Seller() {
+
+    }
 
     public Seller(int id, String nameOfShop, String nameOfSeller, String address, double latitude, double longitude, String phone, int rating, String email, ProductCategories productCategories) {
         this.id = id;
-        this.nameOfShop = nameOfShop;
-        this.nameOfSeller = nameOfSeller;
+        this.name_of_shop = nameOfShop;
+        this.name_of_seller = nameOfSeller;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -49,8 +65,8 @@ public class Seller {
      */
     public Seller(String nameOfShop, String nameOfSeller, String address, double latitude, double longitude, String phone, String email, ProductCategories productCategories) {
         this.id = -1;
-        this.nameOfShop = nameOfShop.trim();
-        this.nameOfSeller = nameOfSeller.trim();
+        this.name_of_shop = nameOfShop.trim();
+        this.name_of_seller = nameOfSeller.trim();
         this.address = address.trim();
         this.latitude = latitude;
         this.longitude = longitude;
@@ -62,8 +78,8 @@ public class Seller {
 
     public Seller(JSONObject sellerJsonObject) throws JSONException {
         id = sellerJsonObject.getInt("id");
-        nameOfShop = sellerJsonObject.getString("name_of_shop");
-        nameOfSeller = sellerJsonObject.getString("name_of_seller");
+        name_of_shop = sellerJsonObject.getString("name_of_shop");
+        name_of_seller = sellerJsonObject.getString("name_of_seller");
         address = sellerJsonObject.getString("address");
 
         double latitude = INVALID_COORDINATE;
@@ -94,8 +110,8 @@ public class Seller {
 
     public JSONObject toJsonObject() throws JSONException {
         JSONObject retailerParamsJsonObject = new JSONObject();
-        retailerParamsJsonObject.put("name_of_shop", nameOfShop)
-                .put("name_of_seller", nameOfSeller)
+        retailerParamsJsonObject.put("name_of_shop", name_of_shop)
+                .put("name_of_seller", name_of_seller)
                 .put("address", address)
                 .put("latitude", latitude)
                 .put("longitude", longitude)
@@ -178,7 +194,7 @@ public class Seller {
 
             if (lhsDistance == rhsDistance) // happens if distance is unavailable
                 // compare alphabetically
-                return lhs.nameOfShop.compareTo(rhs.nameOfShop);
+                return lhs.name_of_shop.compareTo(rhs.name_of_shop);
             if (lhsDistance == -1)
                 return 1;
             if (rhsDistance == -1)

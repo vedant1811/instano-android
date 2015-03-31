@@ -6,14 +6,21 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 
-
+import com.android.volley.RequestQueue;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.LauncherActivity;
 import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.models.Seller;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 /**
  * Created by ROHIT on 09-Mar-15.
@@ -22,6 +29,10 @@ public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
     private NotificationManager mNotificationManager;
     private static final String TAG = "GcmIntentService";
+    private static final String LOCAL_SERVER_URL = "http://staging.instano.in/";
+    String SESSION_ID;
+    private RequestQueue mRequestQueue;
+    private ObjectMapper mJsonObjectMapper;
 
     public GcmIntentService() {
         super("GcmIntentService");
@@ -52,10 +63,29 @@ public class GcmIntentService extends IntentService {
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 // Post notification of received message.
-//                sendNotification("Received: " + extras.toString());
-//                Log.i(TAG, "Received: " + extras.getString("buyer"));
-                String session_id = extras.getString("session_id");
-                Log.v(TAG, "Received: " + session_id);
+                sendNotification("Received: " + extras.toString());
+                Log.v(TAG, "Received: " + extras);
+/*                SESSION_ID = extras.getString("session_id");
+//                getSellersRequest();
+                Log.v(TAG, "Received: " + SESSION_ID);*/
+                String seller = extras.getString("seller");
+                Log.v(TAG, "Received Seller: " + seller);
+                Log.v(TAG,"TYPE : "+ extras.getString("type"));
+                mJsonObjectMapper = new ObjectMapper();
+//                mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
+                mJsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                try {
+                    Seller sellerObject = mJsonObjectMapper.readValue(extras.getString("seller"),Seller.class);
+                    JSONObject jsonObject = new JSONObject(mJsonObjectMapper.writeValueAsString(sellerObject));
+                    Log.v(TAG,"Seller object : "+ sellerObject);
+                    Log.v(TAG,"Seller json : "+ jsonObject);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.v(TAG,"Seller object error : "+ e);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.v(TAG,"Seller json error : "+ e);
+                }
                 Log.v(TAG, "Received: " + extras.toString());
             }
         }
@@ -69,7 +99,7 @@ public class GcmIntentService extends IntentService {
     private void sendNotification(String msg) {
         mNotificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
-
+        Log.v(TAG,"sendNotification");
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, LauncherActivity.class), 0);
 

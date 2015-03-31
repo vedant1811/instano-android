@@ -123,7 +123,7 @@ public class QuotationsArrayAdapter extends BaseAdapter {
         Seller seller = DataManager.instance().getSeller(quotation.sellerId);
         // TODO: better handle error
         if (seller != null) {
-            nameOfShop = seller.nameOfShop;
+            nameOfShop = seller.name_of_shop;
             String distance = seller.getPrettyDistanceFromLocation();
             if (distance != null)
                 distanceTextView.setText(distance);

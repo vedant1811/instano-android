@@ -124,7 +124,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         Marker newMarker = mMap.addMarker(
                 new MarkerOptions()
                         .position(new LatLng(seller.latitude, seller.longitude))
-                        .title(seller.nameOfShop)
+                        .title(seller.name_of_shop)
                         .snippet(seller.address)
         );
         mSellerMarkers.put(newMarker, seller);

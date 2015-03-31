@@ -212,7 +212,7 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
                 TextView distanceTextView = (TextView) convertView.findViewById(R.id.distanceTextView);
                 ImageButton callImageButton = (ImageButton) convertView.findViewById(R.id.callImageButton);
 
-                sellerNameTextView.setText(seller.nameOfSeller);
+                sellerNameTextView.setText(seller.name_of_seller);
                 addressTextView.setText(seller.address);
                 String distanceFromLocation = seller.getPrettyDistanceFromLocation();
                 if (distanceFromLocation != null)
@@ -281,7 +281,7 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
 
             TextView mainTextView = (TextView) convertView.findViewById(R.id.mainTextView);
             TextView responsesTextView = (TextView) convertView.findViewById(R.id.responsesTextView);
-            mainTextView.setText(seller.nameOfShop);
+            mainTextView.setText(seller.name_of_shop);
             int numResponses = getChildrenCount(groupPosition) - 1; // since one child is seller
             responsesTextView.setText(numResponses + " responses");
 

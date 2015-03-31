@@ -78,7 +78,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         for (Seller seller : mFilteredList)
             if (mCheckedItems.get(seller.hashCode())) {
                 mSelectedSellerIDs.add(seller.hashCode());
-                Log.d("mCheckedItems", String.format("getSelectedSellerIds %s (%d,%b)",seller.nameOfShop,seller.hashCode(),true));
+                Log.d("mCheckedItems", String.format("getSelectedSellerIds %s (%d,%b)",seller.name_of_shop,seller.hashCode(),true));
             }
         double timeTaken = (System.nanoTime() - start)/1000;
         Log.v(Log.TIMER_TAG, "updateSelectedSellers took " + timeTaken + "μs");
@@ -113,7 +113,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
 
         final Seller seller = getItem(position);
 
-        shopNameTextView.setText(seller.nameOfShop);
+        shopNameTextView.setText(seller.name_of_shop);
         addressTextView.setText(seller.address);
         String distanceFromLocation = seller.getPrettyDistanceFromLocation();
         if (distanceFromLocation != null) {

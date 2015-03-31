@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -150,7 +149,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         Marker newMarker = mMap.addMarker(
                 new MarkerOptions()
                         .position(new LatLng(seller.latitude, seller.longitude))
-                        .title(seller.nameOfShop)
+                        .title(seller.name_of_shop)
         );
         mSellerMarkers.put(newMarker, seller);
     }
@@ -167,7 +166,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         if (seller != null) { // can be another marker
             mSelectedSeller = seller;
             mTopmostSellerInfoView.setVisibility(View.VISIBLE);
-            mShopName.setText(mSelectedSeller.nameOfShop);
+            mShopName.setText(mSelectedSeller.name_of_shop);
             mDistanceTextView.setText(mSelectedSeller.getPrettyDistanceFromLocation());
             mShopAddress.setText(mSelectedSeller.address);
         }

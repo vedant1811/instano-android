@@ -107,8 +107,8 @@ public class DealDetailFragment extends Fragment {
         if (seller == null)
             return view;
 
-        shopNameTextView.setText(seller.nameOfShop);
-        sellerNameTextView.setText(seller.nameOfSeller);
+        shopNameTextView.setText(seller.name_of_shop);
+        sellerNameTextView.setText(seller.name_of_seller);
         addressTextView.setText(seller.address);
         distanceTextView.setText(seller.getPrettyDistanceFromLocation());
         callImageButton.setOnClickListener(new View.OnClickListener() {

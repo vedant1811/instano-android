@@ -23632,6 +23632,7 @@ com.instano.retailer.instano.application.GcmBroadcastReceiver -> com.instano.ret
     void onReceive(android.content.Context,android.content.Intent) -> onReceive
 com.instano.retailer.instano.application.GcmIntentService -> com.instano.retailer.instano.application.GcmIntentService:
     android.app.NotificationManager mNotificationManager -> a
+    com.fasterxml.jackson.databind.ObjectMapper mJsonObjectMapper -> b
     void onHandleIntent(android.content.Intent) -> onHandleIntent
     void sendNotification(java.lang.String) -> a
 com.instano.retailer.instano.application.MyApplication -> com.instano.retailer.instano.application.MyApplication:
@@ -24506,16 +24507,17 @@ com.instano.retailer.instano.utilities.models.Quote -> com.instano.retailer.inst
     java.lang.String getPrettyTimeElapsed() -> a
     org.json.JSONObject toJsonObject() -> b
 com.instano.retailer.instano.utilities.models.Seller -> com.instano.retailer.instano.utilities.a.h:
-    int id -> a
-    java.lang.String nameOfShop -> b
-    java.lang.String nameOfSeller -> c
-    java.lang.String address -> d
-    double latitude -> e
-    double longitude -> f
-    java.lang.String phone -> g
-    int rating -> h
-    java.lang.String email -> i
-    com.instano.retailer.instano.utilities.models.ProductCategories productCategories -> j
+    double INVALID_COORDINATE -> a
+    int id -> b
+    java.lang.String name_of_shop -> c
+    java.lang.String name_of_seller -> d
+    java.lang.String address -> e
+    double latitude -> f
+    double longitude -> g
+    java.lang.String phone -> h
+    int rating -> i
+    java.lang.String email -> j
+    com.instano.retailer.instano.utilities.models.ProductCategories productCategories -> k
     java.lang.String getPrettyDistanceFromLocation() -> a
     boolean equals(java.lang.Object) -> equals
     int hashCode() -> hashCode

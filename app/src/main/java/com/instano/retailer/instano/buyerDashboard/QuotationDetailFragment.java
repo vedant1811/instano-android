@@ -68,8 +68,8 @@ public class QuotationDetailFragment extends Fragment {
         TextView additionalInfoTextView = (TextView) rootView.findViewById(R.id.additionalInfoTextView);
 //        Button acceptDealButton = (Button) rootView.findViewById(R.id.acceptDealButton);
 
-        shopNameTextView.setText(seller.nameOfShop);
-        sellerNameTextView.setText(seller.nameOfSeller);
+        shopNameTextView.setText(seller.name_of_shop);
+        sellerNameTextView.setText(seller.name_of_seller);
         queryTextView.setText(quote.searchString);
         modelTextView.setText(quotation.nameOfProduct);
         priceTextView.setText(String.format("₹%,d", quotation.price));
