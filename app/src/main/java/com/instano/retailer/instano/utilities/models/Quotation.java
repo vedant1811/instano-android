@@ -1,5 +1,6 @@
 package com.instano.retailer.instano.utilities.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.instano.retailer.instano.application.ServicesSingleton;
 
 import org.json.JSONException;
@@ -13,16 +14,24 @@ public class Quotation {
     private final static String STATUS_UNREAD  = "unread";
     private final static String STATUS_READ  = "read";
 
+    @JsonProperty("id")
     public final int id; // server generated
+    @JsonProperty("name_of_product")
     public final String nameOfProduct; // TODO: in future probably make a generic `Product` class
+    @JsonProperty("price")
     public final int price;
+    @JsonProperty("description")
     public final String description;
+    @JsonProperty("seller_id")
     public final int sellerId;
+    @JsonProperty("quote_id")
     public final int quoteId; // the id of the quote being replied to
+    @JsonProperty("created_at")
     public final long createdAt;
 //        public final URL imageUrl; // can be null
 
     /* modifiable fields */
+    @JsonProperty("status")
     private String mStatus;
 
     public boolean isRead() {

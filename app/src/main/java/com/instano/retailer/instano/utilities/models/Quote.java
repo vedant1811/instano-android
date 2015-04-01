@@ -2,6 +2,7 @@ package com.instano.retailer.instano.utilities.models;
 
 import android.support.annotation.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.Log;
 
@@ -17,23 +18,34 @@ import java.util.HashSet;
 public class Quote {
     public final static double INVALID_COORDINATE = -1000; // an invalid coordinate
 
-    public final int id;
-    public final int buyerId;
-    public final String searchString;
+    @JsonProperty("id")
+    public  int id;
+    @JsonProperty("buyer_id")
+    public  int buyerId;
+    @JsonProperty("search_string")
+    public  String searchString;
 
     /**
      * human readable display for price
      * can be null
      */
-    public final String priceRange;
-    public final ProductCategories.Category productCategory;
-    public final String brands;
-    public final long updatedAt; // valid only when constructed from Quote(JSONObject jsonObject)
-    public final HashSet<Integer> sellerIds;
+    @JsonProperty("price_range")
+    public  String priceRange;
+    @JsonProperty("product_category")
+    public  ProductCategories.Category productCategory;
+    @JsonProperty("brands")
+    public  String brands;
+//    @JsonProperty("updated_at")
+    public  long updatedAt; // valid only when constructed from Quote(JSONObject jsonObject)
+    @JsonProperty("seller_ids")
+    public  HashSet<Integer> sellerIds;
     @Nullable
-    public final String address; // newline separated
-    public final double latitude;
-    public final double longitude;
+    @JsonProperty("address")
+    public  String address; // newline separated
+    @JsonProperty("latitude")
+    public  double latitude;
+    @JsonProperty("longitude")
+    public  double longitude;
 
     public static int getIdFrom (JSONObject quoteJsonObject) {
         try {
@@ -41,6 +53,10 @@ public class Quote {
         } catch (JSONException e) {
             return -1;
         }
+    }
+
+    public Quote () {
+        // Dummy constructor for Json Jackson
     }
 
     public Quote(int id, int buyerId, String searchString,
