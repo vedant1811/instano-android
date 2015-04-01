@@ -29,15 +29,14 @@ import java.io.IOException;
  */
 public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
-    private NotificationManager mNotificationManager;
     private static final String TAG = "GcmIntentService";
-    private static final String LOCAL_SERVER_URL = "http://staging.instano.in/";
-    String SESSION_ID;
-    private RequestQueue mRequestQueue;
     private ObjectMapper mJsonObjectMapper;
 
     public GcmIntentService() {
         super("GcmIntentService");
+        mJsonObjectMapper = new ObjectMapper();
+        mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
+        mJsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -67,9 +66,6 @@ public class GcmIntentService extends IntentService {
                 // Post notification of received message.
                 sendNotification("Received: " + extras.toString());
                 Log.v(TAG, "Received: " + extras);
-/*                SESSION_ID = extras.getString("session_id");
-//                getSellersRequest();
-                Log.v(TAG, "Received: " + SESSION_ID);*/
                 Log.v(TAG,"TYPE : "+ extras.getString("type"));
                 if(extras.getString("type").contains("seller")) {
                     jsonToSeller(extras);
@@ -88,9 +84,6 @@ public class GcmIntentService extends IntentService {
     private  void jsonToQuotation(Bundle bundle) {
         String quotation = bundle.getString("quotation");
         Log.v(TAG, "Received quotation: " + quotation);
-        mJsonObjectMapper = new ObjectMapper();
-        mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
-        mJsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             String jsonArrayContent = bundle.getString("quotation");
             JSONArray jsonArray = new JSONArray(jsonArrayContent);
@@ -103,9 +96,6 @@ public class GcmIntentService extends IntentService {
     private void jsonToQuotes(Bundle bundle) {
         String quotes = bundle.getString("quotes");
         Log.v(TAG, "Received Quotes: " + quotes);
-        mJsonObjectMapper = new ObjectMapper();
-        mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
-        mJsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             String jsonArrayContent = bundle.getString("quotes");
             JSONArray jsonArray = new JSONArray(jsonArrayContent);
@@ -124,9 +114,6 @@ public class GcmIntentService extends IntentService {
     private  void  jsonToSeller(Bundle bundle) {
         String seller = bundle.getString("seller");
         Log.v(TAG, "Received Seller: " + seller);
-        mJsonObjectMapper = new ObjectMapper();
-//                mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
-        mJsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             Seller sellerObject = mJsonObjectMapper.readValue(bundle.getString("seller"),Seller.class);
             JSONObject jsonObject = new JSONObject(mJsonObjectMapper.writeValueAsString(sellerObject));
@@ -145,7 +132,7 @@ public class GcmIntentService extends IntentService {
     // This is just one simple example of what you might choose to do with
     // a GCM message.
     private void sendNotification(String msg) {
-        mNotificationManager = (NotificationManager)
+        NotificationManager notificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
         Log.v(TAG,"sendNotification");
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
@@ -160,6 +147,6 @@ public class GcmIntentService extends IntentService {
                         .setContentText(msg);
 
         mBuilder.setContentIntent(contentIntent);
-        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 }
