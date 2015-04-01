@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * Represents a single immutable Seller
@@ -40,7 +41,8 @@ public class Seller {
     public  int rating; // rating is out of 50, displayed out of 5.0
     @JsonProperty("email")
     public  String email;
-//    @JsonProperty("categories")
+    @JsonProperty("categories")
+    public List<ProductCategories.Category> categories;
     public  ProductCategories productCategories;
 
     public Seller() {
