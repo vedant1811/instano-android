@@ -15,55 +15,36 @@ import java.util.List;
 /**
  * Created by vedant on 8/10/14.
  */
-public class ProductCategories {
+public class ProductCategories extends ArrayList<ProductCategories.Category> {
 
     public static final String UNDEFINED = "Select Category";
 
     private static final String TAG = "ProductCategories";
-    private ArrayList<Category> mCategories;
 
     @NonNull
     public List<Category> getProductCategories() {
-        return Collections.unmodifiableList(mCategories);
+        return Collections.unmodifiableList(this);
     }
 
     public void clearSelected() {
-        for (Category category : mCategories)
+        for (Category category : this)
             category.setSelected(null, false);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ProductCategories that = (ProductCategories) o;
-
-        if (!mCategories.equals(that.mCategories)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return mCategories.hashCode();
-    }
-
     public ProductCategories(JSONObject json, boolean allowUndefined) {
-        mCategories = new ArrayList<Category>();
         try {
             JSONArray categories = json.getJSONArray("categories");
             for (int i = 0; i < categories.length(); i++) {
-                mCategories.add(new Category(
+                this.add(new Category(
                         categories.getJSONObject(i)
                 ));
             }
         } catch (JSONException e) {
             Log.e(TAG, "", e);
         }
-        Collections.sort(mCategories);
+        Collections.sort(this);
         if (allowUndefined)
-            mCategories.add(0, Category.undefinedCategory()); // insert at start
+            this.add(0, Category.undefinedCategory()); // insert at start
     }
 
     public boolean contains(String categoryName) {
@@ -72,7 +53,7 @@ public class ProductCategories {
             return true; // undefined is contained in every category
 
         // TODO: make it a check via hash
-        for (Category category : mCategories)
+        for (Category category : this)
             if (category.name.equals(categoryName))
                 return true;
         return false;
@@ -83,7 +64,7 @@ public class ProductCategories {
         if (categoryToMatch.name.equals(UNDEFINED))
             return true;
 
-        for (Category oneCategory : mCategories)
+        for (Category oneCategory : this)
             if (oneCategory.name.equals(categoryToMatch.name)) { // category is matched
 
                 // if no brands specified either category, then consider it matched

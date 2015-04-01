@@ -42,7 +42,6 @@ public class Seller {
     @JsonProperty("email")
     public  String email;
     @JsonProperty("categories")
-    public List<ProductCategories.Category> categories;
     public  ProductCategories productCategories;
 
     public Seller() {
