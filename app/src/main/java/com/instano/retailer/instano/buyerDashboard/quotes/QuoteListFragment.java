@@ -52,9 +52,15 @@ public class QuoteListFragment extends ListFragment implements DataManager.Quote
     public void quotesUpdated() {
         long start = System.nanoTime();
 
-        QuotesAdapter adapter = (QuotesAdapter) getListAdapter();
-        adapter.clear();
-        adapter.addAll(DataManager.instance().getQuotes());
+        final QuotesAdapter adapter = (QuotesAdapter) getListAdapter();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.clear();
+                adapter.addAll(DataManager.instance().getQuotes());
+            }
+        });
+
 
         double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
         Log.v(Log.TIMER_TAG, String.format("QuotesAdapter.dataUpdated took %.4fms", time));

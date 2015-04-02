@@ -23,7 +23,7 @@ public class PeriodicWorker {
             @Override
             public void run() {
                 Log.d(TAG, "running");
-                services.runPeriodicTasks();
+//                services.runPeriodicTasks();
                 mHandler.postDelayed(this, REPEAT_INTERVAL);
             }
         };

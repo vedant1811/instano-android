@@ -17,7 +17,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -30,7 +29,6 @@ import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
-import com.instano.retailer.instano.utilities.PeriodicWorker;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
 
@@ -73,7 +71,7 @@ public class ServicesSingleton implements
 
     private Buyer mBuyer;
 
-    private PeriodicWorker mPeriodicWorker;
+//    private PeriodicWorker mPeriodicWorker;
 
     @Nullable
     public Buyer getBuyer() {
@@ -116,23 +114,6 @@ public class ServicesSingleton implements
         editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
 
         // start periodic worker whether signed in successfully or not
-        mPeriodicWorker.start();
-
-        if (buyer != null) {
-            Log.d(TAG, "saving buyer api key: " + buyer.getApi_key());
-            Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
-            appTracker.setClientId(String.valueOf(buyer.getId()));
-            appTracker.send(new HitBuilders.AppViewBuilder().build());
-            editor.putString(KEY_BUYER_API_KEY, buyer.getApi_key());
-
-            DataManager.instance().onNewBuyer();
-        }
-        // TODO: do more on else
-
-        editor.apply();
-    }
-
-    public void runPeriodicTasks() {
         if (mBuyer != null) // i.e. if user is signed in
         {
             NetworkRequestsManager.instance().getQuotesRequest(); // also fetches quotations once quotes are fetched
@@ -147,6 +128,18 @@ public class ServicesSingleton implements
         if (DataManager.instance().getProductCategories(false) == null)
             NetworkRequestsManager.instance().getProductCategoriesRequest();
 
+        if (buyer != null) {
+            Log.d(TAG, "saving buyer api key: " + buyer.getApi_key());
+            Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
+            appTracker.setClientId(String.valueOf(buyer.getId()));
+            appTracker.send(new HitBuilders.AppViewBuilder().build());
+            editor.putString(KEY_BUYER_API_KEY, buyer.getApi_key());
+
+            DataManager.instance().onNewBuyer();
+        }
+        // TODO: do more on else
+
+        editor.apply();
     }
 
     public void createNotification() {
@@ -198,8 +191,6 @@ public class ServicesSingleton implements
         mLocationClient.connect();
         checkPlayServices(); // not performing checkUserAccount
         // see http://www.androiddesignpatterns.com/2013/01/google-play-services-setup.html
-
-        mPeriodicWorker = new PeriodicWorker(this);
     }
 
     public boolean checkPlayServices() {
