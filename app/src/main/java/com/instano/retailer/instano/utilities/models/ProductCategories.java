@@ -2,6 +2,7 @@ package com.instano.retailer.instano.utilities.models;
 
 import android.support.annotation.NonNull;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.instano.retailer.instano.utilities.library.Log;
 
 import org.json.JSONArray;
@@ -29,6 +30,10 @@ public class ProductCategories extends ArrayList<ProductCategories.Category> {
     public void clearSelected() {
         for (Category category : this)
             category.setSelected(null, false);
+    }
+    public ProductCategories() {
+        //Dummy For Json
+
     }
 
     public ProductCategories(JSONObject json, boolean allowUndefined) {
@@ -78,12 +83,14 @@ public class ProductCategories extends ArrayList<ProductCategories.Category> {
     }
 
     public static class Category implements Comparable<Category> {
-        public final String name;
-        public final ArrayList<String> brands;
+        @JsonProperty("name")
+        public  String name;
+        @JsonProperty("brands")
+        public  ArrayList<String> brands;
 
         private boolean[] selected;
         private boolean mUserSelected = false;
-        private final ArrayList<String> nameVariants;
+        private  ArrayList<String> nameVariants;
 
         public boolean matches(String lowerCaseString) {
             for (String variant : nameVariants)

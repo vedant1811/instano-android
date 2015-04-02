@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
-import com.android.volley.RequestQueue;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -69,7 +68,7 @@ public class GcmIntentService extends IntentService {
                 Log.v(TAG,"TYPE : "+ extras.getString("type"));
                 if(extras.getString("type").contains("seller")) {
                     jsonToSeller(extras);
-                } else if (extras.getString("type").contains("quotes")) {
+                } else if (extras.getString("type").contains("quote")) {
                     jsonToQuotes(extras);
                 } else if(extras.getString("type").contains("quotations")) {
                     jsonToQuotation(extras);
@@ -94,10 +93,10 @@ public class GcmIntentService extends IntentService {
     }
 
     private void jsonToQuotes(Bundle bundle) {
-        String quotes = bundle.getString("quotes");
-        Log.v(TAG, "Received Quotes: " + quotes);
+        String quotes = bundle.getString("quote");
+        Log.v(TAG, "Received Quote : " + quotes);
         try {
-            String jsonArrayContent = bundle.getString("quotes");
+            String jsonArrayContent = bundle.getString("quote");
             JSONArray jsonArray = new JSONArray(jsonArrayContent);
             DataManager.instance().updateQuotes(jsonArray);
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -115,6 +114,9 @@ public class GcmIntentService extends IntentService {
         String seller = bundle.getString("seller");
         Log.v(TAG, "Received Seller: " + seller);
         try {
+            mJsonObjectMapper = new ObjectMapper();
+//            mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
+            mJsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             Seller sellerObject = mJsonObjectMapper.readValue(bundle.getString("seller"),Seller.class);
             JSONObject jsonObject = new JSONObject(mJsonObjectMapper.writeValueAsString(sellerObject));
             Log.v(TAG,"Seller object : "+ sellerObject);
