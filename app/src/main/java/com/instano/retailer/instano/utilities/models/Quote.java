@@ -77,7 +77,7 @@ public class Quote {
 
     public Quote(int buyerId, String searchString,
                  String priceRange, ProductCategories.Category productCategory, String brands,
-                 HashSet<Integer> sellerIds, String address, double latitude, double longitude) {
+                 String address, double latitude, double longitude) {
         this.productCategory = productCategory;
         this.sellerIds = sellerIds;
         this.id = -1;

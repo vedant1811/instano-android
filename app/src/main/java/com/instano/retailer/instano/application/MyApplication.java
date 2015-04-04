@@ -5,6 +5,7 @@ import android.app.Application;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 
 import java.util.HashMap;
@@ -13,9 +14,17 @@ public class MyApplication extends Application
 {
     private HashMap<TrackerName, Tracker> mTrackers;
 
+    /**
+     * Called when the application is starting, before any activity, service,
+     * or receiver objects (excluding content providers) have been created.
+     * Implementations should be as quick as possible (for example using
+     * lazy initialization of state) since the time spent in this function
+     * directly impacts the performance of starting the first activity,
+     * service, or receiver in a process.
+     * If you override this method, be sure to call super.onCreate().
+     */
     @Override
-    public void onCreate()
-    {
+    public void onCreate() {
         super.onCreate();
         mTrackers = new HashMap<TrackerName, Tracker>();
 

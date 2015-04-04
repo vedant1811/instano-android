@@ -7,14 +7,16 @@ import android.widget.EditText;
 import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.NetworkRequestsManager;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.ResponseError;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
 
-public class ProfileActivity extends GlobalMenuActivity
-        implements NetworkRequestsManager.RegistrationCallback {
+import rx.android.observables.AndroidObservable;
+
+public class ProfileActivity extends GlobalMenuActivity {
 
     private static final String ALREADY_TAKEN_ERROR = "already taken. Contact us if this is an error";
     private static final String TAG ="ProfileActivity";
@@ -41,8 +43,7 @@ public class ProfileActivity extends GlobalMenuActivity
         mNameEditText.setText(mName);
         mPhoneEditText.setText(mPhone);
         mSetUpViewFlipper.setDisplayedChild(mViewFlipperState);
-        Log.v(TAG,".onResume");
-        NetworkRequestsManager.instance().registerCallback((NetworkRequestsManager.RegistrationCallback) this);
+        Log.v(TAG, ".onResume");
     }
 
     @Override
@@ -55,16 +56,14 @@ public class ProfileActivity extends GlobalMenuActivity
         mSetUpViewFlipper = (ViewFlipper) findViewById(R.id.setUpViewFlipper);
         mSetUpButton = (Button) findViewById(R.id.setUpButton);
 
-        mPhoneEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                String text = mPhoneEditText.getText().toString();
-                if (!hasFocus && !text.equals("")) {
-                    if (checkPhoneNumber())
-                        NetworkRequestsManager.instance().buyerExistsRequest(text);
-                }
-            }
-        });
+        // TODO:
+//        mPhoneEditText.setOnFocusChangeListener((v, hasFocus) -> {
+//            String text = mPhoneEditText.getText().toString();
+//            if (!hasFocus && !text.equals("")) {
+//                if (checkPhoneNumber())
+//                    NetworkRequestsManager.instance().buyerExistsRequest(text);
+//            }
+//        });
 
         // check if a user exists:
         Buyer buyer = ServicesSingleton.instance().getBuyer();
@@ -101,7 +100,7 @@ public class ProfileActivity extends GlobalMenuActivity
 
         // TODO: add feature of updating profile
         if (ServicesSingleton.instance().getBuyer() != null)
-            onRegistration(NetworkRequestsManager.ResponseError.NO_ERROR);
+            finishWithResultOk();
 
         if ("".contentEquals(mNameEditText.getText())) {
             mNameEditText.setError("Cannot be empty");
@@ -115,35 +114,26 @@ public class ProfileActivity extends GlobalMenuActivity
 
         // all is good so proceed:
         mSetUpViewFlipper.showNext(); // progressbar
-        Buyer buyer = new Buyer();
-        buyer.setName(mNameEditText.getText().toString());
-        buyer.setPhone(mPhoneEditText.getText().toString()) ;
-        Log.v(TAG,"Buyer in setup clicked"+buyer);
-        NetworkRequestsManager.instance().registerRequest(buyer);
+        Buyer newBuyer = new Buyer();
+        newBuyer.setName(mNameEditText.getText().toString());
+        newBuyer.setPhone(mPhoneEditText.getText().toString()) ;
+        Log.v(TAG, "Buyer in setup clicked" + newBuyer);
+        AndroidObservable.bindActivity(this,
+                NetworkRequestsManager.instance().getRegisteredBuyersApiService().register(newBuyer))
+                .subscribe(createdBuyer -> finishWithResultOk(),
+                        throwable -> {
+                            mSetUpViewFlipper.setDisplayedChild(0); // button
+                            mViewFlipperState = 0; // so as to update it if activity is not resumed
+                            if (ResponseError.Type.PHONE_EXISTS.is(throwable)) {
+                                mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
+                                mPhoneEditText.requestFocus();
+                            } else
+                                showErrorDialog(throwable);
+                        });
     }
 
-    @Override
-    public void phoneExists(boolean exists) {
-        if (exists) {
-            mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
-        }
+    private void finishWithResultOk() {
+        setResult(RESULT_OK);
+        finish();
     }
-
-    @Override
-    public void onRegistration(NetworkRequestsManager.ResponseError error) {
-        mSetUpViewFlipper.setDisplayedChild(0); // button
-        mViewFlipperState = 0; // so as to update it if activity is not resumed
-        if (error == NetworkRequestsManager.ResponseError.NO_ERROR) {
-            setResult(RESULT_OK);
-            finish();
-        }
-        else if (error == NetworkRequestsManager.ResponseError.PHONE_EXISTS) {
-            mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
-            mPhoneEditText.requestFocus();
-        }
-        else
-            onSessionResponse(error);
-    }
-
-
 }

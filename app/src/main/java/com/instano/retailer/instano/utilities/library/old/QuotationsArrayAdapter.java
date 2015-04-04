@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
-import com.instano.retailer.instano.application.NetworkRequestsManager;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
 import com.instano.retailer.instano.utilities.models.Seller;

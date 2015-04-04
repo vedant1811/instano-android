@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.NetworkRequestsManager;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
@@ -34,7 +34,6 @@ import java.util.List;
 
 
 public class SearchTabsActivity extends GlobalMenuActivity implements
-        NetworkRequestsManager.QuoteCallbacks,
         NoLocationErrorDialogFragment.Callbacks {
 
     private static final int RESULT_CODE_LOCATION = 990;
@@ -139,21 +138,27 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
             return;
         }
 
-        HashSet<Integer> sellerIds = null;
-
         Quote quote = new Quote(
                 buyer.getId(),
                 searchString,
                 mSearchConstraintsFragment.getPriceRange(),
                 mSelectedCategory,
                 mSelectedCategory.asAdditionalInfo(),
-                sellerIds, // seller Ids
                 address, // address
                 latitude,
                 longitude
         );
 
-        NetworkRequestsManager.instance().sendQuoteRequest(quote);
+        NetworkRequestsManager.instance().getRegisteredBuyersApiService().sendQuote(quote)
+                .doOnCompleted(() -> {
+                    quoteList();
+                    Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .doOnError((throwable) -> {
+                    Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG).show();
+                    mSearchConstraintsFragment.sendingQuote(false);
+                });
         mSearchConstraintsFragment.sendingQuote(true);
     }
 
@@ -250,9 +255,6 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //                            .setText(mSectionsPagerAdapter.getPageTitle(i))
 //                            .setTabListener(this));
 //        }
-
-        NetworkRequestsManager.instance().registerCallback((NetworkRequestsManager.QuoteCallbacks) this);
-
     }
 
     @Override
@@ -284,23 +286,10 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 //    }
 
-    @Override
-    public void productCategoriesUpdated(List<ProductCategories.Category> productCategories) {
-        mSearchFragment.updateProductCategories(productCategories);
-    }
-
-    @Override
-    public void onQuoteSent(boolean success) {
-        Log.d(TAG, "onQuoteSent success=" + success);
-        if (success) {
-            quoteList();
-            Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT).show();
-            finish();
-        } else {
-            Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG).show();
-            mSearchConstraintsFragment.sendingQuote(false);
-        }
-    }
+//    @Override
+//    public void productCategoriesUpdated(List<ProductCategories.Category> productCategories) {
+//        mSearchFragment.updateProductCategories(productCategories);
+//    }
 
     public void onCategorySelected(ProductCategories.Category selectedCategory) {
         mSelectedCategory = selectedCategory;
@@ -338,7 +327,6 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //                case 3:
 //                    return mSellersMapFragment;
             }
-
             throw new IllegalArgumentException("Invalid parameter position: " + position);
         }
 

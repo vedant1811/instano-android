@@ -23516,7 +23516,7 @@ com.instano.retailer.instano.activities.LauncherActivity -> com.instano.retailer
     void onBackPressed() -> onBackPressed
     void onCreate(android.os.Bundle) -> onCreate
     void onResume() -> onResume
-    void onSessionResponse(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError) -> a
+    void onSessionResponse(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError) -> a
     boolean checkPlayServices() -> a
     void closeIfPossible() -> b
     boolean onCreateOptionsMenu(android.view.Menu) -> onCreateOptionsMenu
@@ -23564,7 +23564,7 @@ com.instano.retailer.instano.activities.ProfileActivity -> com.instano.retailer.
     boolean checkPhoneNumber() -> a
     void setUpClicked(android.view.View) -> setUpClicked
     void phoneExists(boolean) -> a
-    void onRegistration(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError) -> b
+    void onRegistration(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError) -> b
     boolean access$000(com.instano.retailer.instano.activities.ProfileActivity) -> a
 com.instano.retailer.instano.activities.ProfileActivity$1 -> com.instano.retailer.instano.activities.ProfileActivity$1:
     com.instano.retailer.instano.activities.ProfileActivity this$0 -> a
@@ -23576,7 +23576,7 @@ com.instano.retailer.instano.activities.StartingActivity -> com.instano.retailer
     boolean mIsExiting -> d
     void onBackPressed() -> onBackPressed
     void onCreate(android.os.Bundle) -> onCreate
-    void signedIn(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError) -> b
+    void signedIn(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError) -> b
     void onActivityResult(int,int,android.content.Intent) -> onActivityResult
     void onResume() -> onResume
     void onPause() -> onPause
@@ -23644,21 +23644,21 @@ com.instano.retailer.instano.application.MyApplication$TrackerName -> com.instan
     com.instano.retailer.instano.application.MyApplication$TrackerName[] $VALUES -> b
     com.instano.retailer.instano.application.MyApplication$TrackerName[] values() -> values
     com.instano.retailer.instano.application.MyApplication$TrackerName valueOf(java.lang.String) -> valueOf
-com.instano.retailer.instano.application.NetworkRequestsManager -> com.instano.retailer.instano.application.g:
-    com.instano.retailer.instano.application.NetworkRequestsManager sInstance -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager -> com.instano.retailer.instano.application.g:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager sInstance -> a
     com.instano.retailer.instano.application.MyApplication mApplication -> b
-    com.instano.retailer.instano.application.NetworkRequestsManager$QuoteCallbacks mQuoteCallbacks -> c
-    com.instano.retailer.instano.application.NetworkRequestsManager$RegistrationCallback mRegistrationCallback -> d
-    com.instano.retailer.instano.application.NetworkRequestsManager$SignInCallbacks mSignInCallbacks -> e
-    com.instano.retailer.instano.application.NetworkRequestsManager$SessionIdCallback mSessionIdCallback -> f
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$QuoteCallbacks mQuoteCallbacks -> c
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RegistrationCallback mRegistrationCallback -> d
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$SignInCallbacks mSignInCallbacks -> e
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionIdCallback mSessionIdCallback -> f
     com.android.volley.RequestQueue mRequestQueue -> g
     com.fasterxml.jackson.databind.ObjectMapper mJsonObjectMapper -> h
-    void registerCallback(com.instano.retailer.instano.application.NetworkRequestsManager$QuoteCallbacks) -> a
-    void registerCallback(com.instano.retailer.instano.application.NetworkRequestsManager$RegistrationCallback) -> a
-    void registerCallback(com.instano.retailer.instano.application.NetworkRequestsManager$SignInCallbacks) -> a
-    void registerCallback(com.instano.retailer.instano.application.NetworkRequestsManager$SessionIdCallback) -> a
+    void registerCallback(com.instano.retailer.instano.application.network.NetworkRequestsManager$QuoteCallbacks) -> a
+    void registerCallback(com.instano.retailer.instano.application.network.NetworkRequestsManager$RegistrationCallback) -> a
+    void registerCallback(com.instano.retailer.instano.application.network.NetworkRequestsManager$SignInCallbacks) -> a
+    void registerCallback(com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionIdCallback) -> a
     void init(com.instano.retailer.instano.application.MyApplication) -> a
-    com.instano.retailer.instano.application.NetworkRequestsManager instance() -> a
+    com.instano.retailer.instano.application.network.NetworkRequestsManager instance() -> a
     void getQuotationsRequest() -> b
     void getQuotesRequest() -> c
     void getSellersRequest() -> d
@@ -23669,8 +23669,8 @@ com.instano.retailer.instano.application.NetworkRequestsManager -> com.instano.r
     void buyerExistsRequest(java.lang.String) -> b
     void getProductCategoriesRequest() -> f
     void setQuotationStatusReadRequest(int) -> a
-    java.lang.String getRequestUrl(com.instano.retailer.instano.application.NetworkRequestsManager$RequestType,int) -> a
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError getResponseError(com.android.volley.VolleyError) -> c
+    java.lang.String getRequestUrl(com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType,int) -> a
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError getResponseError(com.android.volley.VolleyError) -> c
     boolean isOnline() -> g
     void onErrorResponse(com.android.volley.VolleyError) -> a
     void sendDeviceRegisterRequest(com.instano.retailer.instano.utilities.models.Device) -> a
@@ -23683,148 +23683,148 @@ com.instano.retailer.instano.application.NetworkRequestsManager -> com.instano.r
     int getAppVersion() -> k
     void storeGcmId(java.lang.String) -> e
     android.content.SharedPreferences getAppSharedPreferences() -> l
-    java.lang.String access$000(com.instano.retailer.instano.application.NetworkRequestsManager) -> a
-    com.instano.retailer.instano.application.NetworkRequestsManager$QuoteCallbacks access$100(com.instano.retailer.instano.application.NetworkRequestsManager) -> b
-    com.fasterxml.jackson.databind.ObjectMapper access$200(com.instano.retailer.instano.application.NetworkRequestsManager) -> c
-    com.instano.retailer.instano.application.NetworkRequestsManager$SignInCallbacks access$300(com.instano.retailer.instano.application.NetworkRequestsManager) -> d
-    com.instano.retailer.instano.application.NetworkRequestsManager$RegistrationCallback access$400(com.instano.retailer.instano.application.NetworkRequestsManager) -> e
-    void access$500(com.instano.retailer.instano.application.NetworkRequestsManager,java.lang.String) -> a
-    com.instano.retailer.instano.application.NetworkRequestsManager$SessionIdCallback access$600(com.instano.retailer.instano.application.NetworkRequestsManager) -> f
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError access$700(com.android.volley.VolleyError) -> b
-    com.instano.retailer.instano.application.MyApplication access$800(com.instano.retailer.instano.application.NetworkRequestsManager) -> g
-    void access$900(com.instano.retailer.instano.application.NetworkRequestsManager,java.lang.String) -> b
-    void access$1000(com.instano.retailer.instano.application.NetworkRequestsManager,java.lang.String) -> c
-com.instano.retailer.instano.application.NetworkRequestsManager$1 -> com.instano.retailer.instano.application.g$1:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
+    java.lang.String access$000(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$QuoteCallbacks access$100(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> b
+    com.fasterxml.jackson.databind.ObjectMapper access$200(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> c
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$SignInCallbacks access$300(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> d
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RegistrationCallback access$400(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> e
+    void access$500(com.instano.retailer.instano.application.network.NetworkRequestsManager,java.lang.String) -> a
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionIdCallback access$600(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> f
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError access$700(com.android.volley.VolleyError) -> b
+    com.instano.retailer.instano.application.MyApplication access$800(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> g
+    void access$900(com.instano.retailer.instano.application.network.NetworkRequestsManager,java.lang.String) -> b
+    void access$1000(com.instano.retailer.instano.application.network.NetworkRequestsManager,java.lang.String) -> c
+com.instano.retailer.instano.application.network.NetworkRequestsManager$1 -> com.instano.retailer.instano.application.g$1:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     void onResponse(org.json.JSONArray) -> a
     void onResponse(java.lang.Object) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$10 -> com.instano.retailer.instano.application.g$2:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
-    void onResponse(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$11 -> com.instano.retailer.instano.application.g$3:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
-    void onResponse(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$12 -> com.instano.retailer.instano.application.g$4:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
-    void onResponse(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$13 -> com.instano.retailer.instano.application.g$5:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
-    void onResponse(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$14 -> com.instano.retailer.instano.application.g$6:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
-    void onResponse(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$15 -> com.instano.retailer.instano.application.g$7:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
-    void onResponse(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$16 -> com.instano.retailer.instano.application.g$8:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$10 -> com.instano.retailer.instano.application.g$2:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
+    void onResponse(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$11 -> com.instano.retailer.instano.application.g$3:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
+    void onResponse(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$12 -> com.instano.retailer.instano.application.g$4:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
+    void onResponse(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$13 -> com.instano.retailer.instano.application.g$5:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
+    void onResponse(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$14 -> com.instano.retailer.instano.application.g$6:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
+    void onResponse(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$15 -> com.instano.retailer.instano.application.g$7:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
+    void onResponse(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$16 -> com.instano.retailer.instano.application.g$8:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     void onResponse(org.json.JSONObject) -> a
     void onResponse(java.lang.Object) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$17 -> com.instano.retailer.instano.application.g$9:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$17 -> com.instano.retailer.instano.application.g$9:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     void onErrorResponse(com.android.volley.VolleyError) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$18 -> com.instano.retailer.instano.application.g$10:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$18 -> com.instano.retailer.instano.application.g$10:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     void onPreExecute() -> onPreExecute
     java.lang.String doInBackground(java.lang.Void[]) -> a
     void onPostExecute(java.lang.String) -> a
     void onPostExecute(java.lang.Object) -> onPostExecute
     java.lang.Object doInBackground(java.lang.Object[]) -> doInBackground
-com.instano.retailer.instano.application.NetworkRequestsManager$19 -> com.instano.retailer.instano.application.g$11:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$19 -> com.instano.retailer.instano.application.g$11:
     int[] $SwitchMap$com$instano$retailer$instano$application$NetworkRequestsManager$RequestType -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$2 -> com.instano.retailer.instano.application.g$12:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$2 -> com.instano.retailer.instano.application.g$12:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     java.util.Map getHeaders() -> h
-com.instano.retailer.instano.application.NetworkRequestsManager$3 -> com.instano.retailer.instano.application.g$13:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$3 -> com.instano.retailer.instano.application.g$13:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     void onResponse(org.json.JSONArray) -> a
     void onResponse(java.lang.Object) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$4 -> com.instano.retailer.instano.application.g$14:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$4 -> com.instano.retailer.instano.application.g$14:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     void onErrorResponse(com.android.volley.VolleyError) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$5 -> com.instano.retailer.instano.application.g$15:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$5 -> com.instano.retailer.instano.application.g$15:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     java.util.Map getHeaders() -> h
-com.instano.retailer.instano.application.NetworkRequestsManager$6 -> com.instano.retailer.instano.application.g$16:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$6 -> com.instano.retailer.instano.application.g$16:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     void onResponse(org.json.JSONArray) -> a
     void onResponse(java.lang.Object) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$7 -> com.instano.retailer.instano.application.g$17:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$7 -> com.instano.retailer.instano.application.g$17:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     java.util.Map getHeaders() -> h
-com.instano.retailer.instano.application.NetworkRequestsManager$8 -> com.instano.retailer.instano.application.g$18:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$8 -> com.instano.retailer.instano.application.g$18:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     void onResponse(org.json.JSONArray) -> a
     void onResponse(java.lang.Object) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$9 -> com.instano.retailer.instano.application.g$19:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$9 -> com.instano.retailer.instano.application.g$19:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     java.util.Map getHeaders() -> h
-com.instano.retailer.instano.application.NetworkRequestsManager$AuthenticatedJsonRequest -> com.instano.retailer.instano.application.h:
-    com.instano.retailer.instano.application.NetworkRequestsManager this$0 -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$AuthenticatedJsonRequest -> com.instano.retailer.instano.application.h:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     java.util.Map getHeaders() -> h
-com.instano.retailer.instano.application.NetworkRequestsManager$AuthenticatedJsonRequest$1 -> com.instano.retailer.instano.application.h$1:
-    com.instano.retailer.instano.application.NetworkRequestsManager val$this$0 -> a
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseListener val$responseListener -> b
+com.instano.retailer.instano.application.network.NetworkRequestsManager$AuthenticatedJsonRequest$1 -> com.instano.retailer.instano.application.h$1:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager val$this$0 -> a
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseListener val$responseListener -> b
     void onResponse(org.json.JSONObject) -> a
     void onResponse(java.lang.Object) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$AuthenticatedJsonRequest$2 -> com.instano.retailer.instano.application.h$2:
-    com.instano.retailer.instano.application.NetworkRequestsManager val$this$0 -> a
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseListener val$responseListener -> b
+com.instano.retailer.instano.application.network.NetworkRequestsManager$AuthenticatedJsonRequest$2 -> com.instano.retailer.instano.application.h$2:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager val$this$0 -> a
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseListener val$responseListener -> b
     void onErrorResponse(com.android.volley.VolleyError) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$QuoteCallbacks -> com.instano.retailer.instano.application.i:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$QuoteCallbacks -> com.instano.retailer.instano.application.i:
     void productCategoriesUpdated(java.util.List) -> a
     void onQuoteSent(boolean) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$RegistrationCallback -> com.instano.retailer.instano.application.j:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$RegistrationCallback -> com.instano.retailer.instano.application.j:
     void phoneExists(boolean) -> a
-    void onRegistration(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError) -> b
-com.instano.retailer.instano.application.NetworkRequestsManager$RequestType -> com.instano.retailer.instano.application.k:
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType REGISTER_BUYER -> a
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType SIGN_IN -> b
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType GET_QUOTES -> c
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType GET_QUOTATIONS -> d
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType SEND_QUOTE -> e
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType GET_PRODUCT_CATEGORIES -> f
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType GET_SELLERS -> g
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType GET_DEALS -> h
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType REGISTER_DEVICE -> i
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType BUYER_EXISTS -> j
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType PATCH_QUOTATION_STATUS -> k
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType[] $VALUES -> l
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType[] values() -> values
-    com.instano.retailer.instano.application.NetworkRequestsManager$RequestType valueOf(java.lang.String) -> valueOf
-com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError -> com.instano.retailer.instano.application.l:
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError NO_ERROR -> a
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError UNKNOWN_ERROR -> b
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError NO_GCM_ID -> c
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError INVALID_GCM_ID -> d
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError GCM_NOT_REGISTERED -> e
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError OTHER_GCM_ERROR -> f
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError NO_SESSION_ID -> g
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError INCORRECT_SESSION_ID -> h
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError NO_BUYER_ASSOCIATED -> i
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError SOME_OTHER_401 -> j
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError SIGN_IN_FAILED -> k
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError INCORRECT_API_KEY -> l
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError SOME_OTHER_406 -> m
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError SERVER_HANG_UP -> n
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError NETWORK_RESPONSE_NULL -> o
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError VOLLEY_TIMEOUT -> p
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError BAD_REQUEST -> q
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError SERVER_ERROR -> r
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError PHONE_EXISTS -> s
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError SOME_OTHER_422 -> t
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError[] $VALUES -> u
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError[] values() -> values
-    com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError valueOf(java.lang.String) -> valueOf
+    void onRegistration(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError) -> b
+com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType -> com.instano.retailer.instano.application.k:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType REGISTER_BUYER -> a
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType SIGN_IN -> b
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType GET_QUOTES -> c
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType GET_QUOTATIONS -> d
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType SEND_QUOTE -> e
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType GET_PRODUCT_CATEGORIES -> f
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType GET_SELLERS -> g
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType GET_DEALS -> h
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType REGISTER_DEVICE -> i
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType BUYER_EXISTS -> j
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType PATCH_QUOTATION_STATUS -> k
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType[] $VALUES -> l
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType[] values() -> values
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$RequestType valueOf(java.lang.String) -> valueOf
+com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError -> com.instano.retailer.instano.application.l:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError NO_ERROR -> a
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError UNKNOWN_ERROR -> b
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError NO_GCM_ID -> c
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError INVALID_GCM_ID -> d
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError GCM_NOT_REGISTERED -> e
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError OTHER_GCM_ERROR -> f
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError NO_SESSION_ID -> g
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError INCORRECT_SESSION_ID -> h
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError NO_BUYER_ASSOCIATED -> i
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError SOME_OTHER_401 -> j
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError SIGN_IN_FAILED -> k
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError INCORRECT_API_KEY -> l
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError SOME_OTHER_406 -> m
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError SERVER_HANG_UP -> n
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError NETWORK_RESPONSE_NULL -> o
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError VOLLEY_TIMEOUT -> p
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError BAD_REQUEST -> q
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError SERVER_ERROR -> r
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError PHONE_EXISTS -> s
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError SOME_OTHER_422 -> t
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError[] $VALUES -> u
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError[] values() -> values
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError valueOf(java.lang.String) -> valueOf
     boolean shouldRefreshGcmId() -> a
     boolean isLongWaiting() -> b
     boolean isFatal() -> c
-com.instano.retailer.instano.application.NetworkRequestsManager$ResponseListener -> com.instano.retailer.instano.application.m:
-    void onResponse(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$SessionIdCallback -> com.instano.retailer.instano.application.n:
-    void onSessionResponse(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError) -> a
-com.instano.retailer.instano.application.NetworkRequestsManager$SignInCallbacks -> com.instano.retailer.instano.application.o:
-    void signedIn(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError) -> b
+com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseListener -> com.instano.retailer.instano.application.m:
+    void onResponse(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError,org.json.JSONObject) -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionIdCallback -> com.instano.retailer.instano.application.n:
+    void onSessionResponse(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError) -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$SignInCallbacks -> com.instano.retailer.instano.application.o:
+    void signedIn(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError) -> b
 com.instano.retailer.instano.application.ServicesSingleton -> com.instano.retailer.instano.application.p:
     com.instano.retailer.instano.application.ServicesSingleton sInstance -> a
     com.instano.retailer.instano.application.MyApplication mApplication -> b
@@ -24253,7 +24253,7 @@ com.instano.retailer.instano.utilities.GetAddressTask$AddressCallback -> com.ins
 com.instano.retailer.instano.utilities.GlobalMenuActivity -> com.instano.retailer.instano.utilities.c:
     void onActivityResult(int,int,android.content.Intent) -> onActivityResult
     void onResume() -> onResume
-    void onSessionResponse(com.instano.retailer.instano.application.NetworkRequestsManager$ResponseError) -> a
+    void onSessionResponse(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError) -> a
     boolean onOptionsItemSelected(android.view.MenuItem) -> onOptionsItemSelected
     void noInternetDialog() -> d
     void noPlayServicesDialog() -> e

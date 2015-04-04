@@ -13,8 +13,9 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.MessageDialogFragment;
 import com.instano.retailer.instano.activities.ProfileActivity;
 import com.instano.retailer.instano.application.BaseActivity;
-import com.instano.retailer.instano.application.NetworkRequestsManager;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.ResponseError;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.deals.DealListActivity;
 import com.instano.retailer.instano.search.SearchTabsActivity;
@@ -29,7 +30,7 @@ import com.instano.retailer.instano.sellers.SellersActivity;
  *
  * Created by vedant on 15/12/14.
  */
-public abstract class GlobalMenuActivity extends BaseActivity implements NetworkRequestsManager.SessionIdCallback {
+public abstract class GlobalMenuActivity extends BaseActivity {
     private static final String TAG = "GlobalMenuActivity";
     public static final int PICK_CONTACT_REQUEST_CODE = 996;
     public static final int SEND_SMS_REQUEST_CODE = 995;
@@ -64,24 +65,32 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
     protected void onResume() {
         super.onResume();
         // register this callback each time an activity is resumed
-        NetworkRequestsManager.instance().registerCallback(this);
+//        NetworkRequestsManager.instance().registerCallback(this);
         if (!NetworkRequestsManager.instance().isOnline())
             noInternetDialog();
     }
 
-    public void onSessionResponse(NetworkRequestsManager.ResponseError error) {
-        Log.v(TAG, "Response Error in Global "+error);
-        if (error == NetworkRequestsManager.ResponseError.NO_ERROR) {
-            cancelDialog();
-        } else {
-            MessageDialogFragment.Type type = error.isLongWaiting() ?
+    public void showErrorDialog(Throwable throwable) {
+        if (throwable instanceof ResponseError) {
+            ResponseError responseError = (ResponseError) throwable;
+            MessageDialogFragment.Type type = responseError.getErrorType().isLongWaiting() ?
                     MessageDialogFragment.Type.NON_CANCELLABLE_WITHOUT_PROGRESSBAR: // don't make user wait more
-                    MessageDialogFragment.Type.NON_CANCELLABLE_WITH_TIMEOUTABLE_PROGRESSBAR;
-
+                            MessageDialogFragment.Type.NON_CANCELLABLE_WITH_TIMEOUTABLE_PROGRESSBAR;
             contactUs("Trouble connecting", "Please wait we are trying to connect or contact us", type);
-            NetworkRequestsManager.instance().authorizeSession(error.shouldRefreshGcmId());
         }
+        else
+            serverErrorDialog();
     }
+
+//    public void onSessionResponse(NetworkRequestsManager.ResponseError error) {
+//        Log.v(TAG, "Response Error in Global "+error);
+//        if (error == NetworkRequestsManager.ResponseError.NO_ERROR) {
+//            cancelDialog();
+//        } else {
+
+//            NetworkRequestsManager.instance().authorizeSession(error.shouldRefreshGcmId());
+//        }
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

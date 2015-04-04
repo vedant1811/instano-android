@@ -1,6 +1,5 @@
 package com.instano.retailer.instano.activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,15 +8,19 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.instano.retailer.instano.application.NetworkRequestsManager;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.ResponseError;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
+import com.instano.retailer.instano.utilities.models.Device;
 
-public class StartingActivity extends GlobalMenuActivity
-        implements NetworkRequestsManager.SignInCallbacks {
+import rx.Observable;
+import rx.functions.Action0;
+
+public class StartingActivity extends GlobalMenuActivity {
 
     private static final String SEARCH_ICON_HELP = "You can Search for products by clicking the icon in the action bar";
     private static final int SETUP_REQUEST_CODE = 1001;
@@ -37,12 +40,7 @@ public class StartingActivity extends GlobalMenuActivity
         else {
             Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
             mIsExiting = true;
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mIsExiting = false;
-                }
-            }, EXIT_DELAY);
+            new Handler().postDelayed(() -> mIsExiting = false, EXIT_DELAY);
         }
     }
 
@@ -56,32 +54,22 @@ public class StartingActivity extends GlobalMenuActivity
         // be sure to initialize ServicesSingleton:
         ServicesSingleton instance = ServicesSingleton.instance();
 
-        // in case buyer already has signed in (activity was killed for some reason) do not sign in again
-        NetworkRequestsManager.instance().registerCallback((NetworkRequestsManager.SignInCallbacks) this);
-        NetworkRequestsManager.instance().registerCallback((NetworkRequestsManager.SessionIdCallback) this);
-
-
-        if (instance.getBuyer() != null || instance.signIn()) {
+        Observable<Buyer> buyerObservable = instance.signIn();
+        if (instance.getBuyer() != null || buyerObservable != null) {
             mText = WELCOME_BACK + SEARCH_ICON_HELP;
+            buyerObservable.subscribe(
+                    buyer -> Toast.makeText(this, String.format("Welcome %s", buyer.getName()), Toast.LENGTH_SHORT).show(),
+                    throwable -> {
+                        if (ResponseError.Type.INCORRECT_API_KEY.is(throwable))
+                            ; // TODO: do something. currently treating as no signed in info present
+                        else
+                            showErrorDialog(throwable);
+                    }
+            );
         }
         else {
             mText = mTextView.getText();
         }
-    }
-
-    @Override
-    public void signedIn(NetworkRequestsManager.ResponseError error) {
-        if (error == NetworkRequestsManager.ResponseError.NO_ERROR) {
-            Buyer buyer = ServicesSingleton.instance().getBuyer();
-            if (buyer != null)
-                Toast.makeText(this, String.format("Welcome %s", buyer.getName()), Toast.LENGTH_SHORT).show();
-            else
-                Log.e(getClass().getSimpleName(), "Buyer is NULL but no error in signed in");
-        }
-        else if (error == NetworkRequestsManager.ResponseError.INCORRECT_API_KEY)
-            ; // TODO: do something. currently treating as no signed in info present
-        else
-            onSessionResponse(error);
     }
 
     /**

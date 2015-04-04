@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import rx.Observable;
+
 /**
  * Created by vedant on 19/12/14.
  */
@@ -34,46 +36,9 @@ public class DataManager {
     private ArrayList<Deal> mDeals;
     private ProductCategories mProductCategories;
 
-    private HashSet<QuotesListener> mQuotesListeners;
-    private HashSet<DealsListener> mDealsListeners;
-    private HashSet<SellersListener> mSellersListeners;
-
-    public interface QuotesListener {
-        public void quotesUpdated();
-        public void quotationsUpdated();
-    }
-
-    public interface DealsListener {
-        public void dealsUpdated();
-    }
-
-    public interface SellersListener {
-        public void sellersUpdated();
-    }
-
-    public void registerListener(@NonNull QuotesListener quotesListener) {
-        mQuotesListeners.add(quotesListener);
-    }
-
-    public void unregisterListener(@Nullable QuotesListener quotesListener) {
-        mQuotesListeners.remove(quotesListener);
-    }
-
-    public void registerListener(@NonNull DealsListener dealsListener) {
-        mDealsListeners.add(dealsListener);
-    }
-
-    public void unregisterListener(@Nullable DealsListener dealsListener) {
-        mDealsListeners.remove(dealsListener);
-    }
-
-    public void registerListener(@NonNull SellersListener sellersListener) {
-        mSellersListeners.add(sellersListener);
-    }
-
-    public void unregisterListener(@Nullable SellersListener sellersListener) {
-        mSellersListeners.remove(sellersListener);
-    }
+    private Observable<Quote> mQuoteObservable;
+    private Observable<Quotation> mQuotationObservable;
+    private
 
     public List<ProductCategories.Category> getProductCategories(boolean clearSelected) {
         if (mProductCategories != null) {
@@ -325,8 +290,5 @@ public class DataManager {
         mQuotations = new ArrayList<Quotation>();
         mSellers = new ArrayList<Seller>();
         mDeals = new ArrayList<Deal>();
-        mQuotesListeners = new HashSet<QuotesListener>();
-        mDealsListeners = new HashSet<DealsListener>();
-        mSellersListeners = new HashSet<SellersListener>();
     }
 }

@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.DataManager;
-import com.instano.retailer.instano.application.NetworkRequestsManager;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.buyerDashboard.QuotationDetailActivity;
 import com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;

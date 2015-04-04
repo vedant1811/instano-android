@@ -27,6 +27,7 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -35,6 +36,8 @@ import com.instano.retailer.instano.utilities.models.Buyer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import rx.Observable;
 
 /**
  *
@@ -82,17 +85,35 @@ public class ServicesSingleton implements
      * tries to sign in if login details are saved
      * @return true if login details are saved
      */
-    public boolean signIn() {
+    public Observable<Buyer> signIn() {
         String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, null);
 
         Log.v(TAG, "api key: " + String.valueOf(apiKey));
 
         if (apiKey != null) {
-            NetworkRequestsManager.instance().sendSignInRequest(apiKey);
-            return true;
+            Observable<Buyer> buyerObservable = NetworkRequestsManager.instance().getRegisteredBuyersApiService().signIn(apiKey);
+            buyerObservable.subscribe(
+                    buyer -> {
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
+                        Log.d(TAG, "saving buyer api key: " + buyer.getApi_key());
+                        Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
+                        appTracker.setClientId(String.valueOf(buyer.getId()));
+                        appTracker.send(new HitBuilders.AppViewBuilder().build());
+                        editor.putString(KEY_BUYER_API_KEY, buyer.getApi_key());
+                        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
+                        editor.apply();
+                        DataManager.instance().onNewBuyer();
+                    },
+                    throwable -> {
+                        SharedPreferences.Editor editor = mSharedPreferences.edit();
+                        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
+                        editor.apply();
+                    });
+            return buyerObservable;
         }
         else
-            return false;
+            return null; // TODO: improve
     }
 
     public boolean isFirstTime() {
@@ -100,46 +121,6 @@ public class ServicesSingleton implements
             return true;
         else
             return mFirstTime;
-    }
-
-    /**
-     * called after a signIn request
-     * @param buyer null if no buyer with given api key
-     */
-    /*package*/ void afterSignIn(@Nullable Buyer buyer) {
-        mBuyer = buyer;
-        Log.d(TAG, "buyer ID: " + mBuyer);
-
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
-
-        // start periodic worker whether signed in successfully or not
-        if (mBuyer != null) // i.e. if user is signed in
-        {
-            NetworkRequestsManager.instance().getQuotesRequest(); // also fetches quotations once quotes are fetched
-            NetworkRequestsManager.instance().getSellersRequest();
-            NetworkRequestsManager.instance().getDealsRequest();
-        }
-        else {
-            String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, null);
-            if (apiKey != null)
-                NetworkRequestsManager.instance().sendSignInRequest(apiKey);
-        }
-        if (DataManager.instance().getProductCategories(false) == null)
-            NetworkRequestsManager.instance().getProductCategoriesRequest();
-
-        if (buyer != null) {
-            Log.d(TAG, "saving buyer api key: " + buyer.getApi_key());
-            Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
-            appTracker.setClientId(String.valueOf(buyer.getId()));
-            appTracker.send(new HitBuilders.AppViewBuilder().build());
-            editor.putString(KEY_BUYER_API_KEY, buyer.getApi_key());
-
-            DataManager.instance().onNewBuyer();
-        }
-        // TODO: do more on else
-
-        editor.apply();
     }
 
     public void createNotification() {
@@ -189,21 +170,7 @@ public class ServicesSingleton implements
          */
         mLocationClient = new LocationClient(mApplication, this, this);
         mLocationClient.connect();
-        checkPlayServices(); // not performing checkUserAccount
         // see http://www.androiddesignpatterns.com/2013/01/google-play-services-setup.html
-    }
-
-    public boolean checkPlayServices() {
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(mApplication);
-        if (status != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(status) && mInitialDataCallbacks != null) {
-                mInitialDataCallbacks.showErrorDialog(status);
-            } else {
-                locationErrorString = "This device is not supported.";
-            }
-            return false;
-        }
-        return true;
     }
 
     public String getLocationErrorString() {
