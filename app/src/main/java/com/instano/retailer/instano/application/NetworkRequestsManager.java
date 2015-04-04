@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 
 import com.android.volley.AuthFailureError;
@@ -27,11 +28,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.instano.retailer.instano.BuildConfig;
+import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.utilities.library.JsonArrayRequest;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
+import com.instano.retailer.instano.utilities.models.Deal;
 import com.instano.retailer.instano.utilities.models.Device;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
 
 import org.apache.http.HttpStatus;
@@ -45,14 +49,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import retrofit.RequestInterceptor;
+import retrofit.RestAdapter;
+import retrofit.http.Body;
+import retrofit.http.Field;
+import retrofit.http.GET;
+import retrofit.http.POST;
+import rx.Observable;
+
 /**
  * Created by vedant on 18/12/14.
  */
 public class NetworkRequestsManager implements Response.ErrorListener {
 
     private static final String TAG = "NetworkRequestsManager";
-    private static final String LOCAL_SERVER_URL = "http://staging.instano.in/";
-//    private static final String LOCAL_SERVER_URL = "http://192.168.0.149:3000/";
+    private static final String API_VERSION = "v1/";
 
     private final static String API_ERROR_ALREADY_TAKEN = "has already been taken";
     private final static String API_ERROR_IS_BLANK = "can't be blank";
@@ -65,58 +76,66 @@ public class NetworkRequestsManager implements Response.ErrorListener {
     private static NetworkRequestsManager sInstance;
 
     private final MyApplication mApplication;
+    private final RegisteredBuyersApiService mRegisteredBuyersApiService;
+    private final UnregisteredBuyersApiService mUnregisteredBuyersApiService;
 
-    private QuoteCallbacks mQuoteCallbacks;
-    private RegistrationCallback mRegistrationCallback;
-    private SignInCallbacks mSignInCallbacks;
-    private SessionIdCallback mSessionIdCallback;
+    /**
+     * always adds a header ("Session-Id", getSessionId())
+     */
+    public interface RegisteredBuyersApiService {
+        @POST("/buyers/quotes")
+        Observable<Quote> sendQuote(@Body Quote quote);
 
-    private RequestQueue mRequestQueue;
-    private ObjectMapper mJsonObjectMapper;
+        @GET("/buyers/quotes")
+        Observable<List<Quote>> getQuotes();
 
+        @GET("/buyers/quotations")
+        Observable<List<Quotation>> getQuotations();
 
-    public void registerCallback(QuoteCallbacks quoteCallbacks) {
-        mQuoteCallbacks = quoteCallbacks;
+        @GET("/buyers/deals")
+        Observable<List<Deal>> getDeals();
+
+        @GET("/product_categories")
+        Observable<ProductCategories> getProductCategories();
     }
 
-    public void registerCallback(RegistrationCallback registrationCallback) {
-        this.mRegistrationCallback = registrationCallback;
-    }
+    public interface UnregisteredBuyersApiService {
+        @POST("/devices")
+        Observable<Device> registerDevice(@Body Device device);
 
-    public void registerCallback(SignInCallbacks signInCallbacks) {
-        this.mSignInCallbacks = signInCallbacks;
-    }
+        @POST("/buyers")
+        Observable<Buyer> register(@Body Buyer buyer);
 
-    public void registerCallback(SessionIdCallback sessionIdCallback) {
-        mSessionIdCallback = sessionIdCallback;
-    }
+        @POST("/buyers/sign_in")
+        Observable<Buyer> signIn(@Field("api_key") String apiKey);
 
-    public interface QuoteCallbacks {
-        public void productCategoriesUpdated(List<ProductCategories.Category> productCategories);
-
-        public void onQuoteSent(boolean success);
-    }
-
-    public interface RegistrationCallback {
-        public void phoneExists(boolean exists);
-
-        public void onRegistration(ResponseError result);
-    }
-
-    public interface SignInCallbacks {
-        public void signedIn(ResponseError error);
-    }
-
-    public interface SessionIdCallback {
-        public void onSessionResponse(ResponseError error);
+        @POST("/buyers/exists")
+        Observable<Boolean> exists(@Body String phone);
     }
 
     private NetworkRequestsManager(MyApplication application) {
         this.mApplication = application;
-        mRequestQueue = Volley.newRequestQueue(application);
-        mJsonObjectMapper = new ObjectMapper();
-        mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
-        mJsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        RestAdapter.LogLevel logLevel = BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE;
+
+        String endpoint = application.getResources().getString(R.string.server_url);
+        RestAdapter registeredRestAdapter = new RestAdapter.Builder()
+                .setEndpoint(endpoint)
+                .setRequestInterceptor(request -> request.addHeader("Session-Id", getSessionId()))
+                .setLogLevel(logLevel)
+                .build();
+
+        mRegisteredBuyersApiService = registeredRestAdapter.create(RegisteredBuyersApiService.class);
+
+        RestAdapter unregisteredRestAdapter = new RestAdapter.Builder()
+                .setEndpoint(endpoint)
+                .setLogLevel(logLevel)
+                .build();
+
+        mUnregisteredBuyersApiService = unregisteredRestAdapter.create(UnregisteredBuyersApiService.class);
+
+//        mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
+//        mJsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     /*package*/
@@ -131,124 +150,8 @@ public class NetworkRequestsManager implements Response.ErrorListener {
         return sInstance;
     }
 
-    public void getQuotationsRequest() {
+    public Observable<ResponseError> sendQuoteRequest(@NonNull Quote quote) {
 
-        JsonArrayRequest request = new JsonArrayRequest(
-                getRequestUrl(RequestType.GET_QUOTATIONS, -1),
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.v(TAG, "Quotations response:" + response.toString());
-                        boolean dataChanged = DataManager.instance().updateQuotations(response);
-                    }
-                },
-                this
-        ){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers = new HashMap<String,String>();
-                headers.put("Session-Id",getSessionId() );
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
-    }
-
-    public void getQuotesRequest() {
-
-        JsonArrayRequest request = new JsonArrayRequest(
-                getRequestUrl(RequestType.GET_QUOTES, -1),
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.v(TAG, "Quotes response:" + response.toString());
-                        DataManager.instance().updateQuotes(response);
-                        // fetch quotations once quotes are fetched:
-                        getQuotationsRequest();
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, ".getQuotesRequest networkResponse: " + error.networkResponse, error);
-                    }
-                }
-        ){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers = new HashMap<String,String>();
-                headers.put("Session-Id",getSessionId() );
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
-    }
-
-    public void getSellersRequest() {
-        JsonArrayRequest request = new JsonArrayRequest(
-                getRequestUrl(RequestType.GET_SELLERS, -1),
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.v(TAG, "Sellers response:" + response.toString());
-                        DataManager.instance().updateSellers(response);
-                    }
-                },
-                this
-        ){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers = new HashMap<String,String>();
-                headers.put("Session-Id",getSessionId() );
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
-    }
-
-    public void getDealsRequest() {
-        JsonArrayRequest request = new JsonArrayRequest(
-                getRequestUrl(RequestType.GET_DEALS, -1),
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        Log.v(TAG, "Deals response:" + response.toString());
-                        DataManager.instance().updateDeals(response);
-                    }
-                },
-                this
-        )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers = new HashMap<String,String>();
-                headers.put("Session-Id",getSessionId() );
-                return headers;
-            }
-        };
-        mRequestQueue.add(request);
-    }
-
-    public void sendQuoteRequest(@NonNull Quote quote) {
-        Log.v(TAG, "sendQuoteRequest request: " + quote.toJsonObject());
-
-        JsonObjectRequest request = new AuthenticatedJsonRequest(
-                getRequestUrl(RequestType.SEND_QUOTE, -1),
-                quote.toJsonObject(),
-                new ResponseListener() {
-                    @Override
-                    public void onResponse(ResponseError error, JSONObject response) {
-
-                        boolean success = error == ResponseError.NO_ERROR;
-
-                        if (mQuoteCallbacks != null)
-                            mQuoteCallbacks.onQuoteSent(success);
-
-                    }
-                }
-        );
-        mRequestQueue.add(request);
     }
 
     public void sendSignInRequest(@NonNull final String apiKey) {
@@ -260,29 +163,26 @@ public class NetworkRequestsManager implements Response.ErrorListener {
             request = new AuthenticatedJsonRequest(
                     getRequestUrl(RequestType.SIGN_IN, -1),
                     postData,
-                    new ResponseListener() {
-                        @Override
-                        public void onResponse(ResponseError error, JSONObject response) {
-                            Log.d(TAG + "sendSignInRequest.onResponse", String.valueOf(response));
-                            Buyer responseBuyer = null;
-                            if (error == ResponseError.NO_ERROR) {
-                                try {
-                                    responseBuyer = mJsonObjectMapper.readValue(response.toString(), Buyer.class);
-                                } catch (JsonMappingException e) {
-                                    error = ResponseError.UNKNOWN_ERROR;
-                                    Log.fatalError(e);
-                                } catch (JsonParseException e) {
-                                    error = ResponseError.UNKNOWN_ERROR;
-                                    Log.fatalError(e);
-                                } catch (IOException e) {
-                                    error = ResponseError.UNKNOWN_ERROR;
-                                    Log.fatalError(e);
-                                }
+                    (error, response) -> {
+                        Log.d(TAG + "sendSignInRequest.onResponse", String.valueOf(response));
+                        Buyer responseBuyer = null;
+                        if (error == ResponseError.NO_ERROR) {
+                            try {
+                                responseBuyer = mJsonObjectMapper.readValue(response.toString(), Buyer.class);
+                            } catch (JsonMappingException e) {
+                                error = ResponseError.UNKNOWN_ERROR;
+                                Log.fatalError(e);
+                            } catch (JsonParseException e) {
+                                error = ResponseError.UNKNOWN_ERROR;
+                                Log.fatalError(e);
+                            } catch (IOException e) {
+                                error = ResponseError.UNKNOWN_ERROR;
+                                Log.fatalError(e);
                             }
-                            ServicesSingleton.instance().afterSignIn(responseBuyer);
-                            if (mSignInCallbacks != null)
-                                mSignInCallbacks.signedIn(error);
                         }
+                        ServicesSingleton.instance().afterSignIn(responseBuyer);
+                        if (mSignInCallbacks != null)
+                            mSignInCallbacks.signedIn(error);
                     }
             );
         } catch (JSONException e) {
@@ -413,6 +313,8 @@ public class NetworkRequestsManager implements Response.ErrorListener {
      * @return the complete URL to be sent
      */
     private  String getRequestUrl(RequestType requestType, int id) {
+
+        BuildConfig.
 
         String SERVER_URL;
         if (BuildConfig.DEBUG)
@@ -766,7 +668,6 @@ public class NetworkRequestsManager implements Response.ErrorListener {
 
     private void registerNewSession(String gcmId) {
         if (!gcmId.isEmpty()) {
-            // Your implementation here.
             Log.v(TAG, ".registerNewSession Send regId  " + gcmId);
             Device device = new Device();
             device.setGcm_registration_id(gcmId);
