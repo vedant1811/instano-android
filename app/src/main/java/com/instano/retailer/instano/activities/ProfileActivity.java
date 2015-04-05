@@ -119,7 +119,7 @@ public class ProfileActivity extends GlobalMenuActivity {
         newBuyer.setPhone(mPhoneEditText.getText().toString()) ;
         Log.v(TAG, "Buyer in setup clicked" + newBuyer);
         AndroidObservable.bindActivity(this,
-                NetworkRequestsManager.instance().getRegisteredBuyersApiService().register(newBuyer))
+                NetworkRequestsManager.instance().registerBuyer(newBuyer))
                 .subscribe(createdBuyer -> finishWithResultOk(),
                         throwable -> {
                             mSetUpViewFlipper.setDisplayedChild(0); // button

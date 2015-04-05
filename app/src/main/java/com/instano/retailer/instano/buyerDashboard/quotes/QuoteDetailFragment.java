@@ -15,8 +15,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.DataManager;
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.buyerDashboard.QuotationDetailActivity;
 import com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -34,7 +32,7 @@ import java.util.List;
  * in two-pane mode (on tablets) or a {@link QuoteDetailActivity}
  * on handsets.
  */
-public class QuoteDetailFragment extends Fragment implements DataManager.QuotesListener {
+public class QuoteDetailFragment extends Fragment {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -76,7 +74,7 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             int id = getArguments().getInt(ARG_QUOTE_ID);
-            mItem = DataManager.instance().getQuote(id);
+//            mItem = DataManager.instance().getQuote(id);
             if (mItem == null)
                 throw new IllegalStateException(
                         "Fragment Quote detail created without any Quote. Quote id: " + id);
@@ -94,7 +92,7 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
 
         mHeadingTextView.setText(String.format("\"%s\"", mItem.searchString));
         mAdapter = new Adapter(getActivity());
-        DataManager.instance().registerListener(this);
+//        DataManager.instance().registerListener(this);
         expandableListView.setAdapter(mAdapter);
 
         return rootView;
@@ -103,15 +101,13 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        DataManager.instance().unregisterListener(this);
+//        DataManager.instance().unregisterListener(this);
     }
 
-    @Override
     public void quotesUpdated() {
         mAdapter.dataUpdated();
     }
 
-    @Override
     public void quotationsUpdated() {
         mAdapter.dataUpdated();
     }
@@ -146,15 +142,15 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
             mChildrenMap.clear();
 
             for (Integer id : mItem.sellerIds){
-                DataManager dataManager = DataManager.instance();
-                Seller seller = dataManager.getSeller(id);
-                if (seller != null) {
-                    mHeaders.add(0, seller);
-                    ArrayList<Object> groupChildren = dataManager.quotationsBySeller(seller.id);
-                    // put first item, Seller:
-                    groupChildren.add(0, seller);
-                    mChildrenMap.put(seller, groupChildren);
-                }
+//                DataManager dataManager = DataManager.instance();
+//                Seller seller = dataManager.getSeller(id);
+//                if (seller != null) {
+//                    mHeaders.add(0, seller);
+//                    ArrayList<Object> groupChildren = dataManager.quotationsBySeller(seller.id);
+//                    put first item, Seller:
+//                    groupChildren.add(0, seller);
+//                    mChildrenMap.put(seller, groupChildren);
+//                }
             }
             notifyDataSetChanged();
             int numOfSellers = getGroupCount();
@@ -253,7 +249,7 @@ public class QuoteDetailFragment extends Fragment implements DataManager.QuotesL
                         detailIntent.putExtra(QuotationDetailFragment.ARG_QUOTATION_ID, quotation.id);
                         startActivity(detailIntent);
                         if (!quotation.isRead()) {
-                            NetworkRequestsManager.instance().setQuotationStatusReadRequest(quotation.id);
+//                            NetworkRequestsManager.instance().setQuotationStatusReadRequest(quotation.id);
                             quotation.setStatusRead();
                             newTextView.setVisibility(View.GONE);
                             notifyDataSetChanged();

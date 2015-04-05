@@ -6,7 +6,6 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import android.view.LayoutInflater;
 import android.view.View;

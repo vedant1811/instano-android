@@ -2,18 +2,13 @@ package com.instano.retailer.instano.buyerDashboard;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
-import com.instano.retailer.instano.utilities.models.Quotation;
-import com.instano.retailer.instano.utilities.models.Quote;
-import com.instano.retailer.instano.utilities.models.Seller;
 
 /**
  * A fragment representing a single Quotation detail screen.
@@ -56,9 +51,9 @@ public class QuotationDetailFragment extends Fragment {
             Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_quotation_detail, container, false);
 
-        Quotation quotation = DataManager.instance().getQuotation(mQuotationId);
-        Seller seller = DataManager.instance().getSeller(quotation.sellerId);
-        Quote quote = DataManager.instance().getQuote(quotation.quoteId);
+//        Quotation quotation = DataManager.instance().getQuotation(mQuotationId);
+//        Seller seller = DataManager.instance().getSeller(quotation.sellerId);
+//        Quote quote = DataManager.instance().getQuote(quotation.quoteId);
 
         TextView shopNameTextView = (TextView) rootView.findViewById(R.id.shopNameTextView);
         TextView sellerNameTextView = (TextView) rootView.findViewById(R.id.shopNameTextView);
@@ -68,17 +63,17 @@ public class QuotationDetailFragment extends Fragment {
         TextView additionalInfoTextView = (TextView) rootView.findViewById(R.id.additionalInfoTextView);
 //        Button acceptDealButton = (Button) rootView.findViewById(R.id.acceptDealButton);
 
-        shopNameTextView.setText(seller.name_of_shop);
-        sellerNameTextView.setText(seller.name_of_seller);
-        queryTextView.setText(quote.searchString);
-        modelTextView.setText(quotation.nameOfProduct);
-        priceTextView.setText(String.format("₹%,d", quotation.price));
-        if (TextUtils.isEmpty(quotation.description))
-            additionalInfoTextView.setVisibility(View.GONE);
-        else {
-            additionalInfoTextView.setVisibility(View.VISIBLE);
-            additionalInfoTextView.setText("Additional Info:\n" + quotation.description);
-        }
+//        shopNameTextView.setText(seller.name_of_shop);
+//        sellerNameTextView.setText(seller.name_of_seller);
+//        queryTextView.setText(quote.searchString);
+//        modelTextView.setText(quotation.nameOfProduct);
+//        priceTextView.setText(String.format("₹%,d", quotation.price));
+//        if (TextUtils.isEmpty(quotation.description))
+//            additionalInfoTextView.setVisibility(View.GONE);
+//        else {
+//            additionalInfoTextView.setVisibility(View.VISIBLE);
+//            additionalInfoTextView.setText("Additional Info:\n" + quotation.description);
+//        }
 
         return rootView;
     }

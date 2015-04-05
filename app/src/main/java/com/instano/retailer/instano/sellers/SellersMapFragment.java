@@ -25,7 +25,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -101,7 +100,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         mSelectedLocationMarker.showInfoWindow();
         mMap.setOnMarkerDragListener(this);
 
-        addSellers(DataManager.instance().getSellers());
+//        addSellers(DataManager.instance().getSellers());
     }
 
     /* package private */

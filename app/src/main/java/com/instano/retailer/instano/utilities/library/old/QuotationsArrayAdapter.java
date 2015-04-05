@@ -9,8 +9,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.DataManager;
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
 import com.instano.retailer.instano.utilities.models.Seller;
@@ -120,19 +118,19 @@ public class QuotationsArrayAdapter extends BaseAdapter {
 
         String nameOfShop;
 
-        Seller seller = DataManager.instance().getSeller(quotation.sellerId);
+//        Seller seller = DataManager.instance().getSeller(quotation.sellerId);
         // TODO: better handle error
-        if (seller != null) {
-            nameOfShop = seller.name_of_shop;
-            String distance = seller.getPrettyDistanceFromLocation();
-            if (distance != null)
-                distanceTextView.setText(distance);
-            else
-                distanceTextView.setVisibility(View.INVISIBLE);
-        } else {
+//        if (seller != null) {
+//            nameOfShop = seller.name_of_shop;
+//            String distance = seller.getPrettyDistanceFromLocation();
+//            if (distance != null)
+//                distanceTextView.setText(distance);
+//            else
+//                distanceTextView.setVisibility(View.INVISIBLE);
+//        } else {
             nameOfShop = "INVALID SHOP";
             distanceTextView.setVisibility(View.INVISIBLE);
-        }
+//        }
 
 //        shopTextView.setText(nameOfShop);
 
@@ -142,7 +140,7 @@ public class QuotationsArrayAdapter extends BaseAdapter {
                 if (mCallbacks != null)
                     mCallbacks.onItemSelected(quotation.id);
                 if (!quotation.isRead()) {
-                    NetworkRequestsManager.instance().setQuotationStatusReadRequest(quotation.id);
+//                    NetworkRequestsManager.instance().setQuotationStatusReadRequest(quotation.id);
                     quotation.setStatusRead();
 //                    newTextView.setVisibility(View.GONE);
                     notifyDataSetChanged();

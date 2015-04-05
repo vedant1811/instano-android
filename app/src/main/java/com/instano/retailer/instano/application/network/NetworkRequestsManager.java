@@ -9,22 +9,9 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.google.android.gms.games.internal.constants.RequestType;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.application.MyApplication;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -35,15 +22,9 @@ import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
 
-import org.apache.http.HttpStatus;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import retrofit.RestAdapter;
 import retrofit.http.Body;
@@ -51,7 +32,6 @@ import retrofit.http.Field;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import rx.Observable;
-import rx.android.observables.AndroidObservable;
 
 /**
  * Created by vedant on 18/12/14.
@@ -74,11 +54,26 @@ public class NetworkRequestsManager {
     private final MyApplication mApplication;
     private final RegisteredBuyersApiService mRegisteredBuyersApiService;
     private final UnregisteredBuyersApiService mUnregisteredBuyersApiService;
-    private Observable<Device> mDeviceRegisterObservable;
 
-    public RegisteredBuyersApiService getRegisteredBuyersApiService() {
-        return mRegisteredBuyersApiService;
+    /**
+     * stores the different observables based on class name.
+     * Do NOT access this directly, use the accessor {@link #getObservable(Class)}
+     */
+    private final HashMap<String, Observable> mObservableHashMap;
+
+    public Observable<Buyer> signIn(String apiKey) {
+        Observable<Buyer> buyerObservable = mRegisteredBuyersApiService.signIn(apiKey);
+        buyerObservable.subscribe(this::newBuyer);
+        return buyerObservable;
     }
+
+    public Observable<Quote> sendQuote(Quote quote) {
+        return mRegisteredBuyersApiService.sendQuote(quote);
+    }
+
+//    public RegisteredBuyersApiService getRegisteredBuyersApiService() {
+//        return mRegisteredBuyersApiService;
+//    }
 
     /**
      * always adds a header ("Session-Id", getSessionId())
@@ -114,12 +109,20 @@ public class NetworkRequestsManager {
         Observable<Device> registerDevice(@Body Device device);
     }
 
+    public Observable<Buyer> registerBuyer(Buyer buyer) {
+        Observable<Buyer> buyerObservable = mergeObservable(Buyer.class,
+                        mRegisteredBuyersApiService.register(buyer)
+                );
+        buyerObservable.subscribe(this::newBuyer);
+        return buyerObservable;
+    }
+
     private NetworkRequestsManager(MyApplication application) {
         this.mApplication = application;
 
         RestAdapter.LogLevel logLevel = BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE;
 
-        String endpoint = application.getResources().getString(R.string.server_url);
+        String endpoint = application.getResources().getString(R.string.server_url) + "v1/"; // append api version
         RestAdapter registeredRestAdapter = new RestAdapter.Builder()
                 .setEndpoint(endpoint)
                 .setRequestInterceptor(request -> request.addHeader("Session-Id", getSessionId()))
@@ -140,7 +143,7 @@ public class NetworkRequestsManager {
 //        mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
 //        mJsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        mDeviceRegisterObservable = Observable.never(); // a default akin to null
+        mObservableHashMap = new HashMap<>(); // empty hashmap
     }
 
     /*package*/
@@ -155,6 +158,26 @@ public class NetworkRequestsManager {
         return sInstance;
     }
 
+    public Observable<Device> authorizeSession(boolean refreshGcmId) {
+        String gcmId = getGcmId();
+        if (refreshGcmId || gcmId.isEmpty()) {
+            fetchGcmRegIdAsync();
+        }
+        else
+            registerNewSession(gcmId);
+
+        return getObservable(Device.class);
+    }
+
+    public <T> Observable<T> getObservable(@NonNull Class<T> modelClass) {
+        Observable<T> observable = mObservableHashMap.get(modelClass.getSimpleName());
+        if (observable == null) {
+            observable = Observable.never(); // a placeholder observable so that null isn't returned
+            mObservableHashMap.put(modelClass.getSimpleName(), observable);
+        }
+        return observable;
+    }
+
     // DEPRECATED:
     public boolean isOnline() {
         ConnectivityManager cm =
@@ -166,6 +189,30 @@ public class NetworkRequestsManager {
         return false;
     }
 
+    private <T> Observable<T> mergeObservable(@NonNull Class<T> modelClass, Observable<T> newObservable) {
+        Observable<T> observable = getObservable(modelClass).mergeWith(newObservable);// merge with existing observable
+        mObservableHashMap.put(modelClass.getSimpleName(),
+                observable); // replace the old observable
+        return observable;
+    }
+
+    private void newBuyer(@NonNull Buyer buyer) {
+        Log.d(TAG, "onNewBuyer");
+        mObservableHashMap.put(Deal.class.getSimpleName(),
+                mRegisteredBuyersApiService.getDeals()
+                .flatMap(Observable::from)); // flatten returned List<Deal> into Deal
+
+        mObservableHashMap.put(Quote.class.getSimpleName(),
+                mRegisteredBuyersApiService.getQuotes().flatMap(Observable::from));
+
+        mObservableHashMap.put(ProductCategories.class.getSimpleName(),
+                mRegisteredBuyersApiService.getProductCategories());
+    }
+
+//    private Observable<T> exponentialBackoff(Func1<? super Observable<? extends Throwable>,? extends Observable<?>> attempts) {
+//
+//    }
+
     private void storeSessionId(String sessionId) {
         Log.v(TAG, "saving Session id: "+sessionId);
         getAppSharedPreferences().edit().putString(SESSION_ID, sessionId).commit();
@@ -175,21 +222,6 @@ public class NetworkRequestsManager {
         String sessionId = getAppSharedPreferences().getString(SESSION_ID, "");
         Log.v(TAG, "Saved Session id: "+sessionId);
         return sessionId;
-    }
-
-    public interface ResponseListener{
-        public void onResponse(ResponseError error, JSONObject jsonResponse);
-    }
-
-    public Observable<Device> authorizeSession(boolean refreshGcmId) {
-        String gcmId = getGcmId();
-        if (refreshGcmId || gcmId.isEmpty()) {
-            fetchGcmRegIdAsync();
-        }
-        else
-            registerNewSession(gcmId);
-
-        return mDeviceRegisterObservable;
     }
 
     // TODO: use rxJava instead
@@ -225,9 +257,21 @@ public class NetworkRequestsManager {
             Log.v(TAG, ".registerNewSession Send regId  " + gcmId);
             Device device = new Device();
             device.setGcm_registration_id(gcmId);
-            mDeviceRegisterObservable.mergeWith(
-                    mUnregisteredBuyersApiService.registerDevice(device)
-            ); // in case we are waiting for a pending result, new subscribers will get them as well.
+
+            mergeObservable(Device.class, mUnregisteredBuyersApiService.registerDevice(device))
+                    .subscribe(
+                            d -> storeSessionId(d.getSession_id()),
+                            throwable -> {
+                                if (throwable instanceof ResponseError) {
+                                    ResponseError responseError = (ResponseError) throwable;
+                                    if (responseError.getErrorType().shouldRefreshGcmId()) {
+                                        authorizeSession(true);
+                                        return;
+                                    }
+                                }
+                                // else TODO: do an exponential backoff
+                            });
+            // in case we are waiting for a pending result, new subscribers will get them as well.
         }
         else
             authorizeSession(true);

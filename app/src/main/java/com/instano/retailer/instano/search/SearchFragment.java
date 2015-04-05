@@ -19,7 +19,6 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.library.Spinner;
@@ -105,9 +104,9 @@ public class SearchFragment extends Fragment
 
         mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
                 android.R.layout.simple_spinner_item);
-        List<ProductCategories.Category> categories = DataManager.instance().getProductCategories(true);
-        if (categories != null)
-            mCategoryAdapter.addAll(categories);
+//        List<ProductCategories.Category> categories = DataManager.instance().getProductCategories(true);
+//        if (categories != null)
+//            mCategoryAdapter.addAll(categories);
         mCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         mSearchEditText.addTextChangedListener(new TextWatcher() {

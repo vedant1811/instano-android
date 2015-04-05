@@ -32,7 +32,6 @@ public class MyApplication extends Application
         // are bound to the application process.
         GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
         Log.init(this);
-        DataManager.init();
         NetworkRequestsManager.init(this);
         ServicesSingleton.init(this);
     }

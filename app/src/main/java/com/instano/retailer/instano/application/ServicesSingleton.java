@@ -22,7 +22,6 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.BuildConfig;
@@ -91,7 +90,7 @@ public class ServicesSingleton implements
         Log.v(TAG, "api key: " + String.valueOf(apiKey));
 
         if (apiKey != null) {
-            Observable<Buyer> buyerObservable = NetworkRequestsManager.instance().getRegisteredBuyersApiService().signIn(apiKey);
+            Observable<Buyer> buyerObservable = NetworkRequestsManager.instance().signIn(apiKey);
             buyerObservable.subscribe(
                     buyer -> {
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
@@ -103,7 +102,6 @@ public class ServicesSingleton implements
                         editor.putString(KEY_BUYER_API_KEY, buyer.getApi_key());
                         editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
                         editor.apply();
-                        DataManager.instance().onNewBuyer();
                     },
                     throwable -> {
                         SharedPreferences.Editor editor = mSharedPreferences.edit();

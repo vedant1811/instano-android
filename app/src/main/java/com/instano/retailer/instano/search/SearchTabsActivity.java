@@ -149,7 +149,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
                 longitude
         );
 
-        NetworkRequestsManager.instance().getRegisteredBuyersApiService().sendQuote(quote)
+        NetworkRequestsManager.instance().sendQuote(quote)
                 .doOnCompleted(() -> {
                     quoteList();
                     Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT).show();

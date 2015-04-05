@@ -3,22 +3,15 @@ package com.instano.retailer.instano.sellers;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.activities.MessageDialogFragment;
-import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
-import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
-import com.instano.retailer.instano.utilities.models.Seller;
 
-import java.util.List;
-
-public class SellersActivity extends GlobalMenuActivity implements DataManager.SellersListener{
+public class SellersActivity extends GlobalMenuActivity {
     private static final String CURRENT_FRAGMENT = "current fragment";
     private static final String FILTERS_DIALOG_FRAGMENT = "Filters Dialog Fragment";
     private SellersListFragment mSellersListFragment;
@@ -40,18 +33,18 @@ public class SellersActivity extends GlobalMenuActivity implements DataManager.S
         getFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, mSellersListFragment, CURRENT_FRAGMENT)
                 .commit();
-        DataManager.instance().registerListener(this);
+//        DataManager.instance().registerListener(this);
 
         mAdapter = new SellersArrayAdapter(this);
-        List<Seller> sellers = DataManager.instance().getSellers();
-        Log.d(getClass().getSimpleName(), "no of sellers being added: " + sellers.size());
-        mAdapter.addAll(sellers);
+//        List<Seller> sellers = DataManager.instance().getSellers();
+//        Log.d(getClass().getSimpleName(), "no of sellers being added: " + sellers.size());
+//        mAdapter.addAll(sellers);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DataManager.instance().unregisterListener(this);
+//        DataManager.instance().unregisterListener(this);
     }
 
     @Override
@@ -126,12 +119,11 @@ public class SellersActivity extends GlobalMenuActivity implements DataManager.S
         invalidateOptionsMenu();
     }
 
-    @Override
     public void sellersUpdated() {
-        List<Seller> sellers = DataManager.instance().getSellers();
-        mAdapter.addAll(sellers);
-        if (mSellersMapFragment != null)
-            mSellersMapFragment.addSellers(sellers);
+//        List<Seller> sellers = DataManager.instance().getSellers();
+//        mAdapter.addAll(sellers);
+//        if (mSellersMapFragment != null)
+//            mSellersMapFragment.addSellers(sellers);
     }
 
     /* package private */

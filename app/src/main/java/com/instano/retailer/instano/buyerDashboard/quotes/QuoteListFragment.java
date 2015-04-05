@@ -12,12 +12,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
-
-import java.util.List;
 
 /**
  * A list fragment representing a list of Quotes. This fragment
@@ -28,7 +24,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class QuoteListFragment extends ListFragment implements DataManager.QuotesListener {
+public class QuoteListFragment extends ListFragment {
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -48,7 +44,6 @@ public class QuoteListFragment extends ListFragment implements DataManager.Quote
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
-    @Override
     public void quotesUpdated() {
         long start = System.nanoTime();
 
@@ -57,7 +52,7 @@ public class QuoteListFragment extends ListFragment implements DataManager.Quote
             @Override
             public void run() {
                 adapter.clear();
-                adapter.addAll(DataManager.instance().getQuotes());
+//                adapter.addAll(DataManager.instance().getQuotes());
             }
         });
 
@@ -66,7 +61,6 @@ public class QuoteListFragment extends ListFragment implements DataManager.Quote
         Log.v(Log.TIMER_TAG, String.format("QuotesAdapter.dataUpdated took %.4fms", time));
     }
 
-    @Override
     public void quotationsUpdated() {
         QuotesAdapter adapter = (QuotesAdapter) getListAdapter();
         adapter.notifyDataSetChanged();
@@ -109,13 +103,13 @@ public class QuoteListFragment extends ListFragment implements DataManager.Quote
         setListAdapter(adapter);
         // call after setting the adapter so that the adapter is not null
         quotesUpdated();
-        DataManager.instance().registerListener(this);
+//        DataManager.instance().registerListener(this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        DataManager.instance().unregisterListener(this);
+//        DataManager.instance().unregisterListener(this);
     }
 
     @Override
@@ -225,10 +219,10 @@ public class QuoteListFragment extends ListFragment implements DataManager.Quote
             timeTextView.setText(quote.getPrettyTimeElapsed());
 
             int numResponses = 0;
-            List<Quotation> quotations = DataManager.instance().getQuotations();
-            for (Quotation quotation : quotations)
-                if (quotation.quoteId == quote.id)
-                    numResponses++;
+//            List<Quotation> quotations = DataManager.instance().getQuotations();
+//            for (Quotation quotation : quotations)
+//                if (quotation.quoteId == quote.id)
+//                    numResponses++;
             responsesTextView.setText(numResponses + " responses");
             sentToTextView.setText(String.format("sent to %d retailers", quote.sellerIds.size()));
 

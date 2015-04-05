@@ -2,8 +2,8 @@ package com.instano.retailer.instano.sellers;
 
 
 import android.app.DialogFragment;
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +11,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.library.Spinner;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
-
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -51,9 +48,9 @@ public class FiltersDialogFragment extends DialogFragment {
 
         mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
                 android.R.layout.simple_spinner_item);
-        List<ProductCategories.Category> categories = DataManager.instance().getProductCategories(true);
-        if (categories != null)
-            mCategoryAdapter.addAll(categories);
+//        List<ProductCategories.Category> categories = DataManager.instance().getProductCategories(true);
+//        if (categories != null)
+//            mCategoryAdapter.addAll(categories);
         mCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mProductCategorySpinner.setAdapter(mCategoryAdapter);
         mProductCategorySpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {

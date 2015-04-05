@@ -86,7 +86,7 @@ public class GcmIntentService extends IntentService {
         try {
             String jsonArrayContent = bundle.getString("quotation");
             JSONArray jsonArray = new JSONArray(jsonArrayContent);
-            DataManager.instance().updateQuotes(jsonArray);
+//            DataManager.instance().updateQuotes(jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -98,7 +98,7 @@ public class GcmIntentService extends IntentService {
         try {
             String jsonArrayContent = bundle.getString("quote");
             JSONArray jsonArray = new JSONArray(jsonArrayContent);
-            DataManager.instance().updateQuotes(jsonArray);
+//            DataManager.instance().updateQuotes(jsonArray);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject explrObject = jsonArray.getJSONObject(i);
                  Log.v(TAG, "Received individual quotes json: " + explrObject);
