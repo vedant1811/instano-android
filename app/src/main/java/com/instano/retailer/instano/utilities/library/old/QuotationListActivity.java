@@ -6,7 +6,7 @@ import android.os.Bundle;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.buyerDashboard.QuotationDetailActivity;
 import com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment;
-import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.activities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 
 /**

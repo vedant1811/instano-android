@@ -8,13 +8,10 @@ import android.view.Menu;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
-import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Device;
 
-import rx.Observable;
 import rx.android.observables.AndroidObservable;
 
 
@@ -43,18 +40,18 @@ public class LauncherActivity extends GlobalMenuActivity {
         setContentView(R.layout.activity_launcher);
         if (!ServicesSingleton.instance().isFirstTime())
             mTimedOut = true; // do not wait for timeout if app is not being used for first time
-
-
-        // TODO: combine with above
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         if (checkPlayServices()) {
-            AndroidObservable.bindActivity
-                    (this, NetworkRequestsManager.instance().authorizeSession(false))
-                    .subscribe((device) -> closeIfPossible(),this::showErrorDialog);
+            AndroidObservable.bindActivity(this, NetworkRequestsManager.instance().authorizeSession(false))
+                    .subscribe((device) -> {
+                                mErrorOccurred = false;
+                                closeIfPossible();
+                            },
+                            this::showErrorDialog);
         } else {
             noPlayServicesDialog();
             Log.v(TAG, "No valid Google Play Services APK found.");

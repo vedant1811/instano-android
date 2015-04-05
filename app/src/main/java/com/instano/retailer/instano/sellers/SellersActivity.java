@@ -8,7 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.activities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 
 public class SellersActivity extends GlobalMenuActivity {

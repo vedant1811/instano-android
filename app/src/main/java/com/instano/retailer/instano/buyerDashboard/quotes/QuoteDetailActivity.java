@@ -6,7 +6,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.activities.GlobalMenuActivity;
 
 /**
  * An activity representing a single Quote detail screen. This

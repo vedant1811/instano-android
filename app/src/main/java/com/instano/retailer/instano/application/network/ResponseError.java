@@ -1,14 +1,8 @@
 package com.instano.retailer.instano.application.network;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.instano.retailer.instano.utilities.library.Log;
 
 import org.apache.http.HttpStatus;
-
-import java.io.UnsupportedEncodingException;
 
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -97,6 +91,12 @@ public class ResponseError extends Throwable {
 
     public ResponseError(RetrofitError cause) {
         super(cause);
+
+        cause.printStackTrace();
+
+        if (cause.getKind() == RetrofitError.Kind.UNEXPECTED)
+            throw cause;
+
         Type error = Type.UNKNOWN_ERROR;
         Response networkResponse = cause.getResponse();
         String responseString="";

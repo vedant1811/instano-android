@@ -8,17 +8,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.application.network.ResponseError;
-import com.instano.retailer.instano.utilities.GlobalMenuActivity;
-import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
-import com.instano.retailer.instano.utilities.models.Device;
 
 import rx.Observable;
-import rx.functions.Action0;
+import rx.android.observables.AndroidObservable;
 
 public class StartingActivity extends GlobalMenuActivity {
 
@@ -57,7 +53,8 @@ public class StartingActivity extends GlobalMenuActivity {
         Observable<Buyer> buyerObservable = instance.signIn();
         if (instance.getBuyer() != null || buyerObservable != null) {
             mText = WELCOME_BACK + SEARCH_ICON_HELP;
-            buyerObservable.subscribe(
+            AndroidObservable.bindActivity(this, buyerObservable)
+                    .subscribe(
                     buyer -> Toast.makeText(this, String.format("Welcome %s", buyer.getName()), Toast.LENGTH_SHORT).show(),
                     throwable -> {
                         if (ResponseError.Type.INCORRECT_API_KEY.is(throwable))

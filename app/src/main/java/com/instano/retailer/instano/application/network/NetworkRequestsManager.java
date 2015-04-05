@@ -21,6 +21,7 @@ import com.instano.retailer.instano.utilities.models.Device;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
+import com.instano.retailer.instano.utilities.models.SignIn;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,7 +29,6 @@ import java.util.List;
 
 import retrofit.RestAdapter;
 import retrofit.http.Body;
-import retrofit.http.Field;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import rx.Observable;
@@ -62,7 +62,9 @@ public class NetworkRequestsManager {
     private final HashMap<String, Observable> mObservableHashMap;
 
     public Observable<Buyer> signIn(String apiKey) {
-        Observable<Buyer> buyerObservable = mRegisteredBuyersApiService.signIn(apiKey);
+        SignIn signIn = new SignIn();
+        signIn.setApi_key(apiKey);
+        Observable<Buyer> buyerObservable = mRegisteredBuyersApiService.signIn(signIn);
         buyerObservable.subscribe(this::newBuyer);
         return buyerObservable;
     }
@@ -70,10 +72,6 @@ public class NetworkRequestsManager {
     public Observable<Quote> sendQuote(Quote quote) {
         return mRegisteredBuyersApiService.sendQuote(quote);
     }
-
-//    public RegisteredBuyersApiService getRegisteredBuyersApiService() {
-//        return mRegisteredBuyersApiService;
-//    }
 
     /**
      * always adds a header ("Session-Id", getSessionId())
@@ -83,7 +81,7 @@ public class NetworkRequestsManager {
         Observable<Buyer> register(@Body Buyer buyer);
 
         @POST("/buyers/sign_in")
-        Observable<Buyer> signIn(@Field("api_key") String apiKey);
+        Observable<Buyer> signIn(@Body SignIn signIn);
 
         @POST("/buyers/exists")
         Observable<Boolean> exists(@Body String phone);
@@ -120,9 +118,9 @@ public class NetworkRequestsManager {
     private NetworkRequestsManager(MyApplication application) {
         this.mApplication = application;
 
-        RestAdapter.LogLevel logLevel = BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE;
+        RestAdapter.LogLevel logLevel = BuildConfig.DEBUG ? RestAdapter.LogLevel.HEADERS_AND_ARGS : RestAdapter.LogLevel.NONE;
 
-        String endpoint = application.getResources().getString(R.string.server_url) + "v1/"; // append api version
+        String endpoint = application.getResources().getString(R.string.server_url) + API_VERSION; // append api version
         RestAdapter registeredRestAdapter = new RestAdapter.Builder()
                 .setEndpoint(endpoint)
                 .setRequestInterceptor(request -> request.addHeader("Session-Id", getSessionId()))

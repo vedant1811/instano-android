@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.utilities;
+package com.instano.retailer.instano.activities;
 
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -10,17 +10,15 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.activities.MessageDialogFragment;
-import com.instano.retailer.instano.activities.ProfileActivity;
 import com.instano.retailer.instano.application.BaseActivity;
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.application.network.ResponseError;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.deals.DealListActivity;
 import com.instano.retailer.instano.search.SearchTabsActivity;
-import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.sellers.SellersActivity;
+import com.instano.retailer.instano.utilities.library.Log;
 
 /**
  * Base class for activities with a common menu (menu.global)
@@ -71,6 +69,8 @@ public abstract class GlobalMenuActivity extends BaseActivity {
     }
 
     public void showErrorDialog(Throwable throwable) {
+        Log.d(TAG, "showing error dialog");
+        throwable.printStackTrace();
         if (throwable instanceof ResponseError) {
             ResponseError responseError = (ResponseError) throwable;
             MessageDialogFragment.Type type = responseError.getErrorType().isLongWaiting() ?
