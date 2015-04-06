@@ -16,6 +16,7 @@ import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
+import com.instano.retailer.instano.chat.ChatSellerListActivity;
 import com.instano.retailer.instano.deals.DealListActivity;
 import com.instano.retailer.instano.search.SearchTabsActivity;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -121,6 +122,9 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
             case R.id.action_share:
                 share();
                 return true;
+            case R.id.action_chat:
+                chat();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -214,6 +218,10 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(this, "There are no clients to share links", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void chat() {
+        startActivity(new Intent(this, ChatSellerListActivity.class));
     }
 
     @Override

@@ -26,6 +26,7 @@ public class MyApplication extends Application
         DataManager.init();
         NetworkRequestsManager.init(this);
         ServicesSingleton.init(this);
+        ChatServicesSingleton.init(this);
     }
 
     public synchronized Tracker getTracker(TrackerName trackerId) {
