@@ -24250,7 +24250,7 @@ com.instano.retailer.instano.utilities.GetAddressTask -> com.instano.retailer.in
     java.lang.Object doInBackground(java.lang.Object[]) -> doInBackground
 com.instano.retailer.instano.utilities.GetAddressTask$AddressCallback -> com.instano.retailer.instano.utilities.b:
     void addressFetched(android.location.Address) -> a
-com.instano.retailer.instano.utilities.GlobalMenuActivity -> com.instano.retailer.instano.utilities.c:
+com.instano.retailer.instano.activities.GlobalMenuActivity -> com.instano.retailer.instano.utilities.c:
     void onActivityResult(int,int,android.content.Intent) -> onActivityResult
     void onResume() -> onResume
     void onSessionResponse(com.instano.retailer.instano.application.network.NetworkRequestsManager$ResponseError) -> a

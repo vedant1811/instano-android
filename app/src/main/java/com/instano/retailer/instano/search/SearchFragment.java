@@ -20,11 +20,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.library.Spinner;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
-
-import java.util.List;
 
 
 /**
@@ -104,10 +103,15 @@ public class SearchFragment extends Fragment
 
         mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
                 android.R.layout.simple_spinner_item);
-//        List<ProductCategories.Category> categories = DataManager.instance().getProductCategories(true);
-//        if (categories != null)
-//            mCategoryAdapter.addAll(categories);
         mCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        NetworkRequestsManager.instance().getObservable(ProductCategories.class)
+                .subscribe(categories -> {
+                    if (mCategoryAdapter != null) {
+                        mCategoryAdapter.clear();
+                        mCategoryAdapter.addAll(categories);
+                    }
+                });
 
         mSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -182,38 +186,8 @@ public class SearchFragment extends Fragment
                 (ServicesSingleton.InitialDataCallbacks) this);
     }
 
-    /**
-     * Called when searchButton has been clicked
-     */
-//    public void searchButtonClicked() {
-//        ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
-//
-//        if (!servicesSingleton.checkPlayServices()){
-//            String error = servicesSingleton.getLocationErrorString();
-//            if (error != null) {
-//                mToast.setText(error);
-//                mToast.show();
-//            }
-//            return;
-//        }
-//
-//        String searchString = mSearchEditText.getText().toString();
-//        if (searchString == null) {
-//            mToast.setText("Enter something to search");
-//            mToast.show();
-//            return;
-//        }
-//    }
-
     /* package */ void showSearchEmptyError() {
         mSearchEditText.setError("enter something");
-    }
-
-    /* package */ void updateProductCategories(List<ProductCategories.Category> categories) {
-        if (mCategoryAdapter != null) {
-            mCategoryAdapter.clear();
-            mCategoryAdapter.addAll(categories);
-        }
     }
 
     @Override

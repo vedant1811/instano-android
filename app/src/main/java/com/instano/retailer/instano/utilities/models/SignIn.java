@@ -1,5 +1,6 @@
 package com.instano.retailer.instano.utilities.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 /**
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName(value = "sign_in")
 public class SignIn {
+    @JsonProperty("api_key")
     private String api_key;
 
     public String getApi_key() {

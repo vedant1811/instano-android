@@ -1,10 +1,6 @@
 package com.instano.retailer.instano.application;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.location.Address;
@@ -14,7 +10,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
 
@@ -24,10 +19,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
-import com.instano.retailer.instano.BuildConfig;
-import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
-import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
@@ -73,8 +65,6 @@ public class ServicesSingleton implements
 
     private Buyer mBuyer;
 
-//    private PeriodicWorker mPeriodicWorker;
-
     @Nullable
     public Buyer getBuyer() {
         return mBuyer;
@@ -92,56 +82,48 @@ public class ServicesSingleton implements
         if (apiKey != null) {
             Observable<Buyer> buyerObservable = NetworkRequestsManager.instance().signIn(apiKey);
             buyerObservable.subscribe(
-                    buyer -> {
-                        SharedPreferences.Editor editor = mSharedPreferences.edit();
-                        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
-                        Log.d(TAG, "saving buyer api key: " + buyer.getApi_key());
-                        Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
-                        appTracker.setClientId(String.valueOf(buyer.getId()));
-                        appTracker.send(new HitBuilders.AppViewBuilder().build());
-                        editor.putString(KEY_BUYER_API_KEY, buyer.getApi_key());
-                        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
-                        editor.apply();
-                    },
-                    throwable -> {
-                        SharedPreferences.Editor editor = mSharedPreferences.edit();
-                        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
-                        editor.apply();
-                    });
+                    this::saveBuyer,
+                    throwable -> removeFirstTime());
             return buyerObservable;
         }
         else
             return null; // TODO: improve
     }
 
-    public boolean isFirstTime() {
-        if (BuildConfig.DEBUG)
-            return true;
-        else
-            return mFirstTime;
+    private void removeFirstTime() {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
+        editor.apply();
     }
 
-    public void createNotification() {
-        Log.d(TAG, "new quotations received");
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(mApplication)
-                .setSmallIcon(R.drawable.instano_launcher)
-                .setContentTitle("New Quotations")
-                .setContentText("Click to view your new quotations")
-                .setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL);
+    private void saveBuyer(Buyer buyer) {
+        mBuyer = buyer;
+        Log.d(TAG, "buyer ID: " + mBuyer);
 
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                mApplication,
-                0,
-                new Intent(mApplication, QuoteListActivity.class),
-                PendingIntent.FLAG_UPDATE_CURRENT
-        );
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
+        Log.d(TAG, "saving buyer api key: " + buyer.getApi_key());
+        Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
+        appTracker.setClientId(String.valueOf(buyer.getId()));
+        appTracker.send(new HitBuilders.AppViewBuilder().build());
+        editor.putString(KEY_BUYER_API_KEY, buyer.getApi_key());
+        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
+        editor.apply();
+    }
 
-        builder.setContentIntent(resultPendingIntent);
+    public Observable<Buyer> register(@NonNull Buyer buyer) {
+        Observable<Buyer> buyerObservable = NetworkRequestsManager.instance().registerBuyer(buyer);
+        buyerObservable.subscribe(
+                this::saveBuyer,
+                throwable -> removeFirstTime());
+        return buyerObservable;
+    }
 
-        NotificationManager manager = (NotificationManager) mApplication.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(001, builder.build());
-
+    public boolean isFirstTime() {
+//        if (BuildConfig.DEBUG)
+//            return true;
+//        else
+            return mFirstTime;
     }
 
     /*package*/ static void init(MyApplication application) {

@@ -6,11 +6,9 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -19,10 +17,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
-import com.instano.retailer.instano.application.ServicesSingleton;
-import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.activities.GlobalMenuActivity;
+import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
+import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
@@ -74,12 +72,9 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
                     );
                     String address = data.getStringExtra(SelectLocationActivity.KEY_READABLE_ADDRESS);
                     if (address == null) // try to fetch location again
-                        new GetAddressTask(this, new GetAddressTask.AddressCallback() {
-                            @Override
-                            public void addressFetched(@Nullable Address address) {
-                                String addressString = ServicesSingleton.readableAddress(address);
-                                ServicesSingleton.instance().userSelectsLocation(latLng, addressString);
-                            }
+                        new GetAddressTask(this, address1 -> {
+                            String addressString = ServicesSingleton.readableAddress(address1);
+                            ServicesSingleton.instance().userSelectsLocation(latLng, addressString);
                         }).execute(latLng.latitude, latLng.longitude);
                     ServicesSingleton.instance().userSelectsLocation(latLng, address);
                 }
@@ -281,11 +276,6 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //
 //    @Override
 //    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-//    }
-
-//    @Override
-//    public void productCategoriesUpdated(List<ProductCategories.Category> productCategories) {
-//        mSearchFragment.updateProductCategories(productCategories);
 //    }
 
     public void onCategorySelected(ProductCategories.Category selectedCategory) {

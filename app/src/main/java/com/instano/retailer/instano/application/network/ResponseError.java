@@ -7,6 +7,7 @@ import org.apache.http.HttpStatus;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
+import retrofit.mime.TypedInput;
 
 /**
  * Created by vedant on 4/4/15.
@@ -104,7 +105,11 @@ public class ResponseError extends Throwable {
             Log.v(TAG, ".getResponseError code :" + networkResponse.getStatus());
             Log.v(TAG, ".getResponseError reason :" + networkResponse.getReason());
             try {
-                responseString = new String(((TypedByteArray) networkResponse.getBody()).getBytes());
+                TypedInput body = networkResponse.getBody();
+                Log.v(TAG, ".getResponseError body :" + body);
+                TypedByteArray body1 = (TypedByteArray) body;
+                Log.v(TAG, ".getResponseError TypedByteArray :" + body);
+                responseString = new String(body1.getBytes());
             } catch (Exception e) {
                 Log.fatalError(e);
             }

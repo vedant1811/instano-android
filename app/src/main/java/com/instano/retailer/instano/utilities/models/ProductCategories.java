@@ -3,6 +3,7 @@ package com.instano.retailer.instano.utilities.models;
 import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.instano.retailer.instano.utilities.library.Log;
 
 import org.json.JSONArray;
@@ -16,6 +17,7 @@ import java.util.List;
 /**
  * Created by vedant on 8/10/14.
  */
+@JsonRootName("categories")
 public class ProductCategories extends ArrayList<ProductCategories.Category> {
 
     public static final String UNDEFINED = "Select Category";
@@ -33,7 +35,6 @@ public class ProductCategories extends ArrayList<ProductCategories.Category> {
     }
     public ProductCategories() {
         //Dummy For Json
-
     }
 
     public ProductCategories(JSONObject json, boolean allowUndefined) {
@@ -83,7 +84,7 @@ public class ProductCategories extends ArrayList<ProductCategories.Category> {
     }
 
     public static class Category implements Comparable<Category> {
-        @JsonProperty("name")
+        @JsonProperty("category")
         public  String name;
         @JsonProperty("brands")
         public  ArrayList<String> brands;

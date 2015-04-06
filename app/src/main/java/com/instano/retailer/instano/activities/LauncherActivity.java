@@ -46,7 +46,7 @@ public class LauncherActivity extends GlobalMenuActivity {
     protected void onResume() {
         super.onResume();
         if (checkPlayServices()) {
-            AndroidObservable.bindActivity(this, NetworkRequestsManager.instance().authorizeSession(false))
+            AndroidObservable.bindActivity(this, NetworkRequestsManager.instance().authorizeSession(false, false))
                     .subscribe((device) -> {
                                 mErrorOccurred = false;
                                 closeIfPossible();
@@ -57,11 +57,12 @@ public class LauncherActivity extends GlobalMenuActivity {
             Log.v(TAG, "No valid Google Play Services APK found.");
             return;
         }
-        new Handler().postDelayed(() -> {
-            // This method will be executed once the timer is over
-            mTimedOut = true;
-            closeIfPossible();
-        }, SPLASH_TIME_OUT);
+        if (!mTimedOut)
+            new Handler().postDelayed(() -> {
+                // This method will be executed once the timer is over
+                mTimedOut = true;
+                closeIfPossible();
+            }, SPLASH_TIME_OUT);
     }
 
     protected boolean checkPlayServices() {

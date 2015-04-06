@@ -1,6 +1,7 @@
 package com.instano.retailer.instano.application;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.LauncherActivity;
+import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Seller;
 
@@ -65,19 +67,44 @@ public class GcmIntentService extends IntentService {
                 // Post notification of received message.
                 sendNotification("Received: " + extras.toString());
                 Log.v(TAG, "Received: " + extras);
-                Log.v(TAG,"TYPE : "+ extras.getString("type"));
-                if(extras.getString("type").contains("seller")) {
-                    jsonToSeller(extras);
-                } else if (extras.getString("type").contains("quote")) {
-                    jsonToQuotes(extras);
-                } else if(extras.getString("type").contains("quotations")) {
-                    jsonToQuotation(extras);
+                String type = extras.getString("type");
+                Log.v(TAG,"TYPE : "+ type);
+                if (type != null) {
+                    if (type.contains("seller")) {
+                        jsonToSeller(extras);
+                    } else if (type.contains("quote")) {
+                        jsonToQuotes(extras);
+                    } else if (type.contains("quotations")) {
+                        jsonToQuotation(extras);
+                    }
                 }
-                Log.v(TAG, "Received: " + extras.toString());
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         GcmBroadcastReceiver.completeWakefulIntent(intent);
+    }
+
+    public void createNotification() {
+        Log.d(TAG, "new quotations received");
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.instano_launcher)
+                .setContentTitle("New Quotations")
+                .setContentText("Click to view your new quotations")
+                .setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL);
+
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                new Intent(this, QuoteListActivity.class),
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        builder.setContentIntent(resultPendingIntent);
+
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(001, builder.build());
+
     }
 
     private  void jsonToQuotation(Bundle bundle) {

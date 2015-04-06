@@ -7,7 +7,6 @@ import android.widget.EditText;
 import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.application.network.ResponseError;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -118,7 +117,7 @@ public class ProfileActivity extends GlobalMenuActivity {
         newBuyer.setPhone(mPhoneEditText.getText().toString()) ;
         Log.v(TAG, "Buyer in setup clicked" + newBuyer);
         AndroidObservable.bindActivity(this,
-                NetworkRequestsManager.instance().registerBuyer(newBuyer))
+                ServicesSingleton.instance().register(newBuyer))
                 .subscribe(createdBuyer -> finishWithResultOk(),
                         throwable -> {
                             mSetUpViewFlipper.setDisplayedChild(0); // button
