@@ -13,6 +13,9 @@ import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
@@ -52,6 +55,7 @@ public class ServicesSingleton implements
     private final MyApplication mApplication;
     private SharedPreferences mSharedPreferences;
     private boolean mFirstTime;
+    private ObjectMapper mDefaultObjectMapper;
 
     /* location variables */
     private LocationClient mLocationClient;
@@ -332,4 +336,12 @@ public class ServicesSingleton implements
                 TypedValue.COMPLEX_UNIT_DIP, dp, mApplication.getResources().getDisplayMetrics());
     }
 
+    public ObjectMapper getDefaultObjectMapper() {
+        if (mDefaultObjectMapper == null) {
+            mDefaultObjectMapper = new ObjectMapper();
+            mDefaultObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
+            mDefaultObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        }
+        return mDefaultObjectMapper;
+    }
 }

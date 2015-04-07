@@ -132,7 +132,6 @@ public class SearchConstraintsFragment extends Fragment
     public void onItemsSelected(boolean[] selected) {
         Category selectedCategory = ((SearchTabsActivity)getActivity()).getSelectedCategory();
         selectedCategory.setSelected(selected, true);
-//        ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(selectedCategory);
     }
 
     public void refreshSelectedCategory(Category selectedCategory, String searchString) {

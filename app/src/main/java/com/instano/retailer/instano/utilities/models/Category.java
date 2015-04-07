@@ -5,12 +5,7 @@ import android.support.annotation.NonNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.instano.retailer.instano.utilities.library.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
 * Created by vedant on 4/7/15.
@@ -27,13 +22,9 @@ public class Category implements Comparable<Category> {
 
     private boolean[] selected;
     private boolean mUserSelected = false;
-    private ArrayList<String> nameVariants;
 
     public boolean matches(String lowerCaseString) {
-        for (String variant : nameVariants)
-            if(lowerCaseString.contains(variant))
-                return true;
-        return false;
+        return lowerCaseString.contains(name.toLowerCase());
     }
 
     public void guessBrands(String searchString) {
@@ -60,44 +51,6 @@ public class Category implements Comparable<Category> {
     }
 
     public Category() {
-    }
-
-    public Category(JSONObject params) {
-        selected = null;
-        brands = new ArrayList<String>();
-        String name = null;
-        try {
-            name = params.getString("category");
-            JSONArray brandsJsonArray = params.getJSONArray("brands");
-            for (int i = 0; i < brandsJsonArray.length(); i++) {
-                brands.add(brandsJsonArray.getString(i));
-            }
-        } catch (JSONException e){
-            Log.e(TAG, "", e);
-        }
-        this.name = name;
-        Collections.sort(brands);
-        nameVariants = new ArrayList<String>();
-        nameVariants.add(name.toLowerCase());
-    }
-
-    public JSONObject toJsonObject() {
-        try {
-            JSONArray jsonArray = new JSONArray();
-            if (selected != null) {
-                for (int i = 0; i < selected.length; i++) {
-                    if (selected[i])
-                        jsonArray.put(brands.get(i));
-                }
-            } // TODO: else when selected is null
-            JSONObject jsonObject = new JSONObject()
-                    .put("category", name)
-                    .put("brands", jsonArray);
-            return jsonObject;
-        } catch (JSONException e) {
-            Log.e(TAG, "", e);
-            return null;
-        }
     }
 
     public String asAdditionalInfo() {
@@ -136,13 +89,10 @@ public class Category implements Comparable<Category> {
     }
 
     public static Category undefinedCategory() {
-
         Category category = new Category();
         category.name = UNDEFINED;
         category.brands = new ArrayList<String>();
         category.brands.add("brands");
-        category.nameVariants = new ArrayList<String>();
-        category.nameVariants.add(category.name.toLowerCase());
         return category;
     }
 

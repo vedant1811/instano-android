@@ -145,7 +145,7 @@ public class SearchFragment extends Fragment
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id, boolean userSelected) {
                 if (userSelected)
                     mUserSelectedCategory = true;
-//                ((SearchTabsActivity) getActivity()).onCategorySelected(mCategoryAdapter.getItem(position));
+                ((SearchTabsActivity) getActivity()).onCategorySelected(mCategoryAdapter.getItem(position));
             }
 
             @Override
@@ -171,10 +171,10 @@ public class SearchFragment extends Fragment
         long start = System.nanoTime();
         String search = mSearchEditText.getText().toString().toLowerCase();
         for (int i = 0; i < mCategoryAdapter.getCount(); i++) {
-//            if (mCategoryAdapter.getItem(i).matches(search)) {
-//                mProductCategorySpinner.programmaticallySetPosition(i, true);
-//                return;
-//            }
+            if (mCategoryAdapter.getItem(i).matches(search)) {
+                mProductCategorySpinner.programmaticallySetPosition(i, true);
+                return;
+            }
         }
         mProductCategorySpinner.programmaticallySetPosition(0, true); // setting to undefined
         double time = (System.nanoTime() - start)/Log.ONE_MILLION;
@@ -239,5 +239,4 @@ public class SearchFragment extends Fragment
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
 }

@@ -9,9 +9,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.R;
@@ -104,16 +102,6 @@ public class NetworkRequestsManager {
         SignIn signIn = new SignIn();
         signIn.setApi_key(apiKey);
 
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
-//        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-//
-//        try {
-//            Log.d(TAG, objectMapper.writeValueAsString(signIn));
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
-
         Observable<Buyer> buyerObservable =
                 mRegisteredBuyersApiService.signIn(signIn)
                 .cache();
@@ -139,9 +127,7 @@ public class NetworkRequestsManager {
 
         RestAdapter.LogLevel logLevel = BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE;
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapper objectMapper = ServicesSingleton.instance().getDefaultObjectMapper();
 
         String endpoint = application.getResources().getString(R.string.server_url) + API_VERSION; // append api version
         JacksonConverter jacksonConverter = new JacksonConverter(objectMapper);

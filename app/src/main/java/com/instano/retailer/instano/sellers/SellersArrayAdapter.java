@@ -13,14 +13,16 @@ import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Category;
+import com.instano.retailer.instano.utilities.models.Constraint;
 import com.instano.retailer.instano.utilities.models.Seller;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -199,58 +201,58 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         public void callButtonClicked(String number);
     }
 
+    /**
+     * do not call filter directly, use the overloaded helper methods: filter(...)
+     */
     private class DistanceAndCategoryFilter extends Filter {
-
-        private static final String PRODUCT_CATEGORY = "product_category";
-        private static final String MIN_DIST = "min_dist";
         private static final int INITIAL_MIN_DIST = 1000;
 
-        private CharSequence mLastConstraint =
-                getConstraint(INITIAL_MIN_DIST, Category.undefinedCategory());
+        private Constraint mLastConstraint;
+        private final ObjectMapper mObjectMapper;
+
+        public DistanceAndCategoryFilter() {
+            mObjectMapper = ServicesSingleton.instance().getDefaultObjectMapper();
+            mLastConstraint = new Constraint();
+            mLastConstraint.category = Category.undefinedCategory();
+            mLastConstraint.min_distance = INITIAL_MIN_DIST;
+        }
 
         private void runOldFilter() {
-            filter(mLastConstraint);
             Log.d("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint);
+            try {
+                filter(mObjectMapper.writeValueAsString(mLastConstraint));
+            } catch (JsonProcessingException e) {
+                Log.fatalError(e);
+            }
         }
 
         private void filter(int minDist) {
-            try {
-                mLastConstraint = (new JSONObject(mLastConstraint.toString())
-                        .put(MIN_DIST, minDist)).toString();
-            } catch (JSONException e) {
-                Log.fatalError(e);
-                mLastConstraint = getConstraint(minDist, Category.undefinedCategory());
-            }
-            filter(mLastConstraint);
             Log.d("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint);
+            mLastConstraint.min_distance = minDist;
+            runOldFilter();
         }
 
         private void filter(Category category) {
-            try {
-                mLastConstraint = (new JSONObject(mLastConstraint.toString())
-                        .put(PRODUCT_CATEGORY, category.toJsonObject())).toString();
-            } catch (JSONException e) {
-                Log.fatalError(e);
-                mLastConstraint = getConstraint(INITIAL_MIN_DIST, category);
-            }
-            filter(mLastConstraint);
             Log.d("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint);
+            mLastConstraint.category = category;
         }
 
         @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            this.mLastConstraint = constraint;
-            ArrayList<Seller> filteredList = new ArrayList<Seller>();
+        protected FilterResults performFiltering(CharSequence serializedConstraint) {
+            ArrayList<Seller> filteredList = new ArrayList<>();
+
+            Constraint constraint = new Constraint();
+            try {
+                constraint = mObjectMapper.readValue(serializedConstraint.toString(), Constraint.class);
+            } catch (IOException e) {
+                Log.fatalError(e);
+            }
 
             try {
-                // first filter distance
-                int minDist = getMinDist(constraint);
-                // filter category
-                Category category = getProductCategory(constraint);
                 for (int i = 0; i < mCompleteSet.size(); i++) {
                     Seller seller = mCompleteSet.valueAt(i);
-                    if (seller.getDistanceFromLocation() <= minDist &&
-                            seller.categories.containsCategoryAndOneBrand(category))
+                    if (seller.getDistanceFromLocation() <= constraint.min_distance && // first filter distance
+                            seller.categories.containsCategoryAndOneBrand(constraint.category)) // filter category
                         filteredList.add(seller);
                 }
             } catch (Exception e) {
@@ -275,30 +277,5 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
             mFilteredList = (ArrayList<Seller>) results.values;
             newData();
         }
-
-        private Category getProductCategory(CharSequence constraint) throws JSONException {
-            JSONObject jsonObject = new JSONObject(constraint.toString());
-            return new Category(jsonObject.getJSONObject(PRODUCT_CATEGORY));
-        }
-
-        private int getMinDist(CharSequence constraint) throws JSONException {
-            JSONObject jsonObject = new JSONObject(constraint.toString());
-            return jsonObject.getInt(MIN_DIST);
-        }
-
-        private CharSequence getConstraint(int minDist, Category category) {
-            String constraint;
-            try {
-                JSONObject jsonObject = new JSONObject()
-                        .put(MIN_DIST, minDist)
-                        .put(PRODUCT_CATEGORY, category.toJsonObject());
-                constraint = jsonObject.toString();
-            } catch (JSONException e) {
-                Log.fatalError(e);
-                constraint = null;
-            }
-            return constraint;
-        }
-
     }
 }

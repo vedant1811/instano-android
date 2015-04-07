@@ -1,6 +1,7 @@
 package com.instano.retailer.instano.utilities.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.instano.retailer.instano.application.ServicesSingleton;
 
 import org.json.JSONException;
@@ -9,6 +10,7 @@ import org.json.JSONObject;
 /**
  * Represents a single Quotation uniquely identifiable by its @field id
  */
+@JsonRootName("quotation")
 public class Quotation {
 
     private final static String STATUS_UNREAD  = "unread";

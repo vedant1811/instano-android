@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.instano.retailer.instano.application.ServicesSingleton;
 
 import java.util.Comparator;
@@ -13,6 +14,7 @@ import java.util.Comparator;
 /**
  * Represents a single immutable Seller
  */
+@JsonRootName("seller")
 public class Seller {
     public  static double INVALID_COORDINATE = -1000; // an invalid coordinate
 

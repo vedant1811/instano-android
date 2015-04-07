@@ -27,6 +27,8 @@ import com.instano.retailer.instano.utilities.models.Category;
 import com.instano.retailer.instano.utilities.models.Quote;
 import com.instano.retailer.instano.utilities.models.Seller;
 
+import rx.android.observables.AndroidObservable;
+
 
 public class SearchTabsActivity extends GlobalMenuActivity implements
         NoLocationErrorDialogFragment.Callbacks {
@@ -130,27 +132,25 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
             return;
         }
 
-        Quote quote = new Quote(
-                buyer.getId(),
-                searchString,
-                mSearchConstraintsFragment.getPriceRange(),
-                mSelectedCategory,
-                mSelectedCategory.asAdditionalInfo(),
-                address, // address
-                latitude,
-                longitude
-        );
+        Quote quote = new Quote();
+        quote.searchString = searchString;
+        quote.priceRange = mSearchConstraintsFragment.getPriceRange();
+        quote.brands = mSelectedCategory.asAdditionalInfo();
+        quote.address = address;
+        quote.latitude = latitude;
+        quote.longitude = longitude;
 
-        NetworkRequestsManager.instance().sendQuote(quote)
-                .doOnCompleted(() -> {
-                    quoteList();
-                    Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT).show();
-                    finish();
-                })
-                .doOnError((throwable) -> {
-                    Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG).show();
-                    mSearchConstraintsFragment.sendingQuote(false);
-                });
+        AndroidObservable.bindActivity(this, NetworkRequestsManager.instance().sendQuote(quote))
+                .subscribe(
+                        (returnedQuote) -> {
+                            quoteList();
+                            Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT).show();
+                            finish();
+                        },
+                        (throwable) -> {
+                            Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG).show();
+                            mSearchConstraintsFragment.sendingQuote(false);
+                        });
         mSearchConstraintsFragment.sendingQuote(true);
     }
 
@@ -258,26 +258,6 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
             super.onBackPressed();
     }
 
-//    @Override
-//    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-//        // When the given tab is selected, switch to the corresponding page in
-//        // the ViewPager.
-//        int tabPosition = tab.getPosition();
-//        mViewPager.setCurrentItem(tabPosition);
-//        Log.d("timer", tab.getText() + " tab selected");
-////        if (tabPosition != 0)
-////            mSearchButtonViewFlipper.setVisibility(View.VISIBLE);
-//    }
-//
-//    @Override
-//    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-//        Log.d("timer", tab.getText() + " tab unselected");
-//    }
-//
-//    @Override
-//    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-//    }
-
     public void onCategorySelected(Category selectedCategory) {
         mSelectedCategory = selectedCategory;
     }
@@ -328,4 +308,23 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
         }
     }
 
+//    @Override
+//    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+//        // When the given tab is selected, switch to the corresponding page in
+//        // the ViewPager.
+//        int tabPosition = tab.getPosition();
+//        mViewPager.setCurrentItem(tabPosition);
+//        Log.d("timer", tab.getText() + " tab selected");
+////        if (tabPosition != 0)
+////            mSearchButtonViewFlipper.setVisibility(View.VISIBLE);
+//    }
+//
+//    @Override
+//    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+//        Log.d("timer", tab.getText() + " tab unselected");
+//    }
+//
+//    @Override
+//    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+//    }
 }

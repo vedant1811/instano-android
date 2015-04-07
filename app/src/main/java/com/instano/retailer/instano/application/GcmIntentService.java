@@ -9,9 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.LauncherActivity;
@@ -31,13 +29,9 @@ import java.io.IOException;
 public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
     private static final String TAG = "GcmIntentService";
-    private ObjectMapper mJsonObjectMapper;
 
     public GcmIntentService() {
         super("GcmIntentService");
-        mJsonObjectMapper = new ObjectMapper();
-        mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
-        mJsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -141,11 +135,9 @@ public class GcmIntentService extends IntentService {
         String seller = bundle.getString("seller");
         Log.v(TAG, "Received Seller: " + seller);
         try {
-            mJsonObjectMapper = new ObjectMapper();
-//            mJsonObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
-            mJsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            Seller sellerObject = mJsonObjectMapper.readValue(bundle.getString("seller"),Seller.class);
-            JSONObject jsonObject = new JSONObject(mJsonObjectMapper.writeValueAsString(sellerObject));
+            ObjectMapper objectMapper = ServicesSingleton.instance().getDefaultObjectMapper();
+            Seller sellerObject = objectMapper.readValue(bundle.getString("seller"),Seller.class);
+            JSONObject jsonObject = new JSONObject(objectMapper.writeValueAsString(sellerObject));
             Log.v(TAG,"Seller object : "+ sellerObject);
             Log.v(TAG,"Seller json : "+ jsonObject);
         } catch (IOException e) {
