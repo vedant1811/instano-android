@@ -2,7 +2,6 @@ package com.instano.retailer.instano.utilities.models;
 
 import android.support.annotation.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.instano.retailer.instano.utilities.library.Log;
 
@@ -17,28 +16,26 @@ import java.util.Collections;
 * Created by vedant on 4/7/15.
 */
 public class Category implements Comparable<Category> {
-    @JsonIgnore
+
     public static final String UNDEFINED = "Select Category";
-    @JsonIgnore
+
     private static final String TAG = "ProductCategories";
     @JsonProperty("category")
     public  String name;
     @JsonProperty("brands")
     public ArrayList<String> brands;
-    @JsonIgnore
+
     private boolean[] selected;
-    @JsonIgnore
     private boolean mUserSelected = false;
-    @JsonIgnore
     private ArrayList<String> nameVariants;
-    @JsonIgnore
+
     public boolean matches(String lowerCaseString) {
         for (String variant : nameVariants)
             if(lowerCaseString.contains(variant))
                 return true;
         return false;
     }
-    @JsonIgnore
+
     public void guessBrands(String searchString) {
         if (!mUserSelected) {
             boolean[] selectedBrands = null;
@@ -63,7 +60,6 @@ public class Category implements Comparable<Category> {
     }
 
     public Category() {
-
     }
 
     public Category(JSONObject params) {
@@ -84,7 +80,7 @@ public class Category implements Comparable<Category> {
         nameVariants = new ArrayList<String>();
         nameVariants.add(name.toLowerCase());
     }
-    @JsonIgnore
+
     public JSONObject toJsonObject() {
         try {
             JSONArray jsonArray = new JSONArray();
@@ -103,7 +99,7 @@ public class Category implements Comparable<Category> {
             return null;
         }
     }
-    @JsonIgnore
+
     public String asAdditionalInfo() {
         StringBuilder builder = new StringBuilder();
         builder.append("category: ").append(name).append("\n");
@@ -123,7 +119,6 @@ public class Category implements Comparable<Category> {
     }
 
     @Override
-    @JsonIgnore
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
@@ -136,7 +131,6 @@ public class Category implements Comparable<Category> {
     }
 
     @Override
-    @JsonIgnore
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
     }
@@ -153,13 +147,11 @@ public class Category implements Comparable<Category> {
     }
 
     @Override
-    @JsonIgnore
     public String toString() {
         return name;
     }
 
     @Override
-    @JsonIgnore
     public int compareTo(@NonNull Category another) {
         return name.compareTo(another.name);
     }
@@ -168,12 +160,10 @@ public class Category implements Comparable<Category> {
      * represents the selected brands. If it is null, the category itself is not selected.
      * In case the Product Categories is part of a seller, this is always null
      */
-    @JsonIgnore
     public boolean[] getSelected() {
         return selected;
     }
 
-    @JsonIgnore
     public boolean isAllSelected() {
         if (selected == null)
             return true;
@@ -187,7 +177,6 @@ public class Category implements Comparable<Category> {
      * also sets user selected to true
      * @param selected
      */
-    @JsonIgnore
     public void setSelected(boolean[] selected, boolean byUser) {
         Log.d(getClass().getSimpleName(), String.format(
                 "Setting %s to %b, null:%b", name, byUser, selected==null));

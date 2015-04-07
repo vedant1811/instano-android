@@ -208,9 +208,9 @@ public class SearchFragment extends Fragment
     public void onResume() {
         super.onResume();
         mSearchEditText.setText(mSearchString);
-//        int position = mCategoryAdapter.getPosition(
-//                ((SearchTabsActivity)getActivity()).getSelectedCategory());
-//        mProductCategorySpinner.programmaticallySetPosition(position, false);
+        int position = mCategoryAdapter.getPosition(
+                ((SearchTabsActivity)getActivity()).getSelectedCategory());
+        mProductCategorySpinner.programmaticallySetPosition(position, false);
 
         mLocationButton.setText(mLocationButtonText);
     }

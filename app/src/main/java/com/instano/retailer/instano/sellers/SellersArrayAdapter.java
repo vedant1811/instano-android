@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Category;
 import com.instano.retailer.instano.utilities.models.Seller;
 
 import org.json.JSONException;
@@ -169,7 +169,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         mDistanceAndCategoryFilter.filter(minDist);
     }
 
-    public void filter(ProductCategories.Category category) {
+    public void filter(Category category) {
         mDistanceAndCategoryFilter.filter(category);
     }
 
@@ -206,7 +206,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         private static final int INITIAL_MIN_DIST = 1000;
 
         private CharSequence mLastConstraint =
-                getConstraint(INITIAL_MIN_DIST, ProductCategories.Category.undefinedCategory());
+                getConstraint(INITIAL_MIN_DIST, Category.undefinedCategory());
 
         private void runOldFilter() {
             filter(mLastConstraint);
@@ -219,13 +219,13 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                         .put(MIN_DIST, minDist)).toString();
             } catch (JSONException e) {
                 Log.fatalError(e);
-                mLastConstraint = getConstraint(minDist, ProductCategories.Category.undefinedCategory());
+                mLastConstraint = getConstraint(minDist, Category.undefinedCategory());
             }
             filter(mLastConstraint);
             Log.d("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint);
         }
 
-        private void filter(ProductCategories.Category category) {
+        private void filter(Category category) {
             try {
                 mLastConstraint = (new JSONObject(mLastConstraint.toString())
                         .put(PRODUCT_CATEGORY, category.toJsonObject())).toString();
@@ -246,11 +246,11 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 // first filter distance
                 int minDist = getMinDist(constraint);
                 // filter category
-                ProductCategories.Category category = getProductCategory(constraint);
+                Category category = getProductCategory(constraint);
                 for (int i = 0; i < mCompleteSet.size(); i++) {
                     Seller seller = mCompleteSet.valueAt(i);
                     if (seller.getDistanceFromLocation() <= minDist &&
-                            seller.productCategories.containsCategoryAndOneBrand(category))
+                            seller.categories.containsCategoryAndOneBrand(category))
                         filteredList.add(seller);
                 }
             } catch (Exception e) {
@@ -276,9 +276,9 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
             newData();
         }
 
-        private ProductCategories.Category getProductCategory(CharSequence constraint) throws JSONException {
+        private Category getProductCategory(CharSequence constraint) throws JSONException {
             JSONObject jsonObject = new JSONObject(constraint.toString());
-            return new ProductCategories.Category(jsonObject.getJSONObject(PRODUCT_CATEGORY));
+            return new Category(jsonObject.getJSONObject(PRODUCT_CATEGORY));
         }
 
         private int getMinDist(CharSequence constraint) throws JSONException {
@@ -286,7 +286,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
             return jsonObject.getInt(MIN_DIST);
         }
 
-        private CharSequence getConstraint(int minDist, ProductCategories.Category category) {
+        private CharSequence getConstraint(int minDist, Category category) {
             String constraint;
             try {
                 JSONObject jsonObject = new JSONObject()

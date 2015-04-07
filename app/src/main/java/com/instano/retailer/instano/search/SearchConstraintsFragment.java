@@ -13,7 +13,8 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.MultiSpinner;
 import com.instano.retailer.instano.utilities.library.RangeSeekBar;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Categories;
+import com.instano.retailer.instano.utilities.models.Category;
 
 
 /**
@@ -82,10 +83,10 @@ public class SearchConstraintsFragment extends Fragment
 
         // setup brands multi spinner:
         {
-            final ProductCategories.Category selectedCategory = ((SearchTabsActivity) getActivity()).getSelectedCategory();
+            final Category selectedCategory = ((SearchTabsActivity) getActivity()).getSelectedCategory();
             mBrandsMultiSpinner.setItems(selectedCategory.brands, selectedCategory.getSelected(),
                     "Select brands", this);
-            if (selectedCategory.name.equals(ProductCategories.UNDEFINED)) {
+            if (selectedCategory.name.equals(Categories.UNDEFINED)) {
                 mBrandsMultiSpinner.setEnabled(false);
             } else {
                 mBrandsMultiSpinner.setEnabled(true);
@@ -129,15 +130,15 @@ public class SearchConstraintsFragment extends Fragment
 
     @Override
     public void onItemsSelected(boolean[] selected) {
-        ProductCategories.Category selectedCategory = ((SearchTabsActivity)getActivity()).getSelectedCategory();
+        Category selectedCategory = ((SearchTabsActivity)getActivity()).getSelectedCategory();
         selectedCategory.setSelected(selected, true);
 //        ServicesSingleton.getInstance(getActivity()).getSellersArrayAdapter().filter(selectedCategory);
     }
 
-    public void refreshSelectedCategory(ProductCategories.Category selectedCategory, String searchString) {
+    public void refreshSelectedCategory(Category selectedCategory, String searchString) {
         if (mBrandsMultiSpinner == null)
             return;
-        if (selectedCategory.name.equals(ProductCategories.UNDEFINED)) {
+        if (selectedCategory.name.equals(Categories.UNDEFINED)) {
             mBrandsMultiSpinner.setEnabled(false);
         }
         else {

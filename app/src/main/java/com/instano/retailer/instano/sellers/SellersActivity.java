@@ -9,7 +9,7 @@ import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.GlobalMenuActivity;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Category;
 
 public class SellersActivity extends GlobalMenuActivity {
     private static final String CURRENT_FRAGMENT = "current fragment";
@@ -22,7 +22,7 @@ public class SellersActivity extends GlobalMenuActivity {
      * Views.
      */
     private SellersArrayAdapter mAdapter;
-    private ProductCategories.Category mSelectedCategory = ProductCategories.Category.undefinedCategory();
+    private Category mSelectedCategory = Category.undefinedCategory();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +92,7 @@ public class SellersActivity extends GlobalMenuActivity {
     }
 
     /* package private */
-    void onCategorySelected(ProductCategories.Category category) {
+    void onCategorySelected(Category category) {
         mSelectedCategory = category;
         mSellersMapFragment.setCategory(category.toString());
         mAdapter.filter(category);

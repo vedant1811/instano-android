@@ -13,7 +13,7 @@ import android.widget.ArrayAdapter;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.library.Spinner;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Category;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,10 +21,10 @@ import com.instano.retailer.instano.utilities.models.ProductCategories;
 public class FiltersDialogFragment extends DialogFragment {
 
     private static final String KEY_CATEGORY = "category";
-    private ArrayAdapter<ProductCategories.Category> mCategoryAdapter;
+    private ArrayAdapter<Category> mCategoryAdapter;
     private Spinner mProductCategorySpinner;
 
-    public static FiltersDialogFragment newInstance(ProductCategories.Category category) {
+    public static FiltersDialogFragment newInstance(Category category) {
         Bundle arguments = new Bundle();
         arguments.putString(KEY_CATEGORY, category.toString());
         FiltersDialogFragment fragment = new FiltersDialogFragment();
@@ -46,9 +46,9 @@ public class FiltersDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_filters_dialog, container, false);
         mProductCategorySpinner = (Spinner) view.findViewById(R.id.categoriesSpinner);
 
-        mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
+        mCategoryAdapter = new ArrayAdapter<Category>(getActivity(),
                 android.R.layout.simple_spinner_item);
-//        List<ProductCategories.Category> categories = DataManager.instance().getProductCategories(true);
+//        List<Category> categories = DataManager.instance().getProductCategories(true);
 //        if (categories != null)
 //            mCategoryAdapter.addAll(categories);
         mCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

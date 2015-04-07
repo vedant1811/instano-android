@@ -28,7 +28,7 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Categories;
 import com.instano.retailer.instano.utilities.models.Seller;
 
 import java.util.Collection;
@@ -59,7 +59,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
     private TextView mDistanceTextView;
 
     private HashMap<Marker, Seller> mSellerMarkers;
-    private String mCategory = ProductCategories.UNDEFINED;
+    private String mCategory = Categories.UNDEFINED;
 
     /**
      * This is the where all initialization of the class (or mMap) must take place.
@@ -133,7 +133,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         long start = System.nanoTime();
 
         for (Map.Entry<Marker, Seller> entry : mSellerMarkers.entrySet()) {
-            if (entry.getValue().productCategories.contains(mCategory))
+            if (entry.getValue().categories.contains(mCategory))
                 entry.getKey().setVisible(true);
             else
                 entry.getKey().setVisible(false);

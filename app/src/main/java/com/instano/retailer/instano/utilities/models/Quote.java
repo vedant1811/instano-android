@@ -32,7 +32,7 @@ public class Quote {
     @JsonProperty("price_range")
     public  String priceRange;
     @JsonProperty("product_category")
-    public  ProductCategories.Category productCategory;
+    public  Category productCategory;
     @JsonProperty("brands")
     public  String brands;
 //    @JsonProperty("updated_at")
@@ -60,7 +60,7 @@ public class Quote {
     }
 
     public Quote(int id, int buyerId, String searchString,
-                 String priceRange, ProductCategories.Category productCategory, String brands,
+                 String priceRange, Category productCategory, String brands,
                  HashSet<Integer> sellerIds, String address, double latitude, double longitude) {
         this.id = id;
         this.buyerId = buyerId;
@@ -76,7 +76,7 @@ public class Quote {
     }
 
     public Quote(int buyerId, String searchString,
-                 String priceRange, ProductCategories.Category productCategory, String brands,
+                 String priceRange, Category productCategory, String brands,
                  String address, double latitude, double longitude) {
         this.productCategory = productCategory;
         this.sellerIds = sellerIds;
@@ -98,7 +98,7 @@ public class Quote {
         buyerId = jsonObject.getInt("buyer_id");
         searchString = jsonObject.getString("search_string");
         priceRange = jsonObject.getString("price_range");
-        ProductCategories.Category productCategory;
+        Category productCategory;
 
         String address;
         try {
@@ -122,9 +122,9 @@ public class Quote {
         }
 
         try {
-            productCategory = new ProductCategories.Category(jsonObject.getJSONObject("product_category"));
+            productCategory = new Category(jsonObject.getJSONObject("product_category"));
         } catch (JSONException e) {
-            productCategory = ProductCategories.Category.undefinedCategory();
+            productCategory = Category.undefinedCategory();
         }
         this.productCategory = productCategory;
 

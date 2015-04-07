@@ -23,7 +23,7 @@ import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Category;
 import com.instano.retailer.instano.utilities.models.Quote;
 import com.instano.retailer.instano.utilities.models.Seller;
 
@@ -59,7 +59,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //    private SellersMapFragment mSellersMapFragment;
 
     // should never be null
-    private ProductCategories.Category mSelectedCategory = ProductCategories.Category.undefinedCategory();
+    private Category mSelectedCategory = Category.undefinedCategory();
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -278,7 +278,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 //    }
 
-    public void onCategorySelected(ProductCategories.Category selectedCategory) {
+    public void onCategorySelected(Category selectedCategory) {
         mSelectedCategory = selectedCategory;
     }
 
@@ -286,9 +286,9 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
         return mSearchFragment.getSearchString();
     }
 
-    public ProductCategories.Category getSelectedCategory() {
+    public Category getSelectedCategory() {
         if (mSelectedCategory == null)
-            return ProductCategories.Category.undefinedCategory();
+            return Category.undefinedCategory();
         return mSelectedCategory;
     }
 
