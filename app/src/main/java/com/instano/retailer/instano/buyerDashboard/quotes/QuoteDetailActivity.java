@@ -17,6 +17,7 @@ import com.instano.retailer.instano.activities.GlobalMenuActivity;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link QuoteDetailFragment}.
  */
+// TODO: remove this activity and just use the fragment in the ListActivity
 public class QuoteDetailActivity extends GlobalMenuActivity {
 
     public void contactUsClicked(View view) {

@@ -55,6 +55,8 @@ public class NetworkRequestsManager {
     private final RegisteredBuyersApiService mRegisteredBuyersApiService;
     private final UnregisteredBuyersApiService mUnregisteredBuyersApiService;
 
+    private final EchoFunction<Quote> mQuoteEchoFunction;
+
     /**
      * stores the different observables based on class name.
      * Do NOT access this directly, use the accessor {@link #getObservable(Class)}
@@ -98,6 +100,10 @@ public class NetworkRequestsManager {
         Observable<Device> registerDevice(@Body Device device);
     }
 
+    public void newQuote(Quote quote) {
+        mQuoteEchoFunction.newObjectReceived(quote);
+    }
+
     public Observable<Buyer> signIn(String apiKey) {
         SignIn signIn = new SignIn();
         signIn.setApi_key(apiKey);
@@ -119,7 +125,11 @@ public class NetworkRequestsManager {
     }
 
     public Observable<Quote> sendQuote(Quote quote) {
-        return mRegisteredBuyersApiService.sendQuote(quote);
+        Observable<Quote> quoteObservable = mRegisteredBuyersApiService.sendQuote(quote)
+                .cache();
+        // also echo this quote to newQuote() so that observers will get this quote as well.
+        quoteObservable.subscribe(this::newQuote);
+        return quoteObservable;
     }
 
     private NetworkRequestsManager(MyApplication application) {
@@ -151,6 +161,7 @@ public class NetworkRequestsManager {
         mUnregisteredBuyersApiService = unregisteredRestAdapter.create(UnregisteredBuyersApiService.class);
 
         mObservableHashMap = new HashMap<>(); // empty hashmap
+        mQuoteEchoFunction = new EchoFunction<>();
     }
 
     /*package*/
@@ -221,6 +232,8 @@ public class NetworkRequestsManager {
         mObservableHashMap.put(Quote.class.getSimpleName(),
                 mRegisteredBuyersApiService.getQuotes()
                         .flatMap(Observable::from)
+                        .mergeWith(Observable.create(mQuoteEchoFunction))
+                        .distinct()
                         .cache());
 
         mObservableHashMap.put(Quotation.class.getSimpleName(),

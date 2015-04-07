@@ -12,8 +12,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Quote;
+
+import rx.android.observables.AndroidObservable;
 
 /**
  * A list fragment representing a list of Quotes. This fragment
@@ -44,23 +47,6 @@ public class QuoteListFragment extends ListFragment {
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
 
-    public void quotesUpdated() {
-        long start = System.nanoTime();
-
-        final QuotesAdapter adapter = (QuotesAdapter) getListAdapter();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                adapter.clear();
-//                adapter.addAll(DataManager.instance().getQuotes());
-            }
-        });
-
-
-        double time = (System.nanoTime() - start)/ Log.ONE_MILLION;
-        Log.v(Log.TIMER_TAG, String.format("QuotesAdapter.dataUpdated took %.4fms", time));
-    }
-
     public void quotationsUpdated() {
         QuotesAdapter adapter = (QuotesAdapter) getListAdapter();
         adapter.notifyDataSetChanged();
@@ -82,11 +68,7 @@ public class QuoteListFragment extends ListFragment {
      * A dummy implementation of the {@link Callbacks} interface that does
      * nothing. Used only when this fragment is not attached to an activity.
      */
-    private static Callbacks sDummyCallbacks = new Callbacks() {
-        @Override
-        public void onItemSelected(int id) {
-        }
-    };
+    private static Callbacks sDummyCallbacks = id -> {};
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -100,28 +82,19 @@ public class QuoteListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
 
         QuotesAdapter adapter = new QuotesAdapter(getActivity());
+        AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Quote.class))
+                .subscribe(adapter::add);
         setListAdapter(adapter);
-        // call after setting the adapter so that the adapter is not null
-        quotesUpdated();
-//        DataManager.instance().registerListener(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-//        DataManager.instance().unregisterListener(this);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         // Restore the previously serialized activated item position.
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
-
         setEmptyText("Your searches appear here. Seems you have not searched anything yet" +
                 "\n\nuse the menu (top-right) to contact us if this is an error");
     }
@@ -141,7 +114,6 @@ public class QuoteListFragment extends ListFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-
         // Reset the active callbacks interface to the dummy implementation.
         mCallbacks = sDummyCallbacks;
     }
@@ -198,7 +170,6 @@ public class QuoteListFragment extends ListFragment {
          */
         public QuotesAdapter(Context context) {
             super(context, -1);
-
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 

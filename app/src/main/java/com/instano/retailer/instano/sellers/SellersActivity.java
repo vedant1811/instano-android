@@ -33,18 +33,8 @@ public class SellersActivity extends GlobalMenuActivity {
         getFragmentManager().beginTransaction()
                 .add(R.id.fragment_container, mSellersListFragment, CURRENT_FRAGMENT)
                 .commit();
-//        DataManager.instance().registerListener(this);
 
         mAdapter = new SellersArrayAdapter(this);
-//        List<Seller> sellers = DataManager.instance().getSellers();
-//        Log.d(getClass().getSimpleName(), "no of sellers being added: " + sellers.size());
-//        mAdapter.addAll(sellers);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-//        DataManager.instance().unregisterListener(this);
     }
 
     @Override
@@ -117,13 +107,6 @@ public class SellersActivity extends GlobalMenuActivity {
     public void onBackPressed() {
         super.onBackPressed();
         invalidateOptionsMenu();
-    }
-
-    public void sellersUpdated() {
-//        List<Seller> sellers = DataManager.instance().getSellers();
-//        mAdapter.addAll(sellers);
-//        if (mSellersMapFragment != null)
-//            mSellersMapFragment.addSellers(sellers);
     }
 
     /* package private */
