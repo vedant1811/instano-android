@@ -19,9 +19,9 @@ import com.instano.retailer.instano.application.MyApplication;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
+import com.instano.retailer.instano.utilities.models.Categories;
 import com.instano.retailer.instano.utilities.models.Deal;
 import com.instano.retailer.instano.utilities.models.Device;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
 import com.instano.retailer.instano.utilities.models.Seller;
@@ -92,7 +92,7 @@ public class NetworkRequestsManager {
         Observable<List<Seller>> getSellers();
 
         @GET("/brands_categories")
-        Observable<ProductCategories> getProductCategories();
+        Observable<Categories> getProductCategories();
     }
 
     public interface UnregisteredBuyersApiService {
@@ -247,7 +247,7 @@ public class NetworkRequestsManager {
                         .flatMap(Observable::from)
                         .cache());
 
-        mObservableHashMap.put(ProductCategories.class.getSimpleName(),
+        mObservableHashMap.put(Categories.class.getSimpleName(),
                 mRegisteredBuyersApiService.getProductCategories()
                         .cache());
     }

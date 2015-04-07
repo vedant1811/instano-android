@@ -2,6 +2,7 @@ package com.instano.retailer.instano.utilities.models;
 
 import android.support.annotation.NonNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -18,59 +19,84 @@ import java.util.List;
  * Created by vedant on 8/10/14.
  */
 @JsonRootName("categories")
-public class ProductCategories extends ArrayList<ProductCategories.Category> {
-
+public class ProductCategories {
+    @JsonIgnore
     public static final String UNDEFINED = "Select Category";
-
+    @JsonIgnore
     private static final String TAG = "ProductCategories";
 
-    @NonNull
-    public List<Category> getProductCategories() {
-        return Collections.unmodifiableList(this);
-    }
+    @JsonProperty
+    public ArrayList<Category> mCategories;
 
+    @NonNull
+    @JsonIgnore
+    public List<Category> getProductCategories() {
+        return Collections.unmodifiableList(mCategories);
+    }
+    @JsonIgnore
     public void clearSelected() {
-        for (Category category : this)
+        for (Category category : mCategories)
             category.setSelected(null, false);
     }
+
     public ProductCategories() {
-        //Dummy For Json
+
     }
 
+    @Override
+    @JsonIgnore
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ProductCategories that = (ProductCategories) o;
+
+        if (!mCategories.equals(that.mCategories)) return false;
+
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public int hashCode() {
+        return mCategories.hashCode();
+    }
+    @JsonIgnore
     public ProductCategories(JSONObject json, boolean allowUndefined) {
+        mCategories = new ArrayList<Category>();
         try {
             JSONArray categories = json.getJSONArray("categories");
             for (int i = 0; i < categories.length(); i++) {
-                this.add(new Category(
+                mCategories.add(new Category(
                         categories.getJSONObject(i)
                 ));
             }
         } catch (JSONException e) {
             Log.e(TAG, "", e);
         }
-        Collections.sort(this);
+        Collections.sort(mCategories);
         if (allowUndefined)
-            this.add(0, Category.undefinedCategory()); // insert at start
+            mCategories.add(0, Category.undefinedCategory()); // insert at start
     }
-
+    @JsonIgnore
     public boolean contains(String categoryName) {
 
         if (categoryName.equals(UNDEFINED))
             return true; // undefined is contained in every category
 
         // TODO: make it a check via hash
-        for (Category category : this)
+        for (Category category : mCategories)
             if (category.name.equals(categoryName))
                 return true;
         return false;
     }
-
+    @JsonIgnore
     public boolean containsCategoryAndOneBrand(ProductCategories.Category categoryToMatch) {
 
         if (categoryToMatch.name.equals(UNDEFINED))
             return true;
 
-        for (Category oneCategory : this)
+        for (Category oneCategory : mCategories)
             if (oneCategory.name.equals(categoryToMatch.name)) { // category is matched
 
                 // if no brands specified either category, then consider it matched
@@ -88,18 +114,20 @@ public class ProductCategories extends ArrayList<ProductCategories.Category> {
         public  String name;
         @JsonProperty("brands")
         public  ArrayList<String> brands;
-
+        @JsonIgnore
         private boolean[] selected;
+        @JsonIgnore
         private boolean mUserSelected = false;
-        private  ArrayList<String> nameVariants;
-
+        @JsonIgnore
+        private ArrayList<String> nameVariants;
+        @JsonIgnore
         public boolean matches(String lowerCaseString) {
             for (String variant : nameVariants)
                 if(lowerCaseString.contains(variant))
                     return true;
             return false;
         }
-
+        @JsonIgnore
         public void guessBrands(String searchString) {
             if (!mUserSelected) {
                 boolean[] selectedBrands = null;
@@ -123,6 +151,10 @@ public class ProductCategories extends ArrayList<ProductCategories.Category> {
             }
         }
 
+        public Category() {
+
+        }
+
         public Category(JSONObject params) {
             selected = null;
             brands = new ArrayList<String>();
@@ -141,7 +173,7 @@ public class ProductCategories extends ArrayList<ProductCategories.Category> {
             nameVariants = new ArrayList<String>();
             nameVariants.add(name.toLowerCase());
         }
-
+        @JsonIgnore
         public JSONObject toJsonObject() {
             try {
                 JSONArray jsonArray = new JSONArray();
@@ -160,7 +192,7 @@ public class ProductCategories extends ArrayList<ProductCategories.Category> {
                 return null;
             }
         }
-
+        @JsonIgnore
         public String asAdditionalInfo() {
             StringBuilder builder = new StringBuilder();
             builder.append("category: ").append(name).append("\n");
@@ -179,18 +211,8 @@ public class ProductCategories extends ArrayList<ProductCategories.Category> {
             return builder.toString();
         }
 
-        /**
-         * dummy category
-         */
-        private Category() {
-            this.name = UNDEFINED;
-            brands = new ArrayList<String>();
-            brands.add("brands");
-            nameVariants = new ArrayList<String>();
-            nameVariants.add(name.toLowerCase());
-        }
-
         @Override
+        @JsonIgnore
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || this.getClass() != o.getClass()) return false;
@@ -203,20 +225,30 @@ public class ProductCategories extends ArrayList<ProductCategories.Category> {
         }
 
         @Override
+        @JsonIgnore
         public int hashCode() {
             return name != null ? name.hashCode() : 0;
         }
 
         public static Category undefinedCategory() {
-            return new Category();
+
+            Category category = new Category();
+            category.name = UNDEFINED;
+            category.brands = new ArrayList<String>();
+            category.brands.add("brands");
+            category.nameVariants = new ArrayList<String>();
+            category.nameVariants.add(category.name.toLowerCase());
+            return category;
         }
 
         @Override
+        @JsonIgnore
         public String toString() {
             return name;
         }
 
         @Override
+        @JsonIgnore
         public int compareTo(@NonNull Category another) {
             return name.compareTo(another.name);
         }
@@ -225,10 +257,12 @@ public class ProductCategories extends ArrayList<ProductCategories.Category> {
          * represents the selected brands. If it is null, the category itself is not selected.
          * In case the Product Categories is part of a seller, this is always null
          */
+        @JsonIgnore
         public boolean[] getSelected() {
             return selected;
         }
 
+        @JsonIgnore
         public boolean isAllSelected() {
             if (selected == null)
                 return true;
@@ -242,6 +276,7 @@ public class ProductCategories extends ArrayList<ProductCategories.Category> {
          * also sets user selected to true
          * @param selected
          */
+        @JsonIgnore
         public void setSelected(boolean[] selected, boolean byUser) {
             Log.d(getClass().getSimpleName(), String.format(
                     "Setting %s to %b, null:%b", name, byUser, selected==null));

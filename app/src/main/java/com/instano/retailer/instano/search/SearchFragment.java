@@ -23,7 +23,10 @@ import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.library.Spinner;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Categories;
+import com.instano.retailer.instano.utilities.models.Category;
+
+import rx.android.observables.AndroidObservable;
 
 
 /**
@@ -43,7 +46,7 @@ public class SearchFragment extends Fragment
     private Spinner mProductCategorySpinner;
     private Button mLocationButton;
 
-    private ArrayAdapter<ProductCategories.Category> mCategoryAdapter;
+    private ArrayAdapter<Category> mCategoryAdapter;
 
     private CharSequence mSearchString;
     private CharSequence mLocationButtonText;
@@ -101,17 +104,21 @@ public class SearchFragment extends Fragment
 
         addressUpdated(null, false); // to setup initial state of button
 
-        mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
+        mCategoryAdapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item);
         mCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        NetworkRequestsManager.instance().getObservable(ProductCategories.class)
+        AndroidObservable.bindFragment(this,
+            NetworkRequestsManager.instance().getObservable(Categories.class))
                 .subscribe(categories -> {
+                    Log.d("product categories", categories.mCategories.toString());
                     if (mCategoryAdapter != null) {
                         mCategoryAdapter.clear();
-                        mCategoryAdapter.addAll(categories);
+                        mCategoryAdapter.addAll(categories.mCategories);
                     }
-                });
+                },
+                        Throwable::printStackTrace
+                );
 
         mSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -138,7 +145,7 @@ public class SearchFragment extends Fragment
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id, boolean userSelected) {
                 if (userSelected)
                     mUserSelectedCategory = true;
-                ((SearchTabsActivity) getActivity()).onCategorySelected(mCategoryAdapter.getItem(position));
+//                ((SearchTabsActivity) getActivity()).onCategorySelected(mCategoryAdapter.getItem(position));
             }
 
             @Override
@@ -164,10 +171,10 @@ public class SearchFragment extends Fragment
         long start = System.nanoTime();
         String search = mSearchEditText.getText().toString().toLowerCase();
         for (int i = 0; i < mCategoryAdapter.getCount(); i++) {
-            if (mCategoryAdapter.getItem(i).matches(search)) {
-                mProductCategorySpinner.programmaticallySetPosition(i, true);
-                return;
-            }
+//            if (mCategoryAdapter.getItem(i).matches(search)) {
+//                mProductCategorySpinner.programmaticallySetPosition(i, true);
+//                return;
+//            }
         }
         mProductCategorySpinner.programmaticallySetPosition(0, true); // setting to undefined
         double time = (System.nanoTime() - start)/Log.ONE_MILLION;
@@ -201,9 +208,9 @@ public class SearchFragment extends Fragment
     public void onResume() {
         super.onResume();
         mSearchEditText.setText(mSearchString);
-        int position = mCategoryAdapter.getPosition(
-                ((SearchTabsActivity)getActivity()).getSelectedCategory());
-        mProductCategorySpinner.programmaticallySetPosition(position, false);
+//        int position = mCategoryAdapter.getPosition(
+//                ((SearchTabsActivity)getActivity()).getSelectedCategory());
+//        mProductCategorySpinner.programmaticallySetPosition(position, false);
 
         mLocationButton.setText(mLocationButtonText);
     }
