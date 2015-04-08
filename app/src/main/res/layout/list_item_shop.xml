@@ -64,6 +64,15 @@
     </RelativeLayout>
 
     <ImageButton
+        android:id="@+id/chatImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="centerInside"
+        android:clickable="true"
+        android:src="@drawable/sms"
+        android:layout_marginLeft="@dimen/general_separator_margin" />
+
+    <ImageButton
         android:id="@+id/callImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -119,7 +119,6 @@ public class ServicesSingleton implements
             NetworkRequestsManager.instance().getQuotesRequest(); // also fetches quotations once quotes are fetched
             NetworkRequestsManager.instance().getSellersRequest();
             NetworkRequestsManager.instance().getDealsRequest();
-            ChatServicesSingleton.instance().connectToChat();
         }
         else {
             String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, null);

@@ -2,23 +2,11 @@ package com.instano.retailer.instano.chat;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.ChatServicesSingleton;
 import com.instano.retailer.instano.utilities.GlobalMenuActivity;
-import com.instano.retailer.instano.utilities.library.Log;
-
-import org.jivesoftware.smack.AbstractXMPPConnection;
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smack.chat.Chat;
-import org.jivesoftware.smack.chat.ChatManager;
-import org.jivesoftware.smack.chat.ChatMessageListener;
-import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smackx.iqregister.AccountManager;
-
-import java.io.IOException;
 
 /**
  * An activity representing a list of ChatSellers. This activity
@@ -38,13 +26,13 @@ import java.io.IOException;
 public class ChatSellerListActivity extends GlobalMenuActivity
         implements ChatSellerListFragment.Callbacks {
 
+    public static final String PARAM_ID = "param.extra.id";
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     String TAG = "ChatSellerListActivity";
     private boolean mTwoPane;
-    private AbstractXMPPConnection mConnection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,52 +59,16 @@ public class ChatSellerListActivity extends GlobalMenuActivity
                     .commit();
         }
 
-        mConnection = ChatServicesSingleton.instance().getConnection();
-        if(mConnection != null && mConnection.isConnected()) {
-
-            AccountManager manager = AccountManager.getInstance(mConnection);
-            try {
-                mConnection.login("user2", "user2");
-                Chat chat;
-                ChatManager chatManager = ChatManager.getInstanceFor(mConnection);
-                chat = chatManager.createChat("admin@instano.in",new ChatMessageListener() {
-                    @Override
-                    public void processMessage(Chat chat, Message message) {
-                        Log.v(TAG,"Message Rreceived : "+message);
-                    }
-                });
-                chat.sendMessage("Hello2");
-            } catch (SmackException.NoResponseException e) {
-                e.printStackTrace();
-            } catch (XMPPException.XMPPErrorException e) {
-                e.printStackTrace();
-            } catch (SmackException.NotConnectedException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (SmackException e) {
-                e.printStackTrace();
-            } catch (XMPPException e) {
-                e.printStackTrace();
-            }
-            Log.v(TAG, "user : " +mConnection.getUser());
-            Log.v(TAG, "isAuthenticated : " + mConnection.isAuthenticated());
+        Intent intent = getIntent();
+        int intExtra = intent.getIntExtra(PARAM_ID, -1);
+        if(intExtra != -1) {
+            onItemSelected(intExtra);
         }
-
-
-
-     // TODO: If exposing deep links into your app, handle intents here.
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mConnection.disconnect();
-    }
-
-    @Override
-    public void onItemSelected(int id) {
-        ChatSellerDetailFragment fragment = ChatSellerDetailFragment.newInstance(id);
+    public void onItemSelected(int sellerId) {
+        ChatSellerDetailFragment fragment = ChatSellerDetailFragment.newInstance(sellerId);
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a

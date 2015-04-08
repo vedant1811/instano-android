@@ -13,7 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Comparator;
-import java.util.List;
 
 /**
  * Represents a single immutable Seller

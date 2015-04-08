@@ -1,6 +1,7 @@
 package com.instano.retailer.instano.sellers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
@@ -14,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.chat.ChatSellerListActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Seller;
@@ -110,6 +112,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         TextView addressTextView = (TextView) view.findViewById(R.id.addressTextView);
         TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
         ImageButton callImageButton = (ImageButton) view.findViewById(R.id.callImageButton);
+        ImageButton chatImageButton = (ImageButton) view.findViewById(R.id.chatImageButton);
 
         final Seller seller = getItem(position);
 
@@ -127,6 +130,15 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
             public void onClick(View v) {
                 if (mItemInteractionListener != null)
                     mItemInteractionListener.callButtonClicked(seller.phone);
+            }
+        });
+
+        chatImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, ChatSellerListActivity.class);
+                intent.putExtra(ChatSellerListActivity.PARAM_ID, seller.id);
+                mContext.startActivity(intent);
             }
         });
 

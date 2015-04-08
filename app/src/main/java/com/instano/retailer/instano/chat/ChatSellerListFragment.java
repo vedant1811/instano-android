@@ -7,6 +7,17 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.instano.retailer.instano.application.ChatServicesSingleton;
+import com.instano.retailer.instano.application.DataManager;
+import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.models.Seller;
+
+import org.jivesoftware.smack.AbstractXMPPConnection;
+import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.XMPPConnection;
+
+import java.util.List;
+
 /**
  * A list fragment representing a list of ChatSellers. This fragment
  * also supports tablet devices by allowing list items to be given an
@@ -15,7 +26,8 @@ import android.widget.ListView;
  * <p/>
  * interface.
  */
-public class ChatSellerListFragment extends ListFragment {
+public class ChatSellerListFragment extends ListFragment implements ConnectionListener {
+    private static final String TAG = "ChatSellerListFragment";
     public String[] sellerArray = {"admin", "user2", "test", "UK"};
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -33,6 +45,43 @@ public class ChatSellerListFragment extends ListFragment {
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
+    private AbstractXMPPConnection mConnection;
+
+    @Override
+    public void connected(XMPPConnection connection) {
+        Log.v(TAG, "user : " + connection.getUser());
+        Log.v(TAG, "isAuthenticated : " + connection.isAuthenticated());
+    }
+
+    @Override
+    public void authenticated(XMPPConnection connection, boolean resumed) {
+        mCallbacks.onItemSelected(0);
+    }
+
+    @Override
+    public void connectionClosed() {
+
+    }
+
+    @Override
+    public void connectionClosedOnError(Exception e) {
+
+    }
+
+    @Override
+    public void reconnectionSuccessful() {
+
+    }
+
+    @Override
+    public void reconnectingIn(int seconds) {
+
+    }
+
+    @Override
+    public void reconnectionFailed(Exception e) {
+
+    }
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -67,40 +116,20 @@ public class ChatSellerListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mConnection = ChatServicesSingleton.instance().getConnection();
+        mConnection.addConnectionListener(this);
+        ChatServicesSingleton.instance().connectToChat();
+
+        List<Seller> sellers = DataManager.instance().getSellers();
+
+
         // TODO: replace with a real list adapter.
-        setListAdapter(new ArrayAdapter<String>(
+        setListAdapter(new ArrayAdapter<Seller>(
                 getActivity(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
-                sellerArray));
+                sellers));
     }
-
-/*    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-*//*        View rootView = inflater.inflate(R.layout.fragment_chatseller_list, container, false);
-
-        ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(),
-                R.layout.list_item_chatseller, sellerArray);
-        ListView listView = (ListView) rootView.findViewById(R.id.seller_name_list);
-        listView.setAdapter(adapter);
-
-        listView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                TextView tv = (TextView)parent.getChildAt(position);
-                Fragment newFragment = new ChatSellerDetailFragment();
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.add(R.id.chatseller_list, newFragment).commit();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });*//*
-        return rootView;
-    }*/
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -131,6 +160,12 @@ public class ChatSellerListFragment extends ListFragment {
 
         // Reset the active callbacks interface to the dummy implementation.
         mCallbacks = sDummyCallbacks;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mConnection.disconnect();
     }
 
     @Override

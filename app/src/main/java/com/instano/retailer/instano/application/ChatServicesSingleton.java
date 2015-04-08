@@ -19,7 +19,7 @@ import java.io.IOException;
  */
 public class ChatServicesSingleton  {
 
-    private static final String HOST = "192.168.0.137";
+    private static final String HOST = "192.168.0.130";
     private static final int PORT = 5222;
     private static final String SERVICE = "instano.in";
     private final MyApplication mApplication;
@@ -41,6 +41,16 @@ public class ChatServicesSingleton  {
 
     private ChatServicesSingleton(MyApplication application) {
         mApplication = application;
+        XMPPTCPConnectionConfiguration connConfig = XMPPTCPConnectionConfiguration
+                .builder()
+                .setHost(HOST)
+                .setPort(PORT)
+                .setServiceName(SERVICE)
+                .setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
+                .setDebuggerEnabled(true)
+                .build();
+        AbstractXMPPConnection connection = new XMPPTCPConnection(connConfig);
+        mConnection = connection;
     }
 
     public void connectToChat() {
@@ -49,24 +59,13 @@ public class ChatServicesSingleton  {
 
             @Override
             protected Void doInBackground(Void... params) {
-                XMPPTCPConnectionConfiguration connConfig = XMPPTCPConnectionConfiguration
-                    .builder()
-                    .setHost(HOST)
-                    .setPort(PORT)
-                    .setServiceName(SERVICE)
-                    .setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
-                    .setDebuggerEnabled(true)
-                    .build();
-                AbstractXMPPConnection connection = new XMPPTCPConnection(connConfig);
 
                 try {
-                    connection.connect();
-                    if (connection.isConnected())
-                        mConnection = connection;
-                    else mConnection = null;
-                    Log.v(TAG, "isConnected  :" + connection.isConnected());
-//                    connection.login("user2","user2");
-                    Log.v(TAG, "isAuthenticated  :" + connection.isAuthenticated());
+                    mConnection.connect();
+                    Log.v(TAG, "isConnected  :" + mConnection.isConnected());
+                    if(mConnection.isConnected())
+                        mConnection.login("user2","user2");
+                    Log.v(TAG, "isAuthenticated  :" + mConnection.isAuthenticated());
                 } catch (SmackException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
