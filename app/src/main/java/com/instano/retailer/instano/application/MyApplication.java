@@ -4,17 +4,11 @@ import android.app.Application;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
-import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 
 import java.util.HashMap;
-
-import rx.plugins.DebugHook;
-import rx.plugins.DebugNotification;
-import rx.plugins.DebugNotificationListener;
-import rx.plugins.RxJavaPlugins;
 
 public class MyApplication extends Application
 {
@@ -34,33 +28,6 @@ public class MyApplication extends Application
         super.onCreate();
         mTrackers = new HashMap<>();
 
-        if (BuildConfig.DEBUG) {
-            RxJavaPlugins.getInstance().registerObservableExecutionHook(new DebugHook<>(new DebugNotificationListener<Object>() {
-                private static final String TAG = "RxJava";
-
-                public Object onNext(DebugNotification n) {
-                    Log.v(TAG, Thread.currentThread() + " onNext on "+n);
-                    return super.onNext(n);
-                }
-
-
-                public Object start(DebugNotification n) {
-                    Log.v(TAG, Thread.currentThread() + " start on "+n);
-                    return super.start(n);
-                }
-
-
-                public void complete(Object context) {
-                    super.complete(context);
-                    Log.v(TAG, Thread.currentThread() + " onComplete on "+context);
-                }
-
-                public void error(Object context, Throwable e) {
-                    super.error(context, e);
-                    Log.v(TAG, Thread.currentThread() + " error on "+context);
-                }
-            }));
-        }
         // Initialize the singletons so their instances
         // are bound to the application process.
         GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);

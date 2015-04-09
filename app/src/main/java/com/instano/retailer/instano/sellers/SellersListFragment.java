@@ -2,27 +2,17 @@ package com.instano.retailer.instano.sellers;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-
-import com.instano.retailer.instano.utilities.library.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.utilities.models.Seller;
-
-import java.util.HashSet;
-import java.util.List;
 
 /**
  * A fragment representing a list of Items.

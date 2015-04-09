@@ -1,5 +1,6 @@
 package com.instano.retailer.instano.sellers;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Category;
 import com.instano.retailer.instano.utilities.models.Constraint;
@@ -24,9 +26,10 @@ import com.instano.retailer.instano.utilities.models.Seller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+
+import rx.android.observables.AndroidObservable;
 
 /**
  * TODO: do more
@@ -47,21 +50,23 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
 
     private ItemInteractionListener mItemInteractionListener;
 
-    public SellersArrayAdapter(Context context) {
-        mContext = context;
+    public SellersArrayAdapter(Activity activity) {
+        mContext = activity;
 
-        mCompleteSet = new SparseArray<Seller>();
-        mFilteredList = new ArrayList<Seller>();
+        mCompleteSet = new SparseArray<>();
+        mFilteredList = new ArrayList<>();
         mDistanceAndCategoryFilter = new DistanceAndCategoryFilter();
         mCheckedItems = new SparseBooleanArray();
+
+        AndroidObservable.bindActivity(activity, NetworkRequestsManager.instance().getObservable(Seller.class))
+                .subscribe(seller -> {
+                    mCompleteSet.put(seller.hashCode(), seller);
+                    filter();
+                });
     }
 
     public void setListener(ItemInteractionListener listener) {
         this.mItemInteractionListener = listener;
-    }
-
-    public SparseArray<Seller> getAllSellers() {
-        return mCompleteSet;
     }
 
     public ArrayList<Seller> getFilteredSellers() {
@@ -153,14 +158,6 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
     @Override
     public boolean hasStableIds() {
         return true;
-    }
-
-    public void addAll(Collection<Seller> collection) {
-        mCompleteSet.clear();
-        for (Seller seller : collection){
-            mCompleteSet.put(seller.id, seller);
-        }
-        filter();
     }
 
     public void filter() {

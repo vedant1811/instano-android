@@ -136,7 +136,7 @@ public class GcmIntentService extends IntentService {
         Log.v(TAG, "Received Seller: " + seller);
         try {
             ObjectMapper objectMapper = ServicesSingleton.instance().getDefaultObjectMapper();
-            Seller sellerObject = objectMapper.readValue(bundle.getString("seller"),Seller.class);
+            Seller sellerObject = objectMapper.readValue(bundle.getString("seller"), Seller.class);
             JSONObject jsonObject = new JSONObject(objectMapper.writeValueAsString(sellerObject));
             Log.v(TAG,"Seller object : "+ sellerObject);
             Log.v(TAG,"Seller json : "+ jsonObject);

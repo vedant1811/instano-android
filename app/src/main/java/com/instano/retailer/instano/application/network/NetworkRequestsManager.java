@@ -55,11 +55,10 @@ public class NetworkRequestsManager {
     private final RegisteredBuyersApiService mRegisteredBuyersApiService;
     private final UnregisteredBuyersApiService mUnregisteredBuyersApiService;
 
-    private final EchoFunction<Quote> mQuoteEchoFunction;
-
     /**
      * stores the different observables based on class name.
      * Do NOT access this directly, use the accessor {@link #getObservable(Class)}
+     * TODO: create a separate class to limit that possible keys and clear data on new buyer
      */
     private final HashMap<String, Observable> mObservableHashMap;
 
@@ -101,35 +100,30 @@ public class NetworkRequestsManager {
     }
 
     public void newQuote(Quote quote) {
-        mQuoteEchoFunction.newObjectReceived(quote);
+        mergeCacheAndDistinctObservable(Quote.class, Observable.just(quote));
     }
 
     public Observable<Buyer> signIn(String apiKey) {
         SignIn signIn = new SignIn();
         signIn.setApi_key(apiKey);
 
-        Observable<Buyer> buyerObservable =
-                mRegisteredBuyersApiService.signIn(signIn)
-                .cache();
+        Observable<Buyer> buyerObservable = replaceAndCacheObservable(Buyer.class,
+                mRegisteredBuyersApiService.signIn(signIn));
         buyerObservable.subscribe(this::newBuyer);
         return buyerObservable;
     }
 
     public Observable<Buyer> registerBuyer(Buyer buyer) {
-        Observable<Buyer> buyerObservable = mergeObservable(Buyer.class,
-                        mRegisteredBuyersApiService.register(buyer)
-                        .cache()
-                );
+        Observable<Buyer> buyerObservable = replaceAndCacheObservable(Buyer.class,
+                mRegisteredBuyersApiService.register(buyer));
         buyerObservable.subscribe(this::newBuyer);
         return buyerObservable;
     }
 
     public Observable<Quote> sendQuote(Quote quote) {
-        Observable<Quote> quoteObservable = mRegisteredBuyersApiService.sendQuote(quote)
-                .cache();
-        // also echo this quote to newQuote() so that observers will get this quote as well.
-        quoteObservable.subscribe(this::newQuote);
-        return quoteObservable;
+        // also echo the retrofit returned quote so that observers will get this quote as well.
+        return mergeCacheAndDistinctObservable(Quote.class,
+                mRegisteredBuyersApiService.sendQuote(quote));
     }
 
     private NetworkRequestsManager(MyApplication application) {
@@ -161,7 +155,6 @@ public class NetworkRequestsManager {
         mUnregisteredBuyersApiService = unregisteredRestAdapter.create(UnregisteredBuyersApiService.class);
 
         mObservableHashMap = new HashMap<>(); // empty hashmap
-        mQuoteEchoFunction = new EchoFunction<>();
     }
 
     /*package*/
@@ -215,8 +208,25 @@ public class NetworkRequestsManager {
         return false;
     }
 
-    private <T> Observable<T> mergeObservable(@NonNull Class<T> modelClass, Observable<T> newObservable) {
-        Observable<T> observable = getObservable(modelClass).mergeWith(newObservable);// merge with existing observable
+    /**
+     * used to keep previous values
+     */
+    private <T> Observable<T> mergeCacheAndDistinctObservable(@NonNull Class<T> modelClass, Observable<T> newObservable) {
+        Observable<T> observable = getObservable(modelClass)
+                .mergeWith(newObservable)// merge with existing observable
+                .cache()
+                .distinct();
+        mObservableHashMap.put(modelClass.getSimpleName(),
+                observable); // replace the old observable
+        return observable;
+    }
+
+    /**
+     * used to discard previous values
+     */
+    private <T> Observable<T> replaceAndCacheObservable(@NonNull Class<T> modelClass, Observable<T> newObservable) {
+        Observable<T> observable = newObservable
+                .cache();
         mObservableHashMap.put(modelClass.getSimpleName(),
                 observable); // replace the old observable
         return observable;
@@ -224,31 +234,25 @@ public class NetworkRequestsManager {
 
     private void newBuyer(@NonNull Buyer buyer) {
         Log.d(TAG, "onNewBuyer");
-        mObservableHashMap.put(Deal.class.getSimpleName(),
+        replaceAndCacheObservable(Deal.class,
                 mRegisteredBuyersApiService.getDeals()
-                        .flatMap(Observable::from) // flatten returned List<Deal> into Deal
-                        .cache());
+                        .flatMap(Observable::from)); // flatten returned List<Deal> into Deal
 
-        mObservableHashMap.put(Quote.class.getSimpleName(),
+        replaceAndCacheObservable(Quote.class,
                 mRegisteredBuyersApiService.getQuotes()
                         .flatMap(Observable::from)
-                        .mergeWith(Observable.create(mQuoteEchoFunction))
-                        .distinct()
-                        .cache());
+                        .distinct());
 
-        mObservableHashMap.put(Quotation.class.getSimpleName(),
+        replaceAndCacheObservable(Quotation.class,
                 mRegisteredBuyersApiService.getQuotations()
-                        .flatMap(Observable::from)
-                        .cache());
+                        .flatMap(Observable::from));
 
-        mObservableHashMap.put(Seller.class.getSimpleName(),
+        replaceAndCacheObservable(Seller.class,
                 mRegisteredBuyersApiService.getSellers()
-                        .flatMap(Observable::from)
-                        .cache());
+                        .flatMap(Observable::from));
 
-        mObservableHashMap.put(Categories.class.getSimpleName(),
-                mRegisteredBuyersApiService.getProductCategories()
-                        .cache());
+        replaceAndCacheObservable(Categories.class,
+                mRegisteredBuyersApiService.getProductCategories());
     }
 
 //    private Observable<T> exponentialBackoff(Func1<? super Observable<? extends Throwable>,? extends Observable<?>> attempts) {
@@ -300,7 +304,7 @@ public class NetworkRequestsManager {
             Device device = new Device();
             device.setGcm_registration_id(gcmId);
 
-            mergeObservable(Device.class, mUnregisteredBuyersApiService
+            mergeCacheAndDistinctObservable(Device.class, mUnregisteredBuyersApiService
                     .registerDevice(device)
                     .cache())
                     .subscribe(
