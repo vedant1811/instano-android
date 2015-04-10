@@ -6,8 +6,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 /**
  * Created by vedant on 4/5/15.
  */
-
-@JsonRootName(value = "sign_in")
+@JsonRootName("sign_in")
 public class SignIn {
     @JsonProperty("api_key")
     private String api_key;

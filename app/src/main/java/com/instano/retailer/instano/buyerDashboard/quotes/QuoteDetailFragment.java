@@ -1,10 +1,12 @@
 package com.instano.retailer.instano.buyerDashboard.quotes;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +17,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.buyerDashboard.QuotationDetailActivity;
-import com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
@@ -26,10 +27,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import rx.android.observables.AndroidObservable;
+
 /**
  * A fragment representing a single Quote detail screen.
  * This fragment is either contained in a {@link QuoteListActivity}
- * in two-pane mode (on tablets) or a {@link QuoteDetailActivity}
  * on handsets.
  */
 public class QuoteDetailFragment extends Fragment {
@@ -40,13 +42,34 @@ public class QuoteDetailFragment extends Fragment {
     public static final String ARG_QUOTE_ID = "quote_id";
 
     /**
-     * The dummy content this fragment is presenting.
+     * The fragment's current callback object, which is notified of list item
+     * clicks.
      */
+    private Callbacks mCallbacks = sDummyCallbacks;
+
     private Quote mItem;
     private Adapter mAdapter;
     private TextView mSubheadingTextView;
     private TextView mHeadingTextView;
     private Button mContactUsButton;
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callbacks {
+        /**
+         * Callback for when an item has been selected.
+         */
+        public void onQuoteSelected(int quotation_id);
+    }
+
+    /**
+     * A dummy implementation of the {@link Callbacks} interface that does
+     * nothing. Used only when this fragment is not attached to an activity.
+     */
+    private static Callbacks sDummyCallbacks = id -> {};
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -66,18 +89,25 @@ public class QuoteDetailFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        // Activities containing this fragment must implement its callbacks.
+        if (!(activity instanceof Callbacks)) {
+            throw new IllegalStateException("Activity must implement fragment's callbacks.");
+        }
+
+        mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments().containsKey(ARG_QUOTE_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            int id = getArguments().getInt(ARG_QUOTE_ID);
-//            mItem = DataManager.instance().getQuote(id);
+        if (!getArguments().containsKey(ARG_QUOTE_ID)) {
             if (mItem == null)
                 throw new IllegalStateException(
-                        "Fragment Quote detail created without any Quote. Quote id: " + id);
+                        "Fragment Quote detail created without any Quote");
         }
     }
 
@@ -90,26 +120,25 @@ public class QuoteDetailFragment extends Fragment {
         mSubheadingTextView = (TextView) rootView.findViewById(R.id.subheadingTextView);
         mContactUsButton = (Button) rootView.findViewById(R.id.contactUsButton);
 
-        mHeadingTextView.setText(String.format("\"%s\"", mItem.searchString));
         mAdapter = new Adapter(getActivity());
-//        DataManager.instance().registerListener(this);
         expandableListView.setAdapter(mAdapter);
+        AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Quote.class)
+                .filter(quote -> quote.id == getArguments().getInt(ARG_QUOTE_ID)))
+                        .subscribe(quote -> {
+                            mItem = quote;
+                            mHeadingTextView.setText(String.format("\"%s\"", mItem.searchString));
+                            // initialize adapter only after quote has been fetched
+                            mAdapter.refresh();
+                        });
 
         return rootView;
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-//        DataManager.instance().unregisterListener(this);
-    }
-
-    public void quotesUpdated() {
-        mAdapter.dataUpdated();
-    }
-
-    public void quotationsUpdated() {
-        mAdapter.dataUpdated();
+    public void onDetach() {
+        super.onDetach();
+        // Reset the active callbacks interface to the dummy implementation.
+        mCallbacks = sDummyCallbacks;
     }
 
     /**
@@ -122,6 +151,8 @@ public class QuoteDetailFragment extends Fragment {
         private static final int CHILD_TYPE_SELLER = 0;
         private static final int CHILD_TYPE_QUOTATION = 1;
         private List<Seller> mHeaders; // header titles i.e seller names
+        private SparseArray<Quotation> mQuotations;
+        private SparseArray<Seller> mSellers;
         /**
          * child data in format of header title, child title
          * value `Object` can be of 2 types: {@link Seller} or {@link Quotation}
@@ -131,9 +162,28 @@ public class QuoteDetailFragment extends Fragment {
 
         public Adapter(Context context) {
             mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mHeaders = new ArrayList<Seller>();
-            mChildrenMap = new HashMap<Seller, List<Object>>();
-            dataUpdated();
+            mHeaders = new ArrayList<>();
+            mQuotations = new SparseArray<>();
+            mSellers = new SparseArray<>();
+            mChildrenMap = new HashMap<>();
+        }
+
+        /**
+         * main initializer
+         */
+        private void refresh() {
+            AndroidObservable.bindFragment(QuoteDetailFragment.this, NetworkRequestsManager.instance().getObservable(Seller.class)
+                    .filter(seller -> mItem.sellerIds.contains(seller.id)))
+                            .subscribe(seller -> {
+                                mSellers.put(seller.id, seller);
+                                dataUpdated();
+                            });
+            AndroidObservable.bindFragment(QuoteDetailFragment.this, NetworkRequestsManager.instance().getObservable(Quotation.class)
+                    .filter(quotation -> mItem.sellerIds.contains(quotation.sellerId)))
+                            .subscribe(quotation -> {
+                                mQuotations.put(quotation.id, quotation);
+                                dataUpdated();
+                            });
         }
 
         public void dataUpdated() {
@@ -142,15 +192,21 @@ public class QuoteDetailFragment extends Fragment {
             mChildrenMap.clear();
 
             for (Integer id : mItem.sellerIds){
-//                DataManager dataManager = DataManager.instance();
-//                Seller seller = dataManager.getSeller(id);
-//                if (seller != null) {
-//                    mHeaders.add(0, seller);
-//                    ArrayList<Object> groupChildren = dataManager.quotationsBySeller(seller.id);
+                Seller seller = mSellers.get(id);
+                if (seller != null) {
+                    mHeaders.add(0, seller);
+                    ArrayList<Object> groupChildren = new ArrayList<>();
+                    for (int i = 0; i < mQuotations.size(); i++) {
+                        Quotation quotation = mQuotations.valueAt(i);
+                        if (quotation.sellerId == id)
+                            groupChildren.add(quotation);
+                    }
+                    // TODO: sort the above
+
 //                    put first item, Seller:
-//                    groupChildren.add(0, seller);
-//                    mChildrenMap.put(seller, groupChildren);
-//                }
+                    groupChildren.add(0, seller);
+                    mChildrenMap.put(seller, groupChildren);
+                }
             }
             notifyDataSetChanged();
             int numOfSellers = getGroupCount();
@@ -216,12 +272,9 @@ public class QuoteDetailFragment extends Fragment {
                 else
                     distanceTextView.setVisibility(View.INVISIBLE);
 
-                callImageButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + seller.phone));
-                        startActivity(callIntent);
-                    }
+                callImageButton.setOnClickListener(v -> {
+                    Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + seller.phone));
+                    startActivity(callIntent);
                 });
                 break;
 
@@ -242,19 +295,14 @@ public class QuoteDetailFragment extends Fragment {
                 priceTextView.setText("₹ " + quotation.price);
 
                 // TODO:
-                convertView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent detailIntent = new Intent(getActivity(), QuotationDetailActivity.class);
-                        detailIntent.putExtra(QuotationDetailFragment.ARG_QUOTATION_ID, quotation.id);
-                        startActivity(detailIntent);
-                        if (!quotation.isRead()) {
+                convertView.setOnClickListener(v -> {
+                    mCallbacks.onQuoteSelected(quotation.id);
+                    if (!quotation.isRead()) {
 //                            NetworkRequestsManager.instance().setQuotationStatusReadRequest(quotation.id);
-                            quotation.setStatusRead();
-                            newTextView.setVisibility(View.GONE);
-                            notifyDataSetChanged();
-                            //TODO: optimize if needed. ref: http://stackoverflow.com/a/9987714/1396264
-                        }
+                        quotation.setStatusRead();
+                        newTextView.setVisibility(View.GONE);
+                        notifyDataSetChanged();
+                        //TODO: optimize if needed. ref: http://stackoverflow.com/a/9987714/1396264
                     }
                 });
 

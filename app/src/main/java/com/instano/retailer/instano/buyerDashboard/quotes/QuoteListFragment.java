@@ -181,7 +181,7 @@ public class QuoteListFragment extends ListFragment {
 
             TextView primaryTextView = (TextView) view.findViewById(R.id.mainTextView);
             TextView timeTextView = (TextView) view.findViewById(R.id.timeTextView);
-            TextView responsesTextView = (TextView) view.findViewById(R.id.responsesTextView);
+//            TextView responsesTextView = (TextView) view.findViewById(R.id.responsesTextView);
             TextView sentToTextView = (TextView) view.findViewById(R.id.sentToTextView);
 
             Quote quote = getItem(position);
@@ -189,16 +189,13 @@ public class QuoteListFragment extends ListFragment {
             primaryTextView.setText(quote.searchString);
             timeTextView.setText(quote.getPrettyTimeElapsed());
 
-            int numResponses = 0;
+//            int numResponses = 0;
 //            List<Quotation> quotations = DataManager.instance().getQuotations();
 //            for (Quotation quotation : quotations)
 //                if (quotation.quoteId == quote.id)
 //                    numResponses++;
-            responsesTextView.setText(numResponses + " responses");
+//            responsesTextView.setText(numResponses + " responses");
             sentToTextView.setText(String.format("sent to %d retailers", quote.sellerIds.size()));
-
-            // to behave as a button i.e. have a "pressed" state
-            view.setBackgroundResource(R.drawable.selector_list_item);
 
             return view;
         }

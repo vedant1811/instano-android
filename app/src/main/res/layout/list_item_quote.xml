@@ -6,7 +6,7 @@
     android:layout_marginLeft="@dimen/general_separator_margin"
     android:layout_marginRight="@dimen/general_separator_margin"
     android:layout_marginTop="@dimen/general_separator_margin"
-    android:background="@android:color/white"
+    android:background="@drawable/selector_list_item"
     android:padding="4dp"
     android:minWidth="250dp">
 
@@ -32,19 +32,19 @@
         android:paddingRight="4dp"
         android:paddingTop="4dp"
         android:layout_below="@+id/mainTextView"
-        android:layout_alignRight="@+id/responsesTextView"
-        android:layout_alignEnd="@+id/responsesTextView" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearancePrice"
-        android:text="0 responses"
-        android:id="@+id/responsesTextView"
-        android:padding="4dp"
-        android:layout_below="@+id/timeTextView"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="@style/TextAppearancePrice"-->
+        <!--android:text="0 responses"-->
+        <!--android:id="@+id/responsesTextView"-->
+        <!--android:padding="4dp"-->
+        <!--android:layout_below="@+id/timeTextView"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_alignParentEnd="true" />-->
 
     <TextView
         android:layout_width="wrap_content"
@@ -55,8 +55,8 @@
         android:layout_below="@+id/mainTextView"
         android:layout_alignParentLeft="true"
         android:layout_marginTop="4dp"
-        android:layout_toLeftOf="@+id/responsesTextView"
-        android:layout_toStartOf="@+id/responsesTextView"
-        android:layout_alignBottom="@+id/responsesTextView"
-        android:gravity="center_vertical" />
+        android:layout_toLeftOf="@+id/timeTextView"
+        android:layout_toStartOf="@+id/timeTextView"
+        android:gravity="center_vertical"
+        android:layout_alignBottom="@+id/timeTextView" />
 </RelativeLayout>

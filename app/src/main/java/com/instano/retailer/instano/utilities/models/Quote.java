@@ -35,7 +35,7 @@ public class Quote {
 //    public Category productCategory;
     @JsonProperty("brands")
     public String brands;
-//    @JsonProperty("updated_at")
+    @JsonProperty("updated_at")
     public long updatedAt; // valid only when constructed from Quote(JSONObject jsonObject)
     @JsonProperty("seller_ids")
     public HashSet<Integer> sellerIds;
@@ -53,6 +53,11 @@ public class Quote {
         } catch (JSONException e) {
             return -1;
         }
+    }
+
+    @JsonProperty("updated_at")
+    public void setUpdatedAt(String updatedAtString) {
+        this.updatedAt = ServicesSingleton.dateFromString(updatedAtString);
     }
 
     public Quote () {

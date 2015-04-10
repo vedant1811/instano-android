@@ -28,6 +28,14 @@ public class QuotationDetailFragment extends Fragment {
 
     private int mQuotationId;
 
+    public static QuotationDetailFragment create(int quotation_id) {
+        Bundle arguments = new Bundle();
+        arguments.putInt(QuotationDetailFragment.ARG_QUOTATION_ID, quotation_id);
+        QuotationDetailFragment fragment = new QuotationDetailFragment();
+        fragment.setArguments(arguments);
+        return fragment;
+    }
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
