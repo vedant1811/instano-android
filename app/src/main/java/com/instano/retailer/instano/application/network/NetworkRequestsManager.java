@@ -6,7 +6,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,6 +34,8 @@ import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import rx.Observable;
+import rx.Subscriber;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by vedant on 18/12/14.
@@ -186,23 +187,22 @@ public class NetworkRequestsManager {
         return sInstance;
     }
 
-    public Observable<Device> authorizeSession(boolean refreshGcmId, boolean refreshSessionId) {
+    public Observable<Device> authorizeSession() {
         String gcmId = getGcmId();
-        if (refreshGcmId || gcmId.isEmpty())
-            fetchGcmRegIdAsync();
+        if (gcmId.isEmpty())
+            return registerAfterFetchingGcm();
         else {
             String sessionId = getSessionId();
-            if (refreshSessionId || sessionId.isEmpty())
-                registerNewSession(gcmId);
+            Device device = new Device();
+            device.setGcm_registration_id(gcmId);
+            if (sessionId.isEmpty()) {
+                return registerDevice(device);
+            }
             else {
-                Device device = new Device();
-                device.setGcm_registration_id(gcmId);
                 device.setSession_id(sessionId);
-                mObservableHashMap.put(Device.class.getSimpleName(),
-                        Observable.just(device));
+                return Observable.just(device);
             }
         }
-        return getObservable(Device.class);
     }
 
     public <T> Observable<T> getObservable(@NonNull Class<T> modelClass) {
@@ -285,71 +285,46 @@ public class NetworkRequestsManager {
                 Observable.create(mQuoteEchoFunction));
     }
 
-//    private Observable<T> exponentialBackoff(Func1<? super Observable<? extends Throwable>,? extends Observable<?>> attempts) {
-//
-//    }
+    private Observable<Device> registerAfterFetchingGcm() {
+        return Observable.create(new Observable.OnSubscribe<Device>() {
+            @Override
+            public void call(Subscriber<? super Device> subscriber) {
+                String gcmRegId = "";
+                try {
+                    Log.d(TAG, "fetching gcm");
+                    gcmRegId = GoogleCloudMessaging.getInstance(mApplication).register(SENDER_ID);
+                    NetworkRequestsManager.this.storeGcmId(gcmRegId);
+                    Device device = new Device();
+                    device.setGcm_registration_id(gcmRegId);
+                    subscriber.onNext(device);
+                } catch (IOException e) {
+                    subscriber.onError(e);
+                }
+            }
+        }).subscribeOn(Schedulers.io())
+                .retryWhen(new ExponentialBackoffFunction())
+                .flatMap(this::registerDevice);
+    }
 
-    private void storeSessionId(String sessionId) {
-        Log.v(TAG, "saving Session id: "+sessionId);
-        getAppSharedPreferences().edit().putString(SESSION_ID, sessionId).commit();
+    private Observable<Device> registerDevice(Device device) {
+        return mUnregisteredBuyersApiService.registerDevice(device)
+                .onErrorResumeNext(throwable -> {
+                    if (throwable instanceof ResponseError) {
+                        ResponseError responseError = (ResponseError) throwable;
+                        ResponseError.Type errorType = responseError.getErrorType();
+                        if (errorType.shouldRefreshGcmId())
+                            return registerAfterFetchingGcm();
+                    }
+                    return Observable.error(throwable);
+                })
+                .retryWhen(new ExponentialBackoffFunction())
+                .doOnNext(d -> storeSessionId(d.getSession_id()));
     }
 
     private String getSessionId(){
         String sessionId = getAppSharedPreferences().getString(SESSION_ID, "");
         Log.v(TAG, "Saved Session id: "+sessionId);
         return sessionId;
-    }
-
-    // TODO: use rxJava instead
-    private void fetchGcmRegIdAsync() {
-        new AsyncTask<Void,Void,String>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-            }
-
-            @Override
-            protected String doInBackground(Void... params) {
-                String gcmRegId = "";
-                try {
-                    gcmRegId = GoogleCloudMessaging.getInstance(mApplication).register(SENDER_ID);
-                    // Persist the registration ID - no need to register again.
-                    storeGcmId(gcmRegId);
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-                return gcmRegId;
-            }
-
-            @Override
-            protected void onPostExecute(String gcmId) {
-                registerNewSession(gcmId);
-            }
-        }.execute();
-    }
-
-    private void registerNewSession(String gcmId) {
-        if (!gcmId.isEmpty()) {
-            Log.v(TAG, ".registerNewSession Send regId  " + gcmId);
-            Device device = new Device();
-            device.setGcm_registration_id(gcmId);
-
-            mergeCacheAndDistinctObservable(Device.class, mUnregisteredBuyersApiService
-                    .registerDevice(device))
-                    .subscribe(
-                            d -> storeSessionId(d.getSession_id()),
-                            throwable -> {
-                                if (throwable instanceof ResponseError) {
-                                    ResponseError responseError = (ResponseError) throwable;
-                                    ResponseError.Type errorType = responseError.getErrorType();
-                                    authorizeSession(errorType.shouldRefreshGcmId(), errorType.shouldRefreshSessionId());
-                                }
-                                // else TODO: do an exponential backoff
-                            });
-            // in case we are waiting for a pending result, new subscribers will get them as well.
-        }
-        else
-            authorizeSession(true, false);
     }
 
     private String getGcmId() {
@@ -369,6 +344,11 @@ public class NetworkRequestsManager {
             return "";
         }
         return gcmId;
+    }
+
+    private void storeSessionId(String sessionId) {
+        Log.v(TAG, "saving Session id: "+sessionId);
+        getAppSharedPreferences().edit().putString(SESSION_ID, sessionId).commit();
     }
 
     private void storeGcmId(String gcmId) {
