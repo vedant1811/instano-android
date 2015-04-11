@@ -11,17 +11,17 @@ import android.support.v4.app.NotificationCompat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.LauncherActivity;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Seller;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
+import java.util.Random;
 
 /**
  * Created by ROHIT on 09-Mar-15.
@@ -33,6 +33,7 @@ public class GcmIntentService extends IntentService {
     public GcmIntentService() {
         super("GcmIntentService");
     }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         Bundle extras = intent.getExtras();
@@ -62,14 +63,23 @@ public class GcmIntentService extends IntentService {
                 sendNotification("Received: " + extras.toString());
                 Log.v(TAG, "Received: " + extras);
                 String type = extras.getString("type");
-                Log.v(TAG,"TYPE : "+ type);
+                Log.v(TAG, "TYPE : " + type);
                 if (type != null) {
-                    if (type.contains("seller")) {
-                        jsonToSeller(extras);
-                    } else if (type.contains("quote")) {
-                        jsonToQuotes(extras);
-                    } else if (type.contains("quotations")) {
-                        jsonToQuotation(extras);
+                    try {
+                        ObjectMapper mapper = ServicesSingleton.instance().getDefaultObjectMapper();
+                        switch (type) {
+                            case "seller":
+                                Seller seller = mapper.readValue(extras.getString("seller"), Seller.class);
+                                NetworkRequestsManager.instance().newObject(seller);
+                                break;
+                            case "quotation":
+                                Quotation quotation = mapper.readValue(extras.getString("quotation"), Quotation.class);
+                                NetworkRequestsManager.instance().newObject(quotation);
+                                newQuotationsNotification();
+                                break;
+                        }
+                    } catch (IOException e) {
+                        Log.fatalError(e);
                     }
                 }
             }
@@ -78,7 +88,7 @@ public class GcmIntentService extends IntentService {
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    public void createNotification() {
+    public void newQuotationsNotification() {
         Log.d(TAG, "new quotations received");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.instano_launcher)
@@ -98,68 +108,25 @@ public class GcmIntentService extends IntentService {
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         manager.notify(001, builder.build());
-
     }
 
-    private  void jsonToQuotation(Bundle bundle) {
-        String quotation = bundle.getString("quotation");
-        Log.v(TAG, "Received quotation: " + quotation);
-        try {
-            String jsonArrayContent = bundle.getString("quotation");
-            JSONArray jsonArray = new JSONArray(jsonArrayContent);
-//            DataManager.instance().updateQuotes(jsonArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void jsonToQuotes(Bundle bundle) {
-        String quotes = bundle.getString("quote");
-        Log.v(TAG, "Received Quote : " + quotes);
-        try {
-            String jsonArrayContent = bundle.getString("quote");
-            JSONArray jsonArray = new JSONArray(jsonArrayContent);
-//            DataManager.instance().updateQuotes(jsonArray);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject explrObject = jsonArray.getJSONObject(i);
-                 Log.v(TAG, "Received individual quotes json: " + explrObject);
-            }
-            Log.v(TAG, "Received quotes json: " + jsonArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.v(TAG, "Quotes object error : " + e);
-        }
-    }
-
-    private  void  jsonToSeller(Bundle bundle) {
-        String seller = bundle.getString("seller");
-        Log.v(TAG, "Received Seller: " + seller);
-        try {
-            ObjectMapper objectMapper = ServicesSingleton.instance().getDefaultObjectMapper();
-            Seller sellerObject = objectMapper.readValue(bundle.getString("seller"), Seller.class);
-            JSONObject jsonObject = new JSONObject(objectMapper.writeValueAsString(sellerObject));
-            Log.v(TAG,"Seller object : "+ sellerObject);
-            Log.v(TAG,"Seller json : "+ jsonObject);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.v(TAG,"Seller object error : "+ e);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.v(TAG,"Seller json error : "+ e);
-        }
-    }
-
-    // Put the message into a notification and post it.
-    // This is just one simple example of what you might choose to do with
-    // a GCM message.
+    /**
+     * create a notification. Used for debugging only
+     */
     private void sendNotification(String msg) {
+        if (!BuildConfig.DEBUG)
+            return;
         NotificationManager notificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
         Log.v(TAG,"sendNotification");
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, LauncherActivity.class), 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(
+                this,
+                0,
+                new Intent(this, LauncherActivity.class),
+                0
+        );
 
-        NotificationCompat.Builder mBuilder =
+        NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.com_facebook_button_like_icon_selected)
                         .setContentTitle("GCM Notification")
@@ -167,7 +134,8 @@ public class GcmIntentService extends IntentService {
                                 .bigText(msg))
                         .setContentText(msg);
 
-        mBuilder.setContentIntent(contentIntent);
-        notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        builder.setContentIntent(contentIntent);
+        // preserve all notifications
+        notificationManager.notify(new Random().nextInt(), builder.build());
     }
 }

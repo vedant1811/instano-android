@@ -35,6 +35,7 @@ import rx.android.observables.AndroidObservable;
  * on handsets.
  */
 public class QuoteDetailFragment extends Fragment {
+    private final String TAG = getClass().getSimpleName();
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -126,6 +127,7 @@ public class QuoteDetailFragment extends Fragment {
                 .filter(quote -> quote.id == getArguments().getInt(ARG_QUOTE_ID)))
                         .subscribe(quote -> {
                             mItem = quote;
+                            Log.v(TAG, "quote received: " +quote );
                             mHeadingTextView.setText(String.format("\"%s\"", mItem.searchString));
                             // initialize adapter only after quote has been fetched
                             mAdapter.refresh();
@@ -181,6 +183,7 @@ public class QuoteDetailFragment extends Fragment {
             AndroidObservable.bindFragment(QuoteDetailFragment.this, NetworkRequestsManager.instance().getObservable(Quotation.class)
                     .filter(quotation -> mItem.sellerIds.contains(quotation.sellerId)))
                             .subscribe(quotation -> {
+                                Log.d(TAG, "new quotation, id: " + quotation.id);
                                 mQuotations.put(quotation.id, quotation);
                                 dataUpdated();
                             });
@@ -198,7 +201,7 @@ public class QuoteDetailFragment extends Fragment {
                     ArrayList<Object> groupChildren = new ArrayList<>();
                     for (int i = 0; i < mQuotations.size(); i++) {
                         Quotation quotation = mQuotations.valueAt(i);
-                        if (quotation.sellerId == id)
+                        if (quotation.sellerId == id && quotation.quoteId == mItem.id)
                             groupChildren.add(quotation);
                     }
                     // TODO: sort the above

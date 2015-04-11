@@ -62,6 +62,10 @@ public class NetworkRequestsManager {
      */
     private final HashMap<String, Observable> mObservableHashMap;
 
+    private EchoFunction<Quotation> mQuotationEchoFunction;
+    private EchoFunction<Seller> mSellerEchoFunction;
+    private EchoFunction<Quote> mQuoteEchoFunction;
+
     /**
      * always adds a header ("Session-Id", getSessionId())
      */
@@ -99,8 +103,16 @@ public class NetworkRequestsManager {
         Observable<Device> registerDevice(@Body Device device);
     }
 
-    public void newQuote(Quote quote) {
-        mergeCacheAndDistinctObservable(Quote.class, Observable.just(quote));
+    public void newObject(Quote quote) {
+        mQuoteEchoFunction.newEventReceived(quote);
+    }
+
+    public void newObject(Quotation quotation) {
+        mQuotationEchoFunction.newEventReceived(quotation);
+    }
+
+    public void newObject(Seller seller) {
+        mSellerEchoFunction.newEventReceived(seller);
     }
 
     public Observable<Buyer> signIn(String apiKey) {
@@ -120,10 +132,15 @@ public class NetworkRequestsManager {
         return buyerObservable;
     }
 
+    /**
+     * also echo the retrofit returned quote so that observers will get this quote as well.
+     * @param quote
+     * @return observable that observers this quote response only
+     */
     public Observable<Quote> sendQuote(Quote quote) {
-        // also echo the retrofit returned quote so that observers will get this quote as well.
-        return mergeCacheAndDistinctObservable(Quote.class,
-                mRegisteredBuyersApiService.sendQuote(quote));
+        Observable<Quote> quoteObservable = mRegisteredBuyersApiService.sendQuote(quote);
+        quoteObservable.subscribe(this::newObject);
+        return quoteObservable;
     }
 
     private NetworkRequestsManager(MyApplication application) {
@@ -210,6 +227,7 @@ public class NetworkRequestsManager {
 
     /**
      * used to keep previous values
+     * BEWARE: only future subscribers will get the new results! existing subscribers will have the old observable
      */
     private <T> Observable<T> mergeCacheAndDistinctObservable(@NonNull Class<T> modelClass, Observable<T> newObservable) {
         Observable<T> observable = getObservable(modelClass)
@@ -234,6 +252,7 @@ public class NetworkRequestsManager {
 
     private void newBuyer(@NonNull Buyer buyer) {
         Log.d(TAG, "onNewBuyer");
+
         replaceAndCacheObservable(Deal.class,
                 mRegisteredBuyersApiService.getDeals()
                         .flatMap(Observable::from)); // flatten returned List<Deal> into Deal
@@ -253,6 +272,17 @@ public class NetworkRequestsManager {
 
         replaceAndCacheObservable(Categories.class,
                 mRegisteredBuyersApiService.getProductCategories());
+
+        mQuotationEchoFunction = new EchoFunction<>();
+        mSellerEchoFunction = new EchoFunction<>();
+        mQuoteEchoFunction = new EchoFunction<>();
+
+        mergeCacheAndDistinctObservable(Quotation.class,
+                Observable.create(mQuotationEchoFunction));
+        mergeCacheAndDistinctObservable(Seller.class,
+                Observable.create(mSellerEchoFunction));
+        mergeCacheAndDistinctObservable(Quote.class,
+                Observable.create(mQuoteEchoFunction));
     }
 
 //    private Observable<T> exponentialBackoff(Func1<? super Observable<? extends Throwable>,? extends Observable<?>> attempts) {
@@ -305,8 +335,7 @@ public class NetworkRequestsManager {
             device.setGcm_registration_id(gcmId);
 
             mergeCacheAndDistinctObservable(Device.class, mUnregisteredBuyersApiService
-                    .registerDevice(device)
-                    .cache())
+                    .registerDevice(device))
                     .subscribe(
                             d -> storeSessionId(d.getSession_id()),
                             throwable -> {
