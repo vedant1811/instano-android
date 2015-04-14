@@ -12,8 +12,6 @@ import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 
-import rx.android.observables.AndroidObservable;
-
 
 public class LauncherActivity extends GlobalMenuActivity {
 
@@ -46,12 +44,11 @@ public class LauncherActivity extends GlobalMenuActivity {
     protected void onResume() {
         super.onResume();
         if (checkPlayServices()) {
-            AndroidObservable.bindActivity(this, NetworkRequestsManager.instance().authorizeSession(false, false))
-                    .subscribe((device) -> {
+            retryableError(NetworkRequestsManager.instance().authorizeSession(),
+                    (device) -> {
                                 mErrorOccurred = false;
                                 closeIfPossible();
-                            },
-                            this::showErrorDialog);
+                            });
         } else {
             noPlayServicesDialog();
             Log.v(TAG, "No valid Google Play Services APK found.");
@@ -65,7 +62,7 @@ public class LauncherActivity extends GlobalMenuActivity {
             }, SPLASH_TIME_OUT);
     }
 
-    protected boolean checkPlayServices() {
+    private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {

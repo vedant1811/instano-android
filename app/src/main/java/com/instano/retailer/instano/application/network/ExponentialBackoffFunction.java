@@ -18,7 +18,7 @@ public class ExponentialBackoffFunction implements Func1<Observable<? extends Th
     private int retryCount;
 
     public ExponentialBackoffFunction() {
-        this(3, 3);
+        this(2, 3);
     }
 
     public ExponentialBackoffFunction(final int maxRetries, final int retryDelay) {
@@ -34,11 +34,11 @@ public class ExponentialBackoffFunction implements Func1<Observable<? extends Th
                     if (++retryCount < maxRetries) {
                         // When this Observable calls onNext, the original
                         // Observable will be retried (i.e. re-subscribed).
-                        Log.d(TAG, "retrying after " + Math.pow(retryDelay, retryCount));
-                        return Observable.timer((long) Math.pow(retryDelay, retryCount),
+                        Log.v(TAG, "retrying after " + ((long) Math.pow(retryDelay, retryCount) + 1));
+                        return Observable.timer((long) Math.pow(retryDelay, retryCount) + 1,
                                 TimeUnit.SECONDS);
                     }
-                    Log.e(TAG, "max retires hit");
+                    Log.d(TAG, "max retires hit");
                     // Max retries hit. Just pass the error along.
                     return Observable.error(e);
                 });
