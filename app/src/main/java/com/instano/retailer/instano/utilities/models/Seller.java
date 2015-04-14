@@ -5,10 +5,10 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.instano.retailer.instano.application.ServicesSingleton;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
@@ -37,9 +37,11 @@ public class Seller {
     public int rating; // rating is out of 50, displayed out of 5.0
     @JsonProperty("email")
     public String email;
-//    @JsonProperty("categories")
-    @JsonIgnore
-    public Categories categories;
+////    @JsonProperty("categories")
+//    @JsonIgnore
+//    public Categories categories;
+    @JsonProperty("brands")
+    public ArrayList<Brand> brands;
 
     public Seller() {
 
