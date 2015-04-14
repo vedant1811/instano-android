@@ -62,7 +62,7 @@ public abstract class GlobalMenuActivity extends BaseActivity {
         }
     }
 
-    private ErrorDialogFragment showErrorDialog(Throwable throwable) {
+    protected ErrorDialogFragment showErrorDialog(Throwable throwable) {
         Log.d(TAG, "showing error dialog");
         throwable.printStackTrace();
         if (throwable instanceof ResponseError) {

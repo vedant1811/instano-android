@@ -62,7 +62,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 .subscribe(seller -> {
                     mCompleteSet.put(seller.hashCode(), seller);
                     filter();
-                });
+                }, error -> {});
     }
 
     public void setListener(ItemInteractionListener listener) {

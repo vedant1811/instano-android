@@ -35,6 +35,7 @@ import retrofit.http.GET;
 import retrofit.http.POST;
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -68,7 +69,7 @@ public class NetworkRequestsManager {
     private EchoFunction<Quote> mQuoteEchoFunction;
 
     /**
-     * always adds a header ("Session-Id", getSessionId())
+     * always adds a header ("Session-Id", getStoredSessionId())
      */
     public interface RegisteredBuyersApiService {
         @POST("/buyers")
@@ -79,6 +80,9 @@ public class NetworkRequestsManager {
 
         @POST("/buyers/exists")
         Observable<Boolean> exists(@Body String phone);
+
+        @GET("/buyers/sellers")
+        Observable<List<Seller>> getSellers();
 
         @POST("/buyers/quotes")
         Observable<Quote> sendQuote(@Body Quote quote);
@@ -91,9 +95,6 @@ public class NetworkRequestsManager {
 
         @GET("/buyers/quotations")
         Observable<List<Quotation>> getQuotations();
-
-        @GET("/buyers/sellers")
-        Observable<List<Seller>> getSellers();
 
         @GET("/brands_categories")
         Observable<Categories> getProductCategories();
@@ -121,14 +122,16 @@ public class NetworkRequestsManager {
         signIn.setApi_key(apiKey);
 
         Observable<Buyer> buyerObservable = replaceAndCacheObservable(Buyer.class,
-                mRegisteredBuyersApiService.signIn(signIn));
+                mRegisteredBuyersApiService.signIn(signIn)
+                        .retryWhen(new SessionErrorsHandlerFunction()));
         buyerObservable.subscribe(this::newBuyer);
         return buyerObservable;
     }
 
     public Observable<Buyer> registerBuyer(Buyer buyer) {
         Observable<Buyer> buyerObservable = replaceAndCacheObservable(Buyer.class,
-                mRegisteredBuyersApiService.register(buyer));
+                mRegisteredBuyersApiService.register(buyer)
+                        .retryWhen(new SessionErrorsHandlerFunction()));
         buyerObservable.subscribe(this::newBuyer);
         return buyerObservable;
     }
@@ -139,7 +142,8 @@ public class NetworkRequestsManager {
      * @return observable that observers this quote response only
      */
     public Observable<Quote> sendQuote(Quote quote) {
-        Observable<Quote> quoteObservable = mRegisteredBuyersApiService.sendQuote(quote);
+        Observable<Quote> quoteObservable = mRegisteredBuyersApiService.sendQuote(quote)
+                .retryWhen(new SessionErrorsHandlerFunction());
         quoteObservable.subscribe(this::newObject);
         return quoteObservable;
     }
@@ -156,7 +160,7 @@ public class NetworkRequestsManager {
         RestAdapter registeredRestAdapter = new RestAdapter.Builder()
                 .setEndpoint(endpoint)
                 .setConverter(jacksonConverter)
-                .setRequestInterceptor(request -> request.addHeader("Session-Id", getSessionId()))
+                .setRequestInterceptor(request -> request.addHeader("Session-Id", getStoredSessionId()))
                 .setErrorHandler(new ResponseErrorHandler())
                 .setLogLevel(logLevel)
                 .build();
@@ -187,22 +191,36 @@ public class NetworkRequestsManager {
         return sInstance;
     }
 
+    /**
+     * TODO: move the member to another class and use them to handle errors
+     */
     public Observable<Device> authorizeSession() {
-        String gcmId = getGcmId();
-        if (gcmId.isEmpty())
-            return registerAfterFetchingGcm();
+        Observable<Device> observable;
+        String gcmId = getStoredGcmId();
+        if (gcmId.isEmpty()) {
+            observable = registerAfterFetchingGcm();
+        }
         else {
-            String sessionId = getSessionId();
-            Device device = new Device();
-            device.setGcm_registration_id(gcmId);
+            String sessionId = getStoredSessionId();
             if (sessionId.isEmpty()) {
-                return registerDevice(device);
+                observable = registerDevice();
             }
             else {
+                Device device = new Device();
+                device.setGcm_registration_id(gcmId);
                 device.setSession_id(sessionId);
-                return Observable.just(device);
+                observable = Observable.just(device);
             }
         }
+        observable.subscribe((device) -> {
+            replaceAndCacheObservable(Seller.class,
+                    mRegisteredBuyersApiService.getSellers()
+                            .retryWhen(new SessionErrorsHandlerFunction())
+                            .flatMap(Observable::from));
+            mergeCacheAndDistinctObservable(Seller.class,
+                    Observable.create(mSellerEchoFunction));
+        });
+        return observable;
     }
 
     public <T> Observable<T> getObservable(@NonNull Class<T> modelClass) {
@@ -255,23 +273,23 @@ public class NetworkRequestsManager {
 
         replaceAndCacheObservable(Deal.class,
                 mRegisteredBuyersApiService.getDeals()
+                        .retryWhen(new SessionErrorsHandlerFunction())
                         .flatMap(Observable::from)); // flatten returned List<Deal> into Deal
 
         replaceAndCacheObservable(Quote.class,
                 mRegisteredBuyersApiService.getQuotes()
+                        .retryWhen(new SessionErrorsHandlerFunction())
                         .flatMap(Observable::from)
                         .distinct());
 
         replaceAndCacheObservable(Quotation.class,
                 mRegisteredBuyersApiService.getQuotations()
-                        .flatMap(Observable::from));
-
-        replaceAndCacheObservable(Seller.class,
-                mRegisteredBuyersApiService.getSellers()
+                        .retryWhen(new SessionErrorsHandlerFunction())
                         .flatMap(Observable::from));
 
         replaceAndCacheObservable(Categories.class,
-                mRegisteredBuyersApiService.getProductCategories());
+                mRegisteredBuyersApiService.getProductCategories()
+                        .retryWhen(new SessionErrorsHandlerFunction()));
 
         mQuotationEchoFunction = new EchoFunction<>();
         mSellerEchoFunction = new EchoFunction<>();
@@ -279,34 +297,70 @@ public class NetworkRequestsManager {
 
         mergeCacheAndDistinctObservable(Quotation.class,
                 Observable.create(mQuotationEchoFunction));
-        mergeCacheAndDistinctObservable(Seller.class,
-                Observable.create(mSellerEchoFunction));
         mergeCacheAndDistinctObservable(Quote.class,
                 Observable.create(mQuoteEchoFunction));
     }
 
+    private class SessionErrorsHandlerFunction implements Func1<Observable<? extends Throwable>, Observable<?>> {
+        private static final String TAG = "SessionErrorHandlerFunction";
+        private final int maxRetries;
+        private final int retryDelay;
+        private int retryCount;
+
+        public SessionErrorsHandlerFunction() {
+            this(2, 3);
+        }
+
+        public SessionErrorsHandlerFunction(final int maxRetries, final int retryDelay) {
+            this.maxRetries = maxRetries;
+            this.retryDelay = retryDelay;
+            this.retryCount = 0;
+        }
+
+        @Override
+        public Observable<?> call(Observable<? extends Throwable> observable) {
+            return observable
+                    .flatMap(error -> {
+                        if (++retryCount < maxRetries) {
+                            if (error instanceof ResponseError) {
+                                ResponseError responseError = (ResponseError) error;
+                                ResponseError.Type errorType = responseError.getErrorType();
+                                Log.d(TAG, "retrying " + errorType);
+                                if (errorType.shouldRefreshGcmId())
+                                    return registerAfterFetchingGcm();
+                                else if (errorType.shouldRefreshSessionId())
+                                    return registerDevice();
+                            }
+                            Log.d(TAG, "unknown error. failing");
+                        }
+                        else
+                            Log.d(TAG, "max retires hit");
+                        return Observable.error(error);
+                    });
+        }
+    }
+
     private Observable<Device> registerAfterFetchingGcm() {
-        return Observable.create(new Observable.OnSubscribe<Device>() {
-            @Override
-            public void call(Subscriber<? super Device> subscriber) {
-                String gcmRegId = "";
-                try {
-                    Log.d(TAG, "fetching gcm");
-                    gcmRegId = GoogleCloudMessaging.getInstance(mApplication).register(SENDER_ID);
-                    NetworkRequestsManager.this.storeGcmId(gcmRegId);
-                    Device device = new Device();
-                    device.setGcm_registration_id(gcmRegId);
-                    subscriber.onNext(device);
-                } catch (IOException e) {
-                    subscriber.onError(e);
-                }
+        return Observable.create((Subscriber<? super Device> subscriber) -> {
+            String gcmRegId = "";
+            try {
+                Log.d(TAG, "fetching gcm");
+                gcmRegId = GoogleCloudMessaging.getInstance(mApplication).register(SENDER_ID);
+                NetworkRequestsManager.this.storeGcmId(gcmRegId);
+                Device device = new Device();
+                device.setGcm_registration_id(gcmRegId);
+                subscriber.onNext(device);
+            } catch (IOException e) {
+                subscriber.onError(e);
             }
         }).subscribeOn(Schedulers.io())
                 .retryWhen(new ExponentialBackoffFunction())
-                .flatMap(this::registerDevice);
+                .flatMap(d -> registerDevice());
     }
 
-    private Observable<Device> registerDevice(Device device) {
+    private Observable<Device> registerDevice() {
+        Device device = new Device();
+        device.setGcm_registration_id(getStoredGcmId());
         return mUnregisteredBuyersApiService.registerDevice(device)
                 .onErrorResumeNext(throwable -> {
                     if (throwable instanceof ResponseError) {
@@ -321,14 +375,14 @@ public class NetworkRequestsManager {
                 .doOnNext(d -> storeSessionId(d.getSession_id()));
     }
 
-    private String getSessionId(){
-        String sessionId = getAppSharedPreferences().getString(SESSION_ID, "");
+    private String getStoredSessionId(){
+        String sessionId = mApplication.getSharedPreferences().getString(SESSION_ID, "");
         Log.v(TAG, "Saved Session id: "+sessionId);
         return sessionId;
     }
 
-    private String getGcmId() {
-        final SharedPreferences prefs = getAppSharedPreferences();
+    private String getStoredGcmId() {
+        final SharedPreferences prefs = mApplication.getSharedPreferences();
         String gcmId = prefs.getString(PROPERTY_GCM_ID, "");
         if (gcmId.isEmpty()) {
             Log.v(TAG, "GCM ID not found.");
@@ -348,11 +402,11 @@ public class NetworkRequestsManager {
 
     private void storeSessionId(String sessionId) {
         Log.v(TAG, "saving Session id: "+sessionId);
-        getAppSharedPreferences().edit().putString(SESSION_ID, sessionId).commit();
+        mApplication.getSharedPreferences().edit().putString(SESSION_ID, sessionId).commit();
     }
 
     private void storeGcmId(String gcmId) {
-        final SharedPreferences prefs = getAppSharedPreferences();
+        final SharedPreferences prefs = mApplication.getSharedPreferences();
         int appVersion = getAppVersion();
         Log.v(TAG, "Saving gcmId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
@@ -372,9 +426,5 @@ public class NetworkRequestsManager {
             Log.fatalError(e);
             return -1;
         }
-    }
-
-    private SharedPreferences getAppSharedPreferences() {
-        return mApplication.getSharedPreferences(ServicesSingleton.SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE);
     }
 }
