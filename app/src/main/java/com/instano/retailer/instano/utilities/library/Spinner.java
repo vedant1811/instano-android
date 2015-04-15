@@ -23,7 +23,6 @@ public class Spinner extends android.widget.Spinner implements AdapterView.OnIte
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
         if (mListener != null) {
-
             mListener.onItemSelected(parent, view, position, id, mUserActionOnSpinner);
         }
         // reset variable, so that it will always be true unless tampered with

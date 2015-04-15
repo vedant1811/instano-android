@@ -94,7 +94,7 @@ public class Log {
      */
     public static void e(String tag, String msg, Throwable tr) {
         if (BuildConfig.DEBUG)
-            android.util.Log.e(tag, msg);
+            android.util.Log.e(tag, msg, tr);
         else
             send("error", tag, msg + '\n' + android.util.Log.getStackTraceString(tr));
     }

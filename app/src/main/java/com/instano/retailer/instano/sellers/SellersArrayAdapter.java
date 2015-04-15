@@ -17,15 +17,11 @@ import android.widget.TextView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Category;
 import com.instano.retailer.instano.utilities.models.Constraint;
 import com.instano.retailer.instano.utilities.models.Seller;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,14 +59,6 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         NetworkRequestsManager.instance().getObservable(Seller.class)
                 .subscribe(seller -> {
                     mCompleteSet.put(seller.hashCode(), seller);
-                    Log.v(TAG,"CompleteSet :"+ mCompleteSet.toString());
-                    try {
-                        JSONObject json = new JSONObject(ServicesSingleton.instance().
-                                getDefaultObjectMapper().writeValueAsString(seller));
-                        Log.v(TAG,"seller json : "+json);
-                    } catch (JsonProcessingException | JSONException e) {
-                        e.printStackTrace();
-                    }
                     filter();
                 }, error -> {});
     }
@@ -171,7 +159,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
     }
 
     public void filter() {
-        mDistanceAndCategoryFilter.runOldFilter();
+        mDistanceAndCategoryFilter.runFilter();
     }
 
     public void filter(int minDist) {
@@ -218,14 +206,14 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         private final ObjectMapper mObjectMapper;
 
         public DistanceAndCategoryFilter() {
-            mObjectMapper = ServicesSingleton.instance().getDefaultObjectMapper();
+            mObjectMapper = new ObjectMapper();
             mLastConstraint = new Constraint();
-            mLastConstraint.category = Category.undefinedCategory();
+            mLastConstraint.category = Category.UNDEFINED;
             mLastConstraint.min_distance = INITIAL_MIN_DIST;
         }
 
-        private void runOldFilter() {
-            Log.d("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint);
+        private void runFilter() {
+            Log.d("filter", "runFilter");
             try {
                 filter(mObjectMapper.writeValueAsString(mLastConstraint));
             } catch (JsonProcessingException e) {
@@ -234,32 +222,32 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         }
 
         private void filter(int minDist) {
-            Log.d("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint);
             mLastConstraint.min_distance = minDist;
-            runOldFilter();
+            runFilter();
         }
 
         private void filter(Category category) {
-            Log.d("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint);
-            mLastConstraint.category = category;
+            mLastConstraint.category = category.name;
+            runFilter();
         }
 
         @Override
         protected FilterResults performFiltering(CharSequence serializedConstraint) {
             ArrayList<Seller> filteredList = new ArrayList<>();
-            Log.v(TAG,"filtered size : "+ filteredList.size());
-            Constraint constraint = new Constraint();
+            Constraint constraint = null;
             try {
+                Log.d("filter", ".performFiltering serialized constraint=" + serializedConstraint);
                 constraint = mObjectMapper.readValue(serializedConstraint.toString(), Constraint.class);
             } catch (IOException e) {
                 Log.fatalError(e);
             }
 
             try {
+                Log.d("filter", ".performFiltering constraint=" + constraint);
                 for (int i = 0; i < mCompleteSet.size(); i++) {
                     Seller seller = mCompleteSet.valueAt(i);
                     if (seller.getDistanceFromLocation() <= constraint.min_distance && // first filter distance
-                            seller.containsCategoryAndOneBrand(constraint.category)) // filter category
+                            seller.containsCategory(constraint.category)) // filter category
                         filteredList.add(seller);
                 }
             } catch (Exception e) {

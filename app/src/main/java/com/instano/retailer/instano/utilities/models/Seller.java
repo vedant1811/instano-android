@@ -133,21 +133,14 @@ public class Seller {
         return (int) distance;
     }
 
-    public boolean containsCategoryAndOneBrand(@NonNull Category categoryToMatch) {
+    public boolean containsCategory(@NonNull String categoryToMatch) {
 
-        if (categoryToMatch.name.equals(UNDEFINED))
+        if (categoryToMatch.equals(UNDEFINED))
             return true;
 
-//        for (Category oneCategory : mCategories)
-//            if (oneCategory.name.equals(categoryToMatch.name)) { // category is matched
-//
-//                // if no brands specified either category, then consider it matched
-//                if (categoryToMatch.brands.isEmpty() || oneCategory.brands.isEmpty())
-//                    return true;
-//
-//                // true if atleast one brand is common
-//                return !Collections.disjoint(oneCategory.brands, categoryToMatch.brands);
-//            }
+        for (Brand brand : brands)
+            if (brand.category.equals(categoryToMatch))
+                return true;
         return false;
     }
 
