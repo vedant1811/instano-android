@@ -214,6 +214,7 @@ public class NetworkRequestsManager {
         }
         return observable.doOnNext((device) -> {
             Log.d(TAG, "authorizeSession.doOnNext");
+            mSellerEchoFunction = new EchoFunction<>();
             replaceAndCacheObservable(Seller.class,
                     mRegisteredBuyersApiService.getSellers()
                             .retryWhen(new SessionErrorsHandlerFunction())
@@ -221,7 +222,7 @@ public class NetworkRequestsManager {
                                 Log.d(TAG, "" + t1);
                                 return Observable.from(t1);
                             }))
-                            .doOnNext((Seller seller) -> Log.d(TAG, "new seller: " + seller));
+                    .doOnNext((Seller seller) -> Log.d(TAG, "new seller: " + seller));
             mergeCacheAndDistinctObservable(Seller.class,
                     Observable.create(mSellerEchoFunction));
         });
@@ -296,7 +297,6 @@ public class NetworkRequestsManager {
                         .retryWhen(new SessionErrorsHandlerFunction()));
 
         mQuotationEchoFunction = new EchoFunction<>();
-        mSellerEchoFunction = new EchoFunction<>();
         mQuoteEchoFunction = new EchoFunction<>();
 
         mergeCacheAndDistinctObservable(Quotation.class,

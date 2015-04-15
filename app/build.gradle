@@ -38,7 +38,7 @@ android {
             resValue "string", "app_name", "Instano Debug"
             resValue "string", "server_url",
 //                    "http://staging.instano.in/"
-                    "http://192.168.0.129:3000/"
+                    "http://192.168.1.8:3000/"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
