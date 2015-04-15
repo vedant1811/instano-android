@@ -24,12 +24,13 @@ import com.instano.retailer.instano.utilities.models.Category;
 import com.instano.retailer.instano.utilities.models.Constraint;
 import com.instano.retailer.instano.utilities.models.Seller;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-
-import rx.android.observables.AndroidObservable;
 
 /**
  * TODO: do more
@@ -58,11 +59,19 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         mDistanceAndCategoryFilter = new DistanceAndCategoryFilter();
         mCheckedItems = new SparseBooleanArray();
 
-        AndroidObservable.bindActivity(activity, NetworkRequestsManager.instance().getObservable(Seller.class))
+        NetworkRequestsManager.instance().getObservable(Seller.class)
                 .subscribe(seller -> {
                     mCompleteSet.put(seller.hashCode(), seller);
+                    Log.v(TAG,"CompleteSet :"+ mCompleteSet.toString());
+                    try {
+                        JSONObject json = new JSONObject(ServicesSingleton.instance().
+                                getDefaultObjectMapper().writeValueAsString(seller));
+                        Log.v(TAG,"seller json : "+json);
+                    } catch (JsonProcessingException | JSONException e) {
+                        e.printStackTrace();
+                    }
                     filter();
-                });
+                }, error -> {});
     }
 
     public void setListener(ItemInteractionListener listener) {
@@ -237,7 +246,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         @Override
         protected FilterResults performFiltering(CharSequence serializedConstraint) {
             ArrayList<Seller> filteredList = new ArrayList<>();
-
+            Log.v(TAG,"filtered size : "+ filteredList.size());
             Constraint constraint = new Constraint();
             try {
                 constraint = mObjectMapper.readValue(serializedConstraint.toString(), Constraint.class);
@@ -249,7 +258,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 for (int i = 0; i < mCompleteSet.size(); i++) {
                     Seller seller = mCompleteSet.valueAt(i);
                     if (seller.getDistanceFromLocation() <= constraint.min_distance && // first filter distance
-                            seller.categories.containsCategoryAndOneBrand(constraint.category)) // filter category
+                            seller.containsCategoryAndOneBrand(constraint.category)) // filter category
                         filteredList.add(seller);
                 }
             } catch (Exception e) {
@@ -272,6 +281,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             mFilteredList = (ArrayList<Seller>) results.values;
+            Log.v(TAG,"publishResults size :"+ mFilteredList.size());
             newData();
         }
     }

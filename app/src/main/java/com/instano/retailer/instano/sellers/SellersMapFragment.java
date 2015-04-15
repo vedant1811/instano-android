@@ -42,6 +42,7 @@ import rx.android.observables.AndroidObservable;
 public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongClickListener,
         GetAddressTask.AddressCallback, GoogleMap.OnMarkerDragListener, GoogleMap.OnMarkerClickListener {
 
+    private static final String TAG = "SellerMapFragment";
     private static BitmapDescriptor BLUE_MARKER;
     private MapView mMapView;
 
@@ -121,7 +122,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         mSellerMarkers.clear();
 
         AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Seller.class))
-                .filter(seller -> seller.categories.contains(mCategory)) // only sellers satisfying this will be allowed
+                .filter(seller -> seller.contains(mCategory)) // only sellers satisfying this will be allowed
                 .subscribe(seller -> {
                     if (seller.latitude == Seller.INVALID_COORDINATE || seller.longitude == Seller.INVALID_COORDINATE)
                         return;
@@ -131,6 +132,8 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
                                     .title(seller.name_of_shop)
                     );
                     mSellerMarkers.put(newMarker, seller);
+                },error -> {
+                    Log.v(TAG,"");
                 });
         double timeTaken = (System.nanoTime() - start)/1000000;
         Log.d("Timing", "SellersMapFragment.onResume took " + timeTaken + "ms");

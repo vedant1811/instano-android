@@ -268,7 +268,10 @@ public class NetworkRequestsManager {
 
         replaceAndCacheObservable(Seller.class,
                 mRegisteredBuyersApiService.getSellers()
-                        .flatMap(Observable::from));
+                        .flatMap((List<Seller> t1) -> {
+                            Log.v(TAG,t1.toString());
+                            return Observable.from(t1);
+                        }));
 
         replaceAndCacheObservable(Categories.class,
                 mRegisteredBuyersApiService.getProductCategories());
