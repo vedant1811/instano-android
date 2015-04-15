@@ -212,15 +212,19 @@ public class NetworkRequestsManager {
                 observable = Observable.just(device);
             }
         }
-        observable.subscribe((device) -> {
+        return observable.doOnNext((device) -> {
+            Log.d(TAG, "authorizeSession.doOnNext");
             replaceAndCacheObservable(Seller.class,
                     mRegisteredBuyersApiService.getSellers()
                             .retryWhen(new SessionErrorsHandlerFunction())
-                            .flatMap(Observable::from));
+                            .flatMap((List<Seller> t1) -> {
+                                Log.d(TAG, "" + t1);
+                                return Observable.from(t1);
+                            }))
+                            .doOnNext((Seller seller) -> Log.d(TAG, "new seller: " + seller));
             mergeCacheAndDistinctObservable(Seller.class,
                     Observable.create(mSellerEchoFunction));
         });
-        return observable;
     }
 
     public <T> Observable<T> getObservable(@NonNull Class<T> modelClass) {
@@ -355,7 +359,7 @@ public class NetworkRequestsManager {
             }
         }).subscribeOn(Schedulers.io())
                 .retryWhen(new ExponentialBackoffFunction())
-                .flatMap(d -> registerDevice());
+                .flatMap((Device d) -> registerDevice());
     }
 
     private Observable<Device> registerDevice() {

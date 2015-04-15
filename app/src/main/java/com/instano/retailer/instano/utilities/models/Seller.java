@@ -9,13 +9,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.instano.retailer.instano.application.ServicesSingleton;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
  * Represents a single immutable Seller
  */
 public class Seller {
-    public  static double INVALID_COORDINATE = -1000; // an invalid coordinate
+    public final static double INVALID_COORDINATE = -1000; // an invalid coordinate
+    public static final String UNDEFINED = "Select Category";
+    private static final String TAG = "Seller";
 
     @JsonProperty("id")
     public int id; // server generated
@@ -27,9 +30,9 @@ public class Seller {
     public String address; // newline separated
     // TODO: convert to Pointer Double that can be null instead of being INVALID_COORDINATE
     @JsonProperty("latitude")
-    public double latitude;
+    public double latitude = INVALID_COORDINATE;
     @JsonProperty("longitude")
-    public double longitude;
+    public double longitude = INVALID_COORDINATE;
     @JsonProperty("phone")
     public String phone; // TODO: maybe make it a list of Strings
     @JsonProperty("status")
@@ -37,16 +40,18 @@ public class Seller {
     public int rating; // rating is out of 50, displayed out of 5.0
     @JsonProperty("email")
     public String email;
-//    @JsonProperty("categories")
-    @JsonIgnore
-    public Categories categories;
+////    @JsonProperty("categories")
+//    @JsonIgnore
+//    public Categories categories;
+    @JsonProperty("brands")
+    public ArrayList<Brand> brands;
 
     public Seller() {
-
     }
 
     // get distance between to two points given as latitude and longitude or null on error
     @Nullable
+    @JsonIgnore
     public String getPrettyDistanceFromLocation() {
         int distanceFromLocation = getDistanceFromLocation();
         if (distanceFromLocation == -1)
@@ -104,6 +109,7 @@ public class Seller {
      * get distance between to two points in 10x meters or -1 if last location is null or
      * seller's coordinates are invalid
      */
+    @JsonIgnore
     public int getDistanceFromLocation() {
 
         Location lastLocation = ServicesSingleton.instance().getUserLocation();
@@ -125,5 +131,36 @@ public class Seller {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double distance = R * c;
         return (int) distance;
+    }
+
+    public boolean containsCategoryAndOneBrand(@NonNull Category categoryToMatch) {
+
+        if (categoryToMatch.name.equals(UNDEFINED))
+            return true;
+
+//        for (Category oneCategory : mCategories)
+//            if (oneCategory.name.equals(categoryToMatch.name)) { // category is matched
+//
+//                // if no brands specified either category, then consider it matched
+//                if (categoryToMatch.brands.isEmpty() || oneCategory.brands.isEmpty())
+//                    return true;
+//
+//                // true if atleast one brand is common
+//                return !Collections.disjoint(oneCategory.brands, categoryToMatch.brands);
+//            }
+        return false;
+    }
+
+    public boolean contains(String category) {
+        if (Category.UNDEFINED.equals(category))
+            return true;
+        if (category != null) {
+            for (Brand brand : brands) {
+                if (category.equals(brand.category)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
