@@ -132,8 +132,8 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
                     );
                     mSellerMarkers.put(newMarker, seller);
                 });
-        double timeTaken = (System.nanoTime() - start)/1000000;
-        Log.d("Timing", "SellersMapFragment.onResume took " + timeTaken + "ms");
+        double timeTaken = (System.nanoTime() - start)/Log.ONE_MILLION;
+        Log.d(Log.TIMER_TAG, "SellersMapFragment.updateMarkers took " + timeTaken + "ms");
     }
 
     /* package private */
