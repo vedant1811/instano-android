@@ -71,8 +71,8 @@ public class QuoteListActivity extends GlobalMenuActivity
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(int id) {
-        QuoteDetailFragment fragment = QuoteDetailFragment.create(id);
+    public void onQuoteSelected(int quote_id) {
+        QuoteDetailFragment fragment = QuoteDetailFragment.create(quote_id);
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
@@ -98,7 +98,7 @@ public class QuoteListActivity extends GlobalMenuActivity
      * @param quotation_id
      */
     @Override
-    public void onQuoteSelected(int quotation_id) {
+    public void onQuotationSelected(int quotation_id) {
         QuotationDetailFragment fragment = QuotationDetailFragment.create(quotation_id);
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by

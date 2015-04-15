@@ -63,7 +63,7 @@ public class QuoteDetailFragment extends Fragment {
         /**
          * Callback for when an item has been selected.
          */
-        public void onQuoteSelected(int quotation_id);
+        public void onQuotationSelected(int quotation_id);
     }
 
     /**
@@ -299,7 +299,7 @@ public class QuoteDetailFragment extends Fragment {
 
                 // TODO:
                 convertView.setOnClickListener(v -> {
-                    mCallbacks.onQuoteSelected(quotation.id);
+                    mCallbacks.onQuotationSelected(quotation.id);
                     if (!quotation.isRead()) {
 //                            NetworkRequestsManager.instance().setQuotationStatusReadRequest(quotation.id);
                         quotation.setStatusRead();

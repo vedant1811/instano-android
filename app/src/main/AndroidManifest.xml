@@ -72,6 +72,7 @@
         </activity>
         <activity
             android:name=".activities.StartingActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="nosensor" >
         </activity>
         <activity

@@ -61,7 +61,7 @@ public class QuoteListFragment extends ListFragment {
         /**
          * Callback for when an item has been selected.
          */
-        public void onItemSelected(int id);
+        public void onQuoteSelected(int id);
     }
 
     /**
@@ -125,7 +125,7 @@ public class QuoteListFragment extends ListFragment {
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         Quote quote = (Quote) getListAdapter().getItem(position);
-        mCallbacks.onItemSelected(quote.id);
+        mCallbacks.onQuoteSelected(quote.id);
         Log.d(TAG, "Quote clicked, id: " + quote.id);
     }
 
