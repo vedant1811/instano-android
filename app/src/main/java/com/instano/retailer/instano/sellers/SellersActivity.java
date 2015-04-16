@@ -84,7 +84,6 @@ public class SellersActivity extends GlobalMenuActivity {
     /* package private */
     void onCategorySelected(Category category) {
         mSelectedCategory = category;
-        mSellersMapFragment.setCategory(category.toString());
         mAdapter.filter(category);
     }
 

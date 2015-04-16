@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +25,11 @@ import com.instano.retailer.instano.utilities.models.Seller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.subjects.BehaviorSubject;
 
 /**
  * TODO: do more
@@ -40,12 +43,14 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
     private SparseArray<Seller> mCompleteSet;
 
     private ArrayList<Seller> mFilteredList;
-    private SparseBooleanArray mCheckedItems;
-    private HashSet<Integer> mSelectedSellerIDs;
+//    private SparseBooleanArray mCheckedItems;
+//    private HashSet<Integer> mSelectedSellerIDs;
     private DistanceAndCategoryFilter mDistanceAndCategoryFilter;
     private Context mContext;
 
     private ItemInteractionListener mItemInteractionListener;
+
+    private BehaviorSubject<List<Seller>> mSellersListSubject;
 
     public SellersArrayAdapter(Activity activity) {
         mContext = activity;
@@ -53,7 +58,8 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         mCompleteSet = new SparseArray<>();
         mFilteredList = new ArrayList<>();
         mDistanceAndCategoryFilter = new DistanceAndCategoryFilter();
-        mCheckedItems = new SparseBooleanArray();
+//        mCheckedItems = new SparseBooleanArray();
+        mSellersListSubject = BehaviorSubject.create();
 
         Log.v(TAG, "NetworkRequestsManager.instance().getObservable(Seller.class)");
         NetworkRequestsManager.instance().getObservable(Seller.class)
@@ -67,27 +73,29 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         this.mItemInteractionListener = listener;
     }
 
-    public ArrayList<Seller> getFilteredSellers() {
-        return mFilteredList;
+    public Observable<List<Seller>> getFilteredSellersObservable() {
+        return mSellersListSubject.asObservable()
+                // send only the latest list of sellers in last 10ms
+                .debounce(10, TimeUnit.MILLISECONDS);
     }
 
-    public HashSet<Integer> getSelectedSellerIds() {
-        if (mSelectedSellerIDs == null)
-            updateSelectedSellers();
-        return mSelectedSellerIDs;
-    }
+//    public HashSet<Integer> getSelectedSellerIds() {
+//        if (mSelectedSellerIDs == null)
+//            updateSelectedSellers();
+//        return mSelectedSellerIDs;
+//    }
 
-    private void updateSelectedSellers() {
-        long start = System.nanoTime();
-        mSelectedSellerIDs = new HashSet<Integer>();
-        for (Seller seller : mFilteredList)
-            if (mCheckedItems.get(seller.hashCode())) {
-                mSelectedSellerIDs.add(seller.hashCode());
-                Log.d("mCheckedItems", String.format("getSelectedSellerIds %s (%d,%b)",seller.name_of_shop,seller.hashCode(),true));
-            }
-        double timeTaken = (System.nanoTime() - start)/1000;
-        Log.v(Log.TIMER_TAG, "updateSelectedSellers took " + timeTaken + "μs");
-    }
+//    private void updateSelectedSellers() {
+//        long start = System.nanoTime();
+//        mSelectedSellerIDs = new HashSet<Integer>();
+//        for (Seller seller : mFilteredList)
+//            if (mCheckedItems.get(seller.hashCode())) {
+//                mSelectedSellerIDs.add(seller.hashCode());
+//                Log.d("mCheckedItems", String.format("getSelectedSellerIds %s (%d,%b)",seller.name_of_shop,seller.hashCode(),true));
+//            }
+//        double timeTaken = (System.nanoTime() - start)/1000;
+//        Log.v(Log.TIMER_TAG, "updateSelectedSellers took " + timeTaken + "μs");
+//    }
 
     @Override
     public int getCount() {
@@ -171,11 +179,10 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
     }
 
     private void newData() {
-        mSelectedSellerIDs = null;
-        if (mFilteredList.size() == 0)
-            notifyDataSetInvalidated();
-        else
-            notifyDataSetChanged();
+//        mSelectedSellerIDs = null;
+        notifyDataSetChanged();
+        Log.d(TAG, "new data");
+        mSellersListSubject.onNext(mFilteredList);
     }
 
     /**

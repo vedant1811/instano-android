@@ -59,7 +59,7 @@ public class ErrorDialogFragment extends DialogFragment implements View.OnClickL
     }
 
     public Observable<OnClickEvent> observeTryAgainClicks() {
-        return mEventSubject;
+        return mEventSubject.asObservable();
     }
 
     public void showProgressBar(boolean show) {
