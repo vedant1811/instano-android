@@ -1,6 +1,8 @@
 package com.instano.retailer.instano.application;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
@@ -12,6 +14,7 @@ import java.util.HashMap;
 
 public class MyApplication extends Application
 {
+    public static final String SHARED_PREFERENCES_FILE = "com.instano.SHARED_PREFERENCES_FILE";
     private HashMap<TrackerName, Tracker> mTrackers;
 
     /**
@@ -49,6 +52,10 @@ public class MyApplication extends Application
 
         }
         return mTrackers.get(trackerId);
+    }
+
+    public SharedPreferences getSharedPreferences() {
+        return getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE);
     }
 
     /**

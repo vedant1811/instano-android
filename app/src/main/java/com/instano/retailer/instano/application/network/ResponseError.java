@@ -96,7 +96,7 @@ public class ResponseError extends Throwable {
         cause.printStackTrace();
 
         if (cause.getKind() == RetrofitError.Kind.UNEXPECTED)
-            throw cause;
+            throw new RuntimeException("Unexpected retrofit error", cause);
 
         Type error = Type.UNKNOWN_ERROR;
         Response networkResponse = cause.getResponse();

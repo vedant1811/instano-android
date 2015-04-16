@@ -16,7 +16,7 @@ public class Category implements Comparable<Category> {
 
     private static final String TAG = "ProductCategories";
     @JsonProperty("category")
-    public  String name;
+    public String name;
     @JsonProperty("brands")
     public ArrayList<String> brands;
 
