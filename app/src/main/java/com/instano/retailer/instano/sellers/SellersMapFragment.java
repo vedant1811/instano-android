@@ -123,7 +123,10 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
                     );
                     mSelectedLocationMarker.showInfoWindow();
                     mSellerMarkers.clear();
-                });
+                }, throwable -> Log.fatalError(new RuntimeException(
+                                "error response in subscribe to getFilteredSellersObservable",
+                                throwable)
+                ));
     }
 
     /**
@@ -138,11 +141,18 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
                         .flatMap(Observable::from) // spilt the single list of sellers into individual seller objects
                                 // unlikely, but hey
                         .filter(seller -> seller.latitude != Seller.INVALID_COORDINATE && seller.longitude != Seller.INVALID_COORDINATE)
-                                // combine with another observable that emits items regularly (every 100ms)
-                                // so that a new seller object is received every 100ms :
-                                // also, first event itself is delayed. makes sure sellers are added after map is cleared
+                        .onBackpressureBlock() // prevent zipWith Observer.interval from throwing MissingBackpressureException s
+                        .doOnError(throwable -> Log.fatalError(new RuntimeException(
+                                "error response in subscribe to getFilteredSellersObservable",
+                                throwable)))
+                        // combine with another observable that emits items regularly (every 100ms)
+                        // so that a new seller object is received every 100ms :
+                        // also, first event itself is delayed. makes sure sellers are added after map is cleared
                         .zipWith(Observable.interval(150, TimeUnit.MILLISECONDS),
                                 (seller, aLong) -> seller)
+                        .doOnError(throwable -> Log.fatalError(new RuntimeException(
+                                "error response in subscribe to getFilteredSellersObservable",
+                                throwable)))
         ) // all this was done on a non-UI thread
                 // now on the UI thread:
                 .subscribe(seller -> {
