@@ -1,6 +1,7 @@
 package com.instano.retailer.instano.buyerDashboard;
 
 import android.app.Fragment;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,13 @@ import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
+import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.models.Quotation;
+import com.instano.retailer.instano.utilities.models.Quote;
+import com.instano.retailer.instano.utilities.models.Seller;
+
+import rx.android.observables.AndroidObservable;
 
 /**
  * A fragment representing a single Quotation detail screen.
@@ -17,20 +25,39 @@ import com.instano.retailer.instano.application.ServicesSingleton;
  * on handsets.
  */
 public class QuotationDetailFragment extends Fragment {
-    
-    ServicesSingleton mServicesSingleton;
+
+    private static final String TAG = "QuotationDetailFragment";
     
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-    public static final String ARG_QUOTATION_ID = "com.instano.retailer.instano.item_id"; // quotation ID
+    public static final String ARG_QUOTATION_ID = "quotation_id"; // quotation ID
+    public static final String ARG_SELLER_NAME = "seller_name";
+    public static final String ARG_SHOP_NAME = "shop_name";
+    public static final String ARG_NAME_OF_PRODUCT = "name_of_product";
+    public static final String ARG_QUOTATION_PRICE = "quotation_price";
+    public static final String ARG_QUERY = "query";
+    public static final String ARG_ADDITIONAL_INFO = "additional_info";
 
     private int mQuotationId;
+    private  String mSellerName;
+    private  String mShopName;
+    private  String mProductName;
+    private  String mPrice;
+    private String mAdditionalInfo;
+    private  String mQuery;
 
-    public static QuotationDetailFragment create(int quotation_id) {
+    public static QuotationDetailFragment create(Quotation quotation, Seller seller, String query) {
+        Log.v(TAG,"quotation id : "+ quotation.id);
         Bundle arguments = new Bundle();
-        arguments.putInt(QuotationDetailFragment.ARG_QUOTATION_ID, quotation_id);
+        arguments.putInt(QuotationDetailFragment.ARG_QUOTATION_ID, quotation.id);
+        arguments.putInt(QuotationDetailFragment.ARG_QUOTATION_PRICE, quotation.price);
+        arguments.putString(QuotationDetailFragment.ARG_NAME_OF_PRODUCT, quotation.nameOfProduct);
+        arguments.putString(QuotationDetailFragment.ARG_ADDITIONAL_INFO, quotation.description);
+        arguments.putString(QuotationDetailFragment.ARG_SELLER_NAME, seller.name_of_seller);
+        arguments.putString(QuotationDetailFragment.ARG_SHOP_NAME, seller.name_of_shop);
+        arguments.putString(QuotationDetailFragment.ARG_QUERY, query);
         QuotationDetailFragment fragment = new QuotationDetailFragment();
         fragment.setArguments(arguments);
         return fragment;
@@ -49,6 +76,12 @@ public class QuotationDetailFragment extends Fragment {
 
         if (getArguments().containsKey(ARG_QUOTATION_ID)) {
             mQuotationId = getArguments().getInt(ARG_QUOTATION_ID);
+            mQuery = getArguments().getString(ARG_QUERY);
+            mSellerName = getArguments().getString(ARG_SELLER_NAME);
+            mShopName = getArguments().getString(ARG_SHOP_NAME);
+            mProductName = getArguments().getString(ARG_NAME_OF_PRODUCT);
+            mAdditionalInfo = getArguments().getString(ARG_ADDITIONAL_INFO);
+            mPrice = ""+getArguments().getInt(ARG_QUOTATION_PRICE);
         }
         
 //        mServicesSingleton = ServicesSingleton.getInstance(getActivity());
@@ -63,8 +96,9 @@ public class QuotationDetailFragment extends Fragment {
 //        Seller seller = DataManager.instance().getSeller(quotation.sellerId);
 //        Quote quote = DataManager.instance().getQuote(quotation.quoteId);
 
+        Log.v(TAG,"onCreateView");
         TextView shopNameTextView = (TextView) rootView.findViewById(R.id.shopNameTextView);
-        TextView sellerNameTextView = (TextView) rootView.findViewById(R.id.shopNameTextView);
+        TextView sellerNameTextView = (TextView) rootView.findViewById(R.id.sellerNameTextView);
         TextView queryTextView = (TextView) rootView.findViewById(R.id.headingTextView);
         TextView modelTextView = (TextView) rootView.findViewById(R.id.modelTextView);
         TextView priceTextView = (TextView) rootView.findViewById(R.id.dealHeadingTextView);
@@ -83,6 +117,15 @@ public class QuotationDetailFragment extends Fragment {
 //            additionalInfoTextView.setText("Additional Info:\n" + quotation.description);
 //        }
 
+        shopNameTextView.setText(mShopName);
+        sellerNameTextView.setText(mSellerName);
+        queryTextView.setText(mQuery);
+        modelTextView.setText(mProductName);
+        priceTextView.setText("Rs. "+mPrice);
+        if(mAdditionalInfo.isEmpty())
+            additionalInfoTextView.setText("No additional details");
+        else
+            additionalInfoTextView.setText(mAdditionalInfo);
         return rootView;
     }
 }

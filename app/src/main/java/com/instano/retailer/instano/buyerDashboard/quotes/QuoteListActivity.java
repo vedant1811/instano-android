@@ -6,6 +6,7 @@ import android.view.View;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.GlobalMenuActivity;
 import com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment;
+import com.instano.retailer.instano.utilities.library.Log;
 
 /**
  * An activity representing a list of Quotes. This activity
@@ -26,6 +27,8 @@ import com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment;
 public class QuoteListActivity extends GlobalMenuActivity
         implements QuoteListFragment.Callbacks,
         QuoteDetailFragment.Callbacks {
+
+    private static final String TAG = "QuoteListActivity";
 
     public void contactUsClicked(View view) {
         contactUs();
@@ -98,8 +101,7 @@ public class QuoteListActivity extends GlobalMenuActivity
      * @param quotation_id
      */
     @Override
-    public void onQuotationSelected(int quotation_id) {
-        QuotationDetailFragment fragment = QuotationDetailFragment.create(quotation_id);
+    public void onQuotationSelected(QuotationDetailFragment fragment) {
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
