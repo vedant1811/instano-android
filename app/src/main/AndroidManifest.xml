@@ -72,7 +72,7 @@
         </activity>
         <activity
             android:name=".activities.SessionActivity"
-            android:screenOrientation="nosensor" >
+            android:launchMode="singleTop">
         </activity>
         <activity
             android:name=".search.SearchTabsActivity"

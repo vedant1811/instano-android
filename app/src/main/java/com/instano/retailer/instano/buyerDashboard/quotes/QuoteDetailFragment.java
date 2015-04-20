@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
+import com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
@@ -63,7 +64,7 @@ public class QuoteDetailFragment extends Fragment {
         /**
          * Callback for when an item has been selected.
          */
-        public void onQuoteSelected(int quotation_id);
+        public void onQuotationSelected(QuotationDetailFragment fragment);
     }
 
     /**
@@ -299,7 +300,8 @@ public class QuoteDetailFragment extends Fragment {
 
                 // TODO:
                 convertView.setOnClickListener(v -> {
-                    mCallbacks.onQuoteSelected(quotation.id);
+                    mCallbacks.onQuotationSelected(QuotationDetailFragment.create(quotation,
+                            (Seller) getChild(groupPosition, 0), mHeadingTextView.getText().toString()));
                     if (!quotation.isRead()) {
 //                            NetworkRequestsManager.instance().setQuotationStatusReadRequest(quotation.id);
                         quotation.setStatusRead();
