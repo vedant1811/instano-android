@@ -66,7 +66,10 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 .subscribe(seller -> {
                     mCompleteSet.put(seller.hashCode(), seller);
                     filter();
-                }, error -> {});
+                }, throwable -> Log.fatalError(new RuntimeException(
+                                "error response in subscribe to getObservable(Seller.class)",
+                                throwable)
+                ));
     }
 
     public void setListener(ItemInteractionListener listener) {
@@ -135,12 +138,9 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         } else
             distanceTextView.setVisibility(View.INVISIBLE);
 
-        callImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mItemInteractionListener != null)
-                    mItemInteractionListener.callButtonClicked(seller.phone);
-            }
+        callImageButton.setOnClickListener(v -> {
+            if (mItemInteractionListener != null)
+                mItemInteractionListener.callButtonClicked(seller.phone);
         });
 
         return view;
