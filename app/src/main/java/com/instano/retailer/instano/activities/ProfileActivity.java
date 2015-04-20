@@ -8,11 +8,10 @@ import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.application.network.ResponseError;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
-
-import rx.android.observables.AndroidObservable;
 
 public class ProfileActivity extends GlobalMenuActivity {
 
@@ -116,18 +115,24 @@ public class ProfileActivity extends GlobalMenuActivity {
         newBuyer.setName(mNameEditText.getText().toString());
         newBuyer.setPhone(mPhoneEditText.getText().toString()) ;
         Log.v(TAG, "Buyer in setup clicked" + newBuyer);
-        AndroidObservable.bindActivity(this,
-                ServicesSingleton.instance().register(newBuyer))
-                .subscribe(createdBuyer -> finishWithResultOk(),
-                        throwable -> {
-                            mSetUpViewFlipper.setDisplayedChild(0); // button
-                            mViewFlipperState = 0; // so as to update it if activity is not resumed
-                            if (ResponseError.Type.PHONE_EXISTS.is(throwable)) {
-                                mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
-                                mPhoneEditText.requestFocus();
-                            } else
-                                showErrorDialog(throwable);
-                        });
+        retryableError(
+                NetworkRequestsManager.instance().registerBuyer(newBuyer),
+                buyer -> {
+                    ServicesSingleton.instance().saveBuyer(buyer);
+                    NetworkRequestsManager.instance().newBuyer(buyer);
+                    finishWithResultOk();
+                },
+                throwable -> {
+                    ServicesSingleton.instance().removeFirstTime();
+                    mSetUpViewFlipper.setDisplayedChild(0); // button
+                    mViewFlipperState = 0; // so as to update it if activity is not resumed
+                    if (ResponseError.Type.PHONE_EXISTS.is(throwable)) {
+                        mPhoneEditText.setError(ALREADY_TAKEN_ERROR);
+                        mPhoneEditText.requestFocus();
+                        return true; // error was handled, no need to show dialog
+                    } else
+                        return false; // another error, show dialog
+                });
     }
 
     private void finishWithResultOk() {

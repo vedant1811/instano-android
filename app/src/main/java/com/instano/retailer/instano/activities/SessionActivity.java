@@ -10,13 +10,13 @@ import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.application.network.ResponseError;
 import com.instano.retailer.instano.utilities.models.Buyer;
 
 import rx.Observable;
-import rx.android.observables.AndroidObservable;
 
-public class StartingActivity extends GlobalMenuActivity {
+public class SessionActivity extends GlobalMenuActivity {
 
     private static final String SEARCH_ICON_HELP = "You can Search for products by clicking the icon in the action bar";
     private static final int SETUP_REQUEST_CODE = 1001;
@@ -53,16 +53,20 @@ public class StartingActivity extends GlobalMenuActivity {
         Observable<Buyer> buyerObservable = instance.signIn();
         if (instance.getBuyer() != null || buyerObservable != null) {
             mText = WELCOME_BACK + SEARCH_ICON_HELP;
-            AndroidObservable.bindActivity(this, buyerObservable)
-                    .subscribe(
-                    buyer -> Toast.makeText(this, String.format("Welcome %s", buyer.getName()), Toast.LENGTH_SHORT).show(),
-                    throwable -> {
-                        if (ResponseError.Type.INCORRECT_API_KEY.is(throwable))
-                            ; // TODO: do something. currently treating as no signed in info present
-                        else
-                            showErrorDialog(throwable);
-                    }
-            );
+            retryableError(buyerObservable,
+                    buyer -> {
+                        Toast.makeText(this, String.format("Welcome %s", buyer.getName()), Toast.LENGTH_SHORT).show();
+                        ServicesSingleton.instance().saveBuyer(buyer);
+                        NetworkRequestsManager.instance().newBuyer(buyer);
+                    },
+                    error -> {
+                        if (ResponseError.Type.INCORRECT_API_KEY.is(error)) {
+                            ServicesSingleton.instance().removeFirstTime();
+                            Toast.makeText(this, "Saved data error. Create a new profile", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+                        return false;
+                    });
         }
         else {
             mText = mTextView.getText();

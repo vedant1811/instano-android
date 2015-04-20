@@ -71,18 +71,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.StartingActivity"
+            android:name=".activities.SessionActivity"
             android:screenOrientation="nosensor" >
         </activity>
         <activity
             android:name=".search.SearchTabsActivity"
             android:label="@string/title_activity_search_tabs"
             android:launchMode="singleTop"
-            android:parentActivityName=".activities.StartingActivity"
+            android:parentActivityName=".activities.SessionActivity"
             android:screenOrientation="nosensor" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.instano.retailer.instano.activities.StartingActivity" />
+                android:value=".activities.SessionActivity" />
         </activity>
         <activity
             android:name=".search.SelectLocationActivity"
@@ -101,10 +101,10 @@
         <activity
             android:name=".buyerDashboard.quotes.QuoteListActivity"
             android:label="@string/title_quote_list"
-            android:parentActivityName=".activities.StartingActivity" >
+            android:parentActivityName=".activities.SessionActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.instano.retailer.instano.activities.StartingActivity" />
+                android:value=".activities.SessionActivity" />
         </activity>
         <activity
             android:name=".deals.DealListActivity"

@@ -52,7 +52,6 @@ public class ServicesSingleton implements
 
     private final MyApplication mApplication;
     private SharedPreferences mSharedPreferences;
-    private boolean mFirstTime;
     private ObjectMapper mDefaultObjectMapper;
 
     /* location variables */
@@ -82,23 +81,19 @@ public class ServicesSingleton implements
         Log.v(TAG, "api key: " + String.valueOf(apiKey));
 
         if (apiKey != null) {
-            Observable<Buyer> buyerObservable = NetworkRequestsManager.instance().signIn(apiKey);
-            buyerObservable.subscribe(
-                    this::saveBuyer,
-                    throwable -> removeFirstTime());
-            return buyerObservable;
+            return NetworkRequestsManager.instance().signIn(apiKey);
         }
         else
             return null; // TODO: improve
     }
 
-    private void removeFirstTime() {
+    public void removeFirstTime() {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
         editor.apply();
     }
 
-    private void saveBuyer(Buyer buyer) {
+    public void saveBuyer(Buyer buyer) {
         mBuyer = buyer;
         Log.d(TAG, "buyer ID: " + mBuyer);
 
@@ -113,19 +108,11 @@ public class ServicesSingleton implements
         editor.apply();
     }
 
-    public Observable<Buyer> register(@NonNull Buyer buyer) {
-        Observable<Buyer> buyerObservable = NetworkRequestsManager.instance().registerBuyer(buyer);
-        buyerObservable.subscribe(
-                this::saveBuyer,
-                throwable -> removeFirstTime());
-        return buyerObservable;
-    }
-
     public boolean isFirstTime() {
 //        if (BuildConfig.DEBUG)
 //            return true;
 //        else
-            return mFirstTime;
+            return mSharedPreferences.getBoolean(KEY_FIRST_TIME, true);
     }
 
     /*package*/ static void init(MyApplication application) {
@@ -141,7 +128,6 @@ public class ServicesSingleton implements
     private ServicesSingleton(MyApplication application) {
         mApplication = application;
         mSharedPreferences = mApplication.getSharedPreferences();
-        mFirstTime = mSharedPreferences.getBoolean(KEY_FIRST_TIME, true);
         mUserAddress = null;
         mLastLocation = null;
         mBuyer = null;
@@ -268,11 +254,6 @@ public class ServicesSingleton implements
 
     public void registerCallback (AddressCallbacks addressCallbacks) {
         mAddressCallbacks = addressCallbacks;
-    }
-
-    public String getInstanoWhatsappId() {
-        // TODO: set based on fetched data online
-        return mSharedPreferences.getString(KEY_WHATSAPP_ID, "919916782444");
     }
 
     public interface InitialDataCallbacks {

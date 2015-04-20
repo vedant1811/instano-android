@@ -121,17 +121,13 @@ public class NetworkRequestsManager {
         SignIn signIn = new SignIn();
         signIn.setApi_key(apiKey);
 
-        Observable<Buyer> buyerObservable = replaceAndCacheObservable(Buyer.class,
-                mRegisteredBuyersApiService.signIn(signIn)
-                        .retryWhen(new SessionErrorsHandlerFunction()));
-        buyerObservable.subscribe(this::newBuyer);
-        return buyerObservable;
+        return mRegisteredBuyersApiService.signIn(signIn)
+                        .retryWhen(new SessionErrorsHandlerFunction());
     }
 
     public Observable<Buyer> registerBuyer(Buyer buyer) {
-        Observable<Buyer> buyerObservable = replaceAndCacheObservable(Buyer.class,
-                mRegisteredBuyersApiService.register(buyer)
-                        .retryWhen(new SessionErrorsHandlerFunction()));
+        Observable<Buyer> buyerObservable = mRegisteredBuyersApiService.register(buyer)
+                        .retryWhen(new SessionErrorsHandlerFunction());
         buyerObservable.subscribe(this::newBuyer);
         return buyerObservable;
     }
@@ -273,7 +269,11 @@ public class NetworkRequestsManager {
         return observable;
     }
 
-    private void newBuyer(@NonNull Buyer buyer) {
+    /**
+     * also called by SessionActivity
+     * @param buyer
+     */
+    public void newBuyer(@NonNull Buyer buyer) {
         Log.d(TAG, "onNewBuyer");
 
         replaceAndCacheObservable(Deal.class,

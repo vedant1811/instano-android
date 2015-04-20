@@ -11,6 +11,7 @@ import android.widget.AdapterView;
  * Created by vedant on 6/1/15.
  */
 public class Spinner extends android.widget.Spinner implements AdapterView.OnItemSelectedListener {
+    private final static String TAG = "CustomSpinner";
 
     OnItemSelectedListener mListener;
 
@@ -23,10 +24,12 @@ public class Spinner extends android.widget.Spinner implements AdapterView.OnIte
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
         if (mListener != null) {
+            Log.d(TAG, "item selected, user=" + mUserActionOnSpinner);
             mListener.onItemSelected(parent, view, position, id, mUserActionOnSpinner);
         }
         // reset variable, so that it will always be true unless tampered with
         mUserActionOnSpinner = true;
+        Log.d(TAG, "setting mUserActionOnSpinner to" + mUserActionOnSpinner);
     }
 
     @Override
@@ -64,6 +67,7 @@ public class Spinner extends android.widget.Spinner implements AdapterView.OnIte
 
     public void programmaticallySetPosition(int pos, boolean animate) {
         mUserActionOnSpinner = false;
+        Log.d(TAG, "setting mUserActionOnSpinner to" + mUserActionOnSpinner);
         setSelection(pos, animate);
     }
 

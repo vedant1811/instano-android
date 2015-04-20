@@ -50,7 +50,8 @@ public class LauncherActivity extends GlobalMenuActivity {
                                 closeIfPossible();
                             });
         } else {
-            noPlayServicesDialog();
+            contactUs("No Play Services", "Google Play Services is needed for the app. " +
+                    "Contact us directly instead.");
             Log.v(TAG, "No valid Google Play Services APK found.");
             return;
         }
@@ -83,7 +84,7 @@ public class LauncherActivity extends GlobalMenuActivity {
         if (!mBackPressed) {
             Intent i = null;
 //        if (ServicesSingleton.getInstance(this).isFirstTime())
-            i = new Intent(this, StartingActivity.class);
+            i = new Intent(this, SessionActivity.class);
             startActivity(i);
         }
         // close this activity

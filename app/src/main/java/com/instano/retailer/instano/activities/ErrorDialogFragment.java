@@ -59,7 +59,8 @@ public class ErrorDialogFragment extends DialogFragment implements View.OnClickL
     }
 
     public Observable<OnClickEvent> observeTryAgainClicks() {
-        return mEventSubject.asObservable();
+        return mEventSubject.asObservable()
+                .onBackpressureDrop();
     }
 
     public void showProgressBar(boolean show) {
@@ -72,10 +73,7 @@ public class ErrorDialogFragment extends DialogFragment implements View.OnClickL
 
     @Override
     public void onClick(View v) {
-        String whatsAppId = ServicesSingleton.instance().getInstanoWhatsappId();
-        String mobileNumber = "+" + whatsAppId;
         switch (v.getId()) {
-
             case R.id.buttonSendMail:
                 Intent mailIntent;
                 mailIntent = new Intent(Intent.ACTION_SEND);

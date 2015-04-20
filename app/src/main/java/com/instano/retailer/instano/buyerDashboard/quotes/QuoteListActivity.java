@@ -28,7 +28,8 @@ public class QuoteListActivity extends GlobalMenuActivity
         QuoteDetailFragment.Callbacks {
 
     public void contactUsClicked(View view) {
-        contactUs();
+        // TODO:
+//        contactUs();
     }
 
     /**

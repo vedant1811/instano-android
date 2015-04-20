@@ -108,6 +108,20 @@ public class SearchFragment extends Fragment
                 android.R.layout.simple_spinner_item);
         mCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        mProductCategorySpinner.setAdapter(mCategoryAdapter);
+        mProductCategorySpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id, boolean userSelected) {
+                if (userSelected)
+                    mUserSelectedCategory = true;
+                ((SearchTabsActivity) getActivity()).onCategorySelected(mCategoryAdapter.getItem(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
         AndroidObservable.bindFragment(this,
             NetworkRequestsManager.instance().getObservable(Categories.class))
                 .subscribe(categories -> {
@@ -115,6 +129,8 @@ public class SearchFragment extends Fragment
                     if (mCategoryAdapter != null) {
                         mCategoryAdapter.clear();
                         mCategoryAdapter.addAll(categories.mCategories);
+                        Log.d("product categories", "mUserSelectedCategory = false");
+                        mUserSelectedCategory = false;
                     }
                 },
                         Throwable::printStackTrace
@@ -135,21 +151,6 @@ public class SearchFragment extends Fragment
             @Override
             public void afterTextChanged(Editable s) {
 
-            }
-        });
-
-        mProductCategorySpinner.setAdapter(mCategoryAdapter);
-        mProductCategorySpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id, boolean userSelected) {
-                if (userSelected)
-                    mUserSelectedCategory = true;
-                ((SearchTabsActivity) getActivity()).onCategorySelected(mCategoryAdapter.getItem(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
