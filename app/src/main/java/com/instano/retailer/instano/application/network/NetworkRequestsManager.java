@@ -208,19 +208,20 @@ public class NetworkRequestsManager {
                 observable = Observable.just(device);
             }
         }
-        return observable.doOnNext((device) -> {
-            Log.d(TAG, "authorizeSession.doOnNext");
-            mSellerEchoFunction = new EchoFunction<>();
-            replaceAndCacheObservable(Seller.class,
-                    mRegisteredBuyersApiService.getSellers()
-                            .retryWhen(new SessionErrorsHandlerFunction())
-                            .flatMap((List<Seller> t1) -> {
-                                Log.d(TAG, "" + t1);
-                                return Observable.from(t1);
-                            }))
-                    .doOnNext((Seller seller) -> Log.d(TAG, "new seller: " + seller));
-            mergeCacheAndDistinctObservable(Seller.class,
-                    Observable.create(mSellerEchoFunction));
+        return observable.doOnNext(
+                (device) -> {
+                        Log.d(TAG, "authorizeSession.doOnNext");
+                        mSellerEchoFunction = new EchoFunction<>();
+                        replaceAndCacheObservable(Seller.class,
+                                mRegisteredBuyersApiService.getSellers()
+                                        .retryWhen(new SessionErrorsHandlerFunction())
+                                        .flatMap((List<Seller> t1) -> {
+                                            Log.d(TAG, "" + t1);
+                                            return Observable.from(t1);
+                                        }))
+                                .doOnNext((Seller seller) -> Log.d(TAG, "new seller: " + seller));
+                        mergeCacheAndDistinctObservable(Seller.class,
+                                Observable.create(mSellerEchoFunction));
         });
     }
 
