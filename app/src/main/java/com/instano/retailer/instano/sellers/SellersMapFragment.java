@@ -141,7 +141,6 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
                         .flatMap(Observable::from) // spilt the single list of sellers into individual seller objects
                                 // unlikely, but hey
                         .filter(seller -> seller.latitude != Seller.INVALID_COORDINATE && seller.longitude != Seller.INVALID_COORDINATE)
-                        .onBackpressureBlock() // prevent zipWith Observer.interval from throwing MissingBackpressureException s
                         .doOnError(throwable -> Log.fatalError(new RuntimeException(
                                 "error response in subscribe to getFilteredSellersObservable",
                                 throwable)))
@@ -150,6 +149,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
                         // also, first event itself is delayed. makes sure sellers are added after map is cleared
                         .zipWith(Observable.interval(150, TimeUnit.MILLISECONDS),
                                 (seller, aLong) -> seller)
+                        .onBackpressureBlock() // prevent zipWith Observer.interval from throwing MissingBackpressureException s
                         .doOnError(throwable -> Log.fatalError(new RuntimeException(
                                 "error response in subscribe to getFilteredSellersObservable",
                                 throwable)))

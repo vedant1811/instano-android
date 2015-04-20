@@ -12,8 +12,8 @@ import com.instano.retailer.instano.activities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.models.Category;
 
 public class SellersActivity extends GlobalMenuActivity {
-    private static final String CURRENT_FRAGMENT = "current fragment";
     private static final String FILTERS_DIALOG_FRAGMENT = "Filters Dialog Fragment";
+    private static final String TAG = "SellersActivity";
     private SellersListFragment mSellersListFragment;
     private SellersMapFragment mSellersMapFragment;
 
@@ -29,11 +29,10 @@ public class SellersActivity extends GlobalMenuActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sellers);
         mSellersListFragment = new SellersListFragment();
-        mSellersMapFragment = new SellersMapFragment();
         getFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, mSellersListFragment, CURRENT_FRAGMENT)
+                .add(R.id.fragment_container, mSellersListFragment)
+                .show(mSellersListFragment)
                 .commit();
-
         mAdapter = new SellersArrayAdapter(this);
     }
 
@@ -52,11 +51,20 @@ public class SellersActivity extends GlobalMenuActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_list:
-                onBackPressed();
+                getFragmentManager().popBackStack();
+                invalidateOptionsMenu();
                 return true;
             case R.id.action_map:
+                if (mSellersMapFragment == null) {
+                    mSellersMapFragment = new SellersMapFragment();
+                    getFragmentManager().beginTransaction()
+                            .add(R.id.fragment_container, mSellersMapFragment)
+                            .hide(mSellersMapFragment)
+                            .commit();
+                }
                 getFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, mSellersMapFragment, CURRENT_FRAGMENT)
+                        .hide(mSellersListFragment)
+                        .show(mSellersMapFragment)
                         .addToBackStack(null)
                         .commit();
                 invalidateOptionsMenu();
@@ -90,15 +98,8 @@ public class SellersActivity extends GlobalMenuActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        Fragment currentFragment = getFragmentManager().findFragmentByTag(CURRENT_FRAGMENT);
-        if (currentFragment.equals(mSellersListFragment)) {
-            menu.findItem(R.id.action_list).setVisible(false);
-            menu.findItem(R.id.action_map).setVisible(true);
-        }
-        else {
-            menu.findItem(R.id.action_list).setVisible(true);
-            menu.findItem(R.id.action_map).setVisible(false);
-        }
+        menu.findItem(R.id.action_list).setVisible(!mSellersListFragment.isVisible());
+        menu.findItem(R.id.action_map).setVisible(mSellersListFragment.isVisible());
         return true;
     }
 
