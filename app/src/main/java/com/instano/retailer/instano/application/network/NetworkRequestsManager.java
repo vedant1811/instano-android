@@ -126,10 +126,8 @@ public class NetworkRequestsManager {
     }
 
     public Observable<Buyer> registerBuyer(Buyer buyer) {
-        Observable<Buyer> buyerObservable = mRegisteredBuyersApiService.register(buyer)
+        return mRegisteredBuyersApiService.register(buyer)
                         .retryWhen(new SessionErrorsHandlerFunction());
-        buyerObservable.subscribe(this::newBuyer);
-        return buyerObservable;
     }
 
     /**
@@ -138,10 +136,9 @@ public class NetworkRequestsManager {
      * @return observable that observers this quote response only
      */
     public Observable<Quote> sendQuote(Quote quote) {
-        Observable<Quote> quoteObservable = mRegisteredBuyersApiService.sendQuote(quote)
-                .retryWhen(new SessionErrorsHandlerFunction());
-        quoteObservable.subscribe(this::newObject);
-        return quoteObservable;
+        return mRegisteredBuyersApiService.sendQuote(quote)
+                .retryWhen(new SessionErrorsHandlerFunction())
+                .doOnNext(this::newObject);
     }
 
     private NetworkRequestsManager(MyApplication application) {
@@ -339,7 +336,7 @@ public class NetworkRequestsManager {
                             Log.d(TAG, "unknown error. failing");
                         }
                         else
-                            Log.d(TAG, "max retires hit");
+                            Log.e(TAG, "max retires hit with known error:", error);
                         return Observable.error(error);
                     });
         }
