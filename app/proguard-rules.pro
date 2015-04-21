@@ -30,6 +30,22 @@ public void set(*);
 public ** get*();
 }
 
+-dontwarn rx.**
+
+-dontwarn okio.**
+
+-dontwarn com.squareup.okhttp.*
+
+-dontwarn retrofit.appengine.UrlFetchClient
+
+-keep class retrofit.** { *; }
+
+-keepclasseswithmembers class * {
+    @retrofit.http.* <methods>;
+}
+
+-dontwarn java.lang.invoke**
+
 -keep class * extends java.util.ListResourceBundle {
     protected Object[][] getContents();
 }
