@@ -141,7 +141,6 @@ public class Seller {
     }
 
     public boolean containsCategory(@NonNull String categoryToMatch) {
-
         if (categoryToMatch.equals(UNDEFINED))
             return true;
 
