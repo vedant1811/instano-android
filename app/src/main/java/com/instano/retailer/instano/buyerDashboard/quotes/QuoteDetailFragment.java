@@ -11,9 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
@@ -53,7 +53,7 @@ public class QuoteDetailFragment extends Fragment {
     private Adapter mAdapter;
     private TextView mSubheadingTextView;
     private TextView mHeadingTextView;
-    private Button mContactUsButton;
+    private ProgressBar mProgressBar;
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -120,7 +120,7 @@ public class QuoteDetailFragment extends Fragment {
         ExpandableListView expandableListView = (ExpandableListView) rootView.findViewById(R.id.expandableListView);
         mHeadingTextView = (TextView) rootView.findViewById(R.id.headingTextView);
         mSubheadingTextView = (TextView) rootView.findViewById(R.id.subheadingTextView);
-        mContactUsButton = (Button) rootView.findViewById(R.id.contactUsButton);
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.quoteDetailProgressBar);
 
         mAdapter = new Adapter(getActivity());
         expandableListView.setAdapter(mAdapter);
@@ -217,12 +217,12 @@ public class QuoteDetailFragment extends Fragment {
             String subheading;
             if (numOfSellers > 0) {
                 subheading = String.format("sent to %d retailers", numOfSellers);
-                mContactUsButton.setVisibility(View.GONE);
+                mProgressBar.setVisibility(View.GONE);
             }
             else {
                 subheading = "We have received your query and will forward to retailers." +
-                        " You will see those sellers below soon.\nOr you can";
-                mContactUsButton.setVisibility(View.VISIBLE);
+                        " You will see those sellers below soon.";
+                mProgressBar.setVisibility(View.VISIBLE);
             }
 
             mSubheadingTextView.setText(subheading);

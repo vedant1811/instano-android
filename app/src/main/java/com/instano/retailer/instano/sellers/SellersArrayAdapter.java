@@ -276,8 +276,13 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            mFilteredList = (ArrayList<Seller>) results.values;
-            Log.v(TAG,"publishResults size :"+ mFilteredList.size());
+            if ((ArrayList<Seller>) results.values != null) {
+                mFilteredList = (ArrayList<Seller>) results.values;
+                Log.v(TAG, "publishResults size :" + mFilteredList.size());
+            }
+            else
+                mFilteredList.clear();
+
             newData();
         }
     }

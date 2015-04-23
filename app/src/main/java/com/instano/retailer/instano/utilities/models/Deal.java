@@ -2,6 +2,8 @@ package com.instano.retailer.instano.utilities.models;
 
 import com.instano.retailer.instano.application.ServicesSingleton;
 
+import java.util.Date;
+
 /**
  * Created by vedant on 7/1/15.
  */
@@ -10,7 +12,7 @@ public class Deal {
     public String heading;
     public String subheading;
     public long updatedAt;
-    public long expiresAt;
+    public Date expiresAt;
     public int sellerId;
 
     public String expiresAt() {
