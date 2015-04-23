@@ -141,6 +141,8 @@ public class ResponseError extends Throwable {
                         else
                             error = Type.OTHER_GCM_ERROR;
                     }
+                    else if(responseString.contains("has already been taken"))
+                        error = Type.PHONE_EXISTS;
                     else
                         error = Type.SOME_OTHER_422;
                     break;
