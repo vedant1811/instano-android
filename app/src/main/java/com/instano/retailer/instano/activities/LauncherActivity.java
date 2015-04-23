@@ -91,7 +91,6 @@ public class LauncherActivity extends GlobalMenuActivity {
         finish();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return false;

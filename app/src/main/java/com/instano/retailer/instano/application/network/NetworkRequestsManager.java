@@ -306,16 +306,14 @@ public class NetworkRequestsManager {
     private class SessionErrorsHandlerFunction implements Func1<Observable<? extends Throwable>, Observable<?>> {
         private static final String TAG = "SessionErrorHandlerFunction";
         private final int maxRetries;
-        private final int retryDelay;
         private int retryCount;
 
         public SessionErrorsHandlerFunction() {
-            this(2, 3);
+            this(2);
         }
 
-        public SessionErrorsHandlerFunction(final int maxRetries, final int retryDelay) {
+        public SessionErrorsHandlerFunction(final int maxRetries) {
             this.maxRetries = maxRetries;
-            this.retryDelay = retryDelay;
             this.retryCount = 0;
         }
 

@@ -22,27 +22,34 @@ public class Seller {
 
     @JsonProperty("id")
     public int id; // server generated
+
     @JsonProperty("name_of_shop")
     public String name_of_shop;
+
     @JsonProperty("name_of_seller")
     public String name_of_seller;
+
     @JsonProperty("address")
     public String address; // newline separated
+
     // TODO: convert to Pointer Double that can be null instead of being INVALID_COORDINATE
     @JsonProperty("latitude")
     public double latitude = INVALID_COORDINATE;
+
     @JsonProperty("longitude")
     public double longitude = INVALID_COORDINATE;
+
     @JsonProperty("phone")
     public String phone; // TODO: maybe make it a list of Strings
+
     @JsonProperty("status")
     public String status;
+
     public int rating; // rating is out of 50, displayed out of 5.0
+
     @JsonProperty("email")
     public String email;
-////    @JsonProperty("categories")
-//    @JsonIgnore
-//    public Categories categories;
+
     @JsonProperty("brands")
     public ArrayList<Brand> brands;
 
