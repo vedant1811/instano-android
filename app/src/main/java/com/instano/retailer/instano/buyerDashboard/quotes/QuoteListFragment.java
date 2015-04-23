@@ -35,6 +35,7 @@ public class QuoteListFragment extends ListFragment {
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     private static final String TAG = "QuotesListFragment";
+    private boolean mShown = false;
 
     /**
      * The fragment's current callback object, which is notified of list item
@@ -82,8 +83,16 @@ public class QuoteListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
 
         QuotesAdapter adapter = new QuotesAdapter(getActivity());
+        mShown = false;
         AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Quote.class))
-                .subscribe(adapter::add);
+                .subscribe((t) -> {
+                    mShown = true;
+                    setListShown(mShown);
+                    adapter.add(t);
+                    adapter.sort((lhs, rhs) -> lhs.compareTo(rhs));
+                }, throwable -> Log.fatalError(new RuntimeException(
+                        "error response in subscribe to getObservable(Quote.class)",
+                        throwable)));
         setListAdapter(adapter);
     }
 
@@ -95,6 +104,7 @@ public class QuoteListFragment extends ListFragment {
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
+        setListShown(mShown);
         setEmptyText("Your searches appear here. Seems you have not searched anything yet" +
                 "\n\nuse the menu (top-right) to contact us if this is an error");
     }

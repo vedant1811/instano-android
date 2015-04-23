@@ -24548,7 +24548,7 @@ com.instano.retailer.instano.application.ServicesSingleton -> com.instano.retail
     void onConnectionFailed(com.google.android.gms.common.ConnectionResult) -> a
     void registerCallback(com.instano.retailer.instano.application.ServicesSingleton$InitialDataCallbacks) -> a
     void registerCallback(com.instano.retailer.instano.application.ServicesSingleton$AddressCallbacks) -> a
-    java.lang.String getPrettyTimeElapsed(long) -> a
+    java.lang.String getPrettyTimeElapsed(java.util.Date) -> a
     java.lang.String readableAddress(android.location.Address) -> a
     int dpToPixels(int) -> a
     com.fasterxml.jackson.databind.ObjectMapper getDefaultObjectMapper() -> i
@@ -24577,7 +24577,7 @@ com.instano.retailer.instano.application.network.ExponentialBackoffFunction -> c
     int retryCount -> c
     rx.Observable call(rx.Observable) -> a
     java.lang.Object call(java.lang.Object) -> a
-    rx.Observable lambda$call$32(java.lang.Throwable) -> a
+    rx.Observable lambda$call$35(java.lang.Throwable) -> a
     rx.Observable access$lambda$0(com.instano.retailer.instano.application.network.ExponentialBackoffFunction,java.lang.Throwable) -> a
 com.instano.retailer.instano.application.network.ExponentialBackoffFunction$$Lambda$1 -> com.instano.retailer.instano.application.network.c:
     com.instano.retailer.instano.application.network.ExponentialBackoffFunction arg$1 -> a
@@ -24613,26 +24613,25 @@ com.instano.retailer.instano.application.network.NetworkRequestsManager -> com.i
     void storeSessionId(java.lang.String) -> b
     void storeGcmId(java.lang.String) -> c
     int getAppVersion() -> h
-    void lambda$registerDevice$31(com.instano.retailer.instano.utilities.models.Device) -> a
-    rx.Observable lambda$registerDevice$30(java.lang.Throwable) -> a
-    rx.Observable lambda$registerAfterFetchingGcm$29(com.instano.retailer.instano.utilities.models.Device) -> b
-    void lambda$registerAfterFetchingGcm$28(rx.Subscriber) -> a
-    void lambda$authorizeSession$26(com.instano.retailer.instano.utilities.models.Device) -> c
-    void lambda$null$25(com.instano.retailer.instano.utilities.models.Seller) -> c
-    rx.Observable lambda$null$24(java.util.List) -> b
-    void lambda$new$23(retrofit.RequestInterceptor$RequestFacade) -> a
+    void lambda$registerDevice$34(com.instano.retailer.instano.utilities.models.Device) -> a
+    rx.Observable lambda$registerDevice$33(java.lang.Throwable) -> a
+    rx.Observable lambda$registerAfterFetchingGcm$32(com.instano.retailer.instano.utilities.models.Device) -> b
+    void lambda$registerAfterFetchingGcm$31(rx.Subscriber) -> a
+    void lambda$authorizeSession$29(com.instano.retailer.instano.utilities.models.Device) -> c
+    void lambda$null$28(com.instano.retailer.instano.utilities.models.Seller) -> c
+    rx.Observable lambda$null$27(java.util.List) -> b
+    void lambda$new$26(retrofit.RequestInterceptor$RequestFacade) -> a
     rx.Observable access$000(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
     rx.Observable access$100(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> b
-    void access$lambda$0(com.instano.retailer.instano.application.network.NetworkRequestsManager,com.instano.retailer.instano.utilities.models.Buyer) -> a
-    void access$lambda$1(com.instano.retailer.instano.application.network.NetworkRequestsManager,com.instano.retailer.instano.utilities.models.Quote) -> a
-    void access$lambda$2(com.instano.retailer.instano.application.network.NetworkRequestsManager,retrofit.RequestInterceptor$RequestFacade) -> a
-    void access$lambda$3(com.instano.retailer.instano.application.network.NetworkRequestsManager,com.instano.retailer.instano.utilities.models.Device) -> a
-    void access$lambda$4(com.instano.retailer.instano.application.network.NetworkRequestsManager,rx.Subscriber) -> a
-    rx.Observable access$lambda$5(com.instano.retailer.instano.application.network.NetworkRequestsManager,com.instano.retailer.instano.utilities.models.Device) -> b
-    rx.Observable access$lambda$6(com.instano.retailer.instano.application.network.NetworkRequestsManager,java.lang.Throwable) -> a
-    void access$lambda$7(com.instano.retailer.instano.application.network.NetworkRequestsManager,com.instano.retailer.instano.utilities.models.Device) -> c
-    rx.Observable access$lambda$8(java.util.List) -> a
-    void access$lambda$9(com.instano.retailer.instano.utilities.models.Seller) -> b
+    void access$lambda$0(com.instano.retailer.instano.application.network.NetworkRequestsManager,com.instano.retailer.instano.utilities.models.Quote) -> a
+    void access$lambda$1(com.instano.retailer.instano.application.network.NetworkRequestsManager,retrofit.RequestInterceptor$RequestFacade) -> a
+    void access$lambda$2(com.instano.retailer.instano.application.network.NetworkRequestsManager,com.instano.retailer.instano.utilities.models.Device) -> a
+    void access$lambda$3(com.instano.retailer.instano.application.network.NetworkRequestsManager,rx.Subscriber) -> a
+    rx.Observable access$lambda$4(com.instano.retailer.instano.application.network.NetworkRequestsManager,com.instano.retailer.instano.utilities.models.Device) -> b
+    rx.Observable access$lambda$5(com.instano.retailer.instano.application.network.NetworkRequestsManager,java.lang.Throwable) -> a
+    void access$lambda$6(com.instano.retailer.instano.application.network.NetworkRequestsManager,com.instano.retailer.instano.utilities.models.Device) -> c
+    rx.Observable access$lambda$7(java.util.List) -> a
+    void access$lambda$8(com.instano.retailer.instano.utilities.models.Seller) -> b
 com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$1 -> com.instano.retailer.instano.application.network.d:
     com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
     void call(java.lang.Object) -> call
@@ -24643,48 +24642,44 @@ com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$
     rx.functions.Func1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
 com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$11 -> com.instano.retailer.instano.application.network.f:
     com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
-    void call(java.lang.Object) -> call
-    rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$12 -> com.instano.retailer.instano.application.network.g:
-    com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$12 instance -> a
     java.lang.Object call(java.lang.Object) -> a
-    rx.functions.Func1 lambdaFactory$() -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$13 -> com.instano.retailer.instano.application.network.h:
-    com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$13 instance -> a
-    void call(java.lang.Object) -> call
-    rx.functions.Action1 lambdaFactory$() -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$2 -> com.instano.retailer.instano.application.network.i:
+    rx.functions.Func1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$12 -> com.instano.retailer.instano.application.network.g:
     com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$3 -> com.instano.retailer.instano.application.network.j:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$13 -> com.instano.retailer.instano.application.network.h:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$13 instance -> a
+    java.lang.Object call(java.lang.Object) -> a
+    rx.functions.Func1 lambdaFactory$() -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$14 -> com.instano.retailer.instano.application.network.i:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$14 instance -> a
+    void call(java.lang.Object) -> call
+    rx.functions.Action1 lambdaFactory$() -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$4 -> com.instano.retailer.instano.application.network.j:
     com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
     void intercept(retrofit.RequestInterceptor$RequestFacade) -> intercept
     retrofit.RequestInterceptor lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$4 -> com.instano.retailer.instano.application.network.k:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$5 -> com.instano.retailer.instano.application.network.k:
     com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$5 -> com.instano.retailer.instano.application.network.l:
-    com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$5 instance -> a
-    java.lang.Object call(java.lang.Object) -> a
-    rx.functions.Func1 lambdaFactory$() -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$6 -> com.instano.retailer.instano.application.network.m:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$6 -> com.instano.retailer.instano.application.network.l:
     com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$6 instance -> a
     java.lang.Object call(java.lang.Object) -> a
     rx.functions.Func1 lambdaFactory$() -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$7 -> com.instano.retailer.instano.application.network.n:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$7 -> com.instano.retailer.instano.application.network.m:
     com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$7 instance -> a
     java.lang.Object call(java.lang.Object) -> a
     rx.functions.Func1 lambdaFactory$() -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$8 -> com.instano.retailer.instano.application.network.o:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$8 -> com.instano.retailer.instano.application.network.n:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$8 instance -> a
+    java.lang.Object call(java.lang.Object) -> a
+    rx.functions.Func1 lambdaFactory$() -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$9 -> com.instano.retailer.instano.application.network.o:
     com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
     void call(java.lang.Object) -> call
     rx.Observable$OnSubscribe lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$9 -> com.instano.retailer.instano.application.network.p:
-    com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
-    java.lang.Object call(java.lang.Object) -> a
-    rx.functions.Func1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
 com.instano.retailer.instano.application.network.NetworkRequestsManager$RegisteredBuyersApiService -> com.instano.retailer.instano.application.network.NetworkRequestsManager$RegisteredBuyersApiService:
     rx.Observable register(com.instano.retailer.instano.utilities.models.Buyer) -> register
     rx.Observable signIn(com.instano.retailer.instano.utilities.models.SignIn) -> signIn
@@ -24695,26 +24690,25 @@ com.instano.retailer.instano.application.network.NetworkRequestsManager$Register
     rx.Observable getQuotes() -> getQuotes
     rx.Observable getQuotations() -> getQuotations
     rx.Observable getProductCategories() -> getProductCategories
-com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction -> com.instano.retailer.instano.application.network.q:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction -> com.instano.retailer.instano.application.network.p:
     int maxRetries -> b
-    int retryDelay -> c
-    int retryCount -> d
+    int retryCount -> c
     com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
     rx.Observable call(rx.Observable) -> a
     java.lang.Object call(java.lang.Object) -> a
-    rx.Observable lambda$call$27(java.lang.Throwable) -> a
+    rx.Observable lambda$call$30(java.lang.Throwable) -> a
     rx.Observable access$lambda$0(com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction,java.lang.Throwable) -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction$$Lambda$1 -> com.instano.retailer.instano.application.network.r:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction$$Lambda$1 -> com.instano.retailer.instano.application.network.q:
     com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction arg$1 -> a
     java.lang.Object call(java.lang.Object) -> a
     rx.functions.Func1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction) -> a
 com.instano.retailer.instano.application.network.NetworkRequestsManager$UnregisteredBuyersApiService -> com.instano.retailer.instano.application.network.NetworkRequestsManager$UnregisteredBuyersApiService:
     rx.Observable registerDevice(com.instano.retailer.instano.utilities.models.Device) -> registerDevice
-com.instano.retailer.instano.application.network.ResponseError -> com.instano.retailer.instano.application.network.s:
+com.instano.retailer.instano.application.network.ResponseError -> com.instano.retailer.instano.application.network.r:
     java.lang.String TAG -> a
     com.instano.retailer.instano.application.network.ResponseError$Type mType -> b
     com.instano.retailer.instano.application.network.ResponseError$Type getErrorType() -> a
-com.instano.retailer.instano.application.network.ResponseError$Type -> com.instano.retailer.instano.application.network.t:
+com.instano.retailer.instano.application.network.ResponseError$Type -> com.instano.retailer.instano.application.network.s:
     com.instano.retailer.instano.application.network.ResponseError$Type UNKNOWN_ERROR -> a
     com.instano.retailer.instano.application.network.ResponseError$Type NO_GCM_ID -> b
     com.instano.retailer.instano.application.network.ResponseError$Type INVALID_GCM_ID -> c
@@ -24741,7 +24735,7 @@ com.instano.retailer.instano.application.network.ResponseError$Type -> com.insta
     boolean shouldRefreshGcmId() -> a
     boolean shouldRefreshSessionId() -> b
     boolean isFatal() -> c
-com.instano.retailer.instano.application.network.ResponseErrorHandler -> com.instano.retailer.instano.application.network.u:
+com.instano.retailer.instano.application.network.ResponseErrorHandler -> com.instano.retailer.instano.application.network.t:
     java.lang.Throwable handleError(retrofit.RetrofitError) -> handleError
 com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment -> com.instano.retailer.instano.buyerDashboard.a:
     int mQuotationId -> a
@@ -24761,7 +24755,7 @@ com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment -> com.in
     com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment$Adapter mAdapter -> d
     android.widget.TextView mSubheadingTextView -> e
     android.widget.TextView mHeadingTextView -> f
-    android.widget.Button mContactUsButton -> g
+    android.widget.ProgressBar mProgressBar -> g
     com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment$Callbacks sDummyCallbacks -> h
     com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment create(int) -> a
     void onAttach(android.app.Activity) -> onAttach
@@ -24772,7 +24766,7 @@ com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment -> com.in
     java.lang.Boolean lambda$onCreateView$14(com.instano.retailer.instano.utilities.models.Quote) -> b
     void lambda$static$13(com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment) -> b
     com.instano.retailer.instano.utilities.models.Quote access$000(com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment) -> a
-    android.widget.Button access$100(com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment) -> b
+    android.widget.ProgressBar access$100(com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment) -> b
     android.widget.TextView access$200(com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment) -> c
     android.widget.TextView access$300(com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment) -> d
     com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment$Callbacks access$400(com.instano.retailer.instano.buyerDashboard.quotes.QuoteDetailFragment) -> e
@@ -24864,9 +24858,10 @@ com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity -> com.inst
     void onQuoteSelected(int) -> a
     void onQuotationSelected(com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment) -> a
 com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment -> com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment:
-    com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$Callbacks mCallbacks -> a
-    int mActivatedPosition -> b
-    com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$Callbacks sDummyCallbacks -> c
+    boolean mShown -> a
+    com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$Callbacks mCallbacks -> b
+    int mActivatedPosition -> c
+    com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$Callbacks sDummyCallbacks -> d
     void onCreate(android.os.Bundle) -> onCreate
     void onViewCreated(android.view.View,android.os.Bundle) -> onViewCreated
     void onAttach(android.app.Activity) -> onAttach
@@ -24875,19 +24870,34 @@ com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment -> com.inst
     void onSaveInstanceState(android.os.Bundle) -> onSaveInstanceState
     void setActivateOnItemClick(boolean) -> a
     void setActivatedPosition(int) -> b
+    void lambda$onCreate$25(java.lang.Throwable) -> b
+    void lambda$onCreate$24(com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$QuotesAdapter,com.instano.retailer.instano.utilities.models.Quote) -> a
+    int lambda$null$23(com.instano.retailer.instano.utilities.models.Quote,com.instano.retailer.instano.utilities.models.Quote) -> b
     void lambda$static$22(int) -> c
-    void access$lambda$0(int) -> a
+    void access$lambda$0(com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment,com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$QuotesAdapter,com.instano.retailer.instano.utilities.models.Quote) -> a
+    void access$lambda$1(java.lang.Throwable) -> a
+    int access$lambda$2(com.instano.retailer.instano.utilities.models.Quote,com.instano.retailer.instano.utilities.models.Quote) -> a
+    void access$lambda$3(int) -> a
 com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$$Lambda$1 -> com.instano.retailer.instano.buyerDashboard.quotes.m:
-    com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$QuotesAdapter arg$1 -> a
+    com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment arg$1 -> a
+    com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$QuotesAdapter arg$2 -> b
     void call(java.lang.Object) -> call
-    rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$QuotesAdapter) -> a
+    rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment,com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$QuotesAdapter) -> a
 com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$$Lambda$2 -> com.instano.retailer.instano.buyerDashboard.quotes.n:
     com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$$Lambda$2 instance -> a
+    void call(java.lang.Object) -> call
+    rx.functions.Action1 lambdaFactory$() -> a
+com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$$Lambda$3 -> com.instano.retailer.instano.buyerDashboard.quotes.o:
+    com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$$Lambda$3 instance -> a
+    int compare(java.lang.Object,java.lang.Object) -> compare
+    java.util.Comparator lambdaFactory$() -> a
+com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$$Lambda$4 -> com.instano.retailer.instano.buyerDashboard.quotes.p:
+    com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$$Lambda$4 instance -> a
     void onQuoteSelected(int) -> a
     com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$Callbacks lambdaFactory$() -> a
-com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$Callbacks -> com.instano.retailer.instano.buyerDashboard.quotes.o:
+com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$Callbacks -> com.instano.retailer.instano.buyerDashboard.quotes.q:
     void onQuoteSelected(int) -> a
-com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$QuotesAdapter -> com.instano.retailer.instano.buyerDashboard.quotes.p:
+com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment$QuotesAdapter -> com.instano.retailer.instano.buyerDashboard.quotes.r:
     android.view.LayoutInflater mInflater -> b
     com.instano.retailer.instano.buyerDashboard.quotes.QuoteListFragment this$0 -> a
     android.view.View getView(int,android.view.View,android.view.ViewGroup) -> getView
@@ -24992,7 +25002,7 @@ com.instano.retailer.instano.search.SearchFragment -> com.instano.retailer.insta
     void resolvableConnectionResultError(com.google.android.gms.common.ConnectionResult) -> a
     void showErrorDialog(int) -> a
     void onActivityResult(int,int,android.content.Intent) -> onActivityResult
-    void lambda$onCreateView$50(com.instano.retailer.instano.utilities.models.Categories) -> a
+    void lambda$onCreateView$53(com.instano.retailer.instano.utilities.models.Categories) -> a
     boolean access$002(com.instano.retailer.instano.search.SearchFragment,boolean) -> a
     android.widget.ArrayAdapter access$100(com.instano.retailer.instano.search.SearchFragment) -> a
     boolean access$000(com.instano.retailer.instano.search.SearchFragment) -> b
@@ -25034,9 +25044,9 @@ com.instano.retailer.instano.search.SearchTabsActivity -> com.instano.retailer.i
     void onCategorySelected(com.instano.retailer.instano.utilities.models.Category) -> a
     java.lang.String getSearchString() -> i
     com.instano.retailer.instano.utilities.models.Category getSelectedCategory() -> j
-    void lambda$sendQuote$49(java.lang.Throwable) -> b
-    void lambda$sendQuote$48(com.instano.retailer.instano.utilities.models.Quote) -> a
-    void lambda$onActivityResult$47(com.google.android.gms.maps.model.LatLng,android.location.Address) -> b
+    void lambda$sendQuote$52(java.lang.Throwable) -> b
+    void lambda$sendQuote$51(com.instano.retailer.instano.utilities.models.Quote) -> a
+    void lambda$onActivityResult$50(com.google.android.gms.maps.model.LatLng,android.location.Address) -> b
     com.instano.retailer.instano.utilities.models.Category access$000(com.instano.retailer.instano.search.SearchTabsActivity) -> a
     com.instano.retailer.instano.search.SearchFragment access$100(com.instano.retailer.instano.search.SearchTabsActivity) -> b
     com.instano.retailer.instano.search.SearchConstraintsFragment access$200(com.instano.retailer.instano.search.SearchTabsActivity) -> c
@@ -25089,8 +25099,8 @@ com.instano.retailer.instano.sellers.FiltersDialogFragment -> com.instano.retail
     com.instano.retailer.instano.utilities.library.Spinner mProductCategorySpinner -> b
     com.instano.retailer.instano.sellers.FiltersDialogFragment newInstance(com.instano.retailer.instano.utilities.models.Category) -> a
     android.view.View onCreateView(android.view.LayoutInflater,android.view.ViewGroup,android.os.Bundle) -> onCreateView
-    void lambda$onCreateView$34(java.lang.Throwable) -> b
-    void lambda$onCreateView$33(com.instano.retailer.instano.utilities.models.Categories) -> a
+    void lambda$onCreateView$37(java.lang.Throwable) -> b
+    void lambda$onCreateView$36(com.instano.retailer.instano.utilities.models.Categories) -> a
     android.widget.ArrayAdapter access$000(com.instano.retailer.instano.sellers.FiltersDialogFragment) -> a
     void access$lambda$0(com.instano.retailer.instano.sellers.FiltersDialogFragment,com.instano.retailer.instano.utilities.models.Categories) -> a
     void access$lambda$1(java.lang.Throwable) -> a
@@ -25137,9 +25147,9 @@ com.instano.retailer.instano.sellers.SellersArrayAdapter -> com.instano.retailer
     void newData() -> c
     android.widget.Filter getFilter() -> getFilter
     java.lang.Object getItem(int) -> getItem
-    void lambda$getView$37(com.instano.retailer.instano.utilities.models.Seller,android.view.View) -> a
-    void lambda$new$36(java.lang.Throwable) -> b
-    void lambda$new$35(com.instano.retailer.instano.utilities.models.Seller) -> a
+    void lambda$getView$40(com.instano.retailer.instano.utilities.models.Seller,android.view.View) -> a
+    void lambda$new$39(java.lang.Throwable) -> b
+    void lambda$new$38(com.instano.retailer.instano.utilities.models.Seller) -> a
     android.util.SparseArray access$300(com.instano.retailer.instano.sellers.SellersArrayAdapter) -> a
     java.util.ArrayList access$402(com.instano.retailer.instano.sellers.SellersArrayAdapter,java.util.ArrayList) -> a
     java.util.ArrayList access$400(com.instano.retailer.instano.sellers.SellersArrayAdapter) -> b
@@ -25176,6 +25186,7 @@ com.instano.retailer.instano.sellers.SellersListFragment -> com.instano.retailer
     android.widget.ListView mListView -> a
     void onCreate(android.os.Bundle) -> onCreate
     android.view.View onCreateView(android.view.LayoutInflater,android.view.ViewGroup,android.os.Bundle) -> onCreateView
+    void setEmptyText(java.lang.CharSequence) -> setEmptyText
     void callButtonClicked(java.lang.String) -> a
 com.instano.retailer.instano.sellers.SellersMapFragment -> com.instano.retailer.instano.sellers.k:
     com.google.android.gms.maps.model.BitmapDescriptor BLUE_MARKER -> a
@@ -25208,15 +25219,15 @@ com.instano.retailer.instano.sellers.SellersMapFragment -> com.instano.retailer.
     void onDestroy() -> onDestroy
     void onLowMemory() -> onLowMemory
     void onSaveInstanceState(android.os.Bundle) -> onSaveInstanceState
-    void lambda$onCreateView$46(android.view.View) -> a
-    void lambda$resubscribe$45(java.lang.Throwable) -> e
-    void lambda$resubscribe$44(com.instano.retailer.instano.utilities.models.Seller) -> b
-    void lambda$resubscribe$43(java.lang.Throwable) -> f
-    com.instano.retailer.instano.utilities.models.Seller lambda$resubscribe$42(com.instano.retailer.instano.utilities.models.Seller,java.lang.Long) -> b
-    void lambda$resubscribe$41(java.lang.Throwable) -> g
-    java.lang.Boolean lambda$resubscribe$40(com.instano.retailer.instano.utilities.models.Seller) -> c
-    void lambda$setUpMap$39(java.lang.Throwable) -> h
-    void lambda$setUpMap$38(java.util.List) -> a
+    void lambda$onCreateView$49(android.view.View) -> a
+    void lambda$resubscribe$48(java.lang.Throwable) -> e
+    void lambda$resubscribe$47(com.instano.retailer.instano.utilities.models.Seller) -> b
+    void lambda$resubscribe$46(java.lang.Throwable) -> f
+    com.instano.retailer.instano.utilities.models.Seller lambda$resubscribe$45(com.instano.retailer.instano.utilities.models.Seller,java.lang.Long) -> b
+    void lambda$resubscribe$44(java.lang.Throwable) -> g
+    java.lang.Boolean lambda$resubscribe$43(com.instano.retailer.instano.utilities.models.Seller) -> c
+    void lambda$setUpMap$42(java.lang.Throwable) -> h
+    void lambda$setUpMap$41(java.util.List) -> a
     void access$lambda$0(com.instano.retailer.instano.sellers.SellersMapFragment,java.util.List) -> a
     void access$lambda$1(java.lang.Throwable) -> a
     java.lang.Boolean access$lambda$2(com.instano.retailer.instano.utilities.models.Seller) -> a
@@ -25432,7 +25443,7 @@ com.instano.retailer.instano.utilities.models.Deal -> com.instano.retailer.insta
     int id -> a
     java.lang.String heading -> b
     java.lang.String subheading -> c
-    long expiresAt -> d
+    java.util.Date expiresAt -> d
     java.lang.String expiresAt() -> a
     boolean equals(java.lang.Object) -> equals
     int hashCode() -> hashCode
@@ -25449,7 +25460,7 @@ com.instano.retailer.instano.utilities.models.Quotation -> com.instano.retailer.
     java.lang.String description -> d
     int sellerId -> e
     int quoteId -> f
-    long updatedAt -> g
+    java.util.Date updatedAt -> g
     java.lang.String mStatus -> h
     boolean isRead() -> a
     void setStatusRead() -> b
@@ -25461,14 +25472,16 @@ com.instano.retailer.instano.utilities.models.Quote -> com.instano.retailer.inst
     java.lang.String searchString -> b
     java.lang.String priceRange -> c
     java.lang.String brands -> d
-    long updatedAt -> e
-    java.util.HashSet sellerIds -> f
-    java.lang.String address -> g
-    double latitude -> h
-    double longitude -> i
+    java.util.Date updatedAt -> i
+    java.util.HashSet sellerIds -> e
+    java.lang.String address -> f
+    double latitude -> g
+    double longitude -> h
     boolean equals(java.lang.Object) -> equals
     int hashCode() -> hashCode
     java.lang.String getPrettyTimeElapsed() -> a
+    int compareTo(com.instano.retailer.instano.utilities.models.Quote) -> a
+    int compareTo(java.lang.Object) -> compareTo
 com.instano.retailer.instano.utilities.models.Seller -> com.instano.retailer.instano.utilities.a.j:
     int id -> a
     java.lang.String name_of_shop -> b

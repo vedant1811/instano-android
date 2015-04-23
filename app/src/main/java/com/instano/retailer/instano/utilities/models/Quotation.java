@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.instano.retailer.instano.application.ServicesSingleton;
 
+import java.util.Date;
+
 /**
  * Represents a single Quotation uniquely identifiable by its @field id
  */
@@ -27,7 +29,7 @@ public class Quotation {
     @JsonProperty("quote_id")
     public int quoteId; // the id of the quote being replied to
     @JsonIgnore
-    public long updatedAt;
+    private Date updatedAt;
 //        public final URL imageUrl; // can be null
 
     /* modifiable fields */
@@ -35,8 +37,8 @@ public class Quotation {
     private String mStatus;
 
     @JsonProperty("updated_at")
-    public void setUpdatedAt(String updatedAtString) {
-        this.updatedAt = ServicesSingleton.dateFromString(updatedAtString);
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public Quotation() {

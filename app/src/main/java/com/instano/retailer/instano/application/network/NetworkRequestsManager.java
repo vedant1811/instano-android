@@ -213,7 +213,6 @@ public class NetworkRequestsManager {
                                 mRegisteredBuyersApiService.getSellers()
                                         .retryWhen(new SessionErrorsHandlerFunction())
                                         .flatMap((List<Seller> t1) -> {
-                                            Log.d(TAG, "" + t1);
                                             return Observable.from(t1);
                                         }))
                                 .doOnNext((Seller seller) -> Log.d(TAG, "new seller: " + seller));

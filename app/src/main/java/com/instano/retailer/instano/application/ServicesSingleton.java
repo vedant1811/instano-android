@@ -26,8 +26,6 @@ import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import rx.Observable;
@@ -280,26 +278,15 @@ public class ServicesSingleton implements
      *
      * @return Human readable time elapsed. Eg: "42 minutes ago"
      */
-    public String getPrettyTimeElapsed(long updatedAt) {
-        String dateTimeString = (String) DateUtils.getRelativeDateTimeString(mApplication, updatedAt,
+    public String getPrettyTimeElapsed(Date updatedAt) {
+        long updatedAtTime = updatedAt.getTime();
+        String dateTimeString = (String) DateUtils.getRelativeDateTimeString(mApplication, updatedAtTime,
                 DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
         return dateTimeString.split(",")[0];
     }
 
-    public static long dateFromString(String sDate) {
-        Date date = null;
-        try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-            date = simpleDateFormat.parse(sDate);
-        } catch (ParseException e) {
-            Log.fatalError(e);
-            return 0;
-        }
-        return date.getTime();
-    }
-
     @Nullable
-    public final static String readableAddress(@Nullable Address address) {
+    public static String readableAddress(@Nullable Address address) {
         String text;
         if (address == null)
             text = null;

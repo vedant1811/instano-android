@@ -82,24 +82,6 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 .debounce(10, TimeUnit.MILLISECONDS);
     }
 
-//    public HashSet<Integer> getSelectedSellerIds() {
-//        if (mSelectedSellerIDs == null)
-//            updateSelectedSellers();
-//        return mSelectedSellerIDs;
-//    }
-
-//    private void updateSelectedSellers() {
-//        long start = System.nanoTime();
-//        mSelectedSellerIDs = new HashSet<Integer>();
-//        for (Seller seller : mFilteredList)
-//            if (mCheckedItems.get(seller.hashCode())) {
-//                mSelectedSellerIDs.add(seller.hashCode());
-//                Log.d("mCheckedItems", String.format("getSelectedSellerIds %s (%d,%b)",seller.name_of_shop,seller.hashCode(),true));
-//            }
-//        double timeTaken = (System.nanoTime() - start)/1000;
-//        Log.v(Log.TIMER_TAG, "updateSelectedSellers took " + timeTaken + "μs");
-//    }
-
     @Override
     public int getCount() {
         return mFilteredList.size();
@@ -276,8 +258,13 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            mFilteredList = (ArrayList<Seller>) results.values;
-            Log.v(TAG,"publishResults size :"+ mFilteredList.size());
+            if ((ArrayList<Seller>) results.values != null) {
+                mFilteredList = (ArrayList<Seller>) results.values;
+                Log.v(TAG, "publishResults size :" + mFilteredList.size());
+            }
+            else
+                mFilteredList.clear();
+
             newData();
         }
     }
