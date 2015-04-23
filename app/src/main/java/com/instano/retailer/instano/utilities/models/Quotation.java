@@ -1,6 +1,5 @@
 package com.instano.retailer.instano.utilities.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.instano.retailer.instano.application.ServicesSingleton;
@@ -28,7 +27,7 @@ public class Quotation {
     public int sellerId;
     @JsonProperty("quote_id")
     public int quoteId; // the id of the quote being replied to
-    @JsonIgnore
+
     private Date updatedAt;
 //        public final URL imageUrl; // can be null
 

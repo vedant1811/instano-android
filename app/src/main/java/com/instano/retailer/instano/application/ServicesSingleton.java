@@ -12,7 +12,9 @@ import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.android.gms.analytics.HitBuilders;
@@ -278,7 +280,9 @@ public class ServicesSingleton implements
      *
      * @return Human readable time elapsed. Eg: "42 minutes ago"
      */
-    public String getPrettyTimeElapsed(Date updatedAt) {
+    public String getPrettyTimeElapsed(@Nullable Date updatedAt) {
+        if(updatedAt == null)
+            return "";
         long updatedAtTime = updatedAt.getTime();
         String dateTimeString = (String) DateUtils.getRelativeDateTimeString(mApplication, updatedAtTime,
                 DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
@@ -307,6 +311,12 @@ public class ServicesSingleton implements
             mDefaultObjectMapper = new ObjectMapper();
             mDefaultObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
             mDefaultObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mDefaultObjectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            mDefaultObjectMapper.disable(MapperFeature.AUTO_DETECT_CREATORS,
+                    MapperFeature.AUTO_DETECT_FIELDS,
+                    MapperFeature.AUTO_DETECT_GETTERS,
+                    MapperFeature.AUTO_DETECT_IS_GETTERS,
+                    MapperFeature.AUTO_DETECT_SETTERS);
         }
         return mDefaultObjectMapper;
     }

@@ -5,7 +5,6 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.instano.retailer.instano.application.ServicesSingleton;
 
@@ -58,7 +57,6 @@ public class Seller {
 
     // get distance between to two points given as latitude and longitude or null on error
     @Nullable
-    @JsonIgnore
     public String getPrettyDistanceFromLocation() {
         int distanceFromLocation = getDistanceFromLocation();
         if (distanceFromLocation == -1)
@@ -116,7 +114,6 @@ public class Seller {
      * get distance between to two points in 10x meters or -1 if last location is null or
      * seller's coordinates are invalid
      */
-    @JsonIgnore
     public int getDistanceFromLocation() {
 
         Location lastLocation = ServicesSingleton.instance().getUserLocation();

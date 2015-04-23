@@ -1,5 +1,6 @@
 package com.instano.retailer.instano.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +29,8 @@ public class SessionActivity extends GlobalMenuActivity {
 
     CharSequence mText;
     boolean mIsExiting = false;
+    private boolean mProgressBarShow = false;
+    private ProgressDialog mProgressDialog;
 
     @Override
     public void onBackPressed() {
@@ -49,17 +52,23 @@ public class SessionActivity extends GlobalMenuActivity {
         mButton = (Button) findViewById(R.id.button);
         // be sure to initialize ServicesSingleton:
         ServicesSingleton instance = ServicesSingleton.instance();
+//        mProgressDialog = new ProgressDialog(this);
+
 
         Observable<Buyer> buyerObservable = instance.signIn();
+        mProgressDialog = ProgressDialog.show(this, "Signing In", "Please wait...", false, false);
         if (instance.getBuyer() != null || buyerObservable != null) {
             mText = WELCOME_BACK + SEARCH_ICON_HELP;
+
             retryableError(buyerObservable,
                     buyer -> {
+                        mProgressDialog.dismiss();
                         Toast.makeText(this, String.format("Welcome %s", buyer.getName()), Toast.LENGTH_SHORT).show();
                         ServicesSingleton.instance().saveBuyer(buyer);
                         NetworkRequestsManager.instance().newBuyer(buyer);
                     },
                     error -> {
+                            mProgressDialog.dismiss();
                         if (ResponseError.Type.INCORRECT_API_KEY.is(error)) {
                             ServicesSingleton.instance().removeFirstTime();
                             Toast.makeText(this, "Saved data error. Create a new profile", Toast.LENGTH_SHORT).show();

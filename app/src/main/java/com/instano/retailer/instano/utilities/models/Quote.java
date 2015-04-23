@@ -3,7 +3,6 @@ package com.instano.retailer.instano.utilities.models;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.instano.retailer.instano.application.ServicesSingleton;
@@ -20,7 +19,7 @@ import java.util.HashSet;
 @JsonRootName("quote")
 public class Quote implements Comparable<Quote> {
     public final static double INVALID_COORDINATE = -1000; // an invalid coordinate
-    @JsonIgnoreProperties(ignoreUnknown = true)
+    private static final String TAG = "Quote";
 
     @JsonProperty("id")
     public int id;
@@ -59,7 +58,7 @@ public class Quote implements Comparable<Quote> {
         }
     }
 
-    @JsonProperty("updated_at")
+//    @JsonProperty("updated_at")
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
