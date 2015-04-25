@@ -354,7 +354,10 @@ public class NetworkRequestsManager {
             }
         }).subscribeOn(Schedulers.io())
                 .retryWhen(new ExponentialBackoffFunction())
-                .flatMap((Device d) -> registerDevice());
+                        // do not call registerDevice() as we do not want to re-run fetching of GCM in any case
+                .flatMap(mUnregisteredBuyersApiService::registerDevice)
+                .retryWhen(new ExponentialBackoffFunction())
+                .doOnNext(d -> storeSessionId(d.getSession_id()));
     }
 
     private Observable<Device> registerDevice() {

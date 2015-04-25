@@ -29,7 +29,7 @@ android {
     buildTypes {
         release {
             resValue "string", "app_name", "Instano"
-            resValue "string", "server_url", "http://staging.instano.in/"
+            resValue "string", "server_url", "http://www.instano.in/"
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug

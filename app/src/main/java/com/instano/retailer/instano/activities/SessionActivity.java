@@ -56,9 +56,9 @@ public class SessionActivity extends GlobalMenuActivity {
 
 
         Observable<Buyer> buyerObservable = instance.signIn();
-        mProgressDialog = ProgressDialog.show(this, "Signing In", "Please wait...", false, false);
         if (instance.getBuyer() != null || buyerObservable != null) {
             mText = WELCOME_BACK + SEARCH_ICON_HELP;
+            mProgressDialog = ProgressDialog.show(this, "Signing In", "Please wait...", false, false);
 
             retryableError(buyerObservable,
                     buyer -> {

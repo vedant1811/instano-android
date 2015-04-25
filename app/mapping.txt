@@ -9136,8 +9136,10 @@ com.fasterxml.jackson.databind.ObjectMapper -> com.fasterxml.jackson.databind.Ob
     com.fasterxml.jackson.databind.introspect.ClassIntrospector defaultClassIntrospector() -> defaultClassIntrospector
     com.fasterxml.jackson.databind.SerializationConfig getSerializationConfig() -> getSerializationConfig
     com.fasterxml.jackson.databind.DeserializationConfig getDeserializationConfig() -> getDeserializationConfig
+    com.fasterxml.jackson.databind.ObjectMapper setSerializationInclusion(com.fasterxml.jackson.annotation.JsonInclude$Include) -> setSerializationInclusion
     com.fasterxml.jackson.databind.type.TypeFactory getTypeFactory() -> getTypeFactory
     com.fasterxml.jackson.databind.ObjectMapper configure(com.fasterxml.jackson.databind.MapperFeature,boolean) -> configure
+    com.fasterxml.jackson.databind.ObjectMapper disable(com.fasterxml.jackson.databind.MapperFeature[]) -> disable
     com.fasterxml.jackson.databind.ObjectMapper configure(com.fasterxml.jackson.databind.SerializationFeature,boolean) -> configure
     com.fasterxml.jackson.databind.ObjectMapper configure(com.fasterxml.jackson.databind.DeserializationFeature,boolean) -> configure
     void writeValue(com.fasterxml.jackson.core.JsonGenerator,java.lang.Object) -> writeValue
@@ -9210,6 +9212,7 @@ com.fasterxml.jackson.databind.SerializationConfig -> com.fasterxml.jackson.data
     com.fasterxml.jackson.databind.SerializationConfig without(com.fasterxml.jackson.databind.MapperFeature[]) -> without
     com.fasterxml.jackson.databind.SerializationConfig with(com.fasterxml.jackson.databind.SerializationFeature) -> with
     com.fasterxml.jackson.databind.SerializationConfig without(com.fasterxml.jackson.databind.SerializationFeature) -> without
+    com.fasterxml.jackson.databind.SerializationConfig withSerializationInclusion(com.fasterxml.jackson.annotation.JsonInclude$Include) -> withSerializationInclusion
     void initialize(com.fasterxml.jackson.core.JsonGenerator) -> initialize
     com.fasterxml.jackson.databind.AnnotationIntrospector getAnnotationIntrospector() -> getAnnotationIntrospector
     com.fasterxml.jackson.databind.BeanDescription introspectClassAnnotations(com.fasterxml.jackson.databind.JavaType) -> introspectClassAnnotations
@@ -24478,6 +24481,8 @@ com.instano.retailer.instano.activities.SessionActivity -> com.instano.retailer.
     android.widget.Button mButton -> b
     java.lang.CharSequence mText -> c
     boolean mIsExiting -> d
+    boolean mProgressBarShow -> e
+    android.app.ProgressDialog mProgressDialog -> f
     void onBackPressed() -> onBackPressed
     void onCreate(android.os.Bundle) -> onCreate
     void onActivityResult(int,int,android.content.Intent) -> onActivityResult
@@ -24494,11 +24499,11 @@ com.instano.retailer.instano.activities.SessionActivity$$Lambda$1 -> com.instano
     com.instano.retailer.instano.activities.SessionActivity arg$1 -> a
     void run() -> run
     java.lang.Runnable lambdaFactory$(com.instano.retailer.instano.activities.SessionActivity) -> a
-com.instano.retailer.instano.activities.SessionActivity$$Lambda$2 -> com.instano.retailer.instano.activities.n:
+com.instano.retailer.instano.activities.SessionActivity$$Lambda$4 -> com.instano.retailer.instano.activities.n:
     com.instano.retailer.instano.activities.SessionActivity arg$1 -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.activities.SessionActivity) -> a
-com.instano.retailer.instano.activities.SessionActivity$$Lambda$3 -> com.instano.retailer.instano.activities.o:
+com.instano.retailer.instano.activities.SessionActivity$$Lambda$5 -> com.instano.retailer.instano.activities.o:
     com.instano.retailer.instano.activities.SessionActivity arg$1 -> a
     java.lang.Object call(java.lang.Object) -> a
     rx.functions.Func1 lambdaFactory$(com.instano.retailer.instano.activities.SessionActivity) -> a
@@ -25002,7 +25007,7 @@ com.instano.retailer.instano.search.SearchFragment -> com.instano.retailer.insta
     void resolvableConnectionResultError(com.google.android.gms.common.ConnectionResult) -> a
     void showErrorDialog(int) -> a
     void onActivityResult(int,int,android.content.Intent) -> onActivityResult
-    void lambda$onCreateView$53(com.instano.retailer.instano.utilities.models.Categories) -> a
+    void lambda$onCreateView$55(com.instano.retailer.instano.utilities.models.Categories) -> a
     boolean access$002(com.instano.retailer.instano.search.SearchFragment,boolean) -> a
     android.widget.ArrayAdapter access$100(com.instano.retailer.instano.search.SearchFragment) -> a
     boolean access$000(com.instano.retailer.instano.search.SearchFragment) -> b
@@ -25044,9 +25049,9 @@ com.instano.retailer.instano.search.SearchTabsActivity -> com.instano.retailer.i
     void onCategorySelected(com.instano.retailer.instano.utilities.models.Category) -> a
     java.lang.String getSearchString() -> i
     com.instano.retailer.instano.utilities.models.Category getSelectedCategory() -> j
-    void lambda$sendQuote$52(java.lang.Throwable) -> b
-    void lambda$sendQuote$51(com.instano.retailer.instano.utilities.models.Quote) -> a
-    void lambda$onActivityResult$50(com.google.android.gms.maps.model.LatLng,android.location.Address) -> b
+    void lambda$sendQuote$54(java.lang.Throwable) -> b
+    void lambda$sendQuote$53(com.instano.retailer.instano.utilities.models.Quote) -> a
+    void lambda$onActivityResult$52(com.google.android.gms.maps.model.LatLng,android.location.Address) -> b
     com.instano.retailer.instano.utilities.models.Category access$000(com.instano.retailer.instano.search.SearchTabsActivity) -> a
     com.instano.retailer.instano.search.SearchFragment access$100(com.instano.retailer.instano.search.SearchTabsActivity) -> b
     com.instano.retailer.instano.search.SearchConstraintsFragment access$200(com.instano.retailer.instano.search.SearchTabsActivity) -> c
@@ -25147,9 +25152,9 @@ com.instano.retailer.instano.sellers.SellersArrayAdapter -> com.instano.retailer
     void newData() -> c
     android.widget.Filter getFilter() -> getFilter
     java.lang.Object getItem(int) -> getItem
-    void lambda$getView$40(com.instano.retailer.instano.utilities.models.Seller,android.view.View) -> a
-    void lambda$new$39(java.lang.Throwable) -> b
-    void lambda$new$38(com.instano.retailer.instano.utilities.models.Seller) -> a
+    void lambda$getView$42(com.instano.retailer.instano.utilities.models.Seller,android.view.View) -> a
+    void lambda$new$41(java.lang.Throwable) -> b
+    void lambda$new$40(com.instano.retailer.instano.utilities.models.Seller) -> a
     android.util.SparseArray access$300(com.instano.retailer.instano.sellers.SellersArrayAdapter) -> a
     java.util.ArrayList access$402(com.instano.retailer.instano.sellers.SellersArrayAdapter,java.util.ArrayList) -> a
     java.util.ArrayList access$400(com.instano.retailer.instano.sellers.SellersArrayAdapter) -> b
@@ -25161,11 +25166,11 @@ com.instano.retailer.instano.sellers.SellersArrayAdapter$$Lambda$1 -> com.instan
     com.instano.retailer.instano.sellers.SellersArrayAdapter arg$1 -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.sellers.SellersArrayAdapter) -> a
-com.instano.retailer.instano.sellers.SellersArrayAdapter$$Lambda$2 -> com.instano.retailer.instano.sellers.f:
-    com.instano.retailer.instano.sellers.SellersArrayAdapter$$Lambda$2 instance -> a
+com.instano.retailer.instano.sellers.SellersArrayAdapter$$Lambda$4 -> com.instano.retailer.instano.sellers.f:
+    com.instano.retailer.instano.sellers.SellersArrayAdapter$$Lambda$4 instance -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$() -> a
-com.instano.retailer.instano.sellers.SellersArrayAdapter$$Lambda$3 -> com.instano.retailer.instano.sellers.g:
+com.instano.retailer.instano.sellers.SellersArrayAdapter$$Lambda$5 -> com.instano.retailer.instano.sellers.g:
     com.instano.retailer.instano.sellers.SellersArrayAdapter arg$1 -> a
     com.instano.retailer.instano.utilities.models.Seller arg$2 -> b
     void onClick(android.view.View) -> onClick
@@ -25184,11 +25189,24 @@ com.instano.retailer.instano.sellers.SellersArrayAdapter$ItemInteractionListener
     void callButtonClicked(java.lang.String) -> a
 com.instano.retailer.instano.sellers.SellersListFragment -> com.instano.retailer.instano.sellers.j:
     android.widget.ListView mListView -> a
+    boolean mShown -> b
     void onCreate(android.os.Bundle) -> onCreate
-    android.view.View onCreateView(android.view.LayoutInflater,android.view.ViewGroup,android.os.Bundle) -> onCreateView
+    void onViewCreated(android.view.View,android.os.Bundle) -> onViewCreated
     void setEmptyText(java.lang.CharSequence) -> setEmptyText
     void callButtonClicked(java.lang.String) -> a
-com.instano.retailer.instano.sellers.SellersMapFragment -> com.instano.retailer.instano.sellers.k:
+    void lambda$onCreate$39(java.lang.Throwable) -> b
+    void lambda$onCreate$38(java.util.List) -> a
+    void access$lambda$0(com.instano.retailer.instano.sellers.SellersListFragment,java.util.List) -> a
+    void access$lambda$1(java.lang.Throwable) -> a
+com.instano.retailer.instano.sellers.SellersListFragment$$Lambda$1 -> com.instano.retailer.instano.sellers.k:
+    com.instano.retailer.instano.sellers.SellersListFragment arg$1 -> a
+    void call(java.lang.Object) -> call
+    rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.sellers.SellersListFragment) -> a
+com.instano.retailer.instano.sellers.SellersListFragment$$Lambda$2 -> com.instano.retailer.instano.sellers.l:
+    com.instano.retailer.instano.sellers.SellersListFragment$$Lambda$2 instance -> a
+    void call(java.lang.Object) -> call
+    rx.functions.Action1 lambdaFactory$() -> a
+com.instano.retailer.instano.sellers.SellersMapFragment -> com.instano.retailer.instano.sellers.m:
     com.google.android.gms.maps.model.BitmapDescriptor BLUE_MARKER -> a
     com.google.android.gms.maps.MapView mMapView -> b
     com.google.android.gms.maps.model.LatLng BANGALORE_LOCATION -> c
@@ -25219,15 +25237,15 @@ com.instano.retailer.instano.sellers.SellersMapFragment -> com.instano.retailer.
     void onDestroy() -> onDestroy
     void onLowMemory() -> onLowMemory
     void onSaveInstanceState(android.os.Bundle) -> onSaveInstanceState
-    void lambda$onCreateView$49(android.view.View) -> a
-    void lambda$resubscribe$48(java.lang.Throwable) -> e
-    void lambda$resubscribe$47(com.instano.retailer.instano.utilities.models.Seller) -> b
-    void lambda$resubscribe$46(java.lang.Throwable) -> f
-    com.instano.retailer.instano.utilities.models.Seller lambda$resubscribe$45(com.instano.retailer.instano.utilities.models.Seller,java.lang.Long) -> b
-    void lambda$resubscribe$44(java.lang.Throwable) -> g
-    java.lang.Boolean lambda$resubscribe$43(com.instano.retailer.instano.utilities.models.Seller) -> c
-    void lambda$setUpMap$42(java.lang.Throwable) -> h
-    void lambda$setUpMap$41(java.util.List) -> a
+    void lambda$onCreateView$51(android.view.View) -> a
+    void lambda$resubscribe$50(java.lang.Throwable) -> e
+    void lambda$resubscribe$49(com.instano.retailer.instano.utilities.models.Seller) -> b
+    void lambda$resubscribe$48(java.lang.Throwable) -> f
+    com.instano.retailer.instano.utilities.models.Seller lambda$resubscribe$47(com.instano.retailer.instano.utilities.models.Seller,java.lang.Long) -> b
+    void lambda$resubscribe$46(java.lang.Throwable) -> g
+    java.lang.Boolean lambda$resubscribe$45(com.instano.retailer.instano.utilities.models.Seller) -> c
+    void lambda$setUpMap$44(java.lang.Throwable) -> h
+    void lambda$setUpMap$43(java.util.List) -> a
     void access$lambda$0(com.instano.retailer.instano.sellers.SellersMapFragment,java.util.List) -> a
     void access$lambda$1(java.lang.Throwable) -> a
     java.lang.Boolean access$lambda$2(com.instano.retailer.instano.utilities.models.Seller) -> a
@@ -25237,43 +25255,43 @@ com.instano.retailer.instano.sellers.SellersMapFragment -> com.instano.retailer.
     void access$lambda$6(com.instano.retailer.instano.sellers.SellersMapFragment,com.instano.retailer.instano.utilities.models.Seller) -> a
     void access$lambda$7(java.lang.Throwable) -> d
     void access$lambda$8(com.instano.retailer.instano.sellers.SellersMapFragment,android.view.View) -> a
-com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$1 -> com.instano.retailer.instano.sellers.l:
+com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$1 -> com.instano.retailer.instano.sellers.n:
     com.instano.retailer.instano.sellers.SellersMapFragment arg$1 -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.sellers.SellersMapFragment) -> a
-com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$10 -> com.instano.retailer.instano.sellers.m:
+com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$10 -> com.instano.retailer.instano.sellers.o:
     com.instano.retailer.instano.sellers.SellersMapFragment arg$1 -> a
     void onClick(android.view.View) -> onClick
     android.view.View$OnClickListener lambdaFactory$(com.instano.retailer.instano.sellers.SellersMapFragment) -> a
-com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$2 -> com.instano.retailer.instano.sellers.n:
+com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$2 -> com.instano.retailer.instano.sellers.p:
     com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$2 instance -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$() -> a
-com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$3 -> com.instano.retailer.instano.sellers.o:
+com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$3 -> com.instano.retailer.instano.sellers.q:
     com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$3 instance -> a
     java.lang.Object call(java.lang.Object) -> a
     rx.functions.Func1 lambdaFactory$() -> a
-com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$4 -> com.instano.retailer.instano.sellers.p:
+com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$4 -> com.instano.retailer.instano.sellers.r:
     com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$4 instance -> a
     java.lang.Object call(java.lang.Object) -> a
     rx.functions.Func1 lambdaFactory$() -> a
-com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$5 -> com.instano.retailer.instano.sellers.q:
+com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$5 -> com.instano.retailer.instano.sellers.s:
     com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$5 instance -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$() -> a
-com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$6 -> com.instano.retailer.instano.sellers.r:
+com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$6 -> com.instano.retailer.instano.sellers.t:
     com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$6 instance -> a
     java.lang.Object call(java.lang.Object,java.lang.Object) -> a
     rx.functions.Func2 lambdaFactory$() -> a
-com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$7 -> com.instano.retailer.instano.sellers.s:
+com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$7 -> com.instano.retailer.instano.sellers.u:
     com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$7 instance -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$() -> a
-com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$8 -> com.instano.retailer.instano.sellers.t:
+com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$8 -> com.instano.retailer.instano.sellers.v:
     com.instano.retailer.instano.sellers.SellersMapFragment arg$1 -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.sellers.SellersMapFragment) -> a
-com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$9 -> com.instano.retailer.instano.sellers.u:
+com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$9 -> com.instano.retailer.instano.sellers.w:
     com.instano.retailer.instano.sellers.SellersMapFragment$$Lambda$9 instance -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$() -> a
