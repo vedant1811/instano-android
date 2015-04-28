@@ -13,49 +13,53 @@
         android:layout_gravity="center_horizontal"
         android:layout_margin="@dimen/general_separator_margin" />
 
-    <Button
+    <ViewFlipper
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Send sms"
-        android:drawableLeft="@drawable/sms"
-        android:id="@+id/buttonSendSms"
-        android:layout_gravity="center_horizontal"
-        style="@style/LinkTypeButton"
-        android:layout_margin="2dp"
-        android:padding="@dimen/general_min_padding" />
+        android:layout_height="match_parent"
+        android:id="@+id/messageDialogFragmentViewFlipper">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Send whatsapp"
-        android:drawableLeft="@drawable/wa"
-        android:id="@+id/buttonSendWhatsapp"
-        android:layout_gravity="center_horizontal"
-        style="@style/LinkTypeButton"
-        android:layout_margin="2dp"
-        android:padding="@dimen/general_min_padding" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Send E-Mail"
-        android:drawableLeft="@drawable/email"
-        android:id="@+id/buttonSendMail"
-        android:layout_gravity="center_horizontal"
-        style="@style/LinkTypeButton"
-        android:layout_margin="2dp"
-        android:padding="@dimen/general_min_padding" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Send E-Mail"
+                android:drawableLeft="@drawable/email"
+                android:id="@+id/buttonSendMail"
+                android:layout_gravity="center_horizontal"
+                style="@style/LinkTypeButton"
+                android:layout_margin="2dp"
+                android:padding="@dimen/general_min_padding" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add 'Instano' contact"
-        android:contentDescription="In case WhatsApp doesn't let you send a msg to a anonymous number"
-        android:drawableLeft="@drawable/contact"
-        android:id="@+id/buttonAddContact"
-        android:layout_gravity="center_horizontal"
-        style="@style/LinkTypeButton"
-        android:layout_margin="2dp"
-        android:padding="@dimen/general_min_padding" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Or you can"
+                android:id="@+id/textView7"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="@dimen/general_separator_margin" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Try Again"
+                android:id="@+id/tryAgainButton"
+                android:layout_gravity="center_horizontal" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/messageDialogProgressBar"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:indeterminate="false" />
+
+    </ViewFlipper>
 
 </LinearLayout>

@@ -1,10 +1,5 @@
 package com.instano.retailer.instano.application;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.location.Address;
@@ -14,29 +9,28 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
-import android.widget.Toast;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
-import com.instano.retailer.instano.BuildConfig;
-import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.GetAddressTask;
-import com.instano.retailer.instano.utilities.PeriodicWorker;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import rx.Observable;
 
 /**
  *
@@ -58,7 +52,7 @@ public class ServicesSingleton implements
 
     private final MyApplication mApplication;
     private SharedPreferences mSharedPreferences;
-    private boolean mFirstTime;
+    private ObjectMapper mDefaultObjectMapper;
 
     /* location variables */
     private LocationClient mLocationClient;
@@ -72,8 +66,6 @@ public class ServicesSingleton implements
 
     private Buyer mBuyer;
 
-    private PeriodicWorker mPeriodicWorker;
-
     @Nullable
     public Buyer getBuyer() {
         return mBuyer;
@@ -83,89 +75,44 @@ public class ServicesSingleton implements
      * tries to sign in if login details are saved
      * @return true if login details are saved
      */
-    public boolean signIn() {
+    public Observable<Buyer> signIn() {
         String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, null);
 
+        Log.v(TAG, "api key: " + String.valueOf(apiKey));
+
         if (apiKey != null) {
-            NetworkRequestsManager.instance().signInRequest(apiKey);
-            return true;
+            return NetworkRequestsManager.instance().signIn(apiKey);
         }
         else
-            return false;
+            return null; // TODO: improve
     }
 
-    public boolean firstTime() {
-        if (BuildConfig.DEBUG)
-            return true;
-        else
-            return mFirstTime;
+    public void removeFirstTime() {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
+        editor.apply();
     }
 
-    /**
-     * called after a signIn request
-     * @param buyer null if no buyer with given api key
-     * @param apiKey null if no buyer with given api key
-     */
-    /*package*/ void afterSignIn(@Nullable Buyer buyer, @Nullable String apiKey) {
+    public void saveBuyer(Buyer buyer) {
         mBuyer = buyer;
         Log.d(TAG, "buyer ID: " + mBuyer);
 
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putString(KEY_BUYER_API_KEY, apiKey); // clear saved API key if null
+        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
+        Log.d(TAG, "saving buyer api key: " + buyer.getApi_key());
+        Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
+        appTracker.setClientId(String.valueOf(buyer.getId()));
+        appTracker.send(new HitBuilders.AppViewBuilder().build());
+        editor.putString(KEY_BUYER_API_KEY, buyer.getApi_key());
         editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
         editor.apply();
-
-        if (buyer != null) {
-            Toast.makeText(mApplication, String.format("Welcome %s", mBuyer.getName()), Toast.LENGTH_SHORT).show();
-
-            Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
-            appTracker.setClientId(String.valueOf(mBuyer.getId()));
-            appTracker.send(new HitBuilders.AppViewBuilder().build());
-
-            DataManager.instance().onNewBuyer();
-        }
-        // TODO: else
     }
 
-    public void runPeriodicTasks() {
-        if (mBuyer != null) // i.e. if user is signed in
-        {
-            NetworkRequestsManager.instance().getQuotesRequest(mBuyer); // also fetches quotations once quotes are fetched
-            NetworkRequestsManager.instance().getSellersRequest();
-        }
-        else {
-            String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, null);
-            if (apiKey != null)
-                NetworkRequestsManager.instance().signInRequest(apiKey);
-        }
-        if (DataManager.instance().getProductCategories(false) == null)
-            NetworkRequestsManager.instance().getProductCategoriesRequest();
-
-        // always get deals:
-        NetworkRequestsManager.instance().getDealsRequest();
-    }
-
-    public void createNotification() {
-        Log.d(TAG, "new quotations received");
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(mApplication)
-                .setSmallIcon(R.drawable.instano_launcher)
-                .setContentTitle("New Quotations")
-                .setContentText("Click to view your new quotations")
-                .setAutoCancel(true)
-                .setDefaults(Notification.DEFAULT_ALL);
-
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(
-                mApplication,
-                0,
-                new Intent(mApplication, QuoteListActivity.class),
-                PendingIntent.FLAG_UPDATE_CURRENT
-        );
-
-        builder.setContentIntent(resultPendingIntent);
-
-        NotificationManager manager = (NotificationManager) mApplication.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(001, builder.build());
-
+    public boolean isFirstTime() {
+//        if (BuildConfig.DEBUG)
+//            return true;
+//        else
+            return mSharedPreferences.getBoolean(KEY_FIRST_TIME, true);
     }
 
     /*package*/ static void init(MyApplication application) {
@@ -180,9 +127,7 @@ public class ServicesSingleton implements
 
     private ServicesSingleton(MyApplication application) {
         mApplication = application;
-        mSharedPreferences = mApplication.getSharedPreferences(
-                "com.instano.SHARED_PREFERENCES_FILE", Context.MODE_PRIVATE);
-        mFirstTime = mSharedPreferences.getBoolean(KEY_FIRST_TIME, false);
+        mSharedPreferences = mApplication.getSharedPreferences();
         mUserAddress = null;
         mLastLocation = null;
         mBuyer = null;
@@ -193,24 +138,7 @@ public class ServicesSingleton implements
          */
         mLocationClient = new LocationClient(mApplication, this, this);
         mLocationClient.connect();
-        checkPlayServices(); // not performing checkUserAccount
         // see http://www.androiddesignpatterns.com/2013/01/google-play-services-setup.html
-
-        mPeriodicWorker = new PeriodicWorker(this);
-        mPeriodicWorker.start();
-    }
-
-    public boolean checkPlayServices() {
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(mApplication);
-        if (status != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(status) && mInitialDataCallbacks != null) {
-                mInitialDataCallbacks.showErrorDialog(status);
-            } else {
-                locationErrorString = "This device is not supported.";
-            }
-            return false;
-        }
-        return true;
     }
 
     public String getLocationErrorString() {
@@ -310,7 +238,7 @@ public class ServicesSingleton implements
                  */
             } catch (IntentSender.SendIntentException e) {
                 // Log the error
-                e.printStackTrace();
+                Log.fatalError(e);
             }
         } else {
             /*
@@ -326,11 +254,6 @@ public class ServicesSingleton implements
 
     public void registerCallback (AddressCallbacks addressCallbacks) {
         mAddressCallbacks = addressCallbacks;
-    }
-
-    public String getInstanoWhatsappId() {
-        // TODO: set based on fetched data online
-        return mSharedPreferences.getString(KEY_WHATSAPP_ID, "917602631663");
     }
 
     public interface InitialDataCallbacks {
@@ -357,26 +280,17 @@ public class ServicesSingleton implements
      *
      * @return Human readable time elapsed. Eg: "42 minutes ago"
      */
-    public String getPrettyTimeElapsed(long updatedAt) {
-        String dateTimeString = (String) DateUtils.getRelativeDateTimeString(mApplication, updatedAt,
+    public String getPrettyTimeElapsed(@Nullable Date updatedAt) {
+        if(updatedAt == null)
+            return "";
+        long updatedAtTime = updatedAt.getTime();
+        String dateTimeString = (String) DateUtils.getRelativeDateTimeString(mApplication, updatedAtTime,
                 DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_ABBREV_RELATIVE);
         return dateTimeString.split(",")[0];
     }
 
-    public static long dateFromString(String sDate) {
-        Date date = null;
-        try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-            date = simpleDateFormat.parse(sDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return 0;
-        }
-        return date.getTime();
-    }
-
     @Nullable
-    public final static String readableAddress(@Nullable Address address) {
+    public static String readableAddress(@Nullable Address address) {
         String text;
         if (address == null)
             text = null;
@@ -392,4 +306,18 @@ public class ServicesSingleton implements
                 TypedValue.COMPLEX_UNIT_DIP, dp, mApplication.getResources().getDisplayMetrics());
     }
 
+    public ObjectMapper getDefaultObjectMapper() {
+        if (mDefaultObjectMapper == null) {
+            mDefaultObjectMapper = new ObjectMapper();
+            mDefaultObjectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
+            mDefaultObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            mDefaultObjectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            mDefaultObjectMapper.disable(MapperFeature.AUTO_DETECT_CREATORS,
+                    MapperFeature.AUTO_DETECT_FIELDS,
+                    MapperFeature.AUTO_DETECT_GETTERS,
+                    MapperFeature.AUTO_DETECT_IS_GETTERS,
+                    MapperFeature.AUTO_DETECT_SETTERS);
+        }
+        return mDefaultObjectMapper;
+    }
 }

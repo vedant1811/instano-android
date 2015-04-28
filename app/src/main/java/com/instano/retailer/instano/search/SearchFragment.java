@@ -19,13 +19,14 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.library.Spinner;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Categories;
+import com.instano.retailer.instano.utilities.models.Category;
 
-import java.util.List;
+import rx.android.observables.AndroidObservable;
 
 
 /**
@@ -45,7 +46,7 @@ public class SearchFragment extends Fragment
     private Spinner mProductCategorySpinner;
     private Button mLocationButton;
 
-    private ArrayAdapter<ProductCategories.Category> mCategoryAdapter;
+    private ArrayAdapter<Category> mCategoryAdapter;
 
     private CharSequence mSearchString;
     private CharSequence mLocationButtonText;
@@ -103,12 +104,37 @@ public class SearchFragment extends Fragment
 
         addressUpdated(null, false); // to setup initial state of button
 
-        mCategoryAdapter = new ArrayAdapter<ProductCategories.Category>(getActivity(),
+        mCategoryAdapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item);
-        List<ProductCategories.Category> categories = DataManager.instance().getProductCategories(true);
-        if (categories != null)
-            mCategoryAdapter.addAll(categories);
         mCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        mProductCategorySpinner.setAdapter(mCategoryAdapter);
+        mProductCategorySpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id, boolean userSelected) {
+                if (userSelected)
+                    mUserSelectedCategory = true;
+                ((SearchTabsActivity) getActivity()).onCategorySelected(mCategoryAdapter.getItem(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        AndroidObservable.bindFragment(this,
+            NetworkRequestsManager.instance().getObservable(Categories.class))
+                .subscribe(categories -> {
+                    Log.d("product categories", categories.mCategories.toString());
+                    if (mCategoryAdapter != null) {
+                        mCategoryAdapter.clear();
+                        mCategoryAdapter.addAll(categories.mCategories);
+                        Log.d("product categories", "mUserSelectedCategory = false");
+                        mUserSelectedCategory = false;
+                    }
+                },
+                        Throwable::printStackTrace
+                );
 
         mSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -125,21 +151,6 @@ public class SearchFragment extends Fragment
             @Override
             public void afterTextChanged(Editable s) {
 
-            }
-        });
-
-        mProductCategorySpinner.setAdapter(mCategoryAdapter);
-        mProductCategorySpinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id, boolean userSelected) {
-                if (userSelected)
-                    mUserSelectedCategory = true;
-                ((SearchTabsActivity) getActivity()).onCategorySelected(mCategoryAdapter.getItem(position));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
@@ -183,38 +194,8 @@ public class SearchFragment extends Fragment
                 (ServicesSingleton.InitialDataCallbacks) this);
     }
 
-    /**
-     * Called when searchButton has been clicked
-     */
-//    public void searchButtonClicked() {
-//        ServicesSingleton servicesSingleton = ServicesSingleton.getInstance(getActivity());
-//
-//        if (!servicesSingleton.checkPlayServices()){
-//            String error = servicesSingleton.getLocationErrorString();
-//            if (error != null) {
-//                mToast.setText(error);
-//                mToast.show();
-//            }
-//            return;
-//        }
-//
-//        String searchString = mSearchEditText.getText().toString();
-//        if (searchString == null) {
-//            mToast.setText("Enter something to search");
-//            mToast.show();
-//            return;
-//        }
-//    }
-
     /* package */ void showSearchEmptyError() {
         mSearchEditText.setError("enter something");
-    }
-
-    /* package */ void updateProductCategories(List<ProductCategories.Category> categories) {
-        if (mCategoryAdapter != null) {
-            mCategoryAdapter.clear();
-            mCategoryAdapter.addAll(categories);
-        }
     }
 
     @Override
@@ -259,5 +240,4 @@ public class SearchFragment extends Fragment
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
 }

@@ -1,5 +1,6 @@
 package com.instano.retailer.instano.utilities.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 /**
@@ -9,13 +10,18 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName(value = "buyer")
 public class Buyer {
 
+    @JsonProperty("id")
     private Integer id ;
+    @JsonProperty("name")
     private String name;
+    @JsonProperty("phone")
     private String phone;
+    @JsonProperty("api_key")
     private String api_key;
+    @JsonProperty("created_at")
     private String created_at;
+    @JsonProperty("updated_at")
     private String updated_at;
-    private String facebook_id;
 
 
 
@@ -65,13 +71,5 @@ public class Buyer {
 
     public void setUpdated_at(String updated_at) {
         this.updated_at = updated_at;
-    }
-
-    public String getFacebook_id() {
-        return facebook_id;
-    }
-
-    public void setFacebook_id(String facebook_id) {
-        this.facebook_id = facebook_id;
     }
 }

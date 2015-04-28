@@ -1,17 +1,18 @@
 package com.instano.retailer.instano.buyerDashboard.quotes;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.activities.GlobalMenuActivity;
+import com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment;
+import com.instano.retailer.instano.utilities.library.Log;
 
 /**
  * An activity representing a list of Quotes. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link QuoteDetailActivity} representing
+ * lead to a {@link QuoteDetailFragment} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  * <p/>
@@ -24,7 +25,15 @@ import com.instano.retailer.instano.utilities.GlobalMenuActivity;
  * to listen for item selections.
  */
 public class QuoteListActivity extends GlobalMenuActivity
-        implements QuoteListFragment.Callbacks {
+        implements QuoteListFragment.Callbacks,
+        QuoteDetailFragment.Callbacks {
+
+    private static final String TAG = "QuoteListActivity";
+
+    public void contactUsClicked(View view) {
+        // TODO:
+//        contactUs();
+    }
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -52,6 +61,11 @@ public class QuoteListActivity extends GlobalMenuActivity
                     .findFragmentById(R.id.quote_list))
                     .setActivateOnItemClick(true);
         }
+        else {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new QuoteListFragment(), QuoteListFragment.class.getSimpleName())
+                    .commit();
+        }
 
         // TODO: If exposing deep links into your app, handle intents here.
     }
@@ -61,25 +75,50 @@ public class QuoteListActivity extends GlobalMenuActivity
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(int id) {
+    public void onQuoteSelected(int quote_id) {
+        QuoteDetailFragment fragment = QuoteDetailFragment.create(quote_id);
         if (mTwoPane) {
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putInt(QuoteDetailFragment.ARG_QUOTE_ID, id);
-            QuoteDetailFragment fragment = new QuoteDetailFragment();
-            fragment.setArguments(arguments);
             getFragmentManager().beginTransaction()
                     .replace(R.id.quote_detail_container, fragment)
+                    .addToBackStack(null)
                     .commit();
 
         } else {
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
-            Intent detailIntent = new Intent(this, QuoteDetailActivity.class);
-            detailIntent.putExtra(QuoteDetailFragment.ARG_QUOTE_ID, id);
-            startActivity(detailIntent);
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
+
+    /**
+     * Callback for when an item has been selected.
+     *
+     * @param quotation_id
+     */
+    @Override
+    public void onQuotationSelected(QuotationDetailFragment fragment) {
+        if (mTwoPane) {
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.quote_detail_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+
+        } else {
+            // In single-pane mode, simply start the detail activity
+            // for the selected item ID.
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
         }
     }
 }

@@ -2,42 +2,18 @@ package com.instano.retailer.instano.utilities.models;
 
 import com.instano.retailer.instano.application.ServicesSingleton;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.Date;
 
 /**
  * Created by vedant on 7/1/15.
  */
 public class Deal {
-    public final int id;
-    public final String heading;
-    public final String subheading;
-    public final long updatedAt;
-    public final long expiresAt;
-    public final int sellerId;
-
-    public Deal(int id, String heading, String subheading, long updatedAt, long expiresAt, int sellerId) {
-        this.id = id;
-        this.heading = heading;
-        this.subheading = subheading;
-        this.updatedAt = updatedAt;
-        this.expiresAt = expiresAt;
-        this.sellerId = sellerId;
-    }
-
-    public Deal(JSONObject json) throws JSONException {
-        id = json.getInt("id");
-        heading = json.getString("heading");
-        if (!json.isNull("subheading"))
-            subheading = json.getString("subheading");
-        else
-            subheading = "";
-        String updatedAt = json.getString("updated_at");
-        this.updatedAt = ServicesSingleton.dateFromString(updatedAt);
-        String expiresAt = json.getString("expires_at");
-        this.expiresAt = ServicesSingleton.dateFromString(expiresAt);
-        this.sellerId = json.getInt("seller_id");
-    }
+    public int id;
+    public String heading;
+    public String subheading;
+    public long updatedAt;
+    public Date expiresAt;
+    public int sellerId;
 
     public String expiresAt() {
         return "expires " + ServicesSingleton.instance().getPrettyTimeElapsed(expiresAt);

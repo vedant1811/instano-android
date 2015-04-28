@@ -6,6 +6,7 @@ import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.application.MyApplication;
 
 /**
+ * Prints to log in debug mode and sends (only error messages) to GA when not in debug
  * Created by vedant on 17/12/14.
  */
 public class Log {
@@ -45,8 +46,8 @@ public class Log {
     public static void d(String tag, String msg) {
         if (BuildConfig.DEBUG)
             android.util.Log.d(tag, msg);
-        else
-            send("debug", tag, msg);
+//        else
+//            send("debug", tag, msg);
     }
 
 
@@ -59,9 +60,16 @@ public class Log {
      */
     public static void d(String tag, String msg, Throwable tr) {
         if (BuildConfig.DEBUG)
-            android.util.Log.d(tag, msg);
-        else
-            send("debug", tag, msg + '\n' + android.util.Log.getStackTraceString(tr));
+            android.util.Log.d(tag, msg, tr);
+//        else
+//            send("debug", tag, msg + '\n' + android.util.Log.getStackTraceString(tr));
+    }
+
+    public static void v(String tag, String msg) {
+        if (BuildConfig.DEBUG)
+            android.util.Log.v(tag, msg);
+//        else // do not send verbose messages
+//            send("verbose", tag, msg);
     }
 
     /**
@@ -86,15 +94,16 @@ public class Log {
      */
     public static void e(String tag, String msg, Throwable tr) {
         if (BuildConfig.DEBUG)
-            android.util.Log.e(tag, msg);
+            android.util.Log.e(tag, msg, tr);
         else
             send("error", tag, msg + '\n' + android.util.Log.getStackTraceString(tr));
     }
 
-    public static void v(String tag, String msg) {
+    public static void fatalError(Throwable throwable) {
         if (BuildConfig.DEBUG)
-            android.util.Log.v(tag, msg);
-//        else // do not send verbose messages
-//            send("verbose", tag, msg);
+            throwable.printStackTrace();
+        // TODO:
+//        else
+//
     }
 }

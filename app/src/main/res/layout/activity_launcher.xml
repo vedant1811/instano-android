@@ -9,6 +9,17 @@
     android:windowActionBar="false"
     tools:context="com.instano.retailer.instano.activities.LauncherActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Now Live in Bangalore !!"
+        android:id="@+id/textView4"
+
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        style="@style/TextAppearanceHeading"
+        android:layout_marginTop="32dp" />
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,10 +35,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textAppearance="@style/TextAppearanceHeading"
         android:text="Your Local Shopping Assistant "
         android:id="@+id/textView14"
         android:textSize="16sp"
         android:layout_below="@+id/imageView"
         android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

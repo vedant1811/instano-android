@@ -6,11 +6,9 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
@@ -19,22 +17,20 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.NetworkRequestsManager;
+import com.instano.retailer.instano.activities.GlobalMenuActivity;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.GetAddressTask;
-import com.instano.retailer.instano.utilities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Buyer;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Category;
 import com.instano.retailer.instano.utilities.models.Quote;
 import com.instano.retailer.instano.utilities.models.Seller;
 
-import java.util.HashSet;
-import java.util.List;
+import rx.android.observables.AndroidObservable;
 
 
 public class SearchTabsActivity extends GlobalMenuActivity implements
-        NetworkRequestsManager.QuoteCallbacks,
         NoLocationErrorDialogFragment.Callbacks {
 
     private static final int RESULT_CODE_LOCATION = 990;
@@ -65,7 +61,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //    private SellersMapFragment mSellersMapFragment;
 
     // should never be null
-    private ProductCategories.Category mSelectedCategory = ProductCategories.Category.undefinedCategory();
+    private Category mSelectedCategory = Category.undefinedCategory();
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -78,12 +74,9 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
                     );
                     String address = data.getStringExtra(SelectLocationActivity.KEY_READABLE_ADDRESS);
                     if (address == null) // try to fetch location again
-                        new GetAddressTask(this, new GetAddressTask.AddressCallback() {
-                            @Override
-                            public void addressFetched(@Nullable Address address) {
-                                String addressString = ServicesSingleton.readableAddress(address);
-                                ServicesSingleton.instance().userSelectsLocation(latLng, addressString);
-                            }
+                        new GetAddressTask(this, address1 -> {
+                            String addressString = ServicesSingleton.readableAddress(address1);
+                            ServicesSingleton.instance().userSelectsLocation(latLng, addressString);
                         }).execute(latLng.latitude, latLng.longitude);
                     ServicesSingleton.instance().userSelectsLocation(latLng, address);
                 }
@@ -139,21 +132,25 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
             return;
         }
 
-        HashSet<Integer> sellerIds = null;
+        Quote quote = new Quote();
+        quote.searchString = searchString;
+        quote.priceRange = mSearchConstraintsFragment.getPriceRange();
+        quote.brands = mSelectedCategory.asAdditionalInfo();
+        quote.address = address;
+        quote.latitude = latitude;
+        quote.longitude = longitude;
 
-        Quote quote = new Quote(
-                buyer.getId(),
-                searchString,
-                mSearchConstraintsFragment.getPriceRange(),
-                mSelectedCategory,
-                mSelectedCategory.asAdditionalInfo(),
-                sellerIds, // seller Ids
-                address, // address
-                latitude,
-                longitude
-        );
-
-        NetworkRequestsManager.instance().sendQuoteRequest(quote);
+        AndroidObservable.bindActivity(this, NetworkRequestsManager.instance().sendQuote(quote))
+                .subscribe(
+                        (returnedQuote) -> {
+                            quoteList();
+                            Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT).show();
+                            finish();
+                        },
+                        (throwable) -> {
+                            Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG).show();
+                            mSearchConstraintsFragment.sendingQuote(false);
+                        });
         mSearchConstraintsFragment.sendingQuote(true);
     }
 
@@ -220,7 +217,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
                     mSearchConstraintsFragment.refreshSelectedCategory(mSelectedCategory, mSearchFragment.getSearchString());
 
                 double timeTaken = (System.nanoTime() - start)/Log.ONE_MILLION;
-                Log.d(Log.TIMER_TAG, "onPageSelected took " + timeTaken + "ms");
+                Log.v(Log.TIMER_TAG, "onPageSelected took " + timeTaken + "ms");
             }
 
             @Override
@@ -250,9 +247,6 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //                            .setText(mSectionsPagerAdapter.getPageTitle(i))
 //                            .setTabListener(this));
 //        }
-
-        NetworkRequestsManager.instance().registerCallback(this);
-
     }
 
     @Override
@@ -264,44 +258,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
             super.onBackPressed();
     }
 
-//    @Override
-//    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-//        // When the given tab is selected, switch to the corresponding page in
-//        // the ViewPager.
-//        int tabPosition = tab.getPosition();
-//        mViewPager.setCurrentItem(tabPosition);
-//        Log.d("timer", tab.getText() + " tab selected");
-////        if (tabPosition != 0)
-////            mSearchButtonViewFlipper.setVisibility(View.VISIBLE);
-//    }
-//
-//    @Override
-//    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-//        Log.d("timer", tab.getText() + " tab unselected");
-//    }
-//
-//    @Override
-//    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-//    }
-
-    @Override
-    public void productCategoriesUpdated(List<ProductCategories.Category> productCategories) {
-        mSearchFragment.updateProductCategories(productCategories);
-    }
-
-    @Override
-    public void onQuoteSent(boolean success) {
-        if (success) {
-            quoteList();
-            Toast.makeText(this, "quote sent successfully", Toast.LENGTH_SHORT).show();
-            finish();
-        } else {
-            Toast.makeText(this, "quote send error. please try again later", Toast.LENGTH_LONG).show();
-            mSearchConstraintsFragment.sendingQuote(false);
-        }
-    }
-
-    public void onCategorySelected(ProductCategories.Category selectedCategory) {
+    public void onCategorySelected(Category selectedCategory) {
         mSelectedCategory = selectedCategory;
     }
 
@@ -309,9 +266,9 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
         return mSearchFragment.getSearchString();
     }
 
-    public ProductCategories.Category getSelectedCategory() {
+    public Category getSelectedCategory() {
         if (mSelectedCategory == null)
-            return ProductCategories.Category.undefinedCategory();
+            return Category.undefinedCategory();
         return mSelectedCategory;
     }
 
@@ -337,7 +294,6 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //                case 3:
 //                    return mSellersMapFragment;
             }
-
             throw new IllegalArgumentException("Invalid parameter position: " + position);
         }
 
@@ -352,4 +308,23 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
         }
     }
 
+//    @Override
+//    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+//        // When the given tab is selected, switch to the corresponding page in
+//        // the ViewPager.
+//        int tabPosition = tab.getPosition();
+//        mViewPager.setCurrentItem(tabPosition);
+//        Log.d("timer", tab.getText() + " tab selected");
+////        if (tabPosition != 0)
+////            mSearchButtonViewFlipper.setVisibility(View.VISIBLE);
+//    }
+//
+//    @Override
+//    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+//        Log.d("timer", tab.getText() + " tab unselected");
+//    }
+//
+//    @Override
+//    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+//    }
 }

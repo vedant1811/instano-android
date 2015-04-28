@@ -1,5 +1,6 @@
 package com.instano.retailer.instano.utilities.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 /**
@@ -9,8 +10,10 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName(value = "device")
 public class Device {
 
+    @JsonProperty("gcm_registration_id")
     private String gcm_registration_id;
-    private String sessionId = "sklksal";
+    @JsonProperty("session_id")
+    private String session_id;
 
     public String getGcm_registration_id() {
         return gcm_registration_id;
@@ -20,11 +23,11 @@ public class Device {
         this.gcm_registration_id = gcm_registration_id;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getSession_id() {
+        return session_id;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public void setSession_id(String session_id) {
+        this.session_id = session_id;
     }
 }
