@@ -24620,7 +24620,7 @@ com.instano.retailer.instano.application.network.NetworkRequestsManager -> com.i
     int getAppVersion() -> h
     void lambda$registerDevice$34(com.instano.retailer.instano.utilities.models.Device) -> a
     rx.Observable lambda$registerDevice$33(java.lang.Throwable) -> a
-    rx.Observable lambda$registerAfterFetchingGcm$32(com.instano.retailer.instano.utilities.models.Device) -> b
+    void lambda$registerAfterFetchingGcm$32(com.instano.retailer.instano.utilities.models.Device) -> b
     void lambda$registerAfterFetchingGcm$31(rx.Subscriber) -> a
     void lambda$authorizeSession$29(com.instano.retailer.instano.utilities.models.Device) -> c
     void lambda$null$28(com.instano.retailer.instano.utilities.models.Seller) -> c
@@ -24632,7 +24632,7 @@ com.instano.retailer.instano.application.network.NetworkRequestsManager -> com.i
     void access$lambda$1(com.instano.retailer.instano.application.network.NetworkRequestsManager,retrofit.RequestInterceptor$RequestFacade) -> a
     void access$lambda$2(com.instano.retailer.instano.application.network.NetworkRequestsManager,com.instano.retailer.instano.utilities.models.Device) -> a
     void access$lambda$3(com.instano.retailer.instano.application.network.NetworkRequestsManager,rx.Subscriber) -> a
-    rx.Observable access$lambda$4(com.instano.retailer.instano.application.network.NetworkRequestsManager,com.instano.retailer.instano.utilities.models.Device) -> b
+    void access$lambda$4(com.instano.retailer.instano.application.network.NetworkRequestsManager,com.instano.retailer.instano.utilities.models.Device) -> b
     rx.Observable access$lambda$5(com.instano.retailer.instano.application.network.NetworkRequestsManager,java.lang.Throwable) -> a
     void access$lambda$6(com.instano.retailer.instano.application.network.NetworkRequestsManager,com.instano.retailer.instano.utilities.models.Device) -> c
     rx.Observable access$lambda$7(java.util.List) -> a
@@ -24642,46 +24642,50 @@ com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
 com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$10 -> com.instano.retailer.instano.application.network.e:
-    com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$UnregisteredBuyersApiService arg$1 -> a
     java.lang.Object call(java.lang.Object) -> a
-    rx.functions.Func1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
+    rx.functions.Func1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager$UnregisteredBuyersApiService) -> a
 com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$11 -> com.instano.retailer.instano.application.network.f:
-    com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
-    java.lang.Object call(java.lang.Object) -> a
-    rx.functions.Func1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$12 -> com.instano.retailer.instano.application.network.g:
     com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$13 -> com.instano.retailer.instano.application.network.h:
-    com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$13 instance -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$12 -> com.instano.retailer.instano.application.network.g:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
     java.lang.Object call(java.lang.Object) -> a
-    rx.functions.Func1 lambdaFactory$() -> a
+    rx.functions.Func1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$13 -> com.instano.retailer.instano.application.network.h:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
+    void call(java.lang.Object) -> call
+    rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
 com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$14 -> com.instano.retailer.instano.application.network.i:
     com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$14 instance -> a
+    java.lang.Object call(java.lang.Object) -> a
+    rx.functions.Func1 lambdaFactory$() -> a
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$15 -> com.instano.retailer.instano.application.network.j:
+    com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$15 instance -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$() -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$4 -> com.instano.retailer.instano.application.network.j:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$4 -> com.instano.retailer.instano.application.network.k:
     com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
     void intercept(retrofit.RequestInterceptor$RequestFacade) -> intercept
     retrofit.RequestInterceptor lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$5 -> com.instano.retailer.instano.application.network.k:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$5 -> com.instano.retailer.instano.application.network.l:
     com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
     void call(java.lang.Object) -> call
     rx.functions.Action1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$6 -> com.instano.retailer.instano.application.network.l:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$6 -> com.instano.retailer.instano.application.network.m:
     com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$6 instance -> a
     java.lang.Object call(java.lang.Object) -> a
     rx.functions.Func1 lambdaFactory$() -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$7 -> com.instano.retailer.instano.application.network.m:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$7 -> com.instano.retailer.instano.application.network.n:
     com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$7 instance -> a
     java.lang.Object call(java.lang.Object) -> a
     rx.functions.Func1 lambdaFactory$() -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$8 -> com.instano.retailer.instano.application.network.n:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$8 -> com.instano.retailer.instano.application.network.o:
     com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$8 instance -> a
     java.lang.Object call(java.lang.Object) -> a
     rx.functions.Func1 lambdaFactory$() -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$9 -> com.instano.retailer.instano.application.network.o:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$$Lambda$9 -> com.instano.retailer.instano.application.network.p:
     com.instano.retailer.instano.application.network.NetworkRequestsManager arg$1 -> a
     void call(java.lang.Object) -> call
     rx.Observable$OnSubscribe lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager) -> a
@@ -24695,7 +24699,7 @@ com.instano.retailer.instano.application.network.NetworkRequestsManager$Register
     rx.Observable getQuotes() -> getQuotes
     rx.Observable getQuotations() -> getQuotations
     rx.Observable getProductCategories() -> getProductCategories
-com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction -> com.instano.retailer.instano.application.network.p:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction -> com.instano.retailer.instano.application.network.q:
     int maxRetries -> b
     int retryCount -> c
     com.instano.retailer.instano.application.network.NetworkRequestsManager this$0 -> a
@@ -24703,17 +24707,17 @@ com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionE
     java.lang.Object call(java.lang.Object) -> a
     rx.Observable lambda$call$30(java.lang.Throwable) -> a
     rx.Observable access$lambda$0(com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction,java.lang.Throwable) -> a
-com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction$$Lambda$1 -> com.instano.retailer.instano.application.network.q:
+com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction$$Lambda$1 -> com.instano.retailer.instano.application.network.r:
     com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction arg$1 -> a
     java.lang.Object call(java.lang.Object) -> a
     rx.functions.Func1 lambdaFactory$(com.instano.retailer.instano.application.network.NetworkRequestsManager$SessionErrorsHandlerFunction) -> a
 com.instano.retailer.instano.application.network.NetworkRequestsManager$UnregisteredBuyersApiService -> com.instano.retailer.instano.application.network.NetworkRequestsManager$UnregisteredBuyersApiService:
     rx.Observable registerDevice(com.instano.retailer.instano.utilities.models.Device) -> registerDevice
-com.instano.retailer.instano.application.network.ResponseError -> com.instano.retailer.instano.application.network.r:
+com.instano.retailer.instano.application.network.ResponseError -> com.instano.retailer.instano.application.network.s:
     java.lang.String TAG -> a
     com.instano.retailer.instano.application.network.ResponseError$Type mType -> b
     com.instano.retailer.instano.application.network.ResponseError$Type getErrorType() -> a
-com.instano.retailer.instano.application.network.ResponseError$Type -> com.instano.retailer.instano.application.network.s:
+com.instano.retailer.instano.application.network.ResponseError$Type -> com.instano.retailer.instano.application.network.t:
     com.instano.retailer.instano.application.network.ResponseError$Type UNKNOWN_ERROR -> a
     com.instano.retailer.instano.application.network.ResponseError$Type NO_GCM_ID -> b
     com.instano.retailer.instano.application.network.ResponseError$Type INVALID_GCM_ID -> c
@@ -24740,7 +24744,7 @@ com.instano.retailer.instano.application.network.ResponseError$Type -> com.insta
     boolean shouldRefreshGcmId() -> a
     boolean shouldRefreshSessionId() -> b
     boolean isFatal() -> c
-com.instano.retailer.instano.application.network.ResponseErrorHandler -> com.instano.retailer.instano.application.network.t:
+com.instano.retailer.instano.application.network.ResponseErrorHandler -> com.instano.retailer.instano.application.network.u:
     java.lang.Throwable handleError(retrofit.RetrofitError) -> handleError
 com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment -> com.instano.retailer.instano.buyerDashboard.a:
     int mQuotationId -> a
