@@ -3,9 +3,11 @@ package com.instano.retailer.instano.application;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.StrictMode;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -28,6 +30,9 @@ public class MyApplication extends Application
      */
     @Override
     public void onCreate() {
+        if (BuildConfig.DEBUG) {
+            StrictMode.enableDefaults();
+        }
         super.onCreate();
         mTrackers = new HashMap<>();
 

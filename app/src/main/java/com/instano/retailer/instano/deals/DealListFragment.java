@@ -8,13 +8,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
+import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Deal;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashSet;
+
+import rx.android.observables.AndroidObservable;
 
 /**
  * A list fragment representing a list of Deals. This fragment
@@ -32,6 +45,7 @@ public class DealListFragment extends ListFragment{
      * activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
+    private static final String TAG = "DealListFragment";
 
     /**
      * The fragment's current callback object, which is notified of list item
@@ -69,7 +83,7 @@ public class DealListFragment extends ListFragment{
     public void dealsUpdated() {
         DealsAdapter adapter = (DealsAdapter) getListAdapter();
         adapter.clear();
-        HashSet<Deal> validDeals = new HashSet<Deal>();
+        HashSet<Deal> validDeals = new HashSet<>();
         // add only valid deals:
 //        for(Deal deal : DataManager.instance().getDeals()) {
 //            Seller seller = DataManager.instance().getSeller(deal.sellerId);
@@ -104,6 +118,19 @@ public class DealListFragment extends ListFragment{
         dealsUpdated();
 //        DataManager.instance().registerListener((DataManager.DealsListener) this);
 //        DataManager.instance().registerListener((DataManager.SellersListener) this);
+
+        DealsAdapter adapter = (DealsAdapter) getListAdapter();
+        adapter.notifyDataSetChanged();
+        AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Deal.class))
+                .subscribe((t) -> {
+//                    mShown = true;
+//                    setListShown(mShown);
+                    adapter.add(t);
+//                    adapter.sort((lhs, rhs) -> lhs.compareTo(rhs));
+                }, throwable -> Log.fatalError(new RuntimeException(
+                        "error response in subscribe to getObservable(Quote.class)",
+                        throwable)));
+        setListAdapter(adapter);
     }
 
     @Override
@@ -198,7 +225,7 @@ public class DealListFragment extends ListFragment{
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = convertView;
             if (view == null)
-                view = mInflater.inflate(R.layout.list_item_deal, parent, false);
+                view = mInflater.inflate(R.layout.list_item_googlecard, parent, false);
 
             Deal deal = getItem(position);
 //            Seller seller = DataManager.instance().getSeller(deal.sellerId);
@@ -206,19 +233,38 @@ public class DealListFragment extends ListFragment{
 //            if (seller == null || System.currentTimeMillis() >= deal.expiresAt) {
 //                throw new IllegalStateException("Invalid deal should have not entered the adapter");
 //            }
+            ObjectMapper objectMapper = ServicesSingleton.instance().getDefaultObjectMapper().copy();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+            try {
+                JSONObject jsonObject = new JSONObject(objectMapper.writeValueAsString(deal));
+                Log.v(TAG,"\n"+ jsonObject);
+            } catch (JSONException | JsonProcessingException e) {
+                e.printStackTrace();
+            }
 
-            TextView headingTextView = (TextView) view.findViewById(R.id.headingTextView);
-            TextView subheadingTextView = (TextView) view.findViewById(R.id.subheadingTextView);
-            TextView distanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
-            TextView expiresAtTextView = (TextView) view.findViewById(R.id.expiresAtTextView);
-
+            TextView headingTextView = (TextView) view.findViewById(R.id.dealHeading);
+            TextView subheadingTextView = (TextView) view.findViewById(R.id.dealSubheading);
+            TextView distanceTextView = (TextView) view.findViewById(R.id.dealDistance);
+            ImageButton productImage = (ImageButton) view.findViewById(R.id.dealProduct);
+            Log.v(TAG,"heading : "+deal.heading+" subheading : "+deal.subheading);
             headingTextView.setText(deal.heading);
             subheadingTextView.setText(deal.subheading);
+
+            if(deal.product == null)
+                Picasso.with(getContext())
+                    .load(R.drawable.img_nature5)
+                    .into(productImage);
+            else
+                Picasso.with(getContext())
+                        .load(deal.product.image)
+                        .placeholder(R.drawable.img_nature5)
+                        .error(R.drawable.instano_launcher)
+                        .into(productImage);
 //            if (seller != null)
 //                distanceTextView.setText(seller.getPrettyDistanceFromLocation());
 //            else
 //                throw new IllegalStateException("Invalid deal should have not entered the adapter");
-            expiresAtTextView.setText(deal.expiresAt());
+//            expiresAtTextView.setText(deal.expiresAt());
 
             // to behave as a button i.e. have a "pressed" state
             view.setBackgroundResource(R.drawable.selector_list_item);
