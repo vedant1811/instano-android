@@ -19,6 +19,7 @@ import com.instano.retailer.instano.utilities.models.Buyer;
 import com.instano.retailer.instano.utilities.models.Categories;
 import com.instano.retailer.instano.utilities.models.Deal;
 import com.instano.retailer.instano.utilities.models.Device;
+import com.instano.retailer.instano.utilities.models.Product;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
 import com.instano.retailer.instano.utilities.models.Seller;
@@ -33,6 +34,7 @@ import retrofit.converter.JacksonConverter;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.Query;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
@@ -98,6 +100,9 @@ public class NetworkRequestsManager {
 
         @GET("/brands_categories")
         Observable<Categories> getProductCategories();
+
+        @GET("/products")
+        Observable<List<Product>> queryProducts(@Query("q") String query);
     }
 
     public interface UnregisteredBuyersApiService {
@@ -139,6 +144,11 @@ public class NetworkRequestsManager {
         return mRegisteredBuyersApiService.sendQuote(quote)
                 .retryWhen(new SessionErrorsHandlerFunction())
                 .doOnNext(this::newObject);
+    }
+
+
+    public Observable<List<Product>> queryProducts(String query) {
+        return mRegisteredBuyersApiService.queryProducts(query);
     }
 
     private NetworkRequestsManager(MyApplication application) {
