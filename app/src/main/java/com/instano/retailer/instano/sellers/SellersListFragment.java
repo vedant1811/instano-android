@@ -1,29 +1,17 @@
 package com.instano.retailer.instano.sellers;
 
-import android.app.Fragment;
+import android.app.ListFragment;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-
-import com.instano.retailer.instano.application.DataManager;
-import com.instano.retailer.instano.utilities.library.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 
-import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.utilities.models.Seller;
+import com.instano.retailer.instano.utilities.library.Log;
 
-import java.util.HashSet;
-import java.util.List;
+import rx.android.observables.AndroidObservable;
 
 /**
  * A fragment representing a list of Items.
@@ -32,7 +20,7 @@ import java.util.List;
  * with a GridView.
  * <p />
  */
-public class SellersListFragment extends Fragment implements
+public class SellersListFragment extends ListFragment implements
         SellersArrayAdapter.ItemInteractionListener {
 
     private static final String PLEASE_SELECT_LOCATION = "please select location";
@@ -42,6 +30,7 @@ public class SellersListFragment extends Fragment implements
     private ListView mListView;
 
     private RelativeLayout.LayoutParams mDistTextLayoutParams;
+    private boolean mShown = false;
 //    private Animation mAnimationFadeOut;
 
     /**
@@ -54,25 +43,27 @@ public class SellersListFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SellersArrayAdapter adapter = new SellersArrayAdapter(getActivity());
+        mShown = false;
+
+        //TODO: create a new observable when using animations
+        //TODO: This is emitted after 10ms delay
+        AndroidObservable.bindFragment(this, adapter.getFilteredSellersObservable())
+                .subscribe(
+                        list -> {
+                            mShown = true;
+                            setListShown(mShown);
+                        },
+                        throwable -> Log.fatalError(new RuntimeException(throwable)));
+        setListAdapter(adapter);
+        adapter.setListener(this);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sellers, container, false);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-//        setEmptyText("No sellers nearby. Try relaxing location/categories/brands constraints");
-
-        SellersActivity activity = (SellersActivity) getActivity();
-        SellersArrayAdapter adapter = activity.getAdapter();
-
-        // Set the adapter
-        mListView = (ListView) view.findViewById(R.id.listView);
-        mListView.setAdapter(adapter);
-        mListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-        adapter.setListener(this);
-
-        return view;
+       setListShown(mShown);
     }
 
     /**

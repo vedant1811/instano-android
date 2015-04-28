@@ -12,10 +12,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.DataManager;
-import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.models.Deal;
-import com.instano.retailer.instano.utilities.models.Seller;
 
 import java.util.HashSet;
 
@@ -28,7 +25,7 @@ import java.util.HashSet;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class DealListFragment extends ListFragment implements DataManager.DealsListener, DataManager.SellersListener {
+public class DealListFragment extends ListFragment{
 
     /**
      * The serialization (saved instance state) Bundle key representing the
@@ -69,25 +66,23 @@ public class DealListFragment extends ListFragment implements DataManager.DealsL
         }
     };
 
-    @Override
     public void dealsUpdated() {
         DealsAdapter adapter = (DealsAdapter) getListAdapter();
         adapter.clear();
         HashSet<Deal> validDeals = new HashSet<Deal>();
         // add only valid deals:
-        for(Deal deal : DataManager.instance().getDeals()) {
-            Seller seller = DataManager.instance().getSeller(deal.sellerId);
-            // can happen if sever feeds wrong data
-            if (seller != null && System.currentTimeMillis() < deal.expiresAt) {
-                validDeals.add(deal);
-            }
-            else
-                Log.e("dealsUpdated", "no seller for id: " + deal.sellerId);
-        }
+//        for(Deal deal : DataManager.instance().getDeals()) {
+//            Seller seller = DataManager.instance().getSeller(deal.sellerId);
+//            // can happen if sever feeds wrong data
+//            if (seller != null && System.currentTimeMillis() < deal.expiresAt) {
+//                validDeals.add(deal);
+//            }
+//            else
+//                Log.e("dealsUpdated", "no seller for id: " + deal.sellerId);
+//        }
         adapter.addAll(validDeals);
     }
 
-    @Override
     public void sellersUpdated() {
         DealsAdapter adapter = (DealsAdapter) getListAdapter();
         adapter.notifyDataSetChanged();
@@ -107,15 +102,15 @@ public class DealListFragment extends ListFragment implements DataManager.DealsL
         setListAdapter(new DealsAdapter(getActivity()));
         // call after setting the adapter so that the adapter is not null
         dealsUpdated();
-        DataManager.instance().registerListener((DataManager.DealsListener) this);
-        DataManager.instance().registerListener((DataManager.SellersListener) this);
+//        DataManager.instance().registerListener((DataManager.DealsListener) this);
+//        DataManager.instance().registerListener((DataManager.SellersListener) this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        DataManager.instance().unregisterListener((DataManager.SellersListener) this);
-        DataManager.instance().unregisterListener((DataManager.DealsListener) this);
+//        DataManager.instance().unregisterListener((DataManager.SellersListener) this);
+//        DataManager.instance().unregisterListener((DataManager.DealsListener) this);
     }
 
     @Override
@@ -206,7 +201,7 @@ public class DealListFragment extends ListFragment implements DataManager.DealsL
                 view = mInflater.inflate(R.layout.list_item_deal, parent, false);
 
             Deal deal = getItem(position);
-            Seller seller = DataManager.instance().getSeller(deal.sellerId);
+//            Seller seller = DataManager.instance().getSeller(deal.sellerId);
 
 //            if (seller == null || System.currentTimeMillis() >= deal.expiresAt) {
 //                throw new IllegalStateException("Invalid deal should have not entered the adapter");
@@ -219,11 +214,10 @@ public class DealListFragment extends ListFragment implements DataManager.DealsL
 
             headingTextView.setText(deal.heading);
             subheadingTextView.setText(deal.subheading);
-            if (seller != null)
-                distanceTextView.setText(seller.getPrettyDistanceFromLocation());
-            else {
-                throw new IllegalStateException("Invalid deal should have not entered the adapter");
-            }
+//            if (seller != null)
+//                distanceTextView.setText(seller.getPrettyDistanceFromLocation());
+//            else
+//                throw new IllegalStateException("Invalid deal should have not entered the adapter");
             expiresAtTextView.setText(deal.expiresAt());
 
             // to behave as a button i.e. have a "pressed" state

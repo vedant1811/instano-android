@@ -1,31 +1,39 @@
 package com.instano.retailer.instano.application;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.app.NotificationCompat;
 
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.LauncherActivity;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
+import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.models.Quotation;
+import com.instano.retailer.instano.utilities.models.Seller;
+
+import java.io.IOException;
+import java.util.Random;
 
 /**
  * Created by ROHIT on 09-Mar-15.
  */
 public class GcmIntentService extends IntentService {
     public static final int NOTIFICATION_ID = 1;
-    private NotificationManager mNotificationManager;
     private static final String TAG = "GcmIntentService";
 
     public GcmIntentService() {
         super("GcmIntentService");
     }
+
     @Override
     protected void onHandleIntent(Intent intent) {
         Bundle extras = intent.getExtras();
@@ -52,28 +60,73 @@ public class GcmIntentService extends IntentService {
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 // Post notification of received message.
-//                sendNotification("Received: " + extras.toString());
-//                Log.i(TAG, "Received: " + extras.getString("buyer"));
-                String session_id = extras.getString("session_id");
-                Log.v(TAG, "Received: " + session_id);
-                Log.v(TAG, "Received: " + extras.toString());
+                sendNotification("Received: " + extras.toString());
+                Log.v(TAG, "Received: " + extras);
+                String type = extras.getString("type");
+                Log.v(TAG, "TYPE : " + type);
+                if (type != null) {
+                    try {
+                        ObjectMapper mapper = ServicesSingleton.instance().getDefaultObjectMapper();
+                        switch (type) {
+                            case "seller":
+                                Seller seller = mapper.readValue(extras.getString("seller"), Seller.class);
+                                NetworkRequestsManager.instance().newObject(seller);
+                                break;
+                            case "quotation":
+                                Quotation quotation = mapper.readValue(extras.getString("quotation"), Quotation.class);
+                                NetworkRequestsManager.instance().newObject(quotation);
+                                newQuotationsNotification();
+                                break;
+                        }
+                    } catch (IOException e) {
+                        Log.fatalError(e);
+                    }
+                }
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    // Put the message into a notification and post it.
-    // This is just one simple example of what you might choose to do with
-    // a GCM message.
+    public void newQuotationsNotification() {
+        Log.d(TAG, "new quotations received");
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.instano_launcher)
+                .setContentTitle("New Quotations")
+                .setContentText("Click to view your new quotations")
+                .setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL);
+
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                new Intent(this, QuoteListActivity.class),
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        builder.setContentIntent(resultPendingIntent);
+
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(001, builder.build());
+    }
+
+    /**
+     * create a notification. Used for debugging only
+     */
     private void sendNotification(String msg) {
-        mNotificationManager = (NotificationManager)
+        if (!BuildConfig.DEBUG)
+            return;
+        NotificationManager notificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
+        Log.v(TAG,"sendNotification");
+        PendingIntent contentIntent = PendingIntent.getActivity(
+                this,
+                0,
+                new Intent(this, LauncherActivity.class),
+                0
+        );
 
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, LauncherActivity.class), 0);
-
-        NotificationCompat.Builder mBuilder =
+        NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.com_facebook_button_like_icon_selected)
                         .setContentTitle("GCM Notification")
@@ -81,7 +134,8 @@ public class GcmIntentService extends IntentService {
                                 .bigText(msg))
                         .setContentText(msg);
 
-        mBuilder.setContentIntent(contentIntent);
-        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        builder.setContentIntent(contentIntent);
+        // preserve all notifications
+        notificationManager.notify(new Random().nextInt(), builder.build());
     }
 }

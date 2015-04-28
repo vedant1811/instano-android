@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.utilities;
+package com.instano.retailer.instano.activities;
 
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -10,16 +10,22 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.activities.MessageDialogFragment;
-import com.instano.retailer.instano.activities.ProfileActivity;
 import com.instano.retailer.instano.application.BaseActivity;
-import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
+import com.instano.retailer.instano.application.network.ResponseError;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.deals.DealListActivity;
 import com.instano.retailer.instano.search.SearchTabsActivity;
-import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.sellers.SellersActivity;
+import com.instano.retailer.instano.utilities.library.Log;
+
+import rx.Observable;
+import rx.Subscription;
+import rx.android.observables.AndroidObservable;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.subscriptions.BooleanSubscription;
 
 /**
  * Base class for activities with a common menu (menu.global)
@@ -29,7 +35,7 @@ import com.instano.retailer.instano.sellers.SellersActivity;
  *
  * Created by vedant on 15/12/14.
  */
-public abstract class GlobalMenuActivity extends BaseActivity implements NetworkRequestsManager.SessionIdCallback {
+public abstract class GlobalMenuActivity extends BaseActivity {
     private static final String TAG = "GlobalMenuActivity";
     public static final int PICK_CONTACT_REQUEST_CODE = 996;
     public static final int SEND_SMS_REQUEST_CODE = 995;
@@ -42,10 +48,11 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
     private static final int SHARE_REQUEST_CODE = 998;
 
     protected static final String HOW_DO_YOU_WANT_TO_CONTACT_US = "How do you want to contact us";
-    private static final String TEXT_OFFLINE_QUERY = "You can send a query directly by any of the following";
+    private static final String TEXT_OFFLINE_QUERY = "You can send a query directly by mail";
     private static final String MESSAGE_DIALOG_FRAGMENT = "MessageDialogFragment";
 
     public static final String PLAY_STORE_LINK = "http://play.google.com/store/apps/details?id=com.instano.buyer";
+    private Subscription mClickSubscription = BooleanSubscription.create();
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -60,27 +67,58 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // register this callback each time an activity is resumed
-        NetworkRequestsManager.instance().registerCallback(this);
-        if (!NetworkRequestsManager.instance().isOnline())
-            noInternetDialog();
+    /**
+     * binds an observable to this activity.
+     * shows a dialog with a retry button if observable throws an error
+     * @param observable
+     * @param onNext runs as long as @param observable doesn't throw an error
+     */
+    protected <T> void retryableError(Observable<T> observable, final Action1<? super T> onNext) {
+        retryableError(observable, onNext, (throwable) -> false);
     }
 
-    public void onSessionResponse(NetworkRequestsManager.ResponseError error) {
-        Log.v(TAG, "Response Error in Global "+error);
-        if (error == NetworkRequestsManager.ResponseError.NO_ERROR) {
-            cancelDialog();
-        } else {
-            MessageDialogFragment.Type type = error.isLongWaiting() ?
-                    MessageDialogFragment.Type.NON_CANCELLABLE_WITHOUT_PROGRESSBAR: // don't make user wait more
-                    MessageDialogFragment.Type.NON_CANCELLABLE_WITH_TIMEOUTABLE_PROGRESSBAR;
+    /**
+     * binds an observable to this activity.
+     * shows a dialog with a retry button if observable throws an error and @param booleanFunc returns false
+     * @param observable
+     * @param onNext runs as long as @param observable doesn't throw an error
+     * @param booleanFunc performs this function on error. return true if error was handled, false if dialog needs to be shown
+     */
+    protected <T> void retryableError(Observable<T> observable, final Action1<? super T> onNext, Func1<Throwable, Boolean> booleanFunc) {
+        AndroidObservable.bindActivity(this, observable)
+                .subscribe(
+                        next -> {
+                            onNext.call(next);
+                            cancelDialog();
+                        },
+                        error -> {
+                            // call the function and check whether the error was handled
+                            if (booleanFunc.call(error)) {
+                                cancelDialog();
+                                return; // the callee handled the error, do not do anything
+                            }
+                            ErrorDialogFragment fragment = showErrorDialog(error);
+                            Log.d(TAG, "showProgressBar(false)");
+                            fragment.showProgressBar(false);
+                            mClickSubscription.unsubscribe();
+                            mClickSubscription = fragment.observeTryAgainClicks().subscribe(click -> {
+                                Log.d(TAG, "try again click observed");
+                                fragment.showProgressBar(true);
+                                retryableError(observable.retry(1), onNext, booleanFunc);
+                            });
+                        });
+    }
 
-            contactUs("Trouble connecting", "Please wait we are trying to connect or contact us", type);
-            NetworkRequestsManager.instance().authorizeSession(error.shouldRefreshGcmId());
+    private ErrorDialogFragment showErrorDialog(Throwable throwable) {
+        Log.d(TAG, "showing error dialog");
+        throwable.printStackTrace();
+        if (throwable instanceof ResponseError) {
+            return contactUs("Trouble connecting", "Please wait we are trying to connect or contact us");
         }
+        else if (!NetworkRequestsManager.instance().isOnline())
+            return noInternetDialog();
+        else
+            return contactUs("Server error :(", TEXT_OFFLINE_QUERY);
     }
 
     @Override
@@ -102,9 +140,10 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
                 sellersList();
                 return true;
 
-            case R.id.action_contact_us:
-                contactUs();
-                return true;
+            // TODO:
+//            case R.id.action_contact_us:
+//                contactUs();
+//                return true;
 
             case R.id.action_quote_list:
                 quoteList();
@@ -125,34 +164,24 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
         return super.onOptionsItemSelected(item);
     }
 
-    protected void serverErrorDialog() {
-        contactUs("Server error :(", TEXT_OFFLINE_QUERY);
+    protected ErrorDialogFragment noInternetDialog() {
+        return contactUs("No internet", TEXT_OFFLINE_QUERY);
     }
 
-    protected void noInternetDialog() {
-        contactUs("No internet", TEXT_OFFLINE_QUERY);
-    }
-
-    protected void noPlayServicesDialog() {
-        contactUs("No Play Services", "Google Play Services is needed for the app. " +
-                "Contact us directly instead.", MessageDialogFragment.Type.NON_CANCELLABLE_WITHOUT_PROGRESSBAR);
-    }
-
-    protected MessageDialogFragment contactUs() {
+    protected ErrorDialogFragment contactUs() {
         return contactUs("Contact us", HOW_DO_YOU_WANT_TO_CONTACT_US);
     }
-    protected MessageDialogFragment contactUs(String heading, String title) {
-        return contactUs(heading, title, MessageDialogFragment.Type.CANCELLABLE);
-    }
 
-    protected MessageDialogFragment contactUs(String heading, String subheading, MessageDialogFragment.Type type) {
+    protected ErrorDialogFragment contactUs(String heading, String subheading) {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         Fragment prev = getFragmentManager().findFragmentByTag(MESSAGE_DIALOG_FRAGMENT);
         if (prev != null) {
             try {
-                MessageDialogFragment dialogFragment = (MessageDialogFragment) prev;
-                if (dialogFragment.isHeadingSameAs(heading))
+                ErrorDialogFragment dialogFragment = (ErrorDialogFragment) prev;
+                if (dialogFragment.isHeadingSameAs(heading)) {
+                    Log.d(TAG, "returning old fragment");
                     return dialogFragment; // the same dialog is already showing
+                }
             } catch (ClassCastException e) {
                 ft.remove(prev);
                 Log.fatalError(e);
@@ -161,14 +190,17 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
         ft.addToBackStack(null);
 
         // Create and show the dialog.
-        DialogFragment newFragment = MessageDialogFragment.newInstance(heading, subheading, type);
+        DialogFragment newFragment = ErrorDialogFragment.newInstance(heading, subheading);
         newFragment.show(ft, MESSAGE_DIALOG_FRAGMENT);
-        return (MessageDialogFragment) newFragment;
+        return (ErrorDialogFragment) newFragment;
     }
 
+    /**
+     * idempotent
+     */
     protected void cancelDialog() {
-        MessageDialogFragment prev = (MessageDialogFragment) getFragmentManager().findFragmentByTag(MESSAGE_DIALOG_FRAGMENT);
-        if(prev !=null) {
+        ErrorDialogFragment prev = (ErrorDialogFragment) getFragmentManager().findFragmentByTag(MESSAGE_DIALOG_FRAGMENT);
+        if(prev != null) {
             prev.dismiss();
         }
     }
@@ -220,7 +252,6 @@ public abstract class GlobalMenuActivity extends BaseActivity implements Network
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.global, menu);
-
         return true;
     }
 }

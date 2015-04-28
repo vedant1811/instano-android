@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.activities.GlobalMenuActivity;
 
 /**
  * An activity representing a list of Deals. This activity

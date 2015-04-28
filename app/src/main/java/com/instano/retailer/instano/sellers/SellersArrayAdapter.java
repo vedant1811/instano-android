@@ -1,9 +1,9 @@
 package com.instano.retailer.instano.sellers;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,18 +13,23 @@ import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
+import com.instano.retailer.instano.utilities.models.Category;
+import com.instano.retailer.instano.utilities.models.Constraint;
 import com.instano.retailer.instano.utilities.models.Seller;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.subjects.BehaviorSubject;
 
 /**
  * TODO: do more
@@ -38,50 +43,43 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
     private SparseArray<Seller> mCompleteSet;
 
     private ArrayList<Seller> mFilteredList;
-    private SparseBooleanArray mCheckedItems;
-    private HashSet<Integer> mSelectedSellerIDs;
+//    private SparseBooleanArray mCheckedItems;
+//    private HashSet<Integer> mSelectedSellerIDs;
     private DistanceAndCategoryFilter mDistanceAndCategoryFilter;
     private Context mContext;
 
     private ItemInteractionListener mItemInteractionListener;
 
-    public SellersArrayAdapter(Context context) {
-        mContext = context;
+    private BehaviorSubject<List<Seller>> mSellersListSubject;
 
-        mCompleteSet = new SparseArray<Seller>();
-        mFilteredList = new ArrayList<Seller>();
+    public SellersArrayAdapter(Activity activity) {
+        mContext = activity;
+
+        mCompleteSet = new SparseArray<>();
+        mFilteredList = new ArrayList<>();
         mDistanceAndCategoryFilter = new DistanceAndCategoryFilter();
-        mCheckedItems = new SparseBooleanArray();
+//        mCheckedItems = new SparseBooleanArray();
+        mSellersListSubject = BehaviorSubject.create();
+
+        Log.v(TAG, "NetworkRequestsManager.instance().getObservable(Seller.class)");
+        NetworkRequestsManager.instance().getObservable(Seller.class)
+                .subscribe(seller -> {
+                    mCompleteSet.put(seller.hashCode(), seller);
+                    filter();
+                }, throwable -> Log.fatalError(new RuntimeException(
+                                "error response in subscribe to getObservable(Seller.class)",
+                                throwable)
+                ));
     }
 
     public void setListener(ItemInteractionListener listener) {
         this.mItemInteractionListener = listener;
     }
 
-    public SparseArray<Seller> getAllSellers() {
-        return mCompleteSet;
-    }
-
-    public ArrayList<Seller> getFilteredSellers() {
-        return mFilteredList;
-    }
-
-    public HashSet<Integer> getSelectedSellerIds() {
-        if (mSelectedSellerIDs == null)
-            updateSelectedSellers();
-        return mSelectedSellerIDs;
-    }
-
-    private void updateSelectedSellers() {
-        long start = System.nanoTime();
-        mSelectedSellerIDs = new HashSet<Integer>();
-        for (Seller seller : mFilteredList)
-            if (mCheckedItems.get(seller.hashCode())) {
-                mSelectedSellerIDs.add(seller.hashCode());
-                Log.d("mCheckedItems", String.format("getSelectedSellerIds %s (%d,%b)",seller.nameOfShop,seller.hashCode(),true));
-            }
-        double timeTaken = (System.nanoTime() - start)/1000;
-        Log.v(Log.TIMER_TAG, "updateSelectedSellers took " + timeTaken + "μs");
+    public Observable<List<Seller>> getFilteredSellersObservable() {
+        return mSellersListSubject.asObservable()
+                // send only the latest list of sellers in last 10ms
+                .debounce(10, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -113,7 +111,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
 
         final Seller seller = getItem(position);
 
-        shopNameTextView.setText(seller.nameOfShop);
+        shopNameTextView.setText(seller.name_of_shop);
         addressTextView.setText(seller.address);
         String distanceFromLocation = seller.getPrettyDistanceFromLocation();
         if (distanceFromLocation != null) {
@@ -122,12 +120,9 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         } else
             distanceTextView.setVisibility(View.INVISIBLE);
 
-        callImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mItemInteractionListener != null)
-                    mItemInteractionListener.callButtonClicked(seller.phone);
-            }
+        callImageButton.setOnClickListener(v -> {
+            if (mItemInteractionListener != null)
+                mItemInteractionListener.callButtonClicked(seller.phone);
         });
 
         return view;
@@ -153,32 +148,23 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         return true;
     }
 
-    public void addAll(Collection<Seller> collection) {
-        mCompleteSet.clear();
-        for (Seller seller : collection){
-            mCompleteSet.put(seller.id, seller);
-        }
-        filter();
-    }
-
     public void filter() {
-        mDistanceAndCategoryFilter.runOldFilter();
+        mDistanceAndCategoryFilter.runFilter();
     }
 
     public void filter(int minDist) {
         mDistanceAndCategoryFilter.filter(minDist);
     }
 
-    public void filter(ProductCategories.Category category) {
+    public void filter(Category category) {
         mDistanceAndCategoryFilter.filter(category);
     }
 
     private void newData() {
-        mSelectedSellerIDs = null;
-        if (mFilteredList.size() == 0)
-            notifyDataSetInvalidated();
-        else
-            notifyDataSetChanged();
+//        mSelectedSellerIDs = null;
+        notifyDataSetChanged();
+        Log.d(TAG, "new data");
+        mSellersListSubject.onNext(mFilteredList);
     }
 
     /**
@@ -199,58 +185,58 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         public void callButtonClicked(String number);
     }
 
+    /**
+     * do not call filter directly, use the overloaded helper methods: filter(...)
+     */
     private class DistanceAndCategoryFilter extends Filter {
-
-        private static final String PRODUCT_CATEGORY = "product_category";
-        private static final String MIN_DIST = "min_dist";
         private static final int INITIAL_MIN_DIST = 1000;
 
-        private CharSequence mLastConstraint =
-                getConstraint(INITIAL_MIN_DIST, ProductCategories.Category.undefinedCategory());
+        private Constraint mLastConstraint;
+        private final ObjectMapper mObjectMapper;
 
-        private void runOldFilter() {
-            filter(mLastConstraint);
-            Log.d("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint);
+        public DistanceAndCategoryFilter() {
+            mObjectMapper = new ObjectMapper();
+            mLastConstraint = new Constraint();
+            mLastConstraint.category = Category.UNDEFINED;
+            mLastConstraint.min_distance = INITIAL_MIN_DIST;
+        }
+
+        private void runFilter() {
+            Log.d("filter", "runFilter");
+            try {
+                filter(mObjectMapper.writeValueAsString(mLastConstraint));
+            } catch (JsonProcessingException e) {
+                Log.fatalError(e);
+            }
         }
 
         private void filter(int minDist) {
-            try {
-                mLastConstraint = (new JSONObject(mLastConstraint.toString())
-                        .put(MIN_DIST, minDist)).toString();
-            } catch (JSONException e) {
-                Log.fatalError(e);
-                mLastConstraint = getConstraint(minDist, ProductCategories.Category.undefinedCategory());
-            }
-            filter(mLastConstraint);
-            Log.d("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint);
+            mLastConstraint.min_distance = minDist;
+            runFilter();
         }
 
-        private void filter(ProductCategories.Category category) {
-            try {
-                mLastConstraint = (new JSONObject(mLastConstraint.toString())
-                        .put(PRODUCT_CATEGORY, category.toJsonObject())).toString();
-            } catch (JSONException e) {
-                Log.fatalError(e);
-                mLastConstraint = getConstraint(INITIAL_MIN_DIST, category);
-            }
-            filter(mLastConstraint);
-            Log.d("filter", "DistanceAndCategoryFilter: filtering by " + mLastConstraint);
+        private void filter(Category category) {
+            mLastConstraint.category = category.name;
+            runFilter();
         }
 
         @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            this.mLastConstraint = constraint;
-            ArrayList<Seller> filteredList = new ArrayList<Seller>();
+        protected FilterResults performFiltering(CharSequence serializedConstraint) {
+            ArrayList<Seller> filteredList = new ArrayList<>();
+            Constraint constraint = null;
+            try {
+                Log.d("filter", ".performFiltering serialized constraint=" + serializedConstraint);
+                constraint = mObjectMapper.readValue(serializedConstraint.toString(), Constraint.class);
+            } catch (IOException e) {
+                Log.fatalError(e);
+            }
 
             try {
-                // first filter distance
-                int minDist = getMinDist(constraint);
-                // filter category
-                ProductCategories.Category category = getProductCategory(constraint);
+                Log.d("filter", ".performFiltering constraint=" + constraint);
                 for (int i = 0; i < mCompleteSet.size(); i++) {
                     Seller seller = mCompleteSet.valueAt(i);
-                    if (seller.getDistanceFromLocation() <= minDist &&
-                            seller.productCategories.containsCategoryAndOneBrand(category))
+                    if (seller.getDistanceFromLocation() <= constraint.min_distance && // first filter distance
+                            seller.containsCategory(constraint.category)) // filter category
                         filteredList.add(seller);
                 }
             } catch (Exception e) {
@@ -272,33 +258,14 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            mFilteredList = (ArrayList<Seller>) results.values;
+            if ((ArrayList<Seller>) results.values != null) {
+                mFilteredList = (ArrayList<Seller>) results.values;
+                Log.v(TAG, "publishResults size :" + mFilteredList.size());
+            }
+            else
+                mFilteredList.clear();
+
             newData();
         }
-
-        private ProductCategories.Category getProductCategory(CharSequence constraint) throws JSONException {
-            JSONObject jsonObject = new JSONObject(constraint.toString());
-            return new ProductCategories.Category(jsonObject.getJSONObject(PRODUCT_CATEGORY));
-        }
-
-        private int getMinDist(CharSequence constraint) throws JSONException {
-            JSONObject jsonObject = new JSONObject(constraint.toString());
-            return jsonObject.getInt(MIN_DIST);
-        }
-
-        private CharSequence getConstraint(int minDist, ProductCategories.Category category) {
-            String constraint;
-            try {
-                JSONObject jsonObject = new JSONObject()
-                        .put(MIN_DIST, minDist)
-                        .put(PRODUCT_CATEGORY, category.toJsonObject());
-                constraint = jsonObject.toString();
-            } catch (JSONException e) {
-                Log.fatalError(e);
-                constraint = null;
-            }
-            return constraint;
-        }
-
     }
 }

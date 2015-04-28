@@ -2,7 +2,6 @@ package com.instano.retailer.instano.deals;
 
 import android.app.Fragment;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.DataManager;
-import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.activities.GlobalMenuActivity;
 import com.instano.retailer.instano.utilities.models.Deal;
-import com.instano.retailer.instano.utilities.models.Seller;
 
 /**
  * A fragment representing a single Deal detail screen.
@@ -55,7 +52,7 @@ public class DealDetailFragment extends Fragment {
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             int id = getArguments().getInt(ARG_ITEM_ID);
-            mItem = DataManager.instance().getDeal(id);
+//            mItem = DataManager.instance().getDeal(id);
             if (mItem == null)
                 throw new IllegalStateException(
                         "Fragment Deal detail created without any Deal. Deal id: " + id);
@@ -67,7 +64,7 @@ public class DealDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_deal_detail, container, false);
 
-        final Seller seller = DataManager.instance().getSeller(mItem.sellerId);
+//        final Seller seller = DataManager.instance().getSeller(mItem.sellerId);
 
         TextView shopNameTextView = (TextView) view.findViewById(R.id.shopNameTextView);
         TextView sellerNameTextView = (TextView) view.findViewById(R.id.shopNameTextView);
@@ -104,20 +101,20 @@ public class DealDetailFragment extends Fragment {
         });
 
         // TODO: maybe handle more gracefully
-        if (seller == null)
-            return view;
-
-        shopNameTextView.setText(seller.nameOfShop);
-        sellerNameTextView.setText(seller.nameOfSeller);
-        addressTextView.setText(seller.address);
-        distanceTextView.setText(seller.getPrettyDistanceFromLocation());
-        callImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + seller.phone));
-                startActivity(callIntent);
-            }
-        });
+//        if (seller == null)
+//            return view;
+//
+//        shopNameTextView.setText(seller.name_of_shop);
+//        sellerNameTextView.setText(seller.name_of_seller);
+//        addressTextView.setText(seller.address);
+//        distanceTextView.setText(seller.getPrettyDistanceFromLocation());
+//        callImageButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + seller.phone));
+//                startActivity(callIntent);
+//            }
+//        });
 
         return view;
     }

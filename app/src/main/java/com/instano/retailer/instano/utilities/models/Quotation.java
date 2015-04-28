@@ -1,29 +1,48 @@
 package com.instano.retailer.instano.utilities.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.instano.retailer.instano.application.ServicesSingleton;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.Date;
 
 /**
  * Represents a single Quotation uniquely identifiable by its @field id
  */
+@JsonRootName("quotation")
 public class Quotation {
 
     private final static String STATUS_UNREAD  = "unread";
     private final static String STATUS_READ  = "read";
 
-    public final int id; // server generated
-    public final String nameOfProduct; // TODO: in future probably make a generic `Product` class
-    public final int price;
-    public final String description;
-    public final int sellerId;
-    public final int quoteId; // the id of the quote being replied to
-    public final long createdAt;
+    @JsonProperty("id")
+    public int id; // server generated
+    @JsonProperty("name_of_product")
+    public String nameOfProduct; // TODO: in future probably make a generic `Product` class
+    @JsonProperty("price")
+    public int price;
+    @JsonProperty("description")
+    public String description;
+    @JsonProperty("seller_id")
+    public int sellerId;
+    @JsonProperty("quote_id")
+    public int quoteId; // the id of the quote being replied to
+
+    private Date updatedAt;
 //        public final URL imageUrl; // can be null
 
     /* modifiable fields */
+    @JsonProperty("status")
     private String mStatus;
+
+    @JsonProperty("updated_at")
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Quotation() {
+
+    }
 
     public boolean isRead() {
         if (STATUS_READ.equals(mStatus))
@@ -36,23 +55,6 @@ public class Quotation {
         mStatus = STATUS_READ;
     }
 
-    public Quotation(JSONObject quotationJsonObject) throws JSONException {
-        id = quotationJsonObject.getInt("id");
-        nameOfProduct = quotationJsonObject.getString("name_of_product");
-        price = quotationJsonObject.getInt("price");
-        String description = quotationJsonObject.getString("description");
-        if (description.equalsIgnoreCase("null"))
-            this.description = "";
-        else
-            this.description = description;
-        sellerId = quotationJsonObject.getInt("seller_id");
-        quoteId = quotationJsonObject.getInt("quote_id");
-        String updatedAt = quotationJsonObject.getString("created_at");
-        this.createdAt = ServicesSingleton.dateFromString(updatedAt);
-
-        mStatus = quotationJsonObject.getString("status");
-    }
-
     public String toChatString() {
         return nameOfProduct + "\n₹ " + price + "\n" + description;
     }
@@ -62,7 +64,7 @@ public class Quotation {
      * @return Human readable time elapsed. Eg: "42 minutes ago"
      */
     public String getPrettyTimeElapsed() {
-        return ServicesSingleton.instance().getPrettyTimeElapsed(createdAt);
+        return ServicesSingleton.instance().getPrettyTimeElapsed(updatedAt);
     }
 
     @Override

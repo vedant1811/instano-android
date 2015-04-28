@@ -5,12 +5,10 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.instano.retailer.instano.application.ServicesSingleton;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
@@ -18,124 +16,43 @@ import java.util.Comparator;
  */
 public class Seller {
     public final static double INVALID_COORDINATE = -1000; // an invalid coordinate
+    public static final String UNDEFINED = "Select Category";
+    private static final String TAG = "Seller";
 
-    public final int id; // server generated
-    public final String nameOfShop;
-    public final String nameOfSeller;
-    public final String address; // newline separated
+    @JsonProperty("id")
+    public int id; // server generated
+
+    @JsonProperty("name_of_shop")
+    public String name_of_shop;
+
+    @JsonProperty("name_of_seller")
+    public String name_of_seller;
+
+    @JsonProperty("address")
+    public String address; // newline separated
+
     // TODO: convert to Pointer Double that can be null instead of being INVALID_COORDINATE
-    public final double latitude;
-    public final double longitude;
-    public final String phone; // TODO: maybe make it a list of Strings
-    public final int rating; // rating is out of 50, displayed out of 5.0
-    public final String email;
-    public final ProductCategories productCategories;
+    @JsonProperty("latitude")
+    public double latitude = INVALID_COORDINATE;
 
-    public Seller(int id, String nameOfShop, String nameOfSeller, String address, double latitude, double longitude, String phone, int rating, String email, ProductCategories productCategories) {
-        this.id = id;
-        this.nameOfShop = nameOfShop;
-        this.nameOfSeller = nameOfSeller;
-        this.address = address;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.phone = phone;
-        this.rating = rating;
-        this.email = email;
-        this.productCategories = productCategories;
-    }
+    @JsonProperty("longitude")
+    public double longitude = INVALID_COORDINATE;
 
-    /**
-     * if id and rating are not available, they are set to invalid i.e. -1
-     */
-    public Seller(String nameOfShop, String nameOfSeller, String address, double latitude, double longitude, String phone, String email, ProductCategories productCategories) {
-        this.id = -1;
-        this.nameOfShop = nameOfShop.trim();
-        this.nameOfSeller = nameOfSeller.trim();
-        this.address = address.trim();
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.phone = phone.trim();
-        this.rating = -1;
-        this.email = email.trim();
-        this.productCategories = productCategories;
-    }
+    @JsonProperty("phone")
+    public String phone; // TODO: maybe make it a list of Strings
 
-    public Seller(JSONObject sellerJsonObject) throws JSONException {
-        id = sellerJsonObject.getInt("id");
-        nameOfShop = sellerJsonObject.getString("name_of_shop");
-        nameOfSeller = sellerJsonObject.getString("name_of_seller");
-        address = sellerJsonObject.getString("address");
+    @JsonProperty("status")
+    public String status;
 
-        double latitude = INVALID_COORDINATE;
-        double longitude = INVALID_COORDINATE;
-        try {
-            latitude = sellerJsonObject.getDouble("latitude");
-            longitude = sellerJsonObject.getDouble("longitude");
-        } catch (JSONException e) {
-            latitude = INVALID_COORDINATE;
-            longitude = INVALID_COORDINATE;
-        } finally {
-            this.latitude = latitude;
-            this.longitude = longitude;
-        }
-        phone = sellerJsonObject.getString("phone");
-        int rating;
-        try {
-            rating = Integer.parseInt(sellerJsonObject.getString("rating"));
-        } catch (NumberFormatException e) {
-            rating = -1;
-        }
-        this.rating = rating;
-        email = sellerJsonObject.getString("email");
+    public int rating; // rating is out of 50, displayed out of 5.0
 
+    @JsonProperty("email")
+    public String email;
 
-        productCategories = new ProductCategories(sellerJsonObject, false);
-    }
+    @JsonProperty("brands")
+    public ArrayList<Brand> brands;
 
-    public JSONObject toJsonObject() throws JSONException {
-        JSONObject retailerParamsJsonObject = new JSONObject();
-        retailerParamsJsonObject.put("name_of_shop", nameOfShop)
-                .put("name_of_seller", nameOfSeller)
-                .put("address", address)
-                .put("latitude", latitude)
-                .put("longitude", longitude)
-                .put("phone", phone)
-                .put("email", email);
-
-        if (id != -1)
-            retailerParamsJsonObject.put("id", id);
-        if (rating != -1)
-            retailerParamsJsonObject.put("rating", rating);
-
-        JSONArray productCategoriesJsonArray = new JSONArray();
-
-        for (ProductCategories.Category category : productCategories.getProductCategories()) {
-            if (category.getSelected() == null)
-                continue;
-
-            // create the json object to be added to the json array
-            JSONObject categoryJsonObject = new JSONObject()
-                    .put("name", category.name);
-
-            JSONArray brandsJsonArray = new JSONArray();
-
-            for (int i = 0; i < category.getSelected().length; i++) {
-                if(category.getSelected()[i])
-                    brandsJsonArray.put(category.brands.get(i));
-            }
-
-            categoryJsonObject.put("brands", brandsJsonArray);
-
-            // add the created object to the json array
-            productCategoriesJsonArray.put(categoryJsonObject);
-        }
-
-        retailerParamsJsonObject.put("categories", productCategoriesJsonArray);
-
-        JSONObject retailerJsonObject = new JSONObject();
-        retailerJsonObject.put("seller", retailerParamsJsonObject);
-
-        return retailerJsonObject;
+    public Seller() {
     }
 
     // get distance between to two points given as latitude and longitude or null on error
@@ -178,7 +95,7 @@ public class Seller {
 
             if (lhsDistance == rhsDistance) // happens if distance is unavailable
                 // compare alphabetically
-                return lhs.nameOfShop.compareTo(rhs.nameOfShop);
+                return lhs.name_of_shop.compareTo(rhs.name_of_shop);
             if (lhsDistance == -1)
                 return 1;
             if (rhsDistance == -1)
@@ -218,5 +135,28 @@ public class Seller {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double distance = R * c;
         return (int) distance;
+    }
+
+    public boolean containsCategory(@NonNull String categoryToMatch) {
+        if (categoryToMatch.equals(UNDEFINED))
+            return true;
+
+        for (Brand brand : brands)
+            if (brand.category.equals(categoryToMatch))
+                return true;
+        return false;
+    }
+
+    public boolean contains(String category) {
+        if (Category.UNDEFINED.equals(category))
+            return true;
+        if (category != null) {
+            for (Brand brand : brands) {
+                if (category.equals(brand.category)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

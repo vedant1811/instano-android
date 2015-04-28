@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -26,16 +25,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.DataManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.ProductCategories;
 import com.instano.retailer.instano.utilities.models.Seller;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.Subscription;
+import rx.android.observables.AndroidObservable;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.BooleanSubscription;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,6 +45,7 @@ import java.util.Map;
 public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongClickListener,
         GetAddressTask.AddressCallback, GoogleMap.OnMarkerDragListener, GoogleMap.OnMarkerClickListener {
 
+    private static final String TAG = "SellerMapFragment";
     private static BitmapDescriptor BLUE_MARKER;
     private MapView mMapView;
 
@@ -61,7 +64,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
     private TextView mDistanceTextView;
 
     private HashMap<Marker, Seller> mSellerMarkers;
-    private String mCategory = ProductCategories.UNDEFINED;
+    private Subscription mSellersSubscription;
 
     /**
      * This is the where all initialization of the class (or mMap) must take place.
@@ -73,7 +76,8 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
     private void setUpMap() {
         BLUE_MARKER = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
 
-        mSellerMarkers = new HashMap<Marker, Seller>();
+        mSellerMarkers = new HashMap<>();
+        mSellersSubscription = BooleanSubscription.create(); // just a place holder instead of null
 
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
@@ -86,7 +90,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
             startLatLng = BANGALORE_LOCATION;
         CameraPosition bangalore = new CameraPosition.Builder().target(
                 startLatLng)
-                .zoom(11)
+                .zoom(13)
                 .build();
 
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(bangalore));
@@ -102,57 +106,67 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         mSelectedLocationMarker.showInfoWindow();
         mMap.setOnMarkerDragListener(this);
 
-        addSellers(DataManager.instance().getSellers());
+        SellersActivity activity = (SellersActivity) getActivity();
+
+        Log.d(TAG, ".setUpMap setUpMap");
+        AndroidObservable.bindFragment(this, activity.getAdapter().getFilteredSellersObservable())
+                .subscribe(list -> { // first just clear the map
+                    Log.d(TAG, ".setUpMap clearing map");
+                    resubscribe();
+                    mMap.clear();
+                    mSelectedLocationMarker = mMap.addMarker(new MarkerOptions()
+                                    .position(mSelectedLocationMarker.getPosition())
+                                    .title(mSelectedLocationMarker.getTitle())
+                                    .snippet(mSelectedLocationMarker.getSnippet())
+                                    .icon(BLUE_MARKER)
+                                    .draggable(true)
+                    );
+                    mSelectedLocationMarker.showInfoWindow();
+                    mSellerMarkers.clear();
+                }, throwable -> Log.fatalError(new RuntimeException(
+                                "error response in subscribe to getFilteredSellersObservable",
+                                throwable)
+                ));
     }
 
-    /* package private */
-    void addSellers(Collection<Seller> sellers) {
-        if (mMap == null)
-            return;
-        mMap.clear();
-        mSelectedLocationMarker = mMap.addMarker(new MarkerOptions()
-                .position(mSelectedLocationMarker.getPosition())
-                .title(mSelectedLocationMarker.getTitle())
-                .snippet(mSelectedLocationMarker.getSnippet())
-                .icon(BLUE_MARKER)
-                .draggable(true)
-        );
-        mSelectedLocationMarker.showInfoWindow();
-        mSellerMarkers.clear();
+    /**
+     * any previous subscription needs to be stopped. Otherwise the events will clash
+     * (and probably be merged) with the new one
+     */
+    private void resubscribe() {
+        mSellersSubscription.unsubscribe();
+        SellersActivity activity = (SellersActivity) getActivity();
+        mSellersSubscription = AndroidObservable.bindFragment(this, activity.getAdapter().getFilteredSellersObservable()
+                        .subscribeOn(Schedulers.computation())
+                        .flatMap(Observable::from) // spilt the single list of sellers into individual seller objects
+                                // unlikely, but hey
+                        .filter(seller -> seller.latitude != Seller.INVALID_COORDINATE && seller.longitude != Seller.INVALID_COORDINATE)
+                        .doOnError(throwable -> Log.fatalError(new RuntimeException(
+                                "error response in subscribe to getFilteredSellersObservable",
+                                throwable)))
+                        // combine with another observable that emits items regularly (every 100ms)
+                        // so that a new seller object is received every 100ms :
+                        // also, first event itself is delayed. makes sure sellers are added after map is cleared
+                        .zipWith(Observable.interval(150, TimeUnit.MILLISECONDS),
+                                (seller, aLong) -> seller)
+                        .onBackpressureBlock() // prevent zipWith Observer.interval from throwing MissingBackpressureException s
+                        .doOnError(throwable -> Log.fatalError(new RuntimeException(
+                                "error response in subscribe to getFilteredSellersObservable",
+                                throwable)))
+        ) // all this was done on a non-UI thread
+                // now on the UI thread:
+                .subscribe(seller -> {
+                    Marker newMarker = mMap.addMarker(
+                            new MarkerOptions()
+                                    .position(new LatLng(seller.latitude, seller.longitude))
+                                    .title(seller.name_of_shop)
+                    );
+                    mSellerMarkers.put(newMarker, seller);
+                }, throwable -> Log.fatalError(new RuntimeException(
+                                "error response in subscribe to getFilteredSellersObservable",
+                                throwable)
+                ));
 
-        for (Seller seller : sellers)
-            addSeller(seller);
-
-        updateMarkers();
-    }
-
-    /* package private */
-    void setCategory(String category) {
-        mCategory = category;
-    }
-
-    private void updateMarkers() {
-        long start = System.nanoTime();
-
-        for (Map.Entry<Marker, Seller> entry : mSellerMarkers.entrySet()) {
-            if (entry.getValue().productCategories.contains(mCategory))
-                entry.getKey().setVisible(true);
-            else
-                entry.getKey().setVisible(false);
-        }
-        double timeTaken = (System.nanoTime() - start)/1000000;
-        Log.d("Timing", "updateMarkers took " + timeTaken + "ms");
-    }
-
-    private void addSeller(Seller seller) {
-        if (seller.latitude == Seller.INVALID_COORDINATE || seller.longitude == Seller.INVALID_COORDINATE)
-            return;
-        Marker newMarker = mMap.addMarker(
-                new MarkerOptions()
-                        .position(new LatLng(seller.latitude, seller.longitude))
-                        .title(seller.nameOfShop)
-        );
-        mSellerMarkers.put(newMarker, seller);
     }
 
     @Override
@@ -167,7 +181,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         if (seller != null) { // can be another marker
             mSelectedSeller = seller;
             mTopmostSellerInfoView.setVisibility(View.VISIBLE);
-            mShopName.setText(mSelectedSeller.nameOfShop);
+            mShopName.setText(mSelectedSeller.name_of_shop);
             mDistanceTextView.setText(mSelectedSeller.getPrettyDistanceFromLocation());
             mShopAddress.setText(mSelectedSeller.address);
         }
@@ -243,12 +257,9 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         mDistanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
 
         ImageButton callImageButton = (ImageButton) view.findViewById(R.id.callImageButton);
-        callImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mSelectedSeller.phone));
-                startActivity(callIntent);
-            }
+        callImageButton.setOnClickListener(v -> {
+            Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mSelectedSeller.phone));
+            startActivity(callIntent);
         });
 
         return view;
@@ -270,12 +281,8 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
 
     @Override
     public void onResume() {
-        long start = System.nanoTime();
         super.onResume();
         mMapView.onResume();
-        updateMarkers();
-        double timeTaken = (System.nanoTime() - start)/1000000;
-        Log.d("Timing", "SellersMapFragment.onResume took " + timeTaken + "ms");
     }
 
     @Override

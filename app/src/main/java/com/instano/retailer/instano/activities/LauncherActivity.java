@@ -8,9 +8,8 @@ import android.view.Menu;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.NetworkRequestsManager;
 import com.instano.retailer.instano.application.ServicesSingleton;
-import com.instano.retailer.instano.utilities.GlobalMenuActivity;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 
 
@@ -45,43 +44,26 @@ public class LauncherActivity extends GlobalMenuActivity {
     protected void onResume() {
         super.onResume();
         if (checkPlayServices()) {
-            NetworkRequestsManager.instance().authorizeSession(false);
+            retryableError(NetworkRequestsManager.instance().authorizeSession(),
+                    (device) -> {
+                                mErrorOccurred = false;
+                                closeIfPossible();
+                            });
         } else {
-            noPlayServicesDialog();
+            contactUs("No Play Services", "Google Play Services is needed for the app. " +
+                    "Contact us directly instead.");
             Log.v(TAG, "No valid Google Play Services APK found.");
             return;
         }
-        new Handler().postDelayed(new Runnable() {
-
-        /*
-         * Showing splash screen with a timer. This will be useful when you
-         * want to show case your app logo / company
-         */
-
-            @Override
-            public void run() {
+        if (!mTimedOut)
+            new Handler().postDelayed(() -> {
                 // This method will be executed once the timer is over
-                // Start your app main activity
                 mTimedOut = true;
                 closeIfPossible();
-            }
-        }, SPLASH_TIME_OUT);
+            }, SPLASH_TIME_OUT);
     }
 
-    @Override
-    public void onSessionResponse(NetworkRequestsManager.ResponseError error) {
-        Log.v(TAG, "Response Error in Launcher "+error);
-        if (error == NetworkRequestsManager.ResponseError.NO_ERROR) {
-            mErrorOccurred = false;
-            closeIfPossible();
-        }
-        else if (!mBackPressed) {
-            super.onSessionResponse(error);
-        }
-        // do nothing if back was pressed
-    }
-
-    protected boolean checkPlayServices() {
+    private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (resultCode != ConnectionResult.SUCCESS) {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
@@ -102,13 +84,12 @@ public class LauncherActivity extends GlobalMenuActivity {
         if (!mBackPressed) {
             Intent i = null;
 //        if (ServicesSingleton.getInstance(this).isFirstTime())
-            i = new Intent(this, StartingActivity.class);
+            i = new Intent(this, SessionActivity.class);
             startActivity(i);
         }
         // close this activity
         finish();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
