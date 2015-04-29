@@ -15,12 +15,6 @@ android {
             storePassword 'hello123'
             keyAlias 'retailer'
         }
-        debug {
-            keyPassword 'qwerty'
-            storeFile file('/home/vedant/android/instano/keyStrore.jks')
-            storePassword 'qwerty'
-            keyAlias 'Key'
-        }
     }
     compileSdkVersion 19
     buildToolsVersion '22.0.0'
