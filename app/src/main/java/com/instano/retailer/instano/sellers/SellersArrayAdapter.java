@@ -66,10 +66,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 .subscribe(seller -> {
                     mCompleteSet.put(seller.hashCode(), seller);
                     filter();
-                }, throwable -> Log.fatalError(new RuntimeException(
-                                "error response in subscribe to getObservable(Seller.class)",
-                                throwable)
-                ));
+                }, throwable -> Log.fatalError(new RuntimeException(throwable)));
     }
 
     public void setListener(ItemInteractionListener listener) {

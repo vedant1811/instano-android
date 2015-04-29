@@ -43,7 +43,7 @@ public class SellersListFragment extends ListFragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SellersArrayAdapter adapter = new SellersArrayAdapter(getActivity());
+        SellersArrayAdapter adapter = ((SellersActivity)getActivity()).getAdapter();
         mShown = false;
 
         //TODO: create a new observable when using animations

@@ -3,6 +3,8 @@ package com.instano.retailer.instano.sellers;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.SearchManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +36,15 @@ public class SellersActivity extends GlobalMenuActivity {
                 .show(mSellersListFragment)
                 .commit();
         mAdapter = new SellersArrayAdapter(this);
+
+        // Get the intent, verify the action and get the query
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+//            doMySearch(query);
+        }
+        int productId = 6746;
+
     }
 
     @Override

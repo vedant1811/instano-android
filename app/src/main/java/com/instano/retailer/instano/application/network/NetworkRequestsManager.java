@@ -98,6 +98,9 @@ public class NetworkRequestsManager {
         @GET("/buyers/quotations")
         Observable<List<Quotation>> getQuotations();
 
+        @GET("/buyers/quotations")
+        Observable<List<Quotation>> queryQuotations(@Query("p") int productId);
+
         @GET("/brands_categories")
         Observable<Categories> getProductCategories();
 
@@ -146,9 +149,15 @@ public class NetworkRequestsManager {
                 .doOnNext(this::newObject);
     }
 
+    public Observable<Quotation> queryQuotations(int productId) {
+        return mRegisteredBuyersApiService.queryQuotations(productId)
+                .retryWhen(new SessionErrorsHandlerFunction())
+                .flatMap(Observable::from);
+    }
 
     public Observable<List<Product>> queryProducts(String query) {
-        return mRegisteredBuyersApiService.queryProducts(query);
+        return mRegisteredBuyersApiService.queryProducts(query)
+                .retryWhen(new SessionErrorsHandlerFunction());
     }
 
     private NetworkRequestsManager(MyApplication application) {
