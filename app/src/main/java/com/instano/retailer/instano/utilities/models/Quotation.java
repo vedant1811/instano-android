@@ -17,8 +17,6 @@ public class Quotation {
 
     @JsonProperty("id")
     public int id; // server generated
-    @JsonProperty("name_of_product")
-    public String nameOfProduct; // TODO: in future probably make a generic `Product` class
     @JsonProperty("price")
     public int price;
     @JsonProperty("description")
@@ -28,8 +26,10 @@ public class Quotation {
     @JsonProperty("quote_id")
     public int quoteId; // the id of the quote being replied to
 
+    @JsonProperty("product_id")
+    public int productId;
+
     private Date updatedAt;
-//        public final URL imageUrl; // can be null
 
     /* modifiable fields */
     @JsonProperty("status")
@@ -53,10 +53,6 @@ public class Quotation {
 
     public void setStatusRead() {
         mStatus = STATUS_READ;
-    }
-
-    public String toChatString() {
-        return nameOfProduct + "\n₹ " + price + "\n" + description;
     }
 
     /**

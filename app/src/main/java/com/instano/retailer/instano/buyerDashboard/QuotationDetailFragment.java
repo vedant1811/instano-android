@@ -53,7 +53,7 @@ public class QuotationDetailFragment extends Fragment {
         Bundle arguments = new Bundle();
         arguments.putInt(QuotationDetailFragment.ARG_QUOTATION_ID, quotation.id);
         arguments.putInt(QuotationDetailFragment.ARG_QUOTATION_PRICE, quotation.price);
-        arguments.putString(QuotationDetailFragment.ARG_NAME_OF_PRODUCT, quotation.nameOfProduct);
+//        arguments.putString(QuotationDetailFragment.ARG_NAME_OF_PRODUCT, quotation.nameOfProduct);
         arguments.putString(QuotationDetailFragment.ARG_ADDITIONAL_INFO, quotation.description);
         arguments.putString(QuotationDetailFragment.ARG_SELLER_NAME, seller.name_of_seller);
         arguments.putString(QuotationDetailFragment.ARG_SHOP_NAME, seller.name_of_shop);

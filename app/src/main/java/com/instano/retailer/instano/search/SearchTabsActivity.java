@@ -327,4 +327,5 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
 //    @Override
 //    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
 //    }
+
 }

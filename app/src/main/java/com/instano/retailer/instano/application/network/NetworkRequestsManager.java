@@ -19,6 +19,7 @@ import com.instano.retailer.instano.utilities.models.Buyer;
 import com.instano.retailer.instano.utilities.models.Categories;
 import com.instano.retailer.instano.utilities.models.Deal;
 import com.instano.retailer.instano.utilities.models.Device;
+import com.instano.retailer.instano.utilities.models.Product;
 import com.instano.retailer.instano.utilities.models.Quotation;
 import com.instano.retailer.instano.utilities.models.Quote;
 import com.instano.retailer.instano.utilities.models.Seller;
@@ -33,6 +34,8 @@ import retrofit.converter.JacksonConverter;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.Path;
+import retrofit.http.Query;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
@@ -84,6 +87,9 @@ public class NetworkRequestsManager {
         @GET("/buyers/sellers")
         Observable<List<Seller>> getSellers();
 
+        @GET("/buyers/sellers/{sellerId}")
+        Observable<Seller> getSeller(@Path("sellerId") int sellerId);
+
         @POST("/buyers/quotes")
         Observable<Quote> sendQuote(@Body Quote quote);
 
@@ -96,8 +102,14 @@ public class NetworkRequestsManager {
         @GET("/buyers/quotations")
         Observable<List<Quotation>> getQuotations();
 
+        @GET("/buyers/quotations")
+        Observable<List<Quotation>> queryQuotations(@Query("p") int productId);
+
         @GET("/brands_categories")
         Observable<Categories> getProductCategories();
+
+        @GET("/products")
+        Observable<List<Product>> queryProducts(@Query("q") String query);
     }
 
     public interface UnregisteredBuyersApiService {
@@ -139,6 +151,21 @@ public class NetworkRequestsManager {
         return mRegisteredBuyersApiService.sendQuote(quote)
                 .retryWhen(new SessionErrorsHandlerFunction())
                 .doOnNext(this::newObject);
+    }
+
+    public Observable<Quotation> queryQuotations(int productId) {
+        return mRegisteredBuyersApiService.queryQuotations(productId)
+                .retryWhen(new SessionErrorsHandlerFunction())
+                .flatMap(Observable::from);
+    }
+
+    public Observable<Seller> getSeller(int sellerId) {
+        return mRegisteredBuyersApiService.getSeller(sellerId);
+    }
+
+    public Observable<List<Product>> queryProducts(String query) {
+        return mRegisteredBuyersApiService.queryProducts(query)
+                .retryWhen(new SessionErrorsHandlerFunction());
     }
 
     private NetworkRequestsManager(MyApplication application) {
