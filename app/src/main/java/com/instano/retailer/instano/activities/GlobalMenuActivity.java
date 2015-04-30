@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.activities.home.Home;
+import com.instano.retailer.instano.activities.home.HomeActivity;
 import com.instano.retailer.instano.activities.search.ResultsActivity;
 import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.application.ServicesSingleton;
@@ -221,7 +221,7 @@ public abstract class GlobalMenuActivity extends BaseActivity {
     }
 
     protected void deals() {
-        startActivity(new Intent(this, Home.class));
+        startActivity(new Intent(this, HomeActivity.class));
     }
 
     protected void quoteList() {

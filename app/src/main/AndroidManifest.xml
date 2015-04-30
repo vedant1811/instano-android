@@ -149,7 +149,7 @@
             android:label="@string/title_activity_results" >
         </activity>
         <activity
-            android:name=".activities.home.Home"
+            android:name=".activities.home.HomeActivity"
             android:label="@string/title_activity_home" >
         </activity>
     </application>

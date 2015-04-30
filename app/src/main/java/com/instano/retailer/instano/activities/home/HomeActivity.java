@@ -19,7 +19,7 @@ import com.instano.retailer.instano.deals.DealDetailActivity;
 import com.instano.retailer.instano.deals.DealDetailFragment;
 import com.instano.retailer.instano.deals.DealListFragment;
 
-public class Home extends BaseActivity
+public class HomeActivity extends BaseActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, DealListFragment.Callbacks {
 
     /**
@@ -50,9 +50,10 @@ public class Home extends BaseActivity
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
-            ((DealListFragment) getFragmentManager()
-                    .findFragmentById(R.id.deal_list_home))
-                    .setActivateOnItemClick(true);
+            //TODO for two pane
+//            ((DealListFragment) getFragmentManager()
+//                    .findFragmentById(R.id.deal_list_home))
+//                    .setActivateOnItemClick(true);
         }
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -88,8 +89,15 @@ public class Home extends BaseActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
+        Fragment fragment; // For AppCompat use getSupportFragmentManager
+        switch(position) {
+            default:
+            case 2:
+                fragment = new DealListFragment();
+                break;
+        }
         fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                .replace(R.id.container, fragment)
                 .commit();
     }
 
@@ -103,6 +111,7 @@ public class Home extends BaseActivity
                 break;
             case 3:
                 mTitle = getString(R.string.title_section3);
+                onNavigationDrawerItemSelected(1);
                 break;
         }
     }
@@ -178,7 +187,7 @@ public class Home extends BaseActivity
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((Home) activity).onSectionAttached(
+            ((HomeActivity) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
