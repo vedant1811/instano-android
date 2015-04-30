@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
+import com.instano.retailer.instano.application.network.ResponseError;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.deals.DealListActivity;
 import com.instano.retailer.instano.search.SearchTabsActivity;

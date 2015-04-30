@@ -15,7 +15,6 @@ import com.facebook.SessionState;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.application.network.ResponseError;
@@ -26,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ProfileActivity extends BaseActivity {
+public class ProfileActivity extends GlobalMenuActivity {
 
     private static final String ALREADY_TAKEN_ERROR = "already taken. Contact us if this is an error";
     private static final String TAG ="ProfileActivity";

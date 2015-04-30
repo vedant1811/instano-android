@@ -127,6 +127,10 @@
             android:name="com.facebook.LoginActivity"
             android:label="Fb Login" >
         </activity>
+        <activity
+            android:name=".activities.signUp.SignUp"
+            android:label="Sign Up" >
+        </activity>
     </application>
 
 </manifest>
