@@ -34,6 +34,7 @@ import retrofit.converter.JacksonConverter;
 import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.Path;
 import retrofit.http.Query;
 import rx.Observable;
 import rx.Subscriber;
@@ -85,6 +86,9 @@ public class NetworkRequestsManager {
 
         @GET("/buyers/sellers")
         Observable<List<Seller>> getSellers();
+
+        @GET("/buyers/sellers/{sellerId}")
+        Observable<Seller> getSeller(@Path("sellerId") int sellerId);
 
         @POST("/buyers/quotes")
         Observable<Quote> sendQuote(@Body Quote quote);
@@ -153,6 +157,10 @@ public class NetworkRequestsManager {
         return mRegisteredBuyersApiService.queryQuotations(productId)
                 .retryWhen(new SessionErrorsHandlerFunction())
                 .flatMap(Observable::from);
+    }
+
+    public Observable<Seller> getSeller(int sellerId) {
+        return mRegisteredBuyersApiService.getSeller(sellerId);
     }
 
     public Observable<List<Product>> queryProducts(String query) {

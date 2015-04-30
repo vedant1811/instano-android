@@ -294,7 +294,7 @@ public class QuoteDetailFragment extends Fragment {
                 String timeElapsed = quotation.getPrettyTimeElapsed();
 
                 // TODO: also change color alternating-ly
-                modelTextView.setText(quotation.nameOfProduct);
+//                modelTextView.setText(quotation.nameOfProduct);
                 timeElapsedTextView.setText(timeElapsed);
                 priceTextView.setText("₹ " + quotation.price);
 

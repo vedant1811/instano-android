@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.activities.search.ResultsActivity;
 import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
@@ -17,7 +18,6 @@ import com.instano.retailer.instano.application.network.ResponseError;
 import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.deals.DealListActivity;
 import com.instano.retailer.instano.search.SearchTabsActivity;
-import com.instano.retailer.instano.sellers.SellersActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 
 import rx.Observable;
@@ -217,7 +217,7 @@ public abstract class GlobalMenuActivity extends BaseActivity {
     }
 
     protected void sellersList() {
-        startActivity(new Intent(this, SellersActivity.class));
+        startActivity(new Intent(this, ResultsActivity.class));
     }
 
     protected void deals() {
