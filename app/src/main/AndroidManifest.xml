@@ -148,6 +148,10 @@
             android:name=".activities.search.ResultsActivity"
             android:label="@string/title_activity_results" >
         </activity>
+        <activity
+            android:name=".activities.home.Home"
+            android:label="@string/title_activity_home" >
+        </activity>
     </application>
 
 </manifest>
