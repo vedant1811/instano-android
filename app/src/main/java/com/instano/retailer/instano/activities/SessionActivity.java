@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.activities.signUp.SignUp;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.application.network.ResponseError;
@@ -115,8 +116,9 @@ public class SessionActivity extends GlobalMenuActivity {
         if (mText.toString().contains(SEARCH_ICON_HELP)) {
             search();
         } else {
-            Intent intent = new Intent(this, ProfileActivity.class);
-            startActivityForResult(intent, SETUP_REQUEST_CODE);
+            Intent intent = new Intent(this, SignUp.class);
+//            startActivityForResult(intent, SETUP_REQUEST_CODE);
+            startActivity(intent);
         }
     }
 
