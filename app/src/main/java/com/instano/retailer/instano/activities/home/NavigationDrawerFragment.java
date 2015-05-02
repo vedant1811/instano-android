@@ -1,16 +1,16 @@
 package com.instano.retailer.instano.activities.home;
 
 
-import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
-import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,10 +19,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
+import com.squareup.picasso.Picasso;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -59,6 +62,7 @@ public class NavigationDrawerFragment extends Fragment {
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
+    private LinearLayout mDrawerLinearLayout;
 
     public NavigationDrawerFragment() {
     }
@@ -91,8 +95,13 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mDrawerListView = (ListView) inflater.inflate(
-                R.layout.fragment_home_navigation_drawer, container, false);
+        mDrawerLinearLayout = (LinearLayout) inflater.inflate(R.layout.fragment_home_navigation_drawer, container, false);
+        mDrawerListView = (ListView) mDrawerLinearLayout.findViewById(R.id.drawer_listview);
+        ImageView imageView = (ImageView) mDrawerLinearLayout.findViewById(R.id.facebook_profile_picture);
+        Picasso.with(mDrawerLinearLayout.getContext())
+                .load("https://graph.facebook.com/777235068998158/picture?type=large")
+                .placeholder(R.drawable.com_facebook_button_like_icon)
+                .into(imageView);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -101,15 +110,15 @@ public class NavigationDrawerFragment extends Fragment {
         });
         mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
+                R.layout.list_item_navigation_drawer_home, //TODO change the layout of list for menu with icon
+                R.id.navigation_drawer_menu_text,
                 new String[]{
                         getString(R.string.title_section1),
                         getString(R.string.title_section2),
                         getString(R.string.title_section3),
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        return mDrawerListView;
+        return  mDrawerLinearLayout;
     }
 
     public boolean isDrawerOpen() {

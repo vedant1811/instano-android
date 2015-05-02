@@ -54,7 +54,7 @@ public class LauncherActivity extends GlobalMenuActivity {
         setContentView(R.layout.activity_launcher);
         if (!ServicesSingleton.instance().isFirstTime())
             mTimedOut = true; // do not wait for timeout if app is not being used for first time
-            Session session = Session.getActiveSession().openActiveSessionFromCache(LauncherActivity.this);
+            Session session = Session.openActiveSessionFromCache(LauncherActivity.this);
             Log.v(TAG, "Session getActiveSession :"+Session.getActiveSession());
             if(Session.getActiveSession() == null) {
                 if(session == null)
@@ -81,6 +81,19 @@ public class LauncherActivity extends GlobalMenuActivity {
             else {
                 Log.v(TAG, "Session getActiveSession is not null");
                 mFacebookSession = true;
+                Request.newMeRequest(session, new Request.GraphUserCallback() {
+                    @Override
+                    public void onCompleted(GraphUser user, Response response) {
+                        if (user != null) {
+                            Log.v(TAG, "Birthday: " + user.getBirthday());
+                            Log.v(TAG, "UserId: " + user.getId());
+                            Log.v(TAG, "User birthday : " + user.getName());
+                            Log.v(TAG, "Response : " + response);
+                        } else
+                            Log.v(TAG, "user is null");
+
+                    }
+                }).executeAsync();
             }
     }
 
@@ -91,15 +104,14 @@ public class LauncherActivity extends GlobalMenuActivity {
         if (checkPlayServices()) {
             retryableError(NetworkRequestsManager.instance().authorizeSession(),
                     (device) -> {
-                                mErrorOccurred = false;
+                        mErrorOccurred = false;
                         if(mFacebookSession) {
-                            // be sure to initialize ServicesSingleton:
                             ServicesSingleton instance = ServicesSingleton.instance();
 
                             Observable<Buyer> buyerObservable = instance.signIn();
                             if (instance.getBuyer() != null || buyerObservable != null) {
                                 mProgressDialog = ProgressDialog.show(this, "Signing In", "Please wait...", false, false);
-
+                            //TODO Remove Signing in whats the point of signing when Sesion is active
                                 retryableError(buyerObservable,
                                         buyer -> {
                                             mProgressDialog.dismiss();
