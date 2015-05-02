@@ -1,7 +1,6 @@
 package com.instano.retailer.instano.activities.search;
 
 import android.content.Context;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,14 +9,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.utilities.models.Quotation;
-import com.instano.retailer.instano.utilities.models.Seller;
+import com.instano.retailer.instano.application.controller.model.QuotationCard;
 import com.squareup.picasso.Picasso;
 
 /**
  * Created by vedant on 4/29/15.
  */
-public class QuotationsAndSellersAdapter extends ArrayAdapter<Pair<Seller, Quotation>> {
+public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
 
     private static final String TAG = "QuotationsAndSellersAdapter";
 
@@ -42,14 +40,14 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<Pair<Seller, Quota
         else
             view = convertView;
 
-        Pair<Seller, Quotation> item = getItem(position);
+        QuotationCard item = getItem(position);
 
         TextView headingTextView = (TextView) view.findViewById(R.id.dealHeading);
         TextView subheadingTextView = (TextView) view.findViewById(R.id.dealSubheading);
         TextView distanceTextView = (TextView) view.findViewById(R.id.dealDistance);
         ImageButton productImage = (ImageButton) view.findViewById(R.id.dealProduct);
-        headingTextView.setText(item.first.name_of_shop);
-        subheadingTextView.setText(String.valueOf(item.second.price));
+        headingTextView.setText(item.seller.name_of_shop);
+        subheadingTextView.setText(String.valueOf(item.quotation.price));
 
         if(true)
             Picasso.with(getContext())

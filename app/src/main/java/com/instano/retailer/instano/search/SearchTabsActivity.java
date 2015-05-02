@@ -22,10 +22,10 @@ import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Buyer;
-import com.instano.retailer.instano.utilities.models.Category;
-import com.instano.retailer.instano.utilities.models.Quote;
-import com.instano.retailer.instano.utilities.models.Seller;
+import com.instano.retailer.instano.utilities.model.Buyer;
+import com.instano.retailer.instano.utilities.model.Category;
+import com.instano.retailer.instano.utilities.model.Quote;
+import com.instano.retailer.instano.utilities.model.Seller;
 
 import rx.android.observables.AndroidObservable;
 

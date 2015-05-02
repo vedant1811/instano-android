@@ -5,7 +5,7 @@ import android.widget.ArrayAdapter;
 
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Product;
+import com.instano.retailer.instano.utilities.model.Product;
 
 import java.util.Iterator;
 

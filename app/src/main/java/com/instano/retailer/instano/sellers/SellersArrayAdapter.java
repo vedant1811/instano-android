@@ -18,9 +18,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Category;
-import com.instano.retailer.instano.utilities.models.Constraint;
-import com.instano.retailer.instano.utilities.models.Seller;
+import com.instano.retailer.instano.utilities.model.Category;
+import com.instano.retailer.instano.utilities.model.Constraint;
+import com.instano.retailer.instano.utilities.model.Seller;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.utilities.models;
+package com.instano.retailer.instano.utilities.model;
 
 import android.graphics.PointF;
 import android.location.Location;

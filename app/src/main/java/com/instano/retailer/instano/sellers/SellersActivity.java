@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.GlobalMenuActivity;
 import com.instano.retailer.instano.activities.search.SellersListFragment;
-import com.instano.retailer.instano.utilities.models.Category;
+import com.instano.retailer.instano.utilities.model.Category;
 
 public class SellersActivity extends GlobalMenuActivity {
     private static final String FILTERS_DIALOG_FRAGMENT = "Filters Dialog Fragment";

@@ -13,8 +13,8 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.MultiSpinner;
 import com.instano.retailer.instano.utilities.library.RangeSeekBar;
-import com.instano.retailer.instano.utilities.models.Categories;
-import com.instano.retailer.instano.utilities.models.Category;
+import com.instano.retailer.instano.utilities.model.Categories;
+import com.instano.retailer.instano.utilities.model.Category;
 
 
 /**

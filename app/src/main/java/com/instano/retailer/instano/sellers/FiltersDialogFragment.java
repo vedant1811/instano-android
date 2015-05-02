@@ -14,8 +14,8 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.library.Spinner;
-import com.instano.retailer.instano.utilities.models.Categories;
-import com.instano.retailer.instano.utilities.models.Category;
+import com.instano.retailer.instano.utilities.model.Categories;
+import com.instano.retailer.instano.utilities.model.Category;
 
 import rx.android.observables.AndroidObservable;
 

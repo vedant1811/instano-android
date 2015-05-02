@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.utilities.models;
+package com.instano.retailer.instano.utilities.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.instano.retailer.instano.application.ServicesSingleton;
