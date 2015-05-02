@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -108,16 +107,23 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
-                R.layout.list_item_navigation_drawer_home, //TODO change the layout of list for menu with icon
-                R.id.navigation_drawer_menu_text,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                }));
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+        NavigationMenuItemAdapter menuItemAdapter = new NavigationMenuItemAdapter(
+                getActionBar().getThemedContext(),new String[]{
+                getString(R.string.title_section1),
+                getString(R.string.title_section2),
+                getString(R.string.title_section3),
+        });
+        mDrawerListView.setAdapter(menuItemAdapter);
+//        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+//                getActionBar().getThemedContext(),
+//                R.layout.list_item_navigation_drawer_home, //TODO change the layout of list for menu with icon
+//                R.id.navigation_drawer_menu_text,
+//                new String[]{
+//                        getString(R.string.title_section1),
+//                        getString(R.string.title_section2),
+//                        getString(R.string.title_section3),
+//                }));
+//        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return  mDrawerLinearLayout;
     }
 
