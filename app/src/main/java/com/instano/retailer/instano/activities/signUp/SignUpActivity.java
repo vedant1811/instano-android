@@ -20,7 +20,7 @@ import java.util.Arrays;
 /**
  * Created by Rohit on 30/4/15.
  */
-public class SignUp extends BaseActivity {
+public class SignUpActivity extends BaseActivity {
 
     private static final String TAG = "SignUp";
     Button connectWithFacebook;
@@ -35,7 +35,7 @@ public class SignUp extends BaseActivity {
         connectWithFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Session session = Session.getActiveSession().openActiveSessionFromCache(SignUp.this);
+                Session session = Session.getActiveSession().openActiveSessionFromCache(SignUpActivity.this);
                 Log.v(TAG, "Session getActiveSession :"+Session.getActiveSession());
                 if(Session.getActiveSession() == null){
                     if(session == null)

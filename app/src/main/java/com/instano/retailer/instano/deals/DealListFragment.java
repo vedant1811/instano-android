@@ -57,6 +57,7 @@ public class DealListFragment extends ListFragment{
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
+    private boolean mShown = false;
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -118,13 +119,13 @@ public class DealListFragment extends ListFragment{
         dealsUpdated();
 //        DataManager.instance().registerListener((DataManager.DealsListener) this);
 //        DataManager.instance().registerListener((DataManager.SellersListener) this);
-
+        mShown = false;
         DealsAdapter adapter = (DealsAdapter) getListAdapter();
         adapter.notifyDataSetChanged();
         AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Deal.class))
                 .subscribe((t) -> {
-//                    mShown = true;
-//                    setListShown(mShown);
+
+                    setShown(true);
                     adapter.add(t);
 //                    adapter.sort((lhs, rhs) -> lhs.compareTo(rhs));
                 }, throwable -> Log.fatalError(new RuntimeException(
@@ -143,12 +144,19 @@ public class DealListFragment extends ListFragment{
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setListShown(mShown);
 
         // Restore the previously serialized activated item position.
         if (savedInstanceState != null
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
+    }
+
+    private void setShown(boolean shown) {
+        mShown = shown;
+        if (getView() != null)
+            setListShown(mShown);
     }
 
     @Override

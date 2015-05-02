@@ -141,7 +141,7 @@
             android:label="Fb Login" >
         </activity>
         <activity
-            android:name=".activities.signUp.SignUp"
+            android:name=".activities.signUp.SignUpActivity"
             android:label="Sign Up" >
         </activity>
         <activity
