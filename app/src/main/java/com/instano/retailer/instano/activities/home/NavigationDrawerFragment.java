@@ -4,6 +4,7 @@ package com.instano.retailer.instano.activities.home;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -24,6 +25,8 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.activities.search.ResultsActivity;
+import com.instano.retailer.instano.sellers.SellersActivity;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -263,9 +266,13 @@ public class NavigationDrawerFragment extends Fragment {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        if (item.getItemId() == R.id.action_sellers_list) {
+            startActivity(new Intent(getActivity(), SellersActivity.class));
+        }
 
         if (item.getItemId() == R.id.action_example) {
             Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(getActivity(), ResultsActivity.class));
             return true;
         }
 
