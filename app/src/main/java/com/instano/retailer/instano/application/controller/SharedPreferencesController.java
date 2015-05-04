@@ -10,7 +10,7 @@ import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Buyer;
 
 /**
- * Created by vedant on 5/2/15.
+ * Created by Rohit on 5/2/15.
  */
 public class SharedPreferencesController {
     private static final String TAG = "SharedPreferencesController";
