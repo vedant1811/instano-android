@@ -1,7 +1,6 @@
 package com.instano.retailer.instano.buyerDashboard;
 
 import android.app.Fragment;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,14 +8,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.ServicesSingleton;
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Quotation;
-import com.instano.retailer.instano.utilities.models.Quote;
-import com.instano.retailer.instano.utilities.models.Seller;
-
-import rx.android.observables.AndroidObservable;
+import com.instano.retailer.instano.utilities.model.Quotation;
+import com.instano.retailer.instano.utilities.model.Seller;
 
 /**
  * A fragment representing a single Quotation detail screen.

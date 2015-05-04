@@ -19,7 +19,7 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Deal;
+import com.instano.retailer.instano.utilities.model.Deal;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;

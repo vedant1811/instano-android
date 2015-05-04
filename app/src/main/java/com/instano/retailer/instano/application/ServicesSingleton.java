@@ -27,7 +27,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Buyer;
+import com.instano.retailer.instano.utilities.model.Buyer;
 
 import java.util.Date;
 

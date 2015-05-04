@@ -28,7 +28,7 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Seller;
+import com.instano.retailer.instano.utilities.model.Seller;
 
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -140,7 +140,8 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
                         .subscribeOn(Schedulers.computation())
                         .flatMap(Observable::from) // spilt the single list of sellers into individual seller objects
                                 // unlikely, but hey
-                        .filter(seller -> seller.latitude != Seller.INVALID_COORDINATE && seller.longitude != Seller.INVALID_COORDINATE)
+                        .filter(seller -> seller.outlets.get(0).latitude != Seller.INVALID_COORDINATE &&
+                                seller.longitude != Seller.INVALID_COORDINATE)
                         .doOnError(throwable -> Log.fatalError(new RuntimeException(
                                 "error response in subscribe to getFilteredSellersObservable",
                                 throwable)))

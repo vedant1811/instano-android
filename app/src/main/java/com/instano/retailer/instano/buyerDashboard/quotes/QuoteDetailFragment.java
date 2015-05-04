@@ -20,9 +20,9 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Quotation;
-import com.instano.retailer.instano.utilities.models.Quote;
-import com.instano.retailer.instano.utilities.models.Seller;
+import com.instano.retailer.instano.utilities.model.Quotation;
+import com.instano.retailer.instano.utilities.model.Quote;
+import com.instano.retailer.instano.utilities.model.Seller;
 
 import java.util.ArrayList;
 import java.util.HashMap;

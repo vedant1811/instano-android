@@ -36,10 +36,10 @@ public class ResultsActivity extends Activity implements ActionBar.TabListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // make sure adapter exists before any fragment may be created
+        mAdapter = new QuotationsAndSellersAdapter(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
-
-        mAdapter = new QuotationsAndSellersAdapter(this);
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();

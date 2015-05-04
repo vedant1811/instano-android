@@ -16,7 +16,7 @@ import android.widget.ViewFlipper;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Buyer;
+import com.instano.retailer.instano.utilities.model.Buyer;
 
 import rx.Observable;
 import rx.android.events.OnClickEvent;

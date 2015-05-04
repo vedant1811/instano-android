@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.models.Quote;
+import com.instano.retailer.instano.utilities.model.Quote;
 
 import rx.android.observables.AndroidObservable;
 
