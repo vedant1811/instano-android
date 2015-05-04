@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,13 +25,18 @@ public class Seller {
     @JsonProperty("image")
     public String image;
 
-    @JsonProperty("outlets")
     public List<Outlet> outlets;
 
     @JsonProperty("brands")
     public ArrayList<Brand> brands;
 
     public Seller() {
+    }
+
+    @JsonProperty("outlets")
+    public void setOutlets(List<Outlet> outlets) {
+        Collections.sort(outlets, new Outlet.DistanceComparator());
+        this.outlets = outlets;
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.utilities.library.Log;
 
 import java.util.Comparator;
 
@@ -62,9 +63,11 @@ public class Outlet {
             int lhsDistance = lhs.getDistanceFromLocation();
             int rhsDistance = rhs.getDistanceFromLocation();
 
-            if (lhsDistance == rhsDistance) // happens if distance is unavailable
+            if (lhsDistance == rhsDistance) {// happens if distance is unavailable
+                Log.e("Outlet", "comparing without location");
                 // compare alphabetically
                 return lhs.seller_name.compareTo(rhs.seller_name);
+            }
             if (lhsDistance == -1)
                 return 1;
             if (rhsDistance == -1)
