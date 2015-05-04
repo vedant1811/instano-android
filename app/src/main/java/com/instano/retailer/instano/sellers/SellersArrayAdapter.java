@@ -24,7 +24,6 @@ import com.instano.retailer.instano.utilities.model.Seller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -109,18 +108,18 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         final Seller seller = getItem(position);
 
         shopNameTextView.setText(seller.name_of_shop);
-        addressTextView.setText(seller.address);
-        String distanceFromLocation = seller.getPrettyDistanceFromLocation();
-        if (distanceFromLocation != null) {
-            distanceTextView.setVisibility(View.VISIBLE);
-            distanceTextView.setText(distanceFromLocation);
-        } else
-            distanceTextView.setVisibility(View.INVISIBLE);
-
-        callImageButton.setOnClickListener(v -> {
-            if (mItemInteractionListener != null)
-                mItemInteractionListener.callButtonClicked(seller.phone);
-        });
+//        addressTextView.setText(seller.address);
+//        String distanceFromLocation = seller.getPrettyDistanceFromLocation();
+//        if (distanceFromLocation != null) {
+//            distanceTextView.setVisibility(View.VISIBLE);
+//            distanceTextView.setText(distanceFromLocation);
+//        } else
+//            distanceTextView.setVisibility(View.INVISIBLE);
+//
+//        callImageButton.setOnClickListener(v -> {
+//            if (mItemInteractionListener != null)
+//                mItemInteractionListener.callButtonClicked(seller.phone);
+//        });
 
         return view;
     }
@@ -232,9 +231,9 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 Log.d("filter", ".performFiltering constraint=" + constraint);
                 for (int i = 0; i < mCompleteSet.size(); i++) {
                     Seller seller = mCompleteSet.valueAt(i);
-                    if (seller.getDistanceFromLocation() <= constraint.min_distance && // first filter distance
-                            seller.containsCategory(constraint.category)) // filter category
-                        filteredList.add(seller);
+//                    if (seller.getDistanceFromLocation() <= constraint.min_distance && // first filter distance
+//                            seller.containsCategory(constraint.category)) // filter category
+//                        filteredList.add(seller);
                 }
             } catch (Exception e) {
                 // add all in case of an Exception (NumberFormatException, JSONException, etc.)
@@ -245,7 +244,7 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
                 }
             }
 
-            Collections.sort(filteredList, new Seller.DistanceComparator());
+//            Collections.sort(filteredList, new Seller.DistanceComparator());
 
             FilterResults filterResults = new FilterResults();
             filterResults.count = filteredList.size();

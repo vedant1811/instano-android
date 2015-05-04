@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
 
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
+import com.instano.retailer.instano.application.controller.Quotations;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Quotation;
 import com.instano.retailer.instano.utilities.model.Seller;
@@ -40,17 +40,11 @@ public class SellersListFragment extends ListFragment {
         setShown(false);
 
         Log.d(TAG, "calling query quotation");
-        AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().queryQuotations(productId))
-                .subscribe(quotation -> {
-                            Log.d(TAG, "new quotation " + quotation.hashCode());
-
-                            AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getSeller(quotation.sellerId))
-                                    .subscribe(seller -> {
-                                        setShown(true);
-                                        adapter.add(Pair.create(seller, quotation));
-                                    }, error -> Log.fatalError(new RuntimeException(error)));
-                        },
-                        error -> Log.fatalError(new RuntimeException(error)));
+        AndroidObservable.bindFragment(this, Quotations.controller().fetchQuotationsForProduct(productId))
+                .subscribe(quotationCard -> {
+                        setShown(true);
+                        adapter.add(quotationCard);
+                }, error -> Log.fatalError(new RuntimeException(error)));
     }
 
     @Override

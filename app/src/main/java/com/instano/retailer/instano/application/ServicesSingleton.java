@@ -18,20 +18,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.model.LatLng;
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Buyer;
 
 import java.util.Date;
-
-import rx.Observable;
 
 /**
  *
@@ -43,9 +38,7 @@ public class ServicesSingleton implements
 
     private final static String TAG = "ServicesSingleton";
 
-    private final static String KEY_BUYER_API_KEY = "com.instano.retailer.instano.application.ServicesSingleton.buyer_api_key";
-    private final static String KEY_FIRST_TIME = "com.instano.retailer.instano.application.ServicesSingleton.first_time";
-    private final static String KEY_WHATSAPP_ID = "com.instano.retailer.instano.application.ServicesSingleton.whatsapp_id";
+
 
     public static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 1001;
 
@@ -73,49 +66,6 @@ public class ServicesSingleton implements
         return mBuyer;
     }
 
-    /**
-     * tries to sign in if login details are saved
-     * @return true if login details are saved
-     */
-    public Observable<Buyer> signIn() {
-        String apiKey = mSharedPreferences.getString(KEY_BUYER_API_KEY, null);
-
-        Log.v(TAG, "api key: " + String.valueOf(apiKey));
-
-        if (apiKey != null) {
-            return NetworkRequestsManager.instance().signIn(apiKey);
-        }
-        else
-            return null; // TODO: improve
-    }
-
-    public void removeFirstTime() {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
-        editor.apply();
-    }
-
-    public void saveBuyer(Buyer buyer) {
-        mBuyer = buyer;
-        Log.d(TAG, "buyer ID: " + mBuyer);
-
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
-        Log.d(TAG, "saving buyer api key: " + buyer.getApi_key());
-        Tracker appTracker = mApplication.getTracker(MyApplication.TrackerName.APP_TRACKER);
-        appTracker.setClientId(String.valueOf(buyer.getId()));
-        appTracker.send(new HitBuilders.AppViewBuilder().build());
-        editor.putString(KEY_BUYER_API_KEY, buyer.getApi_key());
-        editor.putBoolean(KEY_FIRST_TIME, false); // update first time on first login
-        editor.apply();
-    }
-
-    public boolean isFirstTime() {
-//        if (BuildConfig.DEBUG)
-//            return true;
-//        else
-            return mSharedPreferences.getBoolean(KEY_FIRST_TIME, true);
-    }
 
     /*package*/ static void init(MyApplication application) {
         sInstance = new ServicesSingleton(application);

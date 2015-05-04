@@ -123,8 +123,8 @@ public class ProfileActivity extends GlobalMenuActivity {
         // check if a user exists:
         Buyer buyer = ServicesSingleton.instance().getBuyer();
         if (buyer != null) {
-            mName = buyer.getName();
-            mPhone = buyer.getPhone();
+//            mName = buyer.getName();
+//            mPhone = buyer.getPhone();
             // TODO: this and other things, including saving state onPause
 //            mSetUpButton.setText("Update");
         }
@@ -198,18 +198,18 @@ public class ProfileActivity extends GlobalMenuActivity {
         // all is good so proceed:
         mSetUpViewFlipper.showNext(); // progressbar
         Buyer newBuyer = new Buyer();
-        newBuyer.setName(mNameEditText.getText().toString());
-        newBuyer.setPhone(mPhoneEditText.getText().toString()) ;
+//        newBuyer.setName(mNameEditText.getText().toString());
+//        newBuyer.setPhone(mPhoneEditText.getText().toString()) ;
         Log.v(TAG, "Buyer in setup clicked" + newBuyer);
         retryableError(
                 NetworkRequestsManager.instance().registerBuyer(newBuyer),
                 buyer -> {
-                    ServicesSingleton.instance().saveBuyer(buyer);
-                    NetworkRequestsManager.instance().newBuyer(buyer);
+//                    ServicesSingleton.instance().saveBuyer(buyer);
+                    NetworkRequestsManager.instance().newBuyer();
                     finishWithResultOk();
                 },
                 throwable -> {
-                    ServicesSingleton.instance().removeFirstTime();
+//                    ServicesSingleton.instance().removeFirstTime();
                     mSetUpViewFlipper.setDisplayedChild(0); // button
                     mViewFlipperState = 0; // so as to update it if activity is not resumed
                     if (ResponseError.Type.PHONE_EXISTS.is(throwable)) {

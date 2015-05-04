@@ -83,7 +83,7 @@ public class ErrorDialogFragment extends DialogFragment implements View.OnClickL
                 Buyer buyer = ServicesSingleton.instance().getBuyer();
                 String append = "";
                 if (buyer != null)
-                    mailIntent.putExtra(Intent.EXTRA_TEXT, "\n\nRegards,\n" + buyer.getName());
+                    mailIntent.putExtra(Intent.EXTRA_TEXT, "\n\nRegards,\n" + buyer.getFacebookUser().getName());
                 try {
                     startActivity(Intent.createChooser(mailIntent, "Send mail..."));
                 } catch (android.content.ActivityNotFoundException ex) {

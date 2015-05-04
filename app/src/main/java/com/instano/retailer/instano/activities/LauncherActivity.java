@@ -16,7 +16,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.home.HomeActivity;
 import com.instano.retailer.instano.activities.signUp.SignUpActivity;
-import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.application.controller.User;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.application.network.ResponseError;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -52,7 +52,7 @@ public class LauncherActivity extends GlobalMenuActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
-        if (!ServicesSingleton.instance().isFirstTime())
+        if (!User.controller().isFirstTime())
             mTimedOut = true; // do not wait for timeout if app is not being used for first time
             Session session = Session.openActiveSessionFromCache(LauncherActivity.this);
             Log.v(TAG, "Session getActiveSession :"+Session.getActiveSession());
@@ -106,25 +106,21 @@ public class LauncherActivity extends GlobalMenuActivity {
                     (device) -> {
                         mErrorOccurred = false;
                         if(mFacebookSession) {
-                            ServicesSingleton instance = ServicesSingleton.instance();
 
-                            Observable<Buyer> buyerObservable = instance.signIn();
-                            if (instance.getBuyer() != null || buyerObservable != null) {
+                            Observable<Buyer> buyerObservable = User.controller().signIn();
+                            if (buyerObservable != null) {
                                 mProgressDialog = ProgressDialog.show(this, "Signing In", "Please wait...", false, false);
-                            //TODO Remove Signing in whats the point of signing when Sesion is active
                                 retryableError(buyerObservable,
                                         buyer -> {
                                             mProgressDialog.dismiss();
-                                            Toast.makeText(this, String.format("Welcome %s", buyer.getName()), Toast.LENGTH_SHORT).show();
-                                            ServicesSingleton.instance().saveBuyer(buyer);
-                                            NetworkRequestsManager.instance().newBuyer(buyer);
+                                            NetworkRequestsManager.instance().newBuyer();
                                             mOpenHome = true;
                                             closeIfPossible();
                                         },
                                         error -> {
                                             mProgressDialog.dismiss();
                                             if (ResponseError.Type.INCORRECT_API_KEY.is(error)) {
-                                                ServicesSingleton.instance().removeFirstTime();
+                                                User.controller().removeFirstTime();
                                                 Toast.makeText(this, "Saved data error. Create a new profile", Toast.LENGTH_SHORT).show();
                                                 return true;
                                             }

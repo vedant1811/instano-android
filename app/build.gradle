@@ -39,7 +39,7 @@ android {
             resValue "string", "server_url",
                     "http://staging.instano.in/"
 //                    "http://192.168.0.5:3000/"
-//                    "http://10.0.0.3:3000/"
+//                    "http://10.0.0.7:3000/"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
