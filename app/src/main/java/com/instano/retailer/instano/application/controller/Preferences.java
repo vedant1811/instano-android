@@ -12,9 +12,9 @@ import com.instano.retailer.instano.utilities.model.Buyer;
 /**
  * Created by Rohit on 5/2/15.
  */
-public class SharedPreferencesController {
+public class Preferences {
     private static final String TAG = "SharedPreferencesController";
-    private static SharedPreferencesController sInstance;
+    private static Preferences sInstance;
     private SharedPreferences mSharedPreferences ;
 
     private final static String KEY_BUYER_FACEBOOK_USER_ID = "buyer_facebook_user_id";
@@ -25,9 +25,9 @@ public class SharedPreferencesController {
 //
 //    }
 
-    public static SharedPreferencesController controller() {
+    public static Preferences controller() {
         if (sInstance == null)
-            sInstance = new SharedPreferencesController();
+            sInstance = new Preferences();
         return sInstance;
     }
 
@@ -64,7 +64,7 @@ public class SharedPreferencesController {
         return mSharedPreferences.getBoolean(KEY_FIRST_TIME, true);
     }
 
-    private SharedPreferencesController() {
+    private Preferences() {
         mSharedPreferences = MyApplication.instance().getSharedPreferences();
     }
 }

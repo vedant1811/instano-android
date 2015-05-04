@@ -20,7 +20,7 @@ public class User {
 
     public void newSignUp(Buyer buyer) {
         Log.d(TAG, "buyer ID: " + buyer);
-        SharedPreferencesController.controller().saveBuyer(buyer);
+        Preferences.controller().saveBuyer(buyer);
         NetworkRequestsManager.instance().newBuyer();
     }
 
@@ -30,7 +30,7 @@ public class User {
      * @return true if login details are saved
      */
     public Observable<Buyer> signIn() {
-        String facebookUserId = SharedPreferencesController.controller().getFacebookUserId();
+        String facebookUserId = Preferences.controller().getFacebookUserId();
 
         Log.v(TAG, "facebook userId: " + facebookUserId);
 
@@ -42,14 +42,14 @@ public class User {
     }
 
     public void removeFirstTime() {
-        SharedPreferencesController.controller().removeFirstTime();
+        Preferences.controller().removeFirstTime();
     }
 
     public boolean isFirstTime() {
 //        if (BuildConfig.DEBUG)
 //            return true;
 //        else
-        return SharedPreferencesController.controller().isFirstTime();
+        return Preferences.controller().isFirstTime();
     }
 
     public static User controller() {

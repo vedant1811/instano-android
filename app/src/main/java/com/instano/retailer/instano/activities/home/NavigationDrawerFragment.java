@@ -27,7 +27,7 @@ import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.search.ResultsActivity;
-import com.instano.retailer.instano.application.controller.SharedPreferencesController;
+import com.instano.retailer.instano.application.controller.Preferences;
 import com.instano.retailer.instano.sellers.SellersActivity;
 import com.squareup.picasso.Picasso;
 
@@ -103,9 +103,9 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView = (ListView) mDrawerLinearLayout.findViewById(R.id.drawer_listview);
         ImageView profilePicture = (ImageView) mDrawerLinearLayout.findViewById(R.id.facebook_profile_picture);
         TextView name = (TextView) mDrawerLinearLayout.findViewById(R.id.facebook_name);
-        name.setText(SharedPreferencesController.controller().getBuyerName());
+        name.setText(Preferences.controller().getBuyerName());
         Picasso.with(mDrawerLinearLayout.getContext())
-                .load("https://graph.facebook.com/" + SharedPreferencesController.controller().getFacebookUserId()+"/picture?type=large")
+                .load("https://graph.facebook.com/" + Preferences.controller().getFacebookUserId()+"/picture?type=large")
                 .placeholder(R.drawable.com_facebook_button_like_icon)
                 .into(profilePicture);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
