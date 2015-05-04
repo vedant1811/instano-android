@@ -3,8 +3,6 @@ package com.instano.retailer.instano.buyerDashboard.quotes;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -268,17 +266,17 @@ public class QuoteDetailFragment extends Fragment {
                 TextView distanceTextView = (TextView) convertView.findViewById(R.id.distanceTextView);
                 ImageButton callImageButton = (ImageButton) convertView.findViewById(R.id.callImageButton);
 
-                sellerNameTextView.setText(seller.name_of_seller);
-                addressTextView.setText(seller.address);
-                String distanceFromLocation = seller.getPrettyDistanceFromLocation();
-                if (distanceFromLocation != null)
-                    distanceTextView.setText(distanceFromLocation);
-                else
-                    distanceTextView.setVisibility(View.INVISIBLE);
+//                sellerNameTextView.setText(seller.name_of_seller);
+//                addressTextView.setText(seller.address);
+//                String distanceFromLocation = seller.getPrettyDistanceFromLocation();
+//                if (distanceFromLocation != null)
+//                    distanceTextView.setText(distanceFromLocation);
+//                else
+//                    distanceTextView.setVisibility(View.INVISIBLE);
 
                 callImageButton.setOnClickListener(v -> {
-                    Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + seller.phone));
-                    startActivity(callIntent);
+//                    Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + seller.phone));
+//                    startActivity(callIntent);
                 });
                 break;
 

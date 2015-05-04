@@ -25,7 +25,6 @@ import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Buyer;
 import com.instano.retailer.instano.utilities.model.Category;
 import com.instano.retailer.instano.utilities.model.Quote;
-import com.instano.retailer.instano.utilities.model.Seller;
 
 import rx.android.observables.AndroidObservable;
 
@@ -69,8 +68,8 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
             case RESULT_CODE_LOCATION:
                 if (resultCode == RESULT_OK) {
                     final LatLng latLng = new LatLng(
-                            data.getDoubleExtra(SelectLocationActivity.KEY_EXTRA_LATITUDE, Seller.INVALID_COORDINATE),
-                            data.getDoubleExtra(SelectLocationActivity.KEY_EXTRA_LONGITUDE, Seller.INVALID_COORDINATE)
+                            data.getDoubleExtra(SelectLocationActivity.KEY_EXTRA_LATITUDE, 0.0),
+                            data.getDoubleExtra(SelectLocationActivity.KEY_EXTRA_LONGITUDE, 0.0)
                     );
                     String address = data.getStringExtra(SelectLocationActivity.KEY_READABLE_ADDRESS);
                     if (address == null) // try to fetch location again
@@ -169,7 +168,7 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
             return;
         }
 
-        sendQuote(searchString, Seller.INVALID_COORDINATE, Seller.INVALID_COORDINATE, address);
+        sendQuote(searchString, 0.0, 0.0, address);
     }
 
     public void nextButtonClicked(View view) {

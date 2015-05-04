@@ -49,7 +49,7 @@ public class QuotationDetailFragment extends Fragment {
         arguments.putInt(QuotationDetailFragment.ARG_QUOTATION_PRICE, quotation.price);
 //        arguments.putString(QuotationDetailFragment.ARG_NAME_OF_PRODUCT, quotation.nameOfProduct);
         arguments.putString(QuotationDetailFragment.ARG_ADDITIONAL_INFO, quotation.description);
-        arguments.putString(QuotationDetailFragment.ARG_SELLER_NAME, seller.name_of_seller);
+//        arguments.putString(QuotationDetailFragment.ARG_SELLER_NAME, seller.name_of_seller);
         arguments.putString(QuotationDetailFragment.ARG_SHOP_NAME, seller.name_of_shop);
         arguments.putString(QuotationDetailFragment.ARG_QUERY, query);
         QuotationDetailFragment fragment = new QuotationDetailFragment();

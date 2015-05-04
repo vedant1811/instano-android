@@ -8,14 +8,14 @@ import com.fasterxml.jackson.annotation.JsonRootName;
  */
 @JsonRootName("sign_in")
 public class SignIn {
-    @JsonProperty("api_key")
-    private String api_key;
+    @JsonProperty("user_id")
+    private String facebookUserId;
 
-    public String getApi_key() {
-        return api_key;
+    public String getFacebookUserId() {
+        return facebookUserId;
     }
 
-    public void setApi_key(String api_key) {
-        this.api_key = api_key;
+    public void setFacebookUserId(String facebookUserId) {
+        this.facebookUserId = facebookUserId;
     }
 }

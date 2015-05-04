@@ -12,7 +12,6 @@ import java.util.List;
  * Represents a single immutable Seller
  */
 public class Seller {
-    public final static double INVALID_COORDINATE = -1000; // an invalid coordinate
     public static final String UNDEFINED = "Select Category";
     private static final String TAG = "Seller";
 

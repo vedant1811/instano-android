@@ -19,6 +19,12 @@ public class MyApplication extends Application
     public static final String SHARED_PREFERENCES_FILE = "com.instano.SHARED_PREFERENCES_FILE";
     private HashMap<TrackerName, Tracker> mTrackers;
 
+    private static MyApplication sInstance;
+
+    public static MyApplication instance() {
+        return sInstance;
+    }
+
     /**
      * Called when the application is starting, before any activity, service,
      * or receiver objects (excluding content providers) have been created.
@@ -30,6 +36,7 @@ public class MyApplication extends Application
      */
     @Override
     public void onCreate() {
+        sInstance = this;
         if (BuildConfig.DEBUG) {
             StrictMode.enableDefaults();
         }

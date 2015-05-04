@@ -25428,7 +25428,7 @@ com.instano.retailer.instano.utilities.models.Buyer -> com.instano.retailer.inst
     java.lang.Integer id -> a
     java.lang.String name -> b
     java.lang.String phone -> c
-    java.lang.String api_key -> d
+    java.lang.String facebookUserId -> d
     java.lang.Integer getId() -> a
     java.lang.String getPhone() -> b
     void setPhone(java.lang.String) -> a
@@ -25523,7 +25523,7 @@ com.instano.retailer.instano.utilities.models.Seller$DistanceComparator -> com.i
     boolean equals(java.lang.Object) -> equals
     int compare(java.lang.Object,java.lang.Object) -> compare
 com.instano.retailer.instano.utilities.models.SignIn -> com.instano.retailer.instano.utilities.a.l:
-    java.lang.String api_key -> a
+    java.lang.String facebookUserId -> a
     void setApi_key(java.lang.String) -> a
 retrofit.Callback -> retrofit.Callback:
     void success(java.lang.Object,retrofit.client.Response) -> success

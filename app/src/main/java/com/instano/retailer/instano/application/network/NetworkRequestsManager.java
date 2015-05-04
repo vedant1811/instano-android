@@ -129,9 +129,9 @@ public class NetworkRequestsManager {
         mSellerEchoFunction.newEventReceived(seller);
     }
 
-    public Observable<Buyer> signIn(String apiKey) {
+    public Observable<Buyer> signIn(String facebookUserId) {
         SignIn signIn = new SignIn();
-        signIn.setApi_key(apiKey);
+        signIn.setFacebookUserId(facebookUserId);
 
         return mRegisteredBuyersApiService.signIn(signIn)
                         .retryWhen(new SessionErrorsHandlerFunction());
@@ -297,7 +297,7 @@ public class NetworkRequestsManager {
      * also called by SessionActivity
      * @param buyer
      */
-    public void newBuyer(@NonNull Buyer buyer) {
+    public void newBuyer() {
         Log.d(TAG, "onNewBuyer");
 
         replaceAndCacheObservable(Deal.class,

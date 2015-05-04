@@ -2,6 +2,7 @@ package com.instano.retailer.instano.utilities.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
+import com.instano.retailer.instano.utilities.models.FacebookUser;
 
 /**
  * Created by vedant on 18/12/14.
@@ -10,66 +11,16 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName(value = "buyer")
 public class Buyer {
 
-    @JsonProperty("id")
-    private Integer id ;
-    @JsonProperty("name")
-    private String name;
-    @JsonProperty("phone")
-    private String phone;
-    @JsonProperty("api_key")
-    private String api_key;
-    @JsonProperty("created_at")
-    private String created_at;
-    @JsonProperty("updated_at")
-    private String updated_at;
+    @JsonProperty("facebook_user_attributes")
+    private FacebookUser facebookUser;
 
-
-
-    public Integer getId() {
-        return id;
+    public FacebookUser getFacebookUser() {
+        return facebookUser;
     }
 
-    public void setId(Integer id) {
-       this.id=id;
+    public void setFacebookUser(FacebookUser facebookUser) {
+        this.facebookUser = facebookUser;
     }
 
-     public String getPhone() {
-        return phone;
-    }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getApi_key() {
-        return api_key;
-    }
-
-    public void setApi_key(String api_key) {
-        this.api_key = api_key;
-    }
-
-    public String getCreated_at() {
-        return created_at;
-    }
-
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
-    }
-
-    public String getUpdated_at() {
-        return updated_at;
-    }
-
-    public void setUpdated_at(String updated_at) {
-        this.updated_at = updated_at;
-    }
 }

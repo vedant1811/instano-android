@@ -140,7 +140,8 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
                         .subscribeOn(Schedulers.computation())
                         .flatMap(Observable::from) // spilt the single list of sellers into individual seller objects
                                 // unlikely, but hey
-                        .filter(seller -> seller.latitude != Seller.INVALID_COORDINATE && seller.longitude != Seller.INVALID_COORDINATE)
+                        .filter(seller -> seller.outlets.get(0).latitude != null &&
+                                seller.outlets.get(0).longitude != null)
                         .doOnError(throwable -> Log.fatalError(new RuntimeException(
                                 "error response in subscribe to getFilteredSellersObservable",
                                 throwable)))
@@ -158,7 +159,8 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
                 .subscribe(seller -> {
                     Marker newMarker = mMap.addMarker(
                             new MarkerOptions()
-                                    .position(new LatLng(seller.latitude, seller.longitude))
+                                    .position(new LatLng(seller.outlets.get(0).latitude,
+                                            seller.outlets.get(0).longitude))
                                     .title(seller.name_of_shop)
                     );
                     mSellerMarkers.put(newMarker, seller);
@@ -182,8 +184,8 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
             mSelectedSeller = seller;
             mTopmostSellerInfoView.setVisibility(View.VISIBLE);
             mShopName.setText(mSelectedSeller.name_of_shop);
-            mDistanceTextView.setText(mSelectedSeller.getPrettyDistanceFromLocation());
-            mShopAddress.setText(mSelectedSeller.address);
+            mDistanceTextView.setText(mSelectedSeller.outlets.get(0).getPrettyDistanceFromLocation());
+            mShopAddress.setText(mSelectedSeller.outlets.get(0).address);
         }
         return false;
     }
@@ -258,7 +260,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
 
         ImageButton callImageButton = (ImageButton) view.findViewById(R.id.callImageButton);
         callImageButton.setOnClickListener(v -> {
-            Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mSelectedSeller.phone));
+            Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mSelectedSeller.outlets.get(0).phone));
             startActivity(callIntent);
         });
 

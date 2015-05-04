@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         applicationId "com.instano.buyer"
-        minSdkVersion 16
+        minSdkVersion 17
         targetSdkVersion 19
         versionCode 16
         versionName "0.4.1"
@@ -37,9 +37,9 @@ android {
         debug {
             resValue "string", "app_name", "Instano Debug"
             resValue "string", "server_url",
-//                    "http://staging.instano.in/"
-                    "http://192.168.0.5:3000/"
-//                    "http://10.0.0.3:3000/"
+                    "http://staging.instano.in/"
+//                    "http://192.168.0.5:3000/"
+//                    "http://10.0.0.7:3000/"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
