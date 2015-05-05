@@ -1,13 +1,13 @@
 package com.instano.retailer.instano.activities.search;
 
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,48 +66,51 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
     private int mProductId;
 
     public void setProduct(int productId) {
-        QuotationsAndSellersAdapter adapter = ((ResultsActivity)getActivity()).getAdapter();
+        mProductId = productId;
 
-        adapter.clear();
-//        setShown(false);
+        if (mMap == null)
+            return;
+
+        mSellersSubscription.unsubscribe();
+        // first just clear the map
+        Log.d(TAG, ".setUpMap clearing map");
+        mMap.clear();
+        mSelectedLocationMarker = mMap.addMarker(new MarkerOptions()
+                        .position(mSelectedLocationMarker.getPosition())
+                        .title(mSelectedLocationMarker.getTitle())
+                        .snippet(mSelectedLocationMarker.getSnippet())
+                        .icon(BLUE_MARKER)
+                        .draggable(true)
+        );
+        mSelectedLocationMarker.showInfoWindow();
+        mSellerMarkers.clear();
 
         Log.d(TAG, "calling query quotation");
-        AndroidObservable.bindFragment(this, Quotations.controller().fetchQuotationsForProduct(productId))
-                .subscribe(quotationCard -> {
-                    AndroidObservable.bindFragment(this, Quotations.controller().fetchQuotationsForProduct(productId))
-                            .subscribe(list -> { // first just clear the map
-                                Log.d(TAG, ".setUpMap clearing map");
-                                mMap.clear();
-                                mSelectedLocationMarker = mMap.addMarker(new MarkerOptions()
-                                                .position(mSelectedLocationMarker.getPosition())
-                                                .title(mSelectedLocationMarker.getTitle())
-                                                .snippet(mSelectedLocationMarker.getSnippet())
-                                                .icon(BLUE_MARKER)
-                                                .draggable(true)
-                                );
-                                mSelectedLocationMarker.showInfoWindow();
-                                mSellerMarkers.clear();
-                            }, throwable -> Log.fatalError(new RuntimeException(
-                                            "error response in subscribe to getFilteredSellersObservable",
-                                            throwable)
-                            ));
-//                    setShown(true);
-                    adapter.add(quotationCard);
-                }, error -> Log.fatalError(new RuntimeException(error)));
+
+        mSellersSubscription =
+                AndroidObservable.bindFragment(this, Quotations.controller().fetchQuotationMarkersForProduct(productId))
+                        .subscribe(quotationMarker -> {
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(new LatLng(quotationMarker.outlet.latitude,quotationMarker.outlet.longitude))
+                                    .title(quotationMarker.outlet.seller_name)
+                                    .snippet(String.valueOf(String.format("₹%,d", quotationMarker.price)))
+                            ).showInfoWindow();
+                        }, throwable -> Log.fatalError(new RuntimeException(
+                                        "error response in subscribe to getFilteredSellersObservable",
+                                        throwable)
+                        ));
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        QuotationsAndSellersAdapter adapter= ((ResultsActivity)getActivity()).getAdapter();
-
         setProduct(6739);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        setListShown(mShown);
+        setProduct(mProductId);
     }
 
     /**
@@ -149,8 +152,6 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
                 .draggable(true));
         mSelectedLocationMarker.showInfoWindow();
         mMap.setOnMarkerDragListener(this);
-
-        ResultsActivity activity = (ResultsActivity) getActivity();
 
         Log.d(TAG, ".setUpMap setUpMap");
 
