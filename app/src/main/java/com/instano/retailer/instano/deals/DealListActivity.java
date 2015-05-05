@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.GlobalMenuActivity;
+import com.instano.retailer.instano.activities.home.DealListFragment;
 
 /**
  * An activity representing a list of Deals. This activity

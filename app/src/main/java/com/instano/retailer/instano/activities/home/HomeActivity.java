@@ -17,7 +17,6 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.deals.DealDetailActivity;
 import com.instano.retailer.instano.deals.DealDetailFragment;
-import com.instano.retailer.instano.deals.DealListFragment;
 
 public class HomeActivity extends BaseActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, DealListFragment.Callbacks {
