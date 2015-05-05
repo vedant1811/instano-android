@@ -16,14 +16,16 @@ public class Quotations {
 
     public Observable<QuotationCard> fetchQuotationsForProduct(int productId) {
         PublishSubject<QuotationCard> subject = PublishSubject.create();
-        subject.doOnSubscribe(() ->
+        Log.v(TAG, "fetchQuotationsForProduct" + subject.hasObservers());
+//        subject.doOnSubscribe(() ->
                 NetworkRequestsManager.instance().queryQuotations(productId).subscribe(quotation -> {
                             Log.d(TAG, "new quotation " + quotation.hashCode());
                             NetworkRequestsManager.instance().getSeller(quotation.sellerId)
                                     .subscribe(seller -> subject.onNext(new QuotationCard(seller, quotation)),
                                             error -> Log.fatalError(new RuntimeException(error)));
                         },
-                        error -> Log.fatalError(new RuntimeException(error))));
+                        error -> Log.fatalError(new RuntimeException(error)));
+//        );
         return subject.asObservable();
     }
 
