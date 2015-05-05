@@ -33,10 +33,10 @@ public class SellersActivity extends GlobalMenuActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sellers);
         mSellersListFragment = new SellersListFragment();
-        getFragmentManager().beginTransaction()
-                .add(R.id.fragment_container, mSellersListFragment)
-                .show(mSellersListFragment)
-                .commit();
+//        getFragmentManager().beginTransaction()
+//                .add(R.id.fragment_container, mSellersListFragment)
+//                .show(mSellersListFragment)
+//                .commit();
         mAdapter = new SellersArrayAdapter(this);
 
         // Get the intent, verify the action and get the query
@@ -70,16 +70,16 @@ public class SellersActivity extends GlobalMenuActivity {
             case R.id.action_map:
                 if (mSellersMapFragment == null) {
                     mSellersMapFragment = new SellersMapFragment();
-                    getFragmentManager().beginTransaction()
-                            .add(R.id.fragment_container, mSellersMapFragment)
-                            .hide(mSellersMapFragment)
-                            .commit();
+//                    getFragmentManager().beginTransaction()
+//                            .add(R.id.fragment_container, mSellersMapFragment)
+//                            .hide(mSellersMapFragment)
+//                            .commit();
                 }
-                getFragmentManager().beginTransaction()
-                        .hide(mSellersListFragment)
-                        .show(mSellersMapFragment)
-                        .addToBackStack(null)
-                        .commit();
+//                getFragmentManager().beginTransaction()
+//                        .hide(mSellersListFragment)
+//                        .show(mSellersMapFragment)
+//                        .addToBackStack(null)
+//                        .commit();
                 invalidateOptionsMenu();
                 return true;
             case R.id.action_filter:
