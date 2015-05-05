@@ -1,7 +1,7 @@
-package com.instano.retailer.instano.deals;
+package com.instano.retailer.instano.activities.home;
 
 import android.app.Activity;
-import android.app.ListFragment;
+import android.support.v4.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
+import com.instano.retailer.instano.deals.DealDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Deal;
 import com.squareup.picasso.Picasso;

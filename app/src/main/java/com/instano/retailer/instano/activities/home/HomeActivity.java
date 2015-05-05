@@ -1,12 +1,12 @@
 package com.instano.retailer.instano.activities.home;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +17,6 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.deals.DealDetailActivity;
 import com.instano.retailer.instano.deals.DealDetailFragment;
-import com.instano.retailer.instano.deals.DealListFragment;
 
 public class HomeActivity extends BaseActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, DealListFragment.Callbacks {
@@ -39,7 +38,7 @@ public class HomeActivity extends BaseActivity
         setContentView(R.layout.activity_home);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
         if (findViewById(R.id.deal_detail_container) != null) {
             // The detail container view will be present only in the
@@ -88,7 +87,7 @@ public class HomeActivity extends BaseActivity
     @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment; // For AppCompat use getSupportFragmentManager
         switch(position) {
             default:
@@ -117,7 +116,7 @@ public class HomeActivity extends BaseActivity
     }
 
     public void restoreActionBar() {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);

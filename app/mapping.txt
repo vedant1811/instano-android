@@ -24926,10 +24926,10 @@ com.instano.retailer.instano.deals.DealListActivity -> com.instano.retailer.inst
     boolean mTwoPane -> a
     void onCreate(android.os.Bundle) -> onCreate
     void onItemSelected(int) -> a
-com.instano.retailer.instano.deals.DealListFragment -> com.instano.retailer.instano.deals.DealListFragment:
-    com.instano.retailer.instano.deals.DealListFragment$Callbacks mCallbacks -> a
+com.instano.retailer.instano.activities.home.DealListFragment -> com.instano.retailer.instano.activities.home.DealListFragment:
+    com.instano.retailer.instano.activities.home.DealListFragment$Callbacks mCallbacks -> a
     int mActivatedPosition -> b
-    com.instano.retailer.instano.deals.DealListFragment$Callbacks sDummyCallbacks -> c
+    com.instano.retailer.instano.activities.home.DealListFragment$Callbacks sDummyCallbacks -> c
     void dealsUpdated() -> a
     void onCreate(android.os.Bundle) -> onCreate
     void onDestroy() -> onDestroy
@@ -24940,13 +24940,13 @@ com.instano.retailer.instano.deals.DealListFragment -> com.instano.retailer.inst
     void onSaveInstanceState(android.os.Bundle) -> onSaveInstanceState
     void setActivateOnItemClick(boolean) -> a
     void setActivatedPosition(int) -> a
-com.instano.retailer.instano.deals.DealListFragment$1 -> com.instano.retailer.instano.deals.DealListFragment$1:
+com.instano.retailer.instano.activities.home.DealListFragment$1 -> com.instano.retailer.instano.activities.home.DealListFragment$1:
     void onItemSelected(int) -> a
-com.instano.retailer.instano.deals.DealListFragment$Callbacks -> com.instano.retailer.instano.deals.b:
+com.instano.retailer.instano.activities.home.DealListFragment$Callbacks -> com.instano.retailer.instano.deals.b:
     void onItemSelected(int) -> a
-com.instano.retailer.instano.deals.DealListFragment$DealsAdapter -> com.instano.retailer.instano.deals.c:
+com.instano.retailer.instano.activities.home.DealListFragment$DealsAdapter -> com.instano.retailer.instano.deals.c:
     android.view.LayoutInflater mInflater -> b
-    com.instano.retailer.instano.deals.DealListFragment this$0 -> a
+    com.instano.retailer.instano.activities.home.DealListFragment this$0 -> a
     android.view.View getView(int,android.view.View,android.view.ViewGroup) -> getView
 com.instano.retailer.instano.search.NoLocationErrorDialogFragment -> com.instano.retailer.instano.search.a:
     android.widget.Button mSelectLocationButton -> a

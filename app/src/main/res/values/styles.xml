@@ -1,7 +1,10 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light">
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
+
+        <item name="colorPrimary">@color/instano_red</item>
+
         <item name="android:buttonStyle">@style/YellowButton</item>
         <item name="android:actionBarStyle">@style/ActionBar</item>
         <item name="android:windowBackground">@color/background</item>

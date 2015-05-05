@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.GlobalMenuActivity;
+import com.instano.retailer.instano.activities.home.DealListFragment;
 
 /**
  * An activity representing a list of Deals. This activity
@@ -45,7 +46,7 @@ public class DealListActivity extends GlobalMenuActivity
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
-            ((DealListFragment) getFragmentManager()
+            ((DealListFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.deal_list))
                     .setActivateOnItemClick(true);
         }

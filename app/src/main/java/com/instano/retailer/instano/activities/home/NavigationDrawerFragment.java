@@ -1,17 +1,18 @@
 package com.instano.retailer.instano.activities.home;
 
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +30,7 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.search.ResultsActivity;
 import com.instano.retailer.instano.application.controller.Preferences;
 import com.instano.retailer.instano.sellers.SellersActivity;
+import com.instano.retailer.instano.utilities.library.Log;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -48,6 +50,7 @@ public class NavigationDrawerFragment extends Fragment {
      * expands it. This shared preference tracks this.
      */
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
+    private static final String TAG = "NavigationDrawerFragment";
 
     /**
      * A pointer to the current callbacks instance (the Activity).
@@ -114,8 +117,10 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
+        Context themedContext = getActionBar().getThemedContext();
+        assert themedContext != null;
         NavigationMenuItemAdapter menuItemAdapter = new NavigationMenuItemAdapter(
-                getActionBar().getThemedContext(),new String[]{
+                themedContext,new String[]{
                 getString(R.string.title_section1),
                 getString(R.string.title_section2),
                 getString(R.string.title_section3),
@@ -295,7 +300,9 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     private ActionBar getActionBar() {
-        return getActivity().getActionBar();
+        ActionBar actionBar = ((HomeActivity)getActivity()).getSupportActionBar();
+        Log.d(TAG, "getActionBar:" + actionBar);
+        return actionBar;
     }
 
     /**

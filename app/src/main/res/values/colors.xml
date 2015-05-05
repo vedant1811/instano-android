@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="instano_red">#d20601</color>
+    <color name="primary">#60c6ea</color>
+    <color name="instano_red">#f1543e</color>
     <color name="instano_red_dark">#690300</color>
     <color name="instano_yellow">#ff9900</color>
     <color name="instano_yellow_dark">#804c00</color>
     <color name="background">#f3f3f3</color>
-    <color name="instano_grey">#c7c7c7</color>
+    <color name="instano_grey">#969696</color>
 
     <color name="translucent_black">#7f000000</color>
 </resources>
