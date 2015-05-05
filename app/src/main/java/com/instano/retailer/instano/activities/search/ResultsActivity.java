@@ -141,6 +141,11 @@ public class ResultsActivity extends Activity implements ActionBar.TabListener {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             Log.v(TAG, "position : " + position);
+            switch (position) {
+                case 0 : return new SellersListFragment();
+
+                case 1 : return new SellersMapFragment();
+            }
             return new SellersListFragment();
         }
 
