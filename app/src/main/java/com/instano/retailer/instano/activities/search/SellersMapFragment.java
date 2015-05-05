@@ -89,7 +89,9 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
 
         mSellersSubscription =
                 AndroidObservable.bindFragment(this, Quotations.controller().fetchQuotationMarkersForProduct(productId))
+                        .onBackpressureBuffer()
                         .subscribe(quotationMarker -> {
+                            Log.d(TAG, "adding marker");
                             mMap.addMarker(new MarkerOptions()
                                     .position(new LatLng(quotationMarker.outlet.latitude,quotationMarker.outlet.longitude))
                                     .title(quotationMarker.outlet.seller_name)
