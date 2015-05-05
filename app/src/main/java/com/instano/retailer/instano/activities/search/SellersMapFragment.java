@@ -26,18 +26,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
-import com.instano.retailer.instano.sellers.SellersActivity;
+import com.instano.retailer.instano.application.controller.Quotations;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Seller;
 
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
 import rx.Subscription;
 import rx.android.observables.AndroidObservable;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.BooleanSubscription;
 
 /**
@@ -66,6 +63,52 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
 
     private HashMap<Marker, Seller> mSellerMarkers;
     private Subscription mSellersSubscription;
+    private int mProductId;
+
+    public void setProduct(int productId) {
+        QuotationsAndSellersAdapter adapter = ((ResultsActivity)getActivity()).getAdapter();
+
+        adapter.clear();
+//        setShown(false);
+
+        Log.d(TAG, "calling query quotation");
+        AndroidObservable.bindFragment(this, Quotations.controller().fetchQuotationsForProduct(productId))
+                .subscribe(quotationCard -> {
+                    AndroidObservable.bindFragment(this, Quotations.controller().fetchQuotationsForProduct(productId))
+                            .subscribe(list -> { // first just clear the map
+                                Log.d(TAG, ".setUpMap clearing map");
+                                mMap.clear();
+                                mSelectedLocationMarker = mMap.addMarker(new MarkerOptions()
+                                                .position(mSelectedLocationMarker.getPosition())
+                                                .title(mSelectedLocationMarker.getTitle())
+                                                .snippet(mSelectedLocationMarker.getSnippet())
+                                                .icon(BLUE_MARKER)
+                                                .draggable(true)
+                                );
+                                mSelectedLocationMarker.showInfoWindow();
+                                mSellerMarkers.clear();
+                            }, throwable -> Log.fatalError(new RuntimeException(
+                                            "error response in subscribe to getFilteredSellersObservable",
+                                            throwable)
+                            ));
+//                    setShown(true);
+                    adapter.add(quotationCard);
+                }, error -> Log.fatalError(new RuntimeException(error)));
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        QuotationsAndSellersAdapter adapter= ((ResultsActivity)getActivity()).getAdapter();
+
+        setProduct(6739);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+//        setListShown(mShown);
+    }
 
     /**
      * This is the where all initialization of the class (or mMap) must take place.
@@ -107,68 +150,9 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         mSelectedLocationMarker.showInfoWindow();
         mMap.setOnMarkerDragListener(this);
 
-        SellersActivity activity = (SellersActivity) getActivity();
+        ResultsActivity activity = (ResultsActivity) getActivity();
 
         Log.d(TAG, ".setUpMap setUpMap");
-        AndroidObservable.bindFragment(this, activity.getAdapter().getFilteredSellersObservable())
-                .subscribe(list -> { // first just clear the map
-                    Log.d(TAG, ".setUpMap clearing map");
-                    resubscribe();
-                    mMap.clear();
-                    mSelectedLocationMarker = mMap.addMarker(new MarkerOptions()
-                                    .position(mSelectedLocationMarker.getPosition())
-                                    .title(mSelectedLocationMarker.getTitle())
-                                    .snippet(mSelectedLocationMarker.getSnippet())
-                                    .icon(BLUE_MARKER)
-                                    .draggable(true)
-                    );
-                    mSelectedLocationMarker.showInfoWindow();
-                    mSellerMarkers.clear();
-                }, throwable -> Log.fatalError(new RuntimeException(
-                                "error response in subscribe to getFilteredSellersObservable",
-                                throwable)
-                ));
-    }
-
-    /**
-     * any previous subscription needs to be stopped. Otherwise the events will clash
-     * (and probably be merged) with the new one
-     */
-    private void resubscribe() {
-        mSellersSubscription.unsubscribe();
-        SellersActivity activity = (SellersActivity) getActivity();
-        mSellersSubscription = AndroidObservable.bindFragment(this, activity.getAdapter().getFilteredSellersObservable()
-                        .subscribeOn(Schedulers.computation())
-                        .flatMap(Observable::from) // spilt the single list of sellers into individual seller objects
-                                // unlikely, but hey
-                        .filter(seller -> seller.outlets.get(0).latitude != null &&
-                                seller.outlets.get(0).longitude != null)
-                        .doOnError(throwable -> Log.fatalError(new RuntimeException(
-                                "error response in subscribe to getFilteredSellersObservable",
-                                throwable)))
-                        // combine with another observable that emits items regularly (every 100ms)
-                        // so that a new seller object is received every 100ms :
-                        // also, first event itself is delayed. makes sure sellers are added after map is cleared
-                        .zipWith(Observable.interval(150, TimeUnit.MILLISECONDS),
-                                (seller, aLong) -> seller)
-                        .onBackpressureBlock() // prevent zipWith Observer.interval from throwing MissingBackpressureException s
-                        .doOnError(throwable -> Log.fatalError(new RuntimeException(
-                                "error response in subscribe to getFilteredSellersObservable",
-                                throwable)))
-        ) // all this was done on a non-UI thread
-                // now on the UI thread:
-                .subscribe(seller -> {
-                    Marker newMarker = mMap.addMarker(
-                            new MarkerOptions()
-                                    .position(new LatLng(seller.outlets.get(0).latitude,
-                                            seller.outlets.get(0).longitude))
-                                    .title(seller.name_of_shop)
-                    );
-                    mSellerMarkers.put(newMarker, seller);
-                }, throwable -> Log.fatalError(new RuntimeException(
-                                "error response in subscribe to getFilteredSellersObservable",
-                                throwable)
-                ));
 
     }
 
