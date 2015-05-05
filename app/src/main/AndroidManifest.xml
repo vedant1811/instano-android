@@ -69,8 +69,7 @@
         <activity
             android:name=".activities.LauncherActivity"
             android:label="@string/app_name"
-            android:screenOrientation="nosensor"
-            android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
+            android:screenOrientation="nosensor" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -78,14 +77,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.SessionActivity"
-            android:launchMode="singleTop" >
-        </activity>
-        <activity
             android:name=".search.SearchTabsActivity"
             android:label="@string/title_activity_search_tabs"
             android:launchMode="singleTop"
-            android:parentActivityName=".activities.SessionActivity"
             android:screenOrientation="nosensor" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -94,9 +88,6 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.SessionActivity" />
         </activity>
         <activity
             android:name=".search.SelectLocationActivity"
@@ -115,10 +106,7 @@
         <activity
             android:name=".buyerDashboard.quotes.QuoteListActivity"
             android:label="@string/title_quote_list"
-            android:parentActivityName=".activities.SessionActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.SessionActivity" />
+            >
         </activity>
         <activity
             android:name=".deals.DealListActivity"

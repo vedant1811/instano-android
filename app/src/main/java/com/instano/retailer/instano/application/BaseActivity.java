@@ -1,9 +1,9 @@
 package com.instano.retailer.instano.application;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 
 import com.facebook.AppEventsLogger;
 import com.instano.retailer.instano.activities.ErrorDialogFragment;
@@ -21,7 +21,7 @@ import rx.subscriptions.BooleanSubscription;
 /**
  * Created by vedant on 29/12/14.
  */
-public abstract class BaseActivity extends Activity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     private static final String TAG = "BaseActivity";
 
