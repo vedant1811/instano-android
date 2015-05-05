@@ -45,7 +45,7 @@ public class DealListActivity extends GlobalMenuActivity
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
-            ((DealListFragment) getFragmentManager()
+            ((DealListFragment) getSupportFragmentManager()
                     .findFragmentById(R.id.deal_list))
                     .setActivateOnItemClick(true);
         }
