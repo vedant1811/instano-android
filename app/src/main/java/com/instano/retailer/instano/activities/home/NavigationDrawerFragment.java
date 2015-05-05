@@ -23,10 +23,12 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.search.ResultsActivity;
+import com.instano.retailer.instano.application.controller.Preferences;
 import com.instano.retailer.instano.sellers.SellersActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.squareup.picasso.Picasso;
@@ -102,11 +104,13 @@ public class NavigationDrawerFragment extends Fragment {
                              Bundle savedInstanceState) {
         mDrawerLinearLayout = (LinearLayout) inflater.inflate(R.layout.fragment_home_navigation_drawer, container, false);
         mDrawerListView = (ListView) mDrawerLinearLayout.findViewById(R.id.drawer_listview);
-        ImageView imageView = (ImageView) mDrawerLinearLayout.findViewById(R.id.facebook_profile_picture);
+        ImageView profilePicture = (ImageView) mDrawerLinearLayout.findViewById(R.id.facebook_profile_picture);
+        TextView name = (TextView) mDrawerLinearLayout.findViewById(R.id.facebook_name);
+        name.setText(Preferences.controller().getBuyerName());
         Picasso.with(mDrawerLinearLayout.getContext())
-                .load("https://graph.facebook.com/777235068998158/picture?type=large")
+                .load("https://graph.facebook.com/" + Preferences.controller().getFacebookUserId()+"/picture?type=large")
                 .placeholder(R.drawable.com_facebook_button_like_icon)
-                .into(imageView);
+                .into(profilePicture);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

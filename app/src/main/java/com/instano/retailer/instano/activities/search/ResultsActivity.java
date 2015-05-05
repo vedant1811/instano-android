@@ -12,11 +12,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.utilities.library.Log;
 
 import java.util.Locale;
 
 public class ResultsActivity extends Activity implements ActionBar.TabListener {
 
+    private static final String TAG = "ResultsActivity";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -138,6 +140,7 @@ public class ResultsActivity extends Activity implements ActionBar.TabListener {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            Log.v(TAG, "position : " + position);
             return new SellersListFragment();
         }
 

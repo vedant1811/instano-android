@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.GlobalMenuActivity;
 import com.instano.retailer.instano.activities.search.SellersListFragment;
+import com.instano.retailer.instano.activities.search.SellersMapFragment;
 import com.instano.retailer.instano.utilities.model.Category;
 
 public class SellersActivity extends GlobalMenuActivity {

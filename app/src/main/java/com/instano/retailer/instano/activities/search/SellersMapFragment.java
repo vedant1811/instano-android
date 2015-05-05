@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.sellers;
+package com.instano.retailer.instano.activities.search;
 
 
 import android.app.Fragment;
@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.sellers.SellersActivity;
 import com.instano.retailer.instano.utilities.GetAddressTask;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Seller;
