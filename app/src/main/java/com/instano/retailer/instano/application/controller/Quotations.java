@@ -22,12 +22,12 @@ public class Quotations {
         Log.v(TAG, "fetchQuotationsForProduct" + subject.hasObservers());
 //        subject.doOnSubscribe(() ->
                 NetworkRequestsManager.instance().queryQuotations(productId).subscribe(quotation -> {
-                            Log.d(TAG, "new quotation " + quotation.hashCode());
-                            NetworkRequestsManager.instance().getSeller(quotation.sellerId)
-                                    .subscribe(seller -> subject.onNext(new QuotationCard(seller, quotation)),
-                                            error -> Log.fatalError(new RuntimeException(error)));
-                        },
-                        error -> Log.fatalError(new RuntimeException(error)));
+                    Log.d(TAG, "new quotation " + quotation.hashCode());
+                    NetworkRequestsManager.instance().getSeller(quotation.sellerId)
+                            .subscribe(seller -> subject.onNext(new QuotationCard(seller, quotation)),
+                                    error -> Log.fatalError(new RuntimeException(error)));
+                    },
+                    error -> Log.fatalError(new RuntimeException(error)));
 //        );
         return subject.asObservable();
     }
@@ -39,17 +39,17 @@ public class Quotations {
         return subject
                 .doOnSubscribe(() -> {
                     NetworkRequestsManager.instance().queryQuotations(productId).subscribe(quotation -> {
-                                Log.d(TAG, "new quotation " + quotation.hashCode());
-                                NetworkRequestsManager.instance().getSeller(quotation.sellerId)
-                                        .subscribe(seller -> {
-                                                    for (Outlet outlet : seller.outlets) {
-                                                        if (outlet.latitude != null && outlet.longitude != null)
-                                                            subject.onNext(new QuotationMarker(outlet, quotation.price));
-                                                    }
-                                                },
-                                                error -> Log.fatalError(new RuntimeException(error)));
-                            },
-                            error -> Log.fatalError(new RuntimeException(error)));
+                        Log.d(TAG, "new quotation " + quotation.hashCode());
+                        NetworkRequestsManager.instance().getSeller(quotation.sellerId)
+                                .subscribe(seller -> {
+                                    for (Outlet outlet : seller.outlets) {
+                                        if (outlet.latitude != null && outlet.longitude != null)
+                                            subject.onNext(new QuotationMarker(outlet, quotation.price));
+                                    }
+                                },
+                                error -> Log.fatalError(new RuntimeException(error)));
+                        },
+                        error -> Log.fatalError(new RuntimeException(error)));
 
                 });
 //                .doOnError(throwable -> Log.fatalError(new RuntimeException(
