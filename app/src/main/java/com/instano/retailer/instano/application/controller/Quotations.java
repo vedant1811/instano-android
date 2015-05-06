@@ -1,5 +1,7 @@
 package com.instano.retailer.instano.application.controller;
 
+import android.util.SparseArray;
+
 import com.instano.retailer.instano.application.controller.model.QuotationCard;
 import com.instano.retailer.instano.application.controller.model.QuotationMarker;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
@@ -7,8 +9,7 @@ import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Outlet;
 
 import rx.Observable;
-import rx.subjects.PublishSubject;
-import rx.subjects.SerializedSubject;
+import rx.subjects.ReplaySubject;
 
 /**
  * Created by vedant on 5/2/15.
@@ -16,42 +17,33 @@ import rx.subjects.SerializedSubject;
 public class Quotations {
     private static final String TAG = "Quotations";
     private static Quotations sInstance;
+    private SparseArray<ReplaySubject<QuotationCard>> mQuotationSubjects;
 
     public Observable<QuotationCard> fetchQuotationsForProduct(int productId) {
-        PublishSubject<QuotationCard> subject = PublishSubject.create();
-        Log.v(TAG, "fetchQuotationsForProduct" + subject.hasObservers());
-//        subject.doOnSubscribe(() ->
-                NetworkRequestsManager.instance().queryQuotations(productId).subscribe(quotation -> {
-                    Log.d(TAG, "new quotation " + quotation.hashCode());
-                    NetworkRequestsManager.instance().getSeller(quotation.sellerId)
-                            .subscribe(seller -> subject.onNext(new QuotationCard(seller, quotation)),
-                                    error -> Log.fatalError(new RuntimeException(error)));
-                    },
-                    error -> Log.fatalError(new RuntimeException(error)));
-//        );
-        return subject.asObservable();
+        ReplaySubject<QuotationCard> replaySubject = mQuotationSubjects.get(productId);
+        if (replaySubject == null) {
+            final ReplaySubject<QuotationCard> finalReplaySubject = ReplaySubject.create();
+            NetworkRequestsManager.instance().queryQuotations(productId).subscribe(quotation -> {
+                        Log.d(TAG, "new quotation " + quotation.hashCode());
+                        NetworkRequestsManager.instance().getSeller(quotation.sellerId)
+                                .subscribe(seller -> finalReplaySubject.onNext(new QuotationCard(seller, quotation)),
+                                        error -> Log.fatalError(new RuntimeException(error)));
+                },
+                error -> Log.fatalError(new RuntimeException(error)));
+            replaySubject = finalReplaySubject;
+            mQuotationSubjects.put(productId, replaySubject);
+        }
+        return replaySubject.asObservable();
     }
 
     public Observable<QuotationMarker> fetchQuotationMarkersForProduct(int productId) {
-        SerializedSubject<QuotationMarker, QuotationMarker> subject = new SerializedSubject<> (PublishSubject.create());
-        Log.v(TAG, "fetchQuotationMarkersForProduct" + subject.hasObservers());
-
-        return subject
-                .doOnSubscribe(() -> {
-                    NetworkRequestsManager.instance().queryQuotations(productId).subscribe(quotation -> {
-                        Log.d(TAG, "new quotation " + quotation.hashCode());
-                        NetworkRequestsManager.instance().getSeller(quotation.sellerId)
-                                .subscribe(seller -> {
-                                    for (Outlet outlet : seller.outlets) {
-                                        if (outlet.latitude != null && outlet.longitude != null)
-                                            subject.onNext(new QuotationMarker(outlet, quotation.price));
-                                    }
-                                },
-                                error -> Log.fatalError(new RuntimeException(error)));
-                        },
-                        error -> Log.fatalError(new RuntimeException(error)));
-
-                });
+        return fetchQuotationsForProduct(productId)
+                .flatMap(quotationCard -> Observable.create(subscriber -> {
+                    for (Outlet outlet : quotationCard.seller.outlets) {
+                        if (!subscriber.isUnsubscribed() && outlet.latitude != null && outlet.longitude != null)
+                            subscriber.onNext(new QuotationMarker(outlet, quotationCard.quotation.price));
+                    }
+                }));
 //                .doOnError(throwable -> Log.fatalError(new RuntimeException(
 //                        "error response in subscribe after doOnSubscribe",
 //                        throwable)))
@@ -75,7 +67,7 @@ public class Quotations {
     }
 
     private Quotations() {
-
+        mQuotationSubjects = new SparseArray<>();
     }
 
 }
