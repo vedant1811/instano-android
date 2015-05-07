@@ -1,27 +1,23 @@
 package com.instano.retailer.instano.activities.home;
 
 import android.app.Activity;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.BaseActivity;
+import com.instano.retailer.instano.activities.SearchableActivity;
 import com.instano.retailer.instano.deals.DealDetailActivity;
 import com.instano.retailer.instano.deals.DealDetailFragment;
 
-public class HomeActivity extends BaseActivity
+public class HomeActivity extends SearchableActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, DealListFragment.Callbacks {
 
     /**
@@ -123,27 +119,6 @@ public class HomeActivity extends BaseActivity
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.home, menu);
-            restoreActionBar();
-            // Associate searchable configuration with the SearchView
-            SearchManager searchManager =
-                    (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-            SearchView searchView =
-                    (SearchView) menu.findItem(R.id.action_example).getActionView();
-            searchView.setSearchableInfo(
-                    searchManager.getSearchableInfo(getComponentName()));
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

@@ -12,7 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.controller.SearchableActivity;
+import com.instano.retailer.instano.activities.SearchableActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 
 import java.util.Locale;

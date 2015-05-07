@@ -1,8 +1,7 @@
-package com.instano.retailer.instano.application.controller;
+package com.instano.retailer.instano.activities;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
@@ -81,9 +80,11 @@ public abstract class SearchableActivity extends BaseActivity{
                 cursor.moveToPosition(i);
                 searchView.setQuery(cursor.getString(1), true);
                 Log.v(TAG, "Suggestion Clicked : " + cursor.getString(1));
-                Intent intent = new Intent();
-                intent.putExtra("product", cursor.getString(1));
-                intent.putExtra("product_id", cursor.getString(0));
+                Bundle bundle = new Bundle();
+                bundle.putString("product", cursor.getString(1));
+                bundle.putInt("product_id", cursor.getInt(0));
+                startSearch(cursor.getString(1), false, bundle, false);
+//                onSearchRequested()
                 return false;
             }
         });

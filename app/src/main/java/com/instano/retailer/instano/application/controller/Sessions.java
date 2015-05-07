@@ -4,9 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.facebook.Request;
-import com.facebook.Response;
 import com.facebook.Session;
-import com.facebook.model.GraphUser;
+import com.facebook.SessionState;
 import com.instano.retailer.instano.activities.home.HomeActivity;
 import com.instano.retailer.instano.activities.signUp.SignUpActivity;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
@@ -34,15 +33,24 @@ public class Sessions {
 //    }
 
     public Observable<Class> doFacebookSignUp(Activity activity) {
-        Observable<Class> observable = Observable.create(subscriber -> Session.openActiveSession(
-                activity, true, Arrays.asList(USER_DATA_FIELDS), (session, state, exception) -> {
-            if (!state.isOpened())
-                subscriber.onError(new RuntimeException("Logged out"));
-            else {
-                Log.v(TAG, "Logged in");
-                meRequest(subscriber, Session.getActiveSession());
-            }
-        }));
+        Observable<Class> observable = Observable.create(subscriber -> {
+            Session.openActiveSession(
+                    activity, true, Arrays.asList(USER_DATA_FIELDS), new Session.StatusCallback() {
+                        private int maxTries = 3;
+                        @Override
+                        public void call(Session session, SessionState state, Exception exception) {
+                            // this callback may be called multiple times
+                            if (!state.isOpened()) {
+                                Log.d(TAG, "Logged out");
+                                if (--maxTries == 0)
+                                    subscriber.onError(new RuntimeException("Logged out 3 times"));
+                            } else {
+                                Log.v(TAG, "Logged in");
+                                Sessions.this.meRequest(subscriber, Session.getActiveSession());
+                            }
+                        }
+                    });
+        });
         return observable;
     }
 
@@ -54,26 +62,24 @@ public class Sessions {
     private void meRequest(Subscriber<? super Class> subscriber, Session session) {
         Log.v(TAG, "creating a meRequest, session.isOpened:" + session.isOpened());
         Assertions.assertUiThread();
-        Request.newMeRequest(session, new Request.GraphUserCallback() {
-            @Override
-            public void onCompleted(GraphUser user, Response response) {
-                Log.d(TAG, "newMeResponse");
-                if (user == null)
-                    subscriber.onError(new RuntimeException("user is null"));
-                else {
-                    Log.v(TAG, "Response : " + response);
+        Request.newMeRequest(session, (user, response) -> {
+            Log.d(TAG, "newMeResponse");
+            if (user == null)
+                subscriber.onError(new RuntimeException("user is null"));
+            else {
+                Log.v(TAG, "Response : " + response);
 
-                    FacebookUser facebookUser = new FacebookUser();
-                    facebookUser.setId(user.getId());
-                    facebookUser.setName(user.getName());
-                    facebookUser.setEmail(user.getProperty("email").toString());
-                    facebookUser.setVerified(user.getProperty("verified").toString());
-                    facebookUser.setUserUpdatedAt(user.getProperty("updated_time").toString());
-                    facebookUser.setGender(user.getProperty("gender").toString());
-                    Buyer newBuyer = new Buyer();
-                    newBuyer.setFacebookUser(facebookUser);
+                FacebookUser facebookUser = new FacebookUser();
+                facebookUser.setId(user.getId());
+                facebookUser.setName(user.getName());
+                facebookUser.setEmail(user.getProperty("email").toString());
+                facebookUser.setVerified(user.getProperty("verified").toString());
+                facebookUser.setUserUpdatedAt(user.getProperty("updated_time").toString());
+                facebookUser.setGender(user.getProperty("gender").toString());
+                Buyer newBuyer = new Buyer();
+                newBuyer.setFacebookUser(facebookUser);
 
-                    // TODO:
+                // TODO:
 //                        new Request(Session.getActiveSession(),
 //                                "/me/friends",
 //                                null,
@@ -86,17 +92,19 @@ public class Sessions {
 //                                }
 //                        ).executeAsync();
 
-                    NetworkRequestsManager.instance().registerBuyer(newBuyer).subscribe(
-                            buyer -> {
-                                // TODO: remove these and return an observable instead from this method
-                                Sessions.controller().newSignUp(newBuyer);
-                                subscriber.onNext(HomeActivity.class);
-                            },
-                            throwable -> {
-                                Sessions.controller().removeFirstTime();
-                                subscriber.onError(new RuntimeException(throwable));
-                            });
-                }
+
+                subscriber.onNext(HomeActivity.class);
+                NetworkRequestsManager.instance().registerBuyer(newBuyer).subscribe(
+                        buyer -> {
+                            Log.d(TAG, "unsubscribed: " + subscriber.isUnsubscribed());
+                            // TODO: remove these and return an observable instead from this method
+                            newSignUp(newBuyer);
+                            subscriber.onNext(HomeActivity.class);
+                        },
+                        throwable -> {
+                            removeFirstTime();
+                            subscriber.onError(new RuntimeException(throwable));
+                        });
             }
         }).executeAsync(); // Request.newMeRequest
     }
