@@ -1,7 +1,9 @@
 package com.instano.retailer.instano.activities.search;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.provider.BaseColumns;
@@ -124,16 +126,31 @@ public class ResultsActivity extends BaseActivity implements ActionBar.TabListen
             String query = intent.getStringExtra(SearchManager.QUERY);
             mQuery = query;
             Log.v(TAG, "on ResultsActivity query is "+ query);
+            Log.v(TAG, "on ResultsActivity ACTION_KEY is "+ intent.getStringExtra(SearchManager.ACTION_KEY));
             //use the query to search your data somehow
         }
     }
+
+//    @Override
+//    public boolean onSearchRequested() {
+//        Cursor cursor = mCursorAdapter.getCursor();
+//        Bundle bundle = new
+//        startSearch(cursor.getString(1), false, null, false);
+//        return true;
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
-        // Associate searchable configuration with the SearchView
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_example).getActionView();
+         // Associate searchable configuration with the SearchView
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.action_example).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+//        SearchView searchView = (SearchView) menu.findItem(R.id.action_example).getActionView();
         if(mQuery != null) {
             searchView.setQuery(mQuery,true);
         }
@@ -146,6 +163,13 @@ public class ResultsActivity extends BaseActivity implements ActionBar.TabListen
 
             @Override
             public boolean onSuggestionClick(int i) {
+                Cursor cursor = mCursorAdapter.getCursor();
+                cursor.moveToPosition(i);
+                searchView.setQuery(cursor.getString(1), true);
+                Log.v(TAG, "Suggestion Clicked : " + cursor.getString(1));
+                Intent intent = new Intent();
+                intent.putExtra("product", cursor.getString(1));
+                intent.putExtra("product_id", cursor.getString(0));
                 return true;
             }
         });
