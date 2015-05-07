@@ -78,16 +78,9 @@
         </activity>
         <activity
             android:name=".search.SearchTabsActivity"
-            android:label="@string/title_activity_search_tabs"
-            android:launchMode="singleTop"
-            android:screenOrientation="nosensor" >
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
+            android:label="@string/title_activity_search_tabs">
 
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
+
         </activity>
         <activity
             android:name=".search.SelectLocationActivity"
@@ -128,12 +121,23 @@
         </activity>
         <activity
             android:name=".activities.search.ResultsActivity"
-            android:label="@string/title_activity_results" >
+            android:label="@string/title_activity_results"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
         </activity>
         <activity
             android:name=".activities.home.HomeActivity"
             android:label="@string/title_activity_home" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value="com.instano.retailer.instano.activities.search.ResultsActivity"/>
         </activity>
+
     </application>
 
 </manifest>

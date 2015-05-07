@@ -279,7 +279,7 @@ public class NavigationDrawerFragment extends Fragment {
             startActivity(new Intent(getActivity(), SellersActivity.class));
         }
 
-        if (item.getItemId() == R.id.action_example) {
+        if (item.getItemId() == R.id.home_action_settings) {
             Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(getActivity(), ResultsActivity.class));
             return true;
