@@ -18,6 +18,7 @@ import java.util.Arrays;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.observables.Assertions;
 
 /**
  * Created by Rohit on 5/2/15.
@@ -52,6 +53,7 @@ public class Sessions {
      */
     private void meRequest(Subscriber<? super Class> subscriber, Session session) {
         Log.v(TAG, "creating a meRequest, session.isOpened:" + session.isOpened());
+        Assertions.assertUiThread();
         Request.newMeRequest(session, new Request.GraphUserCallback() {
             @Override
             public void onCompleted(GraphUser user, Response response) {
@@ -86,6 +88,7 @@ public class Sessions {
 
                     NetworkRequestsManager.instance().registerBuyer(newBuyer).subscribe(
                             buyer -> {
+                                // TODO: remove these and return an observable instead from this method
                                 Sessions.controller().newSignUp(newBuyer);
                                 subscriber.onNext(HomeActivity.class);
                             },
