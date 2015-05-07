@@ -49,7 +49,7 @@ public class ResponseError extends Throwable {
         BAD_REQUEST, // 400
         SERVER_ERROR,
         // 422 specific errors:
-        PHONE_EXISTS,
+        ALREADY_TAKEN,
         SOME_OTHER_422;
 
         public boolean is(Throwable throwable) {
@@ -142,7 +142,7 @@ public class ResponseError extends Throwable {
                             error = Type.OTHER_GCM_ERROR;
                     }
                     else if(responseString.contains("has already been taken"))
-                        error = Type.PHONE_EXISTS;
+                        error = Type.ALREADY_TAKEN;
                     else
                         error = Type.SOME_OTHER_422;
                     break;

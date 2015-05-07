@@ -134,12 +134,19 @@ public class NetworkRequestsManager {
         signIn.setFacebookUserId(facebookUserId);
 
         return mRegisteredBuyersApiService.signIn(signIn)
-                        .retryWhen(new SessionErrorsHandlerFunction());
+                .retryWhen(new SessionErrorsHandlerFunction());
     }
 
     public Observable<Buyer> registerBuyer(Buyer buyer) {
         return mRegisteredBuyersApiService.register(buyer)
-                        .retryWhen(new SessionErrorsHandlerFunction());
+                .onErrorResumeNext(throwable -> {
+                    Log.d(TAG, "retrying error:" + throwable);
+                    if (ResponseError.Type.ALREADY_TAKEN.is(throwable))
+                        return signIn(buyer.getFacebookUser().getId());
+                    else
+                        return Observable.error(throwable);
+                })
+                .retryWhen(new SessionErrorsHandlerFunction());
     }
 
     /**
@@ -295,7 +302,6 @@ public class NetworkRequestsManager {
 
     /**
      * also called by SessionActivity
-     * @param buyer
      */
     public void newBuyer() {
         Log.d(TAG, "onNewBuyer");
@@ -360,7 +366,7 @@ public class NetworkRequestsManager {
                             Log.d(TAG, "unknown error. failing");
                         }
                         else
-                            Log.e(TAG, "max retires hit with known error:", error);
+                            Log.e(TAG, "max retires hit with error:", error);
                         return Observable.error(error);
                     });
         }

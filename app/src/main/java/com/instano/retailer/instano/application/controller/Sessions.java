@@ -1,16 +1,23 @@
 package com.instano.retailer.instano.application.controller;
 
+import android.app.Activity;
 import android.content.Context;
 
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.Session;
+import com.facebook.model.GraphUser;
 import com.instano.retailer.instano.activities.home.HomeActivity;
 import com.instano.retailer.instano.activities.signUp.SignUpActivity;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Buyer;
+import com.instano.retailer.instano.utilities.models.FacebookUser;
+
+import java.util.Arrays;
 
 import rx.Observable;
-import rx.subjects.PublishSubject;
+import rx.Subscriber;
 
 /**
  * Created by Rohit on 5/2/15.
@@ -19,14 +26,80 @@ public class Sessions {
     private final String TAG = getClass().getSimpleName();
 
     private static Sessions sInstance;
+    public static final String[] USER_DATA_FIELDS = new String[]{"user_likes", "user_status", "user_birthday", "email", "public_profile", "user_friends"};
 
 //    public Observable<Outlet> findByProduct(int productId) {
 //
 //    }
 
+    public Observable<Class> doFacebookSignUp(Activity activity) {
+        Observable<Class> observable = Observable.create(subscriber -> Session.openActiveSession(
+                activity, true, Arrays.asList(USER_DATA_FIELDS), (session, state, exception) -> {
+            if (!state.isOpened())
+                subscriber.onError(new RuntimeException("Logged out"));
+            else {
+                Log.v(TAG, "Logged in");
+                meRequest(subscriber, Session.getActiveSession());
+            }
+        }));
+        return observable;
+    }
+
+    /**
+     * creates a me request
+     * @param subscriber onNext/onError is called on this
+     * @param session to be sent to newMeRequest
+     */
+    private void meRequest(Subscriber<? super Class> subscriber, Session session) {
+        Log.v(TAG, "creating a meRequest, session.isOpened:" + session.isOpened());
+        Request.newMeRequest(session, new Request.GraphUserCallback() {
+            @Override
+            public void onCompleted(GraphUser user, Response response) {
+                Log.d(TAG, "newMeResponse");
+                if (user == null)
+                    subscriber.onError(new RuntimeException("user is null"));
+                else {
+                    Log.v(TAG, "Response : " + response);
+
+                    FacebookUser facebookUser = new FacebookUser();
+                    facebookUser.setId(user.getId());
+                    facebookUser.setName(user.getName());
+                    facebookUser.setEmail(user.getProperty("email").toString());
+                    facebookUser.setVerified(user.getProperty("verified").toString());
+                    facebookUser.setUserUpdatedAt(user.getProperty("updated_time").toString());
+                    facebookUser.setGender(user.getProperty("gender").toString());
+                    Buyer newBuyer = new Buyer();
+                    newBuyer.setFacebookUser(facebookUser);
+
+                    // TODO:
+//                        new Request(Session.getActiveSession(),
+//                                "/me/friends",
+//                                null,
+//                                HttpMethod.GET,
+//                                new Request.Callback() {
+//                                    public void onCompleted(Response response) {
+//                                        /* handle the result */
+//                                        Log.v(TAG, "response for friends : " + response);
+//                                    }
+//                                }
+//                        ).executeAsync();
+
+                    NetworkRequestsManager.instance().registerBuyer(newBuyer).subscribe(
+                            buyer -> {
+                                Sessions.controller().newSignUp(newBuyer);
+                                subscriber.onNext(HomeActivity.class);
+                            },
+                            throwable -> {
+                                Sessions.controller().removeFirstTime();
+                                subscriber.onError(new RuntimeException(throwable));
+                            });
+                }
+            }
+        }).executeAsync(); // Request.newMeRequest
+    }
+
     public Observable<Class> doFacebookSignIn(Context context) {
-        PublishSubject<Class> subject = PublishSubject.create();
-        Observable<Class> observable = subject.doOnSubscribe(() -> {
+        Observable<Class> observable = Observable.create(subscriber -> {
             Session session = Session.getActiveSession();
             Log.d(TAG, "getActiveSession(): " + session);
             if (session == null) {
@@ -34,17 +107,19 @@ public class Sessions {
                 Log.d(TAG, "openActiveSessionFromCache(): " + session);
             }
             if (session == null) {
-                subject.onNext(SignUpActivity.class);
+                subscriber.onNext(SignUpActivity.class);
                 Log.d(TAG, "subject.onNext(SignUpActivity.class)");
-            }
-            else {
+            } else {
                 Observable<Buyer> buyerObservable = signIn();
                 Log.d(TAG, "signing in");
-                buyerObservable.subscribe(buyer -> {
+                if (buyerObservable == null)
+                    meRequest(subscriber, session);
+                else
+                    buyerObservable.subscribe(buyer -> {
                             NetworkRequestsManager.instance().newBuyer();
-                            subject.onNext(HomeActivity.class);
+                            subscriber.onNext(HomeActivity.class);
                         },
-                        subject::onError); // just pass the error along
+                        subscriber::onError); // just pass the error along
             }
         });
         return observable;
