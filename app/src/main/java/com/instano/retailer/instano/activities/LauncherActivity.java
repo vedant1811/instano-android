@@ -63,18 +63,15 @@ public class LauncherActivity extends GlobalMenuActivity {
                     Log.v(TAG, "Session getActiveSessionFromCache is not null");
                     mFacebookSession = true;
                     Log.v(TAG, "Logged in...");
-                    Request.newMeRequest(session, new Request.GraphUserCallback() {
-                        @Override
-                        public void onCompleted(GraphUser user, Response response) {
-                            if (user != null) {
-                                Log.v(TAG, "Birthday: " + user.getBirthday());
-                                Log.v(TAG, "UserId: " + user.getId());
-                                Log.v(TAG, "User birthday : " + user.getName());
-                                Log.v(TAG, "Response : " + response);
-                            } else
-                                Log.v(TAG, "user is null");
+                    Request.newMeRequest(session, (user, response) -> {
+                        if (user != null) {
+                            Log.v(TAG, "Birthday: " + user.getBirthday());
+                            Log.v(TAG, "UserId: " + user.getId());
+                            Log.v(TAG, "User birthday : " + user.getName());
+                            Log.v(TAG, "Response : " + response);
+                        } else
+                            Log.v(TAG, "user is null");
 
-                        }
                     }).executeAsync();
                 }
             }
