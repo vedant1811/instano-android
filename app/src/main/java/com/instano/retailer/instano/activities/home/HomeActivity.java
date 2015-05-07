@@ -27,7 +27,7 @@ public class HomeActivity extends BaseActivity
     private NavigationDrawerFragment mNavigationDrawerFragment;
 
     /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     * Used to StoreActivity the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
     private boolean mTwoPane;
