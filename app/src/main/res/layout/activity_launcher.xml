@@ -15,7 +15,6 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Now Live in Bangalore !!"
         android:id="@+id/textView4"
-
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         style="@style/TextAppearanceHeading"

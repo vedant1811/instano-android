@@ -51,7 +51,7 @@ public abstract class GlobalMenuActivity extends BaseActivity {
     private static final String TEXT_OFFLINE_QUERY = "You can send a query directly by mail";
     private static final String MESSAGE_DIALOG_FRAGMENT = "MessageDialogFragment";
 
-    public static final String PLAY_STORE_LINK = "http://play.google.com/store/apps/details?id=com.instano.buyer";
+    public static final String PLAY_STORE_LINK = "http://play.google.com/StoreActivity/apps/details?id=com.instano.buyer";
     private Subscription mClickSubscription = BooleanSubscription.create();
 
     @Override

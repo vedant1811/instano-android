@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
@@ -35,15 +37,18 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
     ViewPager mViewPager;
     private QuotationsAndSellersAdapter mAdapter;
     private SellersListFragment mSellersListFragment;
+    private SellersMapFragment mSellersMapFragment;
+    private SellersListFragment mTab3;
+    private SearchView mSearchView;
+    private int mProductId;
+    private String mQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // make sure adapter exists before any fragment may be created
-        mAdapter = new QuotationsAndSellersAdapter(this);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
 
+        mProductId = getIntent().getIntExtra(KEY_PRODUCT_ID, -1);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -77,7 +82,7 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
-        handleIntent(getIntent());
+
     }
 
     @Override
@@ -89,10 +94,22 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
         String query = intent.getStringExtra(KEY_PRODUCT);
         Log.v(TAG, "on ResultsActivity query is "+ query);
         Log.v(TAG, "on ResultsActivity ACTION_KEY is " + intent.getIntExtra(KEY_PRODUCT_ID, -1));
-
+        mProductId = intent.getIntExtra(KEY_PRODUCT_ID, -1);
+        Log.v(TAG, "Product ID in handleIntent : " + mProductId);
         if (query == null)
             throw new IllegalStateException("no string with KEY_PRODUCT");
         // TODO: set this query text in the action bar search
+        mSearchView.setQuery(mQuery, false);
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        boolean b = super.onCreateOptionsMenu(menu);
+        mSearchView = (SearchView) menu.findItem(R.id.action_example).getActionView();
+        handleIntent(getIntent());
+
+        return b;
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -130,7 +147,22 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
         return mSellersListFragment;
     }
 
+    private SellersMapFragment getSellersMapFragment() {
+        if(mSellersMapFragment == null)
+            mSellersMapFragment = new SellersMapFragment();
+        return mSellersMapFragment;
+    }
+
+    private SellersListFragment getmTab3() {
+        if(mTab3 == null)
+            mTab3 = new SellersListFragment();
+        return mTab3;
+    }
+
     /*package private*/ QuotationsAndSellersAdapter getAdapter() {
+        // make sure adapter exists before any fragment may be created
+        if (mAdapter == null)
+            mAdapter = new QuotationsAndSellersAdapter(this);
         return mAdapter;
     }
 
@@ -149,12 +181,21 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
             Log.v(TAG, "position : " + position);
-            switch (position) {
-                case 0 : return new SellersListFragment();
 
-                case 1 : return new SellersMapFragment();
+            switch (position) {
+                case 0 : SellersListFragment listFragment = getSellersListFragment();
+                    listFragment.setProduct(mProductId);
+                    return  listFragment;
+
+                case 1 : SellersMapFragment sellersMapFragment = getSellersMapFragment();
+                    sellersMapFragment.setProduct(mProductId);
+                    return  sellersMapFragment;
+
+                case 2 : SellersListFragment sellersListFragment = getmTab3();
+                    sellersListFragment.setProduct(mProductId);
+                    return sellersListFragment;
             }
-            return new SellersListFragment();
+            throw new RuntimeException("Item not found") ;
         }
 
         @Override
