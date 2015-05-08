@@ -1,9 +1,9 @@
 package com.instano.retailer.instano.activities.home;
 
 import android.app.Activity;
-import android.support.v4.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +25,6 @@ import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashSet;
 
 import rx.android.observables.AndroidObservable;
 
@@ -82,28 +80,6 @@ public class DealListFragment extends ListFragment{
         }
     };
 
-    public void dealsUpdated() {
-        DealsAdapter adapter = (DealsAdapter) getListAdapter();
-        adapter.clear();
-        HashSet<Deal> validDeals = new HashSet<>();
-        // add only valid deals:
-//        for(Deal deal : DataManager.instance().getDeals()) {
-//            Seller seller = DataManager.instance().getSeller(deal.sellerId);
-//            // can happen if sever feeds wrong data
-//            if (seller != null && System.currentTimeMillis() < deal.expiresAt) {
-//                validDeals.add(deal);
-//            }
-//            else
-//                Log.e("dealsUpdated", "no seller for id: " + deal.sellerId);
-//        }
-        adapter.addAll(validDeals);
-    }
-
-    public void sellersUpdated() {
-        DealsAdapter adapter = (DealsAdapter) getListAdapter();
-        adapter.notifyDataSetChanged();
-    }
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -114,37 +90,30 @@ public class DealListFragment extends ListFragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
 
-        setListAdapter(new DealsAdapter(getActivity()));
-        // call after setting the adapter so that the adapter is not null
-        dealsUpdated();
-//        DataManager.instance().registerListener((DataManager.DealsListener) this);
-//        DataManager.instance().registerListener((DataManager.SellersListener) this);
         mShown = false;
-        DealsAdapter adapter = (DealsAdapter) getListAdapter();
-        adapter.notifyDataSetChanged();
+        DealsAdapter dealsAdapter = new DealsAdapter(getActivity());
+        setListAdapter(dealsAdapter);
         AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Deal.class))
-                .subscribe((t) -> {
-
+                .subscribe((deal) -> {
                     setShown(true);
-                    adapter.add(t);
+                    Log.d(TAG, "new deal:" + deal.id);
+                    dealsAdapter.add(deal);
 //                    adapter.sort((lhs, rhs) -> lhs.compareTo(rhs));
                 }, throwable -> Log.fatalError(new RuntimeException(
                         "error response in subscribe to getObservable(Quote.class)",
                         throwable)));
-        setListAdapter(adapter);
+        setListAdapter(dealsAdapter);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setListShown(mShown);
-
         // Restore the previously serialized activated item position.
-        if (savedInstanceState != null
-                && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION))
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
-        }
     }
 
     private void setShown(boolean shown) {

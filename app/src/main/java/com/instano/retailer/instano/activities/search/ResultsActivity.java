@@ -1,6 +1,5 @@
 package com.instano.retailer.instano.activities.search;
 
-import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -87,13 +86,13 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
     }
 
     private void handleIntent(Intent intent) {
+        String query = intent.getStringExtra(KEY_PRODUCT);
+        Log.v(TAG, "on ResultsActivity query is "+ query);
+        Log.v(TAG, "on ResultsActivity ACTION_KEY is " + intent.getIntExtra(KEY_PRODUCT_ID, -1));
 
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            Log.v(TAG, "on ResultsActivity query is "+ query);
-            Log.v(TAG, "on ResultsActivity ACTION_KEY is "+ intent.getStringExtra(SearchManager.ACTION_KEY));
-            //use the query to search your data somehow
-        }
+        if (query == null)
+            throw new IllegalStateException("no string with KEY_PRODUCT");
+        // TODO: set this query text in the action bar search
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {

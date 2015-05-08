@@ -2,6 +2,7 @@ package com.instano.retailer.instano.activities;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.activities.search.ResultsActivity;
 import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -25,9 +27,14 @@ import rx.subscriptions.BooleanSubscription;
  * Created by vedant on 5/7/15.
  */
 public abstract class SearchableActivity extends BaseActivity{
-    private final String TAG = getClass().getSimpleName();
+    public static final String KEY_PRODUCT = "SearchableActivity.product";
+    public static final String KEY_PRODUCT_ID = "SearchableActivity.product_id";
+
+    private static final int PRODUCT_NAME_INDEX = 1;
+    private static final int ID_INDEX = 0;
     private static final String PRODUCT_NAME = "productName";
 
+    private final String TAG = getClass().getSimpleName();
     private SimpleCursorAdapter mCursorAdapter;
     private Subscription mSuggestionsSubscription;
 
@@ -78,13 +85,12 @@ public abstract class SearchableActivity extends BaseActivity{
             public boolean onSuggestionClick(int i) {
                 Cursor cursor = mCursorAdapter.getCursor();
                 cursor.moveToPosition(i);
-                searchView.setQuery(cursor.getString(1), true);
-                Log.v(TAG, "Suggestion Clicked : " + cursor.getString(1));
-                Bundle bundle = new Bundle();
-                bundle.putString("product", cursor.getString(1));
-                bundle.putInt("product_id", cursor.getInt(0));
-                startSearch(cursor.getString(1), false, bundle, false);
-//                onSearchRequested()
+                searchView.setQuery(cursor.getString(PRODUCT_NAME_INDEX), true);
+                Log.v(TAG, "Suggestion Clicked : " + cursor.getString(PRODUCT_NAME_INDEX));
+                Intent intent = new Intent(SearchableActivity.this, ResultsActivity.class);
+                intent.putExtra(KEY_PRODUCT, cursor.getString(PRODUCT_NAME_INDEX));
+                intent.putExtra(KEY_PRODUCT_ID, cursor.getInt(ID_INDEX));
+                startActivity(intent);
                 return false;
             }
         });
