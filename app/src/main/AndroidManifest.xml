@@ -67,7 +67,7 @@
         <service android:name=".application.GcmIntentService" />
 
         <activity
-            android:name=".sellers.StoreActivity"
+            android:name=".activities.LauncherActivity"
             android:label="@string/app_name"
             android:screenOrientation="nosensor" >
             <intent-filter>
