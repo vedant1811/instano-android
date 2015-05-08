@@ -188,7 +188,7 @@ public class NavigationDrawerFragment extends Fragment {
                 }
 
                 if (!mUserLearnedDrawer) {
-                    // The user manually opened the drawer; store this flag to prevent auto-showing
+                    // The user manually opened the drawer; StoreActivity this flag to prevent auto-showing
                     // the navigation drawer automatically in the future.
                     mUserLearnedDrawer = true;
                     SharedPreferences sp = PreferenceManager

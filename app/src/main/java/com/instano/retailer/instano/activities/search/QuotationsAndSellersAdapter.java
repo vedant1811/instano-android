@@ -43,9 +43,9 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
 
         QuotationCard item = getItem(position);
 
-        TextView headingTextView = (TextView) view.findViewById(R.id.dealHeading);
-        TextView subheadingTextView = (TextView) view.findViewById(R.id.dealSubheading);
-        TextView distanceTextView = (TextView) view.findViewById(R.id.dealDistance);
+        TextView headingTextView = (TextView) view.findViewById(R.id.mediumText);
+        TextView subheadingTextView = (TextView) view.findViewById(R.id.largeText);
+        TextView distanceTextView = (TextView) view.findViewById(R.id.smallText);
         ImageButton productImage = (ImageButton) view.findViewById(R.id.dealProduct);
         headingTextView.setText(item.seller.name_of_shop);
         subheadingTextView.setText(String.valueOf(item.quotation.price));

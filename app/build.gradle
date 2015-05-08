@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
-retrolambda {
-    jdk "/usr/lib/jvm/java-8-oracle/"
-    oldJdk "/usr/lib/jvm/java-7-oracle/"
-    javaVersion JavaVersion.VERSION_1_7
-}
+//retrolambda {
+//    jdk "/usr/lib/jvm/java-8-oracle/"
+//    oldJdk "/usr/lib/jvm/java-7-oracle/"
+//    javaVersion JavaVersion.VERSION_1_7
+//}
 
 android {
     signingConfigs {
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         applicationId "com.instano.buyer"
-        minSdkVersion 17
+        minSdkVersion 15
         targetSdkVersion 19
         versionCode 16
         versionName "0.4.1"

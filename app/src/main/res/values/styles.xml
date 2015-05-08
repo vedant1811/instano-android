@@ -3,26 +3,16 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
 
-        <item name="colorPrimary">@color/instano_red</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
 
-        <item name="android:buttonStyle">@style/YellowButton</item>
-        <item name="android:actionBarStyle">@style/ActionBar</item>
-        <item name="android:windowBackground">@color/background</item>
-        <item name="android:editTextStyle">@style/WhiteEditText</item>
-        <item name="android:textAppearanceLarge">@style/TextAppearanceHeading</item>
-        <item name="android:textAppearanceMedium">@style/TextAppearanceMedium</item>
     </style>
 
-    <style name="ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid">
-        <item name="android:titleTextStyle">@style/titleTextStyle</item>
-        <item name="android:background">@color/instano_red</item>
+    <style name="titleTextStyle" parent="@style/Theme.AppCompat.Light" >
+        <item name="android:textColor">@android:color/black</item>
     </style>
 
-    <style name="titleTextStyle" parent="android:style/TextAppearance.Holo.Widget.ActionBar.Title" >
-        <item name="android:textColor">@android:color/white</item>
-    </style>
-
-    <style name="WhiteEditText" parent="android:Widget.Holo.Light.EditText">
+    <style name="WhiteEditText" parent="@style/Theme.AppCompat.Light">
         <item name="android:background">@android:color/white</item>
         <item name="android:padding">8dp</item>
     </style>
@@ -31,10 +21,10 @@
         <item name="android:textAppearance">@style/TextAppearanceMedium</item>
         <item name="android:minHeight">0dp</item>
         <item name="android:textColor">@android:color/holo_blue_dark</item>
-        <item name="android:background">@drawable/selector_borderless_button</item>
+        <item name="android:background">@drawable/selector_bookit_button</item>
     </style>
 
-    <style name="RedButton" parent="android:style/Widget.Holo.Light.Button">
+    <style name="RedButton" parent="@style/Theme.AppCompat.Light">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textAppearance">@style/ButtonTextAppearance</item>
         <item name="android:background">@drawable/selector_red_button</item>
@@ -82,6 +72,64 @@
 
     <style name="TextAppearanceListItemTimeElapsed" parent="TextAppearanceMedium">
         <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="MediumText" parent="@style/Theme.AppCompat.Light">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:layout_marginLeft">20dp</item>
+    </style>
+
+    <style name="LargeText" parent="@style/Theme.AppCompat.Light">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">26dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:textColor">@color/instano_red</item>
+        <item name="android:layout_marginLeft">20dp</item>
+    </style>
+
+    <style name="SmallText" parent="@style/Theme.AppCompat.Light">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">18dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:textColor">@color/instano_grey</item>
+        <item name="android:layout_marginLeft">20dp</item>
+    </style>
+
+    <style name="ContactButton" parent="@style/Theme.AppCompat.Light">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:src">@drawable/chat_store</item>
+        <item name="android:background">@drawable/image_button_selector</item>
+        <item name="android:padding">14dp</item>
+
+
+    </style>
+    <style name="MsgButton" parent="@style/Theme.AppCompat.Light" >
+        <item name="android:layout_width"> wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/chat_store</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:background">@drawable/image_button_selector</item>
+    </style>
+
+    <style name="BookitButton" parent="@style/Theme.AppCompat.Light">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">26dp</item>
+        <item name="android:background">@drawable/selector_bookit_button</item>
+        <item name="android:text">Book it</item>
+        <item name="android:textColor">@color/instano_red</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:textSize">14dp</item>
+        
+
     </style>
 
 </resources>
