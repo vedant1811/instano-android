@@ -1,5 +1,7 @@
 package com.instano.retailer.instano.activities.search;
 
+import android.app.SearchManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -7,16 +9,15 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.BaseActivity;
+import com.instano.retailer.instano.activities.SearchableActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 
 import java.util.Locale;
 
-public class ResultsActivity extends BaseActivity implements ActionBar.TabListener {
+public class ResultsActivity extends SearchableActivity implements ActionBar.TabListener {
 
     private static final String TAG = "ResultsActivity";
     /**
@@ -40,12 +41,9 @@ public class ResultsActivity extends BaseActivity implements ActionBar.TabListen
     protected void onCreate(Bundle savedInstanceState) {
         // make sure adapter exists before any fragment may be created
         mAdapter = new QuotationsAndSellersAdapter(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
-
-        // Set up the action bar.
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -54,6 +52,10 @@ public class ResultsActivity extends BaseActivity implements ActionBar.TabListen
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        // Set up the action bar.
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // When swiping between different sections, select the corresponding
         // tab. We can also use ActionBar.Tab#select() to do this if we have
@@ -76,17 +78,24 @@ public class ResultsActivity extends BaseActivity implements ActionBar.TabListen
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_results, menu);
-        return true;
+        handleIntent(getIntent());
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        handleIntent(getIntent());
+    }
+
+    private void handleIntent(Intent intent) {
+
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            Log.v(TAG, "on ResultsActivity query is "+ query);
+            Log.v(TAG, "on ResultsActivity ACTION_KEY is "+ intent.getStringExtra(SearchManager.ACTION_KEY));
+            //use the query to search your data somehow
+        }
+    }
+
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long

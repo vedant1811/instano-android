@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
 
-import com.facebook.Session;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -59,7 +58,6 @@ public class ServicesSingleton implements
     private AddressCallbacks mAddressCallbacks;
 
     private Buyer mBuyer;
-    public Session facebookSession;
 
     @Nullable
     public Buyer getBuyer() {
