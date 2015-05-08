@@ -1,7 +1,8 @@
 package com.instano.retailer.instano.activities.search;
 
-import android.support.v4.app.ListFragment;
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.view.View;
 
 import com.instano.retailer.instano.application.controller.Quotations;
@@ -20,6 +21,7 @@ public class SellersListFragment extends ListFragment {
     private static final String TAG = "SellersListFragment";
 
     private boolean mShown = false;
+    private int mProductId;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -29,10 +31,14 @@ public class SellersListFragment extends ListFragment {
     }
 
     public void setProduct(int productId) {
-        QuotationsAndSellersAdapter adapter = ((ResultsActivity)getActivity()).getAdapter();
-
-        adapter.clear();
+        mProductId = productId;
         setShown(false);
+        ResultsActivity activity = (ResultsActivity) getActivity();
+        if (activity == null)
+            return;
+
+        QuotationsAndSellersAdapter adapter = activity.getAdapter();
+        adapter.clear();
 
         Log.d(TAG, "calling query quotation");
         AndroidObservable.bindFragment(this, Quotations.controller().fetchQuotationsForProduct(productId))
@@ -49,14 +55,18 @@ public class SellersListFragment extends ListFragment {
         mShown = false;
 
         setListAdapter(adapter);
-
-        setProduct(6739);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setListShown(mShown);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        setProduct(mProductId);
     }
 
     private void setShown(boolean shown) {

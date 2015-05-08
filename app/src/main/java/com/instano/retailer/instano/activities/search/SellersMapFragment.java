@@ -107,12 +107,6 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setProduct(6739);
-    }
-
-    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setProduct(mProductId);
