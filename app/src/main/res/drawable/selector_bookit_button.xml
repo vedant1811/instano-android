@@ -2,9 +2,9 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_pressed="false"
-        android:drawable="@drawable/gray_rectangle" />
+        android:drawable="@drawable/shape_redborder" />
     <item
         android:state_pressed="true"
-        android:drawable="@android:color/darker_gray" />
+        android:drawable="@drawable/shape_redborder_selector" />
 </selector>
     
