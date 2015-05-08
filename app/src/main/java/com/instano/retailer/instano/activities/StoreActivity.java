@@ -1,18 +1,14 @@
-package com.instano.retailer.instano.sellers;
+package com.instano.retailer.instano.activities;
 
-import android.app.ActionBar;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.activities.GlobalMenuActivity;
 
 /**
  * Created by Dheeraj on 06-May-15.

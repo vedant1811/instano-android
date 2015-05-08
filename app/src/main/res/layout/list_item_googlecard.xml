@@ -10,20 +10,16 @@
         android:layout_width="wrap_content"
         android:layout_height="240dp"
         android:id="@+id/dealProduct"
+        android:contentDescription="Product IMage"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:src="@drawable/img_nature5"
         android:background="#00FFFFFF"
         android:layout_centerInParent="true"
         android:scaleType="center"/>
 
-
      <include layout="@layout/store_footer_view"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_alignBottom="@id/dealProduct"/>
-
-
 
 </RelativeLayout>
