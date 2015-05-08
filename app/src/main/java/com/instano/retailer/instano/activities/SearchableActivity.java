@@ -52,16 +52,6 @@ public abstract class SearchableActivity extends BaseActivity{
     }
 
     @Override
-    public boolean onSearchRequested() {
-        Log.d(TAG, "onSearchRequested");
-        Cursor cursor = mCursorAdapter.getCursor();
-//        Bundle bundle = new Bundle()
-//                .put
-        startSearch(cursor.getString(1), false, null, false);
-        return true;
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
