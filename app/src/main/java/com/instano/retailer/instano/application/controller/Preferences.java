@@ -15,6 +15,7 @@ import com.instano.retailer.instano.utilities.model.Buyer;
 public class Preferences {
     private static final String TAG = "SharedPreferencesController";
     private static Preferences sInstance;
+
     private SharedPreferences mSharedPreferences ;
 
     private final static String KEY_BUYER_FACEBOOK_USER_ID = "buyer_facebook_user_id";
@@ -24,6 +25,10 @@ public class Preferences {
 //    public Observable<Outlet> findByProduct(int productId) {
 //
 //    }
+
+    public SharedPreferences get() {
+        return mSharedPreferences;
+    }
 
     public static Preferences controller() {
         if (sInstance == null)

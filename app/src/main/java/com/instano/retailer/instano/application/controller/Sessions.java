@@ -9,6 +9,7 @@ import com.facebook.SessionState;
 import com.instano.retailer.instano.activities.home.HomeActivity;
 import com.instano.retailer.instano.activities.signUp.SignUpActivity;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
+import com.instano.retailer.instano.application.network.ResponseError;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Buyer;
 import com.instano.retailer.instano.utilities.models.FacebookUser;
@@ -127,10 +128,15 @@ public class Sessions {
                     meRequest(subscriber, session);
                 else
                     buyerObservable.subscribe(buyer -> {
-                            NetworkRequestsManager.instance().newBuyer();
-                            subscriber.onNext(HomeActivity.class);
-                        },
-                        subscriber::onError); // just pass the error along
+                                NetworkRequestsManager.instance().newBuyer();
+                                subscriber.onNext(HomeActivity.class);
+                            },
+                            (error) -> {
+                                if (ResponseError.Type.INCORRECT_FACEBOOK_ID.is(error))
+                                    subscriber.onNext(SignUpActivity.class);
+                                else // just pass the error along
+                                    subscriber.onError(error);
+                            });
             }
         });
         return observable;
