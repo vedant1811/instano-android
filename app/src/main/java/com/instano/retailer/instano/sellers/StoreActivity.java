@@ -1,6 +1,8 @@
 package com.instano.retailer.instano.sellers;
 
+import android.app.ActionBar;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.SpannableString;
@@ -27,6 +29,8 @@ public class StoreActivity extends GlobalMenuActivity {
         s1.setSpan(new RelativeSizeSpan(1.3f),0,18,0);
         s1.setSpan(new ForegroundColorSpan(Color.BLACK),0,0,0);
         text.setText(s1);
+
+
 
 
     }
