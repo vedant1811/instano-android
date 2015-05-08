@@ -1,16 +1,11 @@
 package com.instano.retailer.instano.activities.search;
 
-import android.app.ListFragment;
+import android.support.v4.app.ListFragment;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.View;
 
 import com.instano.retailer.instano.application.controller.Quotations;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.model.Quotation;
-import com.instano.retailer.instano.utilities.model.Seller;
-
-import java.util.ArrayList;
 
 import rx.android.observables.AndroidObservable;
 
@@ -55,7 +50,7 @@ public class SellersListFragment extends ListFragment {
 
         setListAdapter(adapter);
 
-        setProduct(6814);
+        setProduct(6739);
     }
 
     @Override
@@ -69,9 +64,4 @@ public class SellersListFragment extends ListFragment {
         if (getView() != null)
             setListShown(mShown);
     }
-
-    /**
-     * just a typedef
-     */
-    private class PairsList extends ArrayList<Pair<Seller, Quotation>>{}
 }

@@ -15,7 +15,7 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.home.HomeActivity;
 import com.instano.retailer.instano.application.BaseActivity;
 import com.instano.retailer.instano.application.ServicesSingleton;
-import com.instano.retailer.instano.application.controller.User;
+import com.instano.retailer.instano.application.controller.Sessions;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.application.network.ResponseError;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -89,13 +89,13 @@ public class SignUpActivity extends BaseActivity {
                                         new Action1<Buyer>() {
                                             @Override
                                             public void call(Buyer buyer) {
-                                                User.controller().newSignUp(newBuyer);
+                                                Sessions.controller().newSignUp(newBuyer);
                                                 startActivity(new Intent(getApplicationContext(), HomeActivity.class));
                                                 finish();
                                             }
                                         },
                                         throwable -> {
-                                            User.controller().removeFirstTime();
+                                            Sessions.controller().removeFirstTime();
 
                                             if (ResponseError.Type.PHONE_EXISTS.is(throwable)) {
                                                 //TODO

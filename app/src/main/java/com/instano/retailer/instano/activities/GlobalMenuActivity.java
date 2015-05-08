@@ -229,7 +229,7 @@ public abstract class GlobalMenuActivity extends BaseActivity {
     }
 
     protected void profile() {
-        startActivity(new Intent(this, ProfileActivity.class));
+//        startActivity(new Intent(this, ProfileActivity.class));
     }
 
     protected void share() {

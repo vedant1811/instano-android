@@ -98,12 +98,6 @@
                 android:value="com.instano.retailer.instano.search.SearchTabsActivity" />
         </activity>
         <activity
-            android:name=".activities.ProfileActivity"
-            android:label="Profile"
-            android:screenOrientation="nosensor"
-            android:windowSoftInputMode="stateVisible|adjustResize" >
-        </activity>
-        <activity
             android:name=".buyerDashboard.quotes.QuoteListActivity"
             android:label="@string/title_quote_list"
             >

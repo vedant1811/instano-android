@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.controller.model.QuotationCard;
+import com.instano.retailer.instano.utilities.library.Log;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -51,8 +52,10 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
 
         if(true)
             Picasso.with(getContext())
-                    .load(R.drawable.img_nature5)
+                    .load(item.seller.image).fit().centerInside()
+                    .placeholder(R.drawable.img_nature5)
                     .into(productImage);
+        Log.v(TAG, "dimensions of view : height = "+ view.getHeight() + " width = "+view.getWidth());
 //        else
 //            Picasso.with(getContext())
 //                    .load(deal.product.image)

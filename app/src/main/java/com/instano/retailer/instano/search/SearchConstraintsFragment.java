@@ -11,7 +11,7 @@ import android.widget.ViewFlipper;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
-import com.instano.retailer.instano.application.controller.User;
+import com.instano.retailer.instano.application.controller.Sessions;
 import com.instano.retailer.instano.utilities.library.MultiSpinner;
 import com.instano.retailer.instano.utilities.library.RangeSeekBar;
 import com.instano.retailer.instano.utilities.model.Categories;
@@ -76,7 +76,7 @@ public class SearchConstraintsFragment extends Fragment
         mOverlayViews[1] = view.findViewById(R.id.overlayTextView);
         mOverlayViews[2] = view.findViewById(R.id.overlayTextView2);
 
-        if (User.controller().isFirstTime()) {
+        if (Sessions.controller().isFirstTime()) {
             for(View overlayView : mOverlayViews)
                 overlayView.setVisibility(View.VISIBLE);
             mOverlayViews[0].setOnClickListener(this);
