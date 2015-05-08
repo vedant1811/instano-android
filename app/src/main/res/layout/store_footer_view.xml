@@ -8,13 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/msgButton"
-        android:layout_alignTop="@id/mediumText"
-        android:background="#ffffff"
-        android:alpha=".8"/>
+
 
     <TextView
         style="@style/MediumText"
@@ -25,7 +19,7 @@
 
     <TextView
         style="@style/LargeText"
-        android:id="@+id/itemDetails"
+        android:id="@+id/largeText"
         android:text="Large Text"
         android:layout_below="@id/mediumText"
         android:layout_alignParentLeft="true"
@@ -34,17 +28,16 @@
 
     <TextView
         style="@style/SmallText"
-        android:id="@+id/itemPrice"
-        android:layout_below="@id/itemDetails"
-        android:text="Small Text"/>
-
-
+        android:id="@+id/smallText"
+        android:layout_below="@id/largeText"
+        android:text="Small Text"
+        />
 
     <ImageButton
         style="@style/MsgButton"
         android:layout_marginBottom="4dp"
         android:id="@+id/msgButton"
-        android:layout_below="@id/itemPrice"
+        android:layout_below="@id/smallText"
 
        />
 
@@ -62,6 +55,14 @@
         android:layout_alignParentEnd="true">
 
         </Button>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/msgButton"
+        android:layout_alignTop="@id/mediumText"
+        android:background="#ffffff"
+        android:alpha=".4"/>
 
 
 </RelativeLayout>

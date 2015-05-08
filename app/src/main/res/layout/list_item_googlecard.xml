@@ -22,7 +22,7 @@
      <include layout="@layout/store_footer_view"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_alignBottom="@id/dealProduct"
+         android:layout_alignBottom="@id/dealProduct"/>
 
 
 

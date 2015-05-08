@@ -244,9 +244,9 @@ public class DealListFragment extends ListFragment{
                 e.printStackTrace();
             }
 
-            TextView headingTextView = (TextView) view.findViewById(R.id.dealHeading);
-            TextView subheadingTextView = (TextView) view.findViewById(R.id.dealSubheading);
-            TextView distanceTextView = (TextView) view.findViewById(R.id.dealDistance);
+            TextView headingTextView = (TextView) view.findViewById(R.id.mediumText);
+            TextView subheadingTextView = (TextView) view.findViewById(R.id.largeText);
+            TextView distanceTextView = (TextView) view.findViewById(R.id.smallText);
             ImageButton productImage = (ImageButton) view.findViewById(R.id.dealProduct);
             Log.v(TAG,"heading : "+deal.heading+" subheading : "+deal.subheading);
             headingTextView.setText(deal.heading);
