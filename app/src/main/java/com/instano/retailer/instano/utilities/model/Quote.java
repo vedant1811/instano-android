@@ -1,5 +1,6 @@
 package com.instano.retailer.instano.utilities.model;
 
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -11,7 +12,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Date;
-import java.util.HashSet;
 
 /**
  * Represents a single quote request (that is received by the seller)
@@ -23,32 +23,39 @@ public class Quote implements Comparable<Quote> {
 
     @JsonProperty("id")
     public int id;
+
     @JsonProperty("buyer_id")
     public int buyerId;
-    @JsonProperty("search_string")
-    public String searchString;
 
-    /**
-     * human readable display for price
-     * can be null
-     */
-    @JsonProperty("price_range")
-    public String priceRange;
-//    @JsonProperty("product_category")
-//    public Category productCategory;
-    @JsonProperty("brands")
-    public String brands;
     @JsonProperty("updated_at")
     private Date updatedAt; // valid only when constructed from Quote(JSONObject jsonObject)
-    @JsonProperty("seller_ids")
-    public HashSet<Integer> sellerIds;
+
     @Nullable
     @JsonProperty("address")
     public String address; // newline separated
+
     @JsonProperty("latitude")
     public double latitude;
+
     @JsonProperty("longitude")
     public double longitude;
+
+    @JsonProperty("product_id")
+    public int productId;
+
+    /**
+     * fields address, latitude, longitude are added from ServicesSingleton if available
+     * @param productId of this quote
+     */
+    public Quote(int productId) {
+        this.productId = productId;
+        Location location = ServicesSingleton.instance().getUserLocation();
+        if (location != null) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        }
+        address = ServicesSingleton.instance().getUserAddress();
+    }
 
     public static int getIdFrom (JSONObject quoteJsonObject) {
         try {

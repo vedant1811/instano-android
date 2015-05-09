@@ -127,7 +127,7 @@ public class QuoteDetailFragment extends Fragment {
                         .subscribe(quote -> {
                             mItem = quote;
                             Log.v(TAG, "quote received: " +quote );
-                            mHeadingTextView.setText(String.format("\"%s\"", mItem.searchString));
+//                            mHeadingTextView.setText(String.format("\"%s\"", mItem.searchString));
                             // initialize adapter only after quote has been fetched
                             mAdapter.refresh();
                         });
@@ -173,14 +173,14 @@ public class QuoteDetailFragment extends Fragment {
          * main initializer
          */
         private void refresh() {
-            AndroidObservable.bindFragment(QuoteDetailFragment.this, NetworkRequestsManager.instance().getObservable(Seller.class)
-                    .filter(seller -> mItem.sellerIds.contains(seller.id)))
+            AndroidObservable.bindFragment(QuoteDetailFragment.this, NetworkRequestsManager.instance().getObservable(Seller.class))
+//                    .filter(seller -> mItem.sellerIds.contains(seller.id)))
                             .subscribe(seller -> {
                                 mSellers.put(seller.id, seller);
                                 dataUpdated();
                             });
-            AndroidObservable.bindFragment(QuoteDetailFragment.this, NetworkRequestsManager.instance().getObservable(Quotation.class)
-                    .filter(quotation -> mItem.sellerIds.contains(quotation.sellerId)))
+            AndroidObservable.bindFragment(QuoteDetailFragment.this, NetworkRequestsManager.instance().getObservable(Quotation.class))
+//                    .filter(quotation -> mItem.sellerIds.contains(quotation.sellerId)))
                             .subscribe(quotation -> {
                                 Log.d(TAG, "new quotation, id: " + quotation.id);
                                 mQuotations.put(quotation.id, quotation);
@@ -193,23 +193,23 @@ public class QuoteDetailFragment extends Fragment {
             mHeaders.clear();
             mChildrenMap.clear();
 
-            for (Integer id : mItem.sellerIds){
-                Seller seller = mSellers.get(id);
-                if (seller != null) {
-                    mHeaders.add(0, seller);
-                    ArrayList<Object> groupChildren = new ArrayList<>();
-                    for (int i = 0; i < mQuotations.size(); i++) {
-                        Quotation quotation = mQuotations.valueAt(i);
-                        if (quotation.sellerId == id && quotation.quoteId == mItem.id)
-                            groupChildren.add(quotation);
-                    }
-                    // TODO: sort the above
-
-//                    put first item, Seller:
-                    groupChildren.add(0, seller);
-                    mChildrenMap.put(seller, groupChildren);
-                }
-            }
+//            for (Integer id : mItem.sellerIds){
+//                Seller seller = mSellers.get(id);
+//                if (seller != null) {
+//                    mHeaders.add(0, seller);
+//                    ArrayList<Object> groupChildren = new ArrayList<>();
+//                    for (int i = 0; i < mQuotations.size(); i++) {
+//                        Quotation quotation = mQuotations.valueAt(i);
+//                        if (quotation.sellerId == id && quotation.quoteId == mItem.id)
+//                            groupChildren.add(quotation);
+//                    }
+//                    // TODO: sort the above
+//
+////                    put first item, Seller:
+//                    groupChildren.add(0, seller);
+//                    mChildrenMap.put(seller, groupChildren);
+//                }
+//            }
             notifyDataSetChanged();
             int numOfSellers = getGroupCount();
             String subheading;

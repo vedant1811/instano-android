@@ -132,9 +132,6 @@ public class SearchTabsActivity extends GlobalMenuActivity implements
         }
 
         Quote quote = new Quote();
-        quote.searchString = searchString;
-        quote.priceRange = mSearchConstraintsFragment.getPriceRange();
-        quote.brands = mSelectedCategory.asAdditionalInfo();
         quote.address = address;
         quote.latitude = latitude;
         quote.longitude = longitude;

@@ -11,12 +11,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.SearchableActivity;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.model.Quote;
 
 import java.util.Locale;
+
+import rx.android.observables.AndroidObservable;
 
 public class ResultsActivity extends SearchableActivity implements ActionBar.TabListener {
 
@@ -99,8 +104,14 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
         Log.v(TAG, "Product ID in handleIntent : " + mProductId);
         if (query == null)
             throw new IllegalStateException("no string with KEY_PRODUCT");
-        // TODO: set this query text in the action bar search
         mSearchView.setQuery(query, false);
+
+        Quote quote = new Quote(mProductId);
+        // TODO: improve the look of the toast:
+        AndroidObservable.bindActivity(this, NetworkRequestsManager.instance().sendQuote(quote))
+                .subscribe(q -> Toast.makeText(this, "sellers have been notified", Toast.LENGTH_SHORT).show(),
+                        throwable -> Log.fatalError(new RuntimeException(throwable)));
+
         getSellersListFragment().setProduct(mProductId);
         getSellersMapFragment().setProduct(mProductId);
         getmTab3().setProduct(mProductId);
