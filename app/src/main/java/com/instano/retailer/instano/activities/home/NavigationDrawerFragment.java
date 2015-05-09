@@ -89,7 +89,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         // Select either the default item (0) or the last selected item.
-//        selectItem(mCurrentSelectedPosition);
+        selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -115,8 +115,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     @OnClick(R.id.homeButton)
     public void homeClicked() {
-        mCallbacks.onNavigationDrawerItemSelected(0);
-        // TODO: setActivated:
+        selectItem(0);
     }
 
     public boolean isDrawerOpen() {
@@ -197,18 +196,19 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-//    private void selectItem(int position) {
-//        mCurrentSelectedPosition = position;
+    private void selectItem(int position) {
+        mCurrentSelectedPosition = position;
+        // TODO:
 //        if (mDrawerListView != null) {
 //            mDrawerListView.setItemChecked(position, true);
 //        }
-//        if (mDrawerLayout != null) {
-//            mDrawerLayout.closeDrawer(mFragmentContainerView);
-//        }
-//        if (mCallbacks != null) {
-//            mCallbacks.onNavigationDrawerItemSelected(position);
-//        }
-//    }
+        if (mDrawerLayout != null) {
+            mDrawerLayout.closeDrawer(mFragmentContainerView);
+        }
+        if (mCallbacks != null) {
+            mCallbacks.onNavigationDrawerItemSelected(position);
+        }
+    }
 
     @Override
     public void onAttach(Activity activity) {
