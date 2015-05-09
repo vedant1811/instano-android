@@ -2,24 +2,63 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:background="#00FFFFFF"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:layout_margin="@dimen/general_separator_margin"
     >
 
     <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="240dp"
+        style="@style/image_view_card"
         android:id="@+id/dealProduct"
         android:contentDescription="Product IMage"
         android:layout_alignParentTop="true"
-        android:src="@drawable/img_nature5"
-        android:background="#00FFFFFF"
         android:layout_centerInParent="true"
-        android:scaleType="center"/>
+        />
 
-     <include layout="@layout/store_footer_view"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignBottom="@id/dealProduct"/>
+    <ImageButton
+        style="@style/MsgButton"
+        android:id="@+id/msgButton"
+        android:layout_marginLeft="10dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/dealProduct"/>
+
+    <ImageButton
+        style="@style/ContactButton"
+        android:id="@+id/contactButton"
+        android:layout_below="@+id/dealProduct"
+        android:layout_centerHorizontal="true" />
+
+    <!-- TODO: fix layout_marginRight-->
+    <Button
+        style="@style/BookitButton"
+        android:id="@+id/bookitButton"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="200dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/dealProduct"/>
+
+    <TextView
+        style="@style/SmallText"
+        android:id="@+id/smallText"
+        android:text="Small Text"
+        android:layout_above="@id/msgButton"
+        android:background="@color/translucent_white"
+        />
+
+    <TextView
+        style="@style/LargeText"
+        android:id="@+id/largeText"
+        android:text="Large Text"
+        android:layout_alignParentLeft="true"
+        android:layout_above="@id/smallText"
+        android:background="@color/translucent_white"
+        />
+
+    <TextView
+        style="@style/MediumText"
+        android:id="@+id/mediumText"
+        android:text="Medium Text"
+        android:layout_above="@id/largeText"
+        android:background="@color/translucent_white"/>
 
 </RelativeLayout>

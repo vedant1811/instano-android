@@ -7,6 +7,7 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_search_tabs">Search</string>
     <string name="title_activity_home">Home</string>
+    <string name="title_activity_seller_detail">Seller Detail</string>
     <string name="title_activity_queries_map">Queries Map</string>
     <string name="title_activity_starting">StartingActivity</string>
     <string name="title_activity_profile">ProfileActivity</string>

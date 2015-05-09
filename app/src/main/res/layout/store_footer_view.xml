@@ -1,65 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android" >
-    <RelativeLayout
-        android:layout_gravity="bottom"
-        android:gravity="bottom"
-        android:id="@+id/mylayout"
-        android:layout_alignParentBottom="true"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+    <merge xmlns:android="http://schemas.android.com/apk/res/android" >
+<RelativeLayout
+    android:layout_gravity="bottom"
+    android:gravity="bottom"
+    android:id="@+id/mylayout"
+    android:layout_alignParentBottom="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/translucent_white">
 
-        <TextView
-            style="@style/MediumText"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:id="@+id/mediumText"
-            android:text="Medium Text"/>
 
-        <TextView
-            style="@style/LargeText"
-            android:id="@+id/largeText"
-            android:text="Large Text"
-            android:layout_below="@id/mediumText"
-            android:layout_alignParentLeft="true"
-           />
 
-        <TextView
-            style="@style/SmallText"
-            android:id="@+id/smallText"
-            android:layout_below="@id/largeText"
-            android:text="Small Text"
-            />
+    <TextView
+        style="@style/MediumText"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/mediumText"
+        android:text="Medium Text"/>
 
-        <ImageButton
-            style="@style/MsgButton"
-            android:layout_marginBottom="4dp"
-            android:id="@+id/msgButton"
-            android:layout_below="@id/smallText"
-           />
+    <TextView
+        style="@style/LargeText"
+        android:id="@+id/largeText"
+        android:text="Large Text"
+        android:layout_below="@id/mediumText"
+        android:layout_alignParentLeft="true"
+       />
 
-        <ImageButton
-            style="@style/ContactButton"
-            android:id="@+id/contactButton"
-            android:layout_alignBottom="@id/msgButton" />
 
-        <Button
-            style="@style/BookitButton"
-            android:layout_margin="10dp"
-            android:layout_alignBottom="@id/msgButton"
-            android:id="@+id/bookitButton"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            />
+    <TextView
+        style="@style/SmallText"
+        android:id="@+id/smallText"
+        android:layout_below="@id/largeText"
+        android:text="Small Text"
+        />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/msgButton"
-            android:layout_alignTop="@id/mediumText"
-            android:background="#ffffff"
-            android:alpha=".4"
-            />
+    <ImageButton
+        style="@style/MsgButton"
+        android:layout_marginBottom="4dp"
+        android:id="@+id/msgButton"
+        android:layout_below="@id/smallText"
 
-    </RelativeLayout>
-</merge>
+       />
+
+    <ImageButton
+        style="@style/ContactButton"
+        android:id="@+id/contactButton"
+        android:layout_alignBottom="@id/msgButton" />
+
+    <Button
+        style="@style/BookitButton"
+        android:layout_margin="10dp"
+        android:layout_alignBottom="@id/msgButton"
+        android:id="@+id/bookitButton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
+
+        </Button>
+
+
+</RelativeLayout>
+
+    </merge>
