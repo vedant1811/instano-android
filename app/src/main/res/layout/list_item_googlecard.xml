@@ -39,7 +39,7 @@
 
     <TextView
         style="@style/SmallText"
-        android:id="@+id/smallText"
+        android:id="@+id/sellerDetails"
         android:text="Small Text"
         android:layout_above="@id/msgButton"
         android:background="@color/translucent_white"
@@ -47,18 +47,18 @@
 
     <TextView
         style="@style/LargeText"
-        android:id="@+id/largeText"
+        android:id="@+id/dealSubheading"
         android:text="Large Text"
         android:layout_alignParentLeft="true"
-        android:layout_above="@id/smallText"
+        android:layout_above="@id/sellerDetails"
         android:background="@color/translucent_white"
         />
 
     <TextView
         style="@style/MediumText"
-        android:id="@+id/mediumText"
+        android:id="@+id/dealHeading"
         android:text="Medium Text"
-        android:layout_above="@id/largeText"
+        android:layout_above="@id/dealSubheading"
         android:background="@color/translucent_white"/>
 
 </RelativeLayout>

@@ -43,9 +43,9 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
 
         QuotationCard item = getItem(position);
 
-        TextView headingTextView = (TextView) view.findViewById(R.id.mediumText);
-        TextView subheadingTextView = (TextView) view.findViewById(R.id.largeText);
-        TextView distanceTextView = (TextView) view.findViewById(R.id.smallText);
+        TextView headingTextView = (TextView) view.findViewById(R.id.dealHeading);
+        TextView subheadingTextView = (TextView) view.findViewById(R.id.dealSubheading);
+        TextView distanceTextView = (TextView) view.findViewById(R.id.sellerDetails);
         ImageButton productImage = (ImageButton) view.findViewById(R.id.dealProduct);
         headingTextView.setText(item.seller.name_of_shop);
         subheadingTextView.setText(String.valueOf(item.quotation.price));
@@ -53,7 +53,6 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
         if(true)
             Picasso.with(getContext())
                     .load(item.seller.image).fit().centerInside()
-                    .placeholder(R.drawable.img_nature5)
                     .into(productImage);
         Log.v(TAG, "dimensions of view : height = "+ view.getHeight() + " width = "+view.getWidth());
 //        else
