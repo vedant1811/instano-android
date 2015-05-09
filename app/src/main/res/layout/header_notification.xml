@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:background="@color/primary"
+    android:layout_marginBottom="@dimen/general_separator_margin"
+    >
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="We have also notified nearby sellers"
+        android:id="@+id/mainTextView"
+        android:textColor="@android:color/white"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="14sp" />
+
+    <ImageButton
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:id="@+id/cancelButton"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:background="@drawable/selector_image_button" />
+</LinearLayout>

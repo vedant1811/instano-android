@@ -19,9 +19,11 @@ import rx.android.observables.AndroidObservable;
  */
 public class SellersListFragment extends ListFragment {
     private static final String TAG = "SellersListFragment";
+    private static final String KEY_IS_NOTIFICATION_CANCELLED = "IsNotificationCancelled";
 
     private boolean mShown = false;
     private int mProductId;
+//    private View mHeaderView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -37,8 +39,10 @@ public class SellersListFragment extends ListFragment {
         if (activity == null)
             return;
 
+//        getListView().addHeaderView(mHeaderView);
         QuotationsAndSellersAdapter adapter = activity.getAdapter();
         adapter.clear();
+        setListAdapter(adapter);
 
         Log.d(TAG, "calling query quotation");
         AndroidObservable.bindFragment(this, Quotations.controller().fetchQuotationsForProduct(productId))
@@ -51,22 +55,27 @@ public class SellersListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        QuotationsAndSellersAdapter adapter = ((ResultsActivity)getActivity()).getAdapter();
         mShown = false;
-
-        setListAdapter(adapter);
     }
+//
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        View view = super.onCreateView(inflater, container, savedInstanceState);
+//        mHeaderView = inflater.inflate(R.layout.header_notification, null);
+//        mHeaderView.findViewById(R.id.cancelButton).setOnClickListener(v -> getListView().removeHeaderView(mHeaderView));
+//        return view;
+//    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setListShown(mShown);
+        setProduct(mProductId);
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        setProduct(mProductId);
     }
 
     private void setShown(boolean shown) {

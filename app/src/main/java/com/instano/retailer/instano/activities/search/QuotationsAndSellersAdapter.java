@@ -13,6 +13,9 @@ import com.instano.retailer.instano.application.controller.model.QuotationCard;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.squareup.picasso.Picasso;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 /**
  * Created by vedant on 4/29/15.
  */
@@ -29,33 +32,29 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
         super(context, 0);
     }
 
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        final View view;
-
+        ViewHolder viewHolder;
         // first check to see if the view is null. if so, we have to inflate it.
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.list_item_googlecard, parent, false);
+            convertView = inflater.inflate(R.layout.list_item_googlecard, parent, false);
+            viewHolder = new ViewHolder(convertView);
+            convertView.setTag(viewHolder);
         }
         else
-            view = convertView;
+            viewHolder = (ViewHolder) convertView.getTag();
 
         QuotationCard item = getItem(position);
-
-        TextView headingTextView = (TextView) view.findViewById(R.id.mediumText);
-        TextView subheadingTextView = (TextView) view.findViewById(R.id.largeText);
-        TextView distanceTextView = (TextView) view.findViewById(R.id.smallText);
-        ImageButton productImage = (ImageButton) view.findViewById(R.id.dealProduct);
-        headingTextView.setText(item.seller.name_of_shop);
-        subheadingTextView.setText(String.valueOf(item.quotation.price));
+        viewHolder.headingTextView.setText(item.seller.name_of_shop);
+        viewHolder.subheadingTextView.setText(String.valueOf(item.quotation.price));
 
         if(true)
             Picasso.with(getContext())
                     .load(item.seller.image).fit().centerInside()
-                    .placeholder(R.drawable.img_nature5)
-                    .into(productImage);
-        Log.v(TAG, "dimensions of view : height = "+ view.getHeight() + " width = "+view.getWidth());
+                    .into(viewHolder.productImage);
+        Log.v(TAG, "dimensions of view : height = " + convertView.getHeight() + " width = " + convertView.getWidth());
 //        else
 //            Picasso.with(getContext())
 //                    .load(deal.product.image)
@@ -63,6 +62,17 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
 //                    .error(R.drawable.instano_launcher)
 //                    .into(productImage);
 
-        return view;
+        return convertView;
+    }
+
+    public class ViewHolder{
+        @InjectView(R.id.dealHeading) TextView headingTextView;
+        @InjectView(R.id.sellerDetails) TextView distanceTextView;
+        @InjectView(R.id.dealSubheading) TextView subheadingTextView;
+        @InjectView(R.id.dealProduct) ImageButton productImage;
+
+        public ViewHolder(View view) {
+            ButterKnife.inject(this,view);
+        }
     }
 }

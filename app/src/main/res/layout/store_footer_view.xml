@@ -15,22 +15,22 @@
         style="@style/MediumText"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:id="@+id/mediumText"
+        android:id="@+id/dealHeading"
         android:text="Medium Text"/>
 
     <TextView
         style="@style/LargeText"
-        android:id="@+id/largeText"
+        android:id="@+id/dealSubheading"
         android:text="Large Text"
-        android:layout_below="@id/mediumText"
+        android:layout_below="@id/dealHeading"
         android:layout_alignParentLeft="true"
        />
 
 
     <TextView
         style="@style/SmallText"
-        android:id="@+id/smallText"
-        android:layout_below="@id/largeText"
+        android:id="@+id/sellerDetails"
+        android:layout_below="@id/dealSubheading"
         android:text="Small Text"
         />
 
@@ -38,7 +38,7 @@
         style="@style/MsgButton"
         android:layout_marginBottom="4dp"
         android:id="@+id/msgButton"
-        android:layout_below="@id/smallText"
+        android:layout_below="@id/sellerDetails"
 
        />
 

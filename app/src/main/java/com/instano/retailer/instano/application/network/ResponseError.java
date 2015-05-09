@@ -38,6 +38,7 @@ public class ResponseError extends Throwable {
 
         // Not acceptable (406):
         INCORRECT_API_KEY,
+        INCORRECT_FACEBOOK_ID,
         SOME_OTHER_406,
 
         // network errors:
@@ -128,6 +129,8 @@ public class ResponseError extends Throwable {
                 case HttpStatus.SC_NOT_ACCEPTABLE:
                     if (responseString.contains("incorrect api_key"))
                         error = Type.INCORRECT_API_KEY;
+                    else if (responseString.contains("no such facebook user id"))
+                        error = Type.INCORRECT_FACEBOOK_ID;
                     else
                         error = Type.SOME_OTHER_406;
                     break;

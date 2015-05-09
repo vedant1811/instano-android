@@ -13,22 +13,28 @@ import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.model.Seller;
 
 import rx.Observable;
+import com.instano.retailer.instano.application.BaseActivity;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 /**
  * Created by Dheeraj on 06-May-15.
  */
-public class SellerDetailActivity extends GlobalMenuActivity {
+public class SellerDetailActivity extends BaseActivity {
+
+     @InjectView(R.id.shop_details) TextView text;
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store);
         Bundle bundle = getIntent().getExtras();
 
-        TextView text = (TextView) findViewById(R.id.shop_details);
+        ButterKnife.inject(this);
         String s = (String) text.getText();
         SpannableString s1 = new SpannableString(s);
-        s1.setSpan(new RelativeSizeSpan(1.3f), 0, 18, 0);
-        s1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, 0, 0);
+        s1.setSpan(new RelativeSizeSpan(1.3f),0,18,0);  // 18 is the no. of character that is to be resized
+        s1.setSpan(new ForegroundColorSpan(Color.BLACK),0,0,0);
         text.setText(s1);
 
         Observable<Seller> seller = NetworkRequestsManager.instance().getSeller(bundle.getInt("seller_id"));
@@ -37,4 +43,4 @@ public class SellerDetailActivity extends GlobalMenuActivity {
 
         });
     }
-}
+   }

@@ -2,7 +2,6 @@ package com.instano.retailer.instano.activities.home;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -19,10 +18,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
@@ -31,12 +28,19 @@ import com.instano.retailer.instano.sellers.SellersActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.squareup.picasso.Picasso;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
+
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
+    @InjectView(R.id.facebook_profile_picture) ImageView mProfilePicture;
+    @InjectView(R.id.facebook_name) TextView mFacebookNameTextView;
+    @InjectView(R.id.homeButton) Button mHomeButton;
 
     /**
      * Remember the position of the selected item.
@@ -61,13 +65,11 @@ public class NavigationDrawerFragment extends Fragment {
     private ActionBarDrawerToggle mDrawerToggle;
 
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerListView;
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
-    private LinearLayout mDrawerLinearLayout;
 
     public NavigationDrawerFragment() {
     }
@@ -100,41 +102,20 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mDrawerLinearLayout = (LinearLayout) inflater.inflate(R.layout.fragment_home_navigation_drawer, container, false);
-        mDrawerListView = (ListView) mDrawerLinearLayout.findViewById(R.id.drawer_listview);
-        ImageView profilePicture = (ImageView) mDrawerLinearLayout.findViewById(R.id.facebook_profile_picture);
-        TextView name = (TextView) mDrawerLinearLayout.findViewById(R.id.facebook_name);
-        name.setText(Preferences.controller().getBuyerName());
-        Picasso.with(mDrawerLinearLayout.getContext())
-                .load("https://graph.facebook.com/" + Preferences.controller().getFacebookUserId()+"/picture?type=large")
+        View view = inflater.inflate(R.layout.fragment_home_navigation_drawer, container, false);
+        ButterKnife.inject(this, view);
+        mFacebookNameTextView.setText(Preferences.controller().getBuyerName());
+        Picasso.with(view.getContext())
+                .load("https://graph.facebook.com/" + Preferences.controller().getFacebookUserId() + "/picture?type=large")
                 .placeholder(R.drawable.com_facebook_button_like_icon)
-                .into(profilePicture);
-        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
-            }
-        });
-        Context themedContext = getActionBar().getThemedContext();
-        assert themedContext != null;
-        NavigationMenuItemAdapter menuItemAdapter = new NavigationMenuItemAdapter(
-                themedContext,new String[]{
-                getString(R.string.title_section1),
-                getString(R.string.title_section2),
-                getString(R.string.title_section3),
-        });
-        mDrawerListView.setAdapter(menuItemAdapter);
-//        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-//                getActionBar().getThemedContext(),
-//                R.layout.list_item_navigation_drawer_home, //TODO change the layout of list for menu with icon
-//                R.id.navigation_drawer_menu_text,
-//                new String[]{
-//                        getString(R.string.title_section1),
-//                        getString(R.string.title_section2),
-//                        getString(R.string.title_section3),
-//                }));
-//        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
-        return  mDrawerLinearLayout;
+                .into(mProfilePicture);
+
+        return view;
+    }
+
+    @OnClick(R.id.homeButton)
+    public void homeClicked() {
+        selectItem(0);
     }
 
     public boolean isDrawerOpen() {
@@ -217,9 +198,10 @@ public class NavigationDrawerFragment extends Fragment {
 
     private void selectItem(int position) {
         mCurrentSelectedPosition = position;
-        if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(position, true);
-        }
+        // TODO:
+//        if (mDrawerListView != null) {
+//            mDrawerListView.setItemChecked(position, true);
+//        }
         if (mDrawerLayout != null) {
             mDrawerLayout.closeDrawer(mFragmentContainerView);
         }
