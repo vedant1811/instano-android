@@ -245,9 +245,14 @@ public class DealListFragment extends ListFragment{
             productImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(getActivity(), SellerDetailActivity.class));
+//                    startActivity(new Intent(getActivity(), SellerDetailActivity.class));
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("seller_id", deal.sellerId);
+                    bundle.putString("heading", deal.heading);
+                    bundle.putString("subheading", deal.subheading);
                     Intent intent = new Intent(getActivity(), SellerDetailActivity.class);
-//                    intent.putExtra()
+                    intent.putExtras(bundle);
+                    startActivity(intent);
                     //TODO: Send Deal details and fetch seller in SellerDeatailActivity through the sellerId in Deal
                 }
             });
