@@ -37,9 +37,4 @@ public class StoreActivity extends GlobalMenuActivity {
         text.setText(s1);
    }
 
-    @OnClick(R.id.shop_details)
-    void textClick()
-    {
-
-    }
 }

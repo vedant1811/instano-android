@@ -63,7 +63,6 @@ public class NavigationDrawerFragment extends Fragment {
     private ActionBarDrawerToggle mDrawerToggle;
 
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerListView;
     private View mFragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
@@ -89,7 +88,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
 
         // Select either the default item (0) or the last selected item.
-        selectItem(mCurrentSelectedPosition);
+//        selectItem(mCurrentSelectedPosition);
     }
 
     @Override
@@ -103,7 +102,6 @@ public class NavigationDrawerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mDrawerLinearLayout = (LinearLayout) inflater.inflate(R.layout.fragment_home_navigation_drawer, container, false);
-        mDrawerListView = (ListView) mDrawerLinearLayout.findViewById(R.id.drawer_listview);
         ImageView profilePicture = (ImageView) mDrawerLinearLayout.findViewById(R.id.facebook_profile_picture);
         TextView name = (TextView) mDrawerLinearLayout.findViewById(R.id.facebook_name);
         name.setText(Preferences.controller().getBuyerName());
@@ -111,31 +109,7 @@ public class NavigationDrawerFragment extends Fragment {
                 .load("https://graph.facebook.com/" + Preferences.controller().getFacebookUserId()+"/picture?type=large")
                 .placeholder(R.drawable.com_facebook_button_like_icon)
                 .into(profilePicture);
-        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
-            }
-        });
-        Context themedContext = getActionBar().getThemedContext();
-        assert themedContext != null;
-        NavigationMenuItemAdapter menuItemAdapter = new NavigationMenuItemAdapter(
-                themedContext,new String[]{
-                getString(R.string.title_section1),
-                getString(R.string.title_section2),
-                getString(R.string.title_section3),
-        });
-        mDrawerListView.setAdapter(menuItemAdapter);
-//        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-//                getActionBar().getThemedContext(),
-//                R.layout.list_item_navigation_drawer_home, //TODO change the layout of list for menu with icon
-//                R.id.navigation_drawer_menu_text,
-//                new String[]{
-//                        getString(R.string.title_section1),
-//                        getString(R.string.title_section2),
-//                        getString(R.string.title_section3),
-//                }));
-//        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+
         return  mDrawerLinearLayout;
     }
 
@@ -217,18 +191,18 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void selectItem(int position) {
-        mCurrentSelectedPosition = position;
-        if (mDrawerListView != null) {
-            mDrawerListView.setItemChecked(position, true);
-        }
-        if (mDrawerLayout != null) {
-            mDrawerLayout.closeDrawer(mFragmentContainerView);
-        }
-        if (mCallbacks != null) {
-            mCallbacks.onNavigationDrawerItemSelected(position);
-        }
-    }
+//    private void selectItem(int position) {
+//        mCurrentSelectedPosition = position;
+//        if (mDrawerListView != null) {
+//            mDrawerListView.setItemChecked(position, true);
+//        }
+//        if (mDrawerLayout != null) {
+//            mDrawerLayout.closeDrawer(mFragmentContainerView);
+//        }
+//        if (mCallbacks != null) {
+//            mCallbacks.onNavigationDrawerItemSelected(position);
+//        }
+//    }
 
     @Override
     public void onAttach(Activity activity) {
