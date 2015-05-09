@@ -6,61 +6,100 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.instano.retailer.instano.activities.home.NavigationDrawerFragment"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    android:weightSum="1">
+
+    <ImageView
+        android:id="@+id/facebook_profile_picture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/com_facebook_profile_default_icon"
+        android:layout_gravity="center_horizontal"/>
+
+    <TextView
+        android:id="@+id/facebook_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Shohel Rana"
+        android:textSize="14sp" />
+
     <LinearLayout
-        android:id="@+id/drawer_profile_linear_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:gravity="center_vertical"
         android:orientation="vertical"
-        android:layout_margin="10dp">
+        android:weightSum="1">
 
-        <ImageView
-            android:id="@+id/facebook_profile_picture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/com_facebook_profile_default_icon"
-            android:layout_gravity="center_horizontal"/>
+        <Button
+            style="@style/NavigationButton"
+            android:id="@+id/homeButton"
+            android:drawableLeft="@drawable/navigation_home_selector"
+            android:text="Home"/>
 
-        <TextView
-            android:id="@+id/facebook_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Shohel Rana"
-            android:textSize="14sp" />
+        <Button
+            style="@style/NavigationButton"
+            android:id="@+id/bestInCityButton"
+            android:drawableLeft="@drawable/navigation_bestincity_selector"
+            android:text="Best in City"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:gravity="center"
-            android:text="test@gmail.com"
-            android:textSize="14sp" />
+        <Button
+            style="@style/NavigationButton"
+            android:drawableLeft="@drawable/navigation_chat_selector"
+            android:text="Chats"
+        />
+
+        <Button
+            style="@style/NavigationButton"
+            android:drawableLeft="@drawable/navigation_booking_selector"
+            android:paddingLeft="26dp"
+            android:drawablePadding="41dp"
+            android:text="Booking"/>
+
+        <Button
+            style="@style/NavigationButton"
+            android:drawableLeft="@drawable/navigation_settings_selector"
+            android:paddingLeft="22dp"
+            android:text="Settings" />
+
+
     </LinearLayout>
-    <TextView
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Offers"
-        android:layout_margin="10dp"
+        android:orientation="horizontal"
+        android:layout_weight="1.03"
+        android:gravity="bottom"
+        android:padding="16dp">
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.02"
+            android:padding="4dp"
+            android:src="@drawable/about_small"
+            android:background="@color/white"
         />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TEXT"
-        android:layout_margin="10dp"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TEXT"
-        android:layout_margin="10dp"/>
-    <ListView
-        android:id="@+id/drawer_listview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:choiceMode="singleChoice"
-        android:divider="@android:color/black"
-        android:dividerHeight="1dp"
-        />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.02"
+            android:padding="4dp"
+            android:gravity="center"
+            android:src="@drawable/rateus"
+            android:background="@color/white" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.02"
+            android:padding="4dp"
+            android:src="@drawable/share"
+            android:background="@color/white"/>
+
+
+    </LinearLayout>
+
+
 </LinearLayout>

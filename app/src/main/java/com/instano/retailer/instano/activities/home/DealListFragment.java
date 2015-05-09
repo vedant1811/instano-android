@@ -208,7 +208,7 @@ public class DealListFragment extends ListFragment{
             else
                 subheadingTextView.setText(deal.subheading);
 
-            
+
 
             if (deal.product != null) {
                 Picasso.with(getContext())
