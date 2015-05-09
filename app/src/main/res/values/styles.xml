@@ -121,8 +121,8 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:src">@drawable/call_store</item>
-        <item name="android:background">@drawable/image_button_selector</item>
+        <item name="android:src">@drawable/selector_callbutton_icon</item>
+        <item name="android:background">@drawable/selector_imagebutton_background</item>
         <item name="android:padding">14dp</item>
 
 
@@ -130,9 +130,9 @@
     <style name="MsgButton" parent="@style/Theme.AppCompat.Light" >
         <item name="android:layout_width"> wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:src">@drawable/chat_store</item>
+        <item name="android:src">@drawable/selector_msgbutton_icon</item>
         <item name="android:padding">12dp</item>
-        <item name="android:background">@drawable/image_button_selector</item>
+        <item name="android:background">@drawable/selector_imagebutton_background</item>
     </style>
 
     <style name="BookitButton" parent="@style/Theme.AppCompat.Light">
@@ -140,7 +140,7 @@
         <item name="android:layout_height">26dp</item>
         <item name="android:background">@drawable/selector_bookit_button</item>
         <item name="android:text">Book it</item>
-        <item name="android:textColor">@color/instano_red</item>
+        <item name="android:textColor">@drawable/bookit_text_selector</item>
         <item name="android:textStyle">normal</item>
         <item name="android:paddingTop">2dp</item>
         <item name="android:textSize">14dp</item>
