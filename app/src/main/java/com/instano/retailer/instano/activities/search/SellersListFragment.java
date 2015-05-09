@@ -3,11 +3,8 @@ package com.instano.retailer.instano.activities.search;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.controller.Quotations;
 import com.instano.retailer.instano.utilities.library.Log;
 
@@ -26,7 +23,7 @@ public class SellersListFragment extends ListFragment {
 
     private boolean mShown = false;
     private int mProductId;
-    private View mHeaderView;
+//    private View mHeaderView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -42,7 +39,7 @@ public class SellersListFragment extends ListFragment {
         if (activity == null)
             return;
 
-        getListView().addHeaderView(mHeaderView);
+//        getListView().addHeaderView(mHeaderView);
         QuotationsAndSellersAdapter adapter = activity.getAdapter();
         adapter.clear();
         setListAdapter(adapter);
@@ -60,13 +57,14 @@ public class SellersListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         mShown = false;
     }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
-        mHeaderView = inflater.inflate(R.layout.header_notification, null);
-        return view;
-    }
+//
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        View view = super.onCreateView(inflater, container, savedInstanceState);
+//        mHeaderView = inflater.inflate(R.layout.header_notification, null);
+//        mHeaderView.findViewById(R.id.cancelButton).setOnClickListener(v -> getListView().removeHeaderView(mHeaderView));
+//        return view;
+//    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {

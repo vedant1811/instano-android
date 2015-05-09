@@ -93,7 +93,7 @@ public abstract class SearchableActivity extends BaseActivity{
 
             @Override
             public boolean onQueryTextChange(String s) {
-                Log.v(TAG, "Query text changed");
+                Log.v(TAG, "Query text changed to " + s);
                 mSuggestionsSubscription.unsubscribe();
                 mSuggestionsSubscription = AndroidObservable.bindActivity(SearchableActivity.this, NetworkRequestsManager.instance().queryProducts(s))
                         .subscribe(products -> {

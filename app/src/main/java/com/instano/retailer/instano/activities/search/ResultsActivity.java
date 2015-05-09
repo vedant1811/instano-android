@@ -41,7 +41,6 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
     private SellersListFragment mTab3;
     private SearchView mSearchView;
     private int mProductId;
-    private String mQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +86,9 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
 
     @Override
     protected void onNewIntent(Intent intent) {
-        handleIntent(getIntent());
+        super.onNewIntent(intent);
+        Log.d(TAG, "new intent");
+        handleIntent(intent);
     }
 
     private void handleIntent(Intent intent) {
@@ -99,8 +100,10 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
         if (query == null)
             throw new IllegalStateException("no string with KEY_PRODUCT");
         // TODO: set this query text in the action bar search
-        mSearchView.setQuery(mQuery, false);
-
+        mSearchView.setQuery(query, false);
+        getSellersListFragment().setProduct(mProductId);
+        getSellersMapFragment().setProduct(mProductId);
+        getmTab3().setProduct(mProductId);
     }
 
     @Override
@@ -108,7 +111,6 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
         boolean b = super.onCreateOptionsMenu(menu);
         mSearchView = (SearchView) menu.findItem(R.id.action_example).getActionView();
         handleIntent(getIntent());
-
         return b;
     }
 
@@ -141,24 +143,6 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
-    private SellersListFragment getSellersListFragment() {
-        if (mSellersListFragment == null)
-            mSellersListFragment = new SellersListFragment();
-        return mSellersListFragment;
-    }
-
-    private SellersMapFragment getSellersMapFragment() {
-        if(mSellersMapFragment == null)
-            mSellersMapFragment = new SellersMapFragment();
-        return mSellersMapFragment;
-    }
-
-    private SellersListFragment getmTab3() {
-        if(mTab3 == null)
-            mTab3 = new SellersListFragment();
-        return mTab3;
-    }
-
     /*package private*/ QuotationsAndSellersAdapter getAdapter() {
         // make sure adapter exists before any fragment may be created
         if (mAdapter == null)
@@ -179,21 +163,17 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
             Log.v(TAG, "position : " + position);
 
             switch (position) {
-                case 0 : SellersListFragment listFragment = getSellersListFragment();
-                    listFragment.setProduct(mProductId);
-                    return  listFragment;
+                case 0 :
+                    return getSellersListFragment();
 
-                case 1 : SellersMapFragment sellersMapFragment = getSellersMapFragment();
-                    sellersMapFragment.setProduct(mProductId);
-                    return  sellersMapFragment;
+                case 1 :
+                    return getSellersMapFragment();
 
-                case 2 : SellersListFragment sellersListFragment = getmTab3();
-                    sellersListFragment.setProduct(mProductId);
-                    return sellersListFragment;
+                case 2 :
+                    return getmTab3();
             }
             throw new RuntimeException("Item not found") ;
         }
@@ -217,5 +197,23 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
             }
             return null;
         }
+    }
+
+    private SellersListFragment getSellersListFragment() {
+        if (mSellersListFragment == null)
+            mSellersListFragment = new SellersListFragment();
+        return mSellersListFragment;
+    }
+
+    private SellersMapFragment getSellersMapFragment() {
+        if(mSellersMapFragment == null)
+            mSellersMapFragment = new SellersMapFragment();
+        return mSellersMapFragment;
+    }
+
+    private SellersListFragment getmTab3() {
+        if(mTab3 == null)
+            mTab3 = new SellersListFragment();
+        return mTab3;
     }
 }

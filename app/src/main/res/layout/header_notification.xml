@@ -21,7 +21,7 @@
     <ImageButton
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:id="@+id/imageButton"
+        android:id="@+id/cancelButton"
         android:src="@android:drawable/ic_menu_close_clear_cancel"
         android:background="@drawable/selector_image_button" />
 </LinearLayout>
