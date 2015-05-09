@@ -2,6 +2,7 @@ package com.instano.retailer.instano.activities.home;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.activities.SellerDetailActivity;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.deals.DealDetailFragment;
@@ -145,7 +147,7 @@ public class DealListFragment extends ListFragment{
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
-
+        Log.v(TAG,"clicked ::::::::::::::::::::::::::");
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         Deal deal = (Deal) getListAdapter().getItem(position);
@@ -239,6 +241,16 @@ public class DealListFragment extends ListFragment{
 
             // to behave as a button i.e. have a "pressed" state
             view.setBackgroundResource(R.drawable.selector_list_item);
+
+            productImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getActivity(), SellerDetailActivity.class));
+                    Intent intent = new Intent(getActivity(), SellerDetailActivity.class);
+//                    intent.putExtra()
+                    //TODO: Send Deal details and fetch seller in SellerDeatailActivity through the sellerId in Deal
+                }
+            });
 
             return view;
         }

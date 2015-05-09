@@ -13,7 +13,7 @@ import com.instano.retailer.instano.R;
 /**
  * Created by Dheeraj on 06-May-15.
  */
-public class StoreActivity extends GlobalMenuActivity {
+public class SellerDetailActivity extends GlobalMenuActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,9 +25,5 @@ public class StoreActivity extends GlobalMenuActivity {
         s1.setSpan(new RelativeSizeSpan(1.3f),0,18,0);
         s1.setSpan(new ForegroundColorSpan(Color.BLACK),0,0,0);
         text.setText(s1);
-
-
-
-
     }
 }
