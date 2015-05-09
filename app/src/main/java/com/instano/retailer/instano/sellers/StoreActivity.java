@@ -14,24 +14,32 @@ import android.widget.Toast;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.GlobalMenuActivity;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
+
 /**
  * Created by Dheeraj on 06-May-15.
  */
 public class StoreActivity extends GlobalMenuActivity {
+
+     @InjectView(R.id.shop_details) TextView text;
+
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_store);
-
-        TextView text = (TextView) findViewById(R.id.shop_details);
+        ButterKnife.inject(this);
         String s = (String) text.getText();
         SpannableString s1 = new SpannableString(s);
-        s1.setSpan(new RelativeSizeSpan(1.3f),0,18,0);
+        s1.setSpan(new RelativeSizeSpan(1.3f),0,18,0);  // 18 is the no. of character that is to be resized
         s1.setSpan(new ForegroundColorSpan(Color.BLACK),0,0,0);
         text.setText(s1);
+   }
 
-
-
+    @OnClick(R.id.shop_details)
+    void textClick()
+    {
 
     }
 }

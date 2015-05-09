@@ -22,6 +22,7 @@
             android:id="@+id/connectWithFacebook"
             android:text="Connect with Facebook"
             android:drawableStart="@drawable/facebook"
+            android:drawableLeft="@drawable/facebook"
             android:drawablePadding="20dp"
             android:layout_gravity="center_vertical"
             />
