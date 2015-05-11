@@ -126,7 +126,7 @@ public class NetworkRequestsManager {
     }
 
     public void newObject(Seller seller) {
-        mSellerEchoFunction.newEventReceived(seller);
+//        mSellerEchoFunction.newEventReceived(seller);
     }
 
     public Observable<Buyer> signIn(String facebookUserId) {

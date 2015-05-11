@@ -3,11 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     >
 
     <ImageView
         android:id="@+id/shop_image"
-        style="@style/image_view_card" />
+        style="@style/image_view_card"
+        />
+
+    <ImageButton
+        android:id="@+id/mapDirection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_below="@id/shop_image"
+        android:layout_marginTop="20dp"
+        />
 
     <TextView
         android:layout_width="match_parent"
@@ -15,24 +27,15 @@
         android:layout_below="@id/shop_image"
         android:text="Croma Retail Store , 500 mts \n 269 ,18th D main, Koramangla 6th Block "
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="12dp"
-        android:paddingBottom="26dp"
+        android:padding="10dp"
         android:textSize="15dp"
+        android:maxLines="3"
         android:textColor="@android:color/black"
         android:id="@+id/shop_details"
-        />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/shop_image"
-        android:layout_alignBottom="@id/shop_details"
         android:background="#E6ffffff"
-        android:alpha="0.6"
+        android:layout_toLeftOf="@id/mapDirection"
+        android:layout_toStartOf="@id/mapDirection"
         />
-
-
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -43,15 +46,15 @@
         android:src="@drawable/selector_directionbutton"
         android:layout_below="@id/shop_image"
         android:layout_marginTop="20dp"
-
     />
+
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/specification_list"
-        android:layout_below="@id/shop_details"/>
-
-
+        android:layout_below="@id/shop_details"
+        android:background="@color/instano_grey"
+        />
 
     <include layout="@layout/store_footer_view"
         android:layout_alignParentBottom="true"
