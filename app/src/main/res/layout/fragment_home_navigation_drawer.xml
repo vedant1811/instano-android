@@ -1,4 +1,3 @@
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_linear_layout"
@@ -11,6 +10,7 @@
 
     <com.pkmmte.view.CircularImageView
         android:id="@+id/facebook_profile_picture"
+        android:layout_marginTop="20dp"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@drawable/com_facebook_profile_default_icon"
@@ -36,6 +36,7 @@
         <Button
             style="@style/NavigationButton"
             android:id="@+id/homeButton"
+            android:layout_marginTop="10dp"
             android:drawableLeft="@drawable/selector_navigation_home"
             android:text="Home"/>
 

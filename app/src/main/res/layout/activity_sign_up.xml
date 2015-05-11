@@ -25,7 +25,7 @@
             android:text="Connect with Facebook"
             android:drawableStart="@drawable/facebook"
             android:drawableLeft="@drawable/facebook"
-            android:drawablePadding="8dp"
+            android:drawablePadding="16dp"
             android:gravity="left|center_vertical"
             />
 </LinearLayout>
