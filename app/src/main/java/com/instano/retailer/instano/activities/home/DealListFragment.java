@@ -1,9 +1,11 @@
 package com.instano.retailer.instano.activities.home;
 
 import android.app.Activity;
-import android.support.v4.app.ListFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,21 +14,13 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.ServicesSingleton;
+import com.instano.retailer.instano.activities.SellerDetailActivity;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.deals.DealDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Deal;
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashSet;
 
 import rx.android.observables.AndroidObservable;
 
@@ -82,28 +76,6 @@ public class DealListFragment extends ListFragment{
         }
     };
 
-    public void dealsUpdated() {
-        DealsAdapter adapter = (DealsAdapter) getListAdapter();
-        adapter.clear();
-        HashSet<Deal> validDeals = new HashSet<>();
-        // add only valid deals:
-//        for(Deal deal : DataManager.instance().getDeals()) {
-//            Seller seller = DataManager.instance().getSeller(deal.sellerId);
-//            // can happen if sever feeds wrong data
-//            if (seller != null && System.currentTimeMillis() < deal.expiresAt) {
-//                validDeals.add(deal);
-//            }
-//            else
-//                Log.e("dealsUpdated", "no seller for id: " + deal.sellerId);
-//        }
-        adapter.addAll(validDeals);
-    }
-
-    public void sellersUpdated() {
-        DealsAdapter adapter = (DealsAdapter) getListAdapter();
-        adapter.notifyDataSetChanged();
-    }
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -114,37 +86,30 @@ public class DealListFragment extends ListFragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
 
-        setListAdapter(new DealsAdapter(getActivity()));
-        // call after setting the adapter so that the adapter is not null
-        dealsUpdated();
-//        DataManager.instance().registerListener((DataManager.DealsListener) this);
-//        DataManager.instance().registerListener((DataManager.SellersListener) this);
         mShown = false;
-        DealsAdapter adapter = (DealsAdapter) getListAdapter();
-        adapter.notifyDataSetChanged();
+        DealsAdapter dealsAdapter = new DealsAdapter(getActivity());
+        setListAdapter(dealsAdapter);
         AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Deal.class))
-                .subscribe((t) -> {
-
+                .subscribe((deal) -> {
                     setShown(true);
-                    adapter.add(t);
+                    Log.d(TAG, "new deal:" + deal.id);
+                    dealsAdapter.add(deal);
 //                    adapter.sort((lhs, rhs) -> lhs.compareTo(rhs));
                 }, throwable -> Log.fatalError(new RuntimeException(
                         "error response in subscribe to getObservable(Quote.class)",
                         throwable)));
-        setListAdapter(adapter);
+        setListAdapter(dealsAdapter);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setListShown(mShown);
-
         // Restore the previously serialized activated item position.
-        if (savedInstanceState != null
-                && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION))
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
-        }
     }
 
     private void setShown(boolean shown) {
@@ -176,7 +141,7 @@ public class DealListFragment extends ListFragment{
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
-
+        Log.v(TAG,"clicked ::::::::::::::::::::::::::");
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         Deal deal = (Deal) getListAdapter().getItem(position);
@@ -230,46 +195,47 @@ public class DealListFragment extends ListFragment{
                 view = mInflater.inflate(R.layout.list_item_googlecard, parent, false);
 
             Deal deal = getItem(position);
-//            Seller seller = DataManager.instance().getSeller(deal.sellerId);
 
-//            if (seller == null || System.currentTimeMillis() >= deal.expiresAt) {
-//                throw new IllegalStateException("Invalid deal should have not entered the adapter");
-//            }
-            ObjectMapper objectMapper = ServicesSingleton.instance().getDefaultObjectMapper().copy();
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
-            try {
-                JSONObject jsonObject = new JSONObject(objectMapper.writeValueAsString(deal));
-                Log.v(TAG,"\n"+ jsonObject);
-            } catch (JSONException | JsonProcessingException e) {
-                e.printStackTrace();
-            }
-
-            TextView headingTextView = (TextView) view.findViewById(R.id.mediumText);
-            TextView subheadingTextView = (TextView) view.findViewById(R.id.largeText);
-            TextView distanceTextView = (TextView) view.findViewById(R.id.smallText);
+            TextView headingTextView = (TextView) view.findViewById(R.id.dealHeading);
+            TextView subheadingTextView = (TextView) view.findViewById(R.id.dealSubheading);
+            TextView sellerDetailsTextView = (TextView) view.findViewById(R.id.sellerDetails);
             ImageButton productImage = (ImageButton) view.findViewById(R.id.dealProduct);
             Log.v(TAG,"heading : "+deal.heading+" subheading : "+deal.subheading);
             headingTextView.setText(deal.heading);
-            subheadingTextView.setText(deal.subheading);
 
-            if(deal.product == null)
-                Picasso.with(getContext())
-                    .load(R.drawable.img_nature5)
-                    .into(productImage);
+            if (TextUtils.isEmpty(deal.subheading))
+                subheadingTextView.setVisibility(View.GONE);
             else
+                subheadingTextView.setText(deal.subheading);
+
+
+
+            if (deal.product != null) {
                 Picasso.with(getContext())
-                        .load(deal.product.image)
-                        .placeholder(R.drawable.img_nature5)
+                        .load(deal.product.image).fit().centerInside()
                         .error(R.drawable.instano_launcher)
                         .into(productImage);
+            }
+//            else {
+//                Picasso.with(getContext())
+//                    .load(R.drawable.img_nature5).fit().centerInside()
+//                    .into(productImage);
+//            }
 //            if (seller != null)
 //                distanceTextView.setText(seller.getPrettyDistanceFromLocation());
 //            else
 //                throw new IllegalStateException("Invalid deal should have not entered the adapter");
 //            expiresAtTextView.setText(deal.expiresAt());
 
-            // to behave as a button i.e. have a "pressed" state
-            view.setBackgroundResource(R.drawable.selector_list_item);
+            productImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(getActivity(), SellerDetailActivity.class));
+                    Intent intent = new Intent(getActivity(), SellerDetailActivity.class);
+//                    intent.putExtra()
+                    //TODO: Send Deal details and fetch seller in SellerDeatailActivity through the sellerId in Deal
+                }
+            });
 
             return view;
         }

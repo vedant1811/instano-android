@@ -2,7 +2,6 @@ package com.instano.retailer.instano.activities.home;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -19,19 +18,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.activities.search.ResultsActivity;
 import com.instano.retailer.instano.application.controller.Preferences;
 import com.instano.retailer.instano.sellers.SellersActivity;
 import com.instano.retailer.instano.utilities.library.Log;
+import com.pkmmte.view.CircularImageView;
 import com.squareup.picasso.Picasso;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -39,6 +39,9 @@ import com.squareup.picasso.Picasso;
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
+    @InjectView(R.id.facebook_profile_picture) CircularImageView mProfilePicture;
+    @InjectView(R.id.facebook_name) TextView mFacebookNameTextView;
+    @InjectView(R.id.homeButton) Button mHomeButton;
 
     /**
      * Remember the position of the selected item.
@@ -68,7 +71,6 @@ public class NavigationDrawerFragment extends Fragment {
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
-    private LinearLayout mDrawerLinearLayout;
 
     public NavigationDrawerFragment() {
     }
@@ -101,16 +103,22 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mDrawerLinearLayout = (LinearLayout) inflater.inflate(R.layout.fragment_home_navigation_drawer, container, false);
-        ImageView profilePicture = (ImageView) mDrawerLinearLayout.findViewById(R.id.facebook_profile_picture);
-        TextView name = (TextView) mDrawerLinearLayout.findViewById(R.id.facebook_name);
-        name.setText(Preferences.controller().getBuyerName());
-        Picasso.with(mDrawerLinearLayout.getContext())
-                .load("https://graph.facebook.com/" + Preferences.controller().getFacebookUserId()+"/picture?type=large")
+        View view = inflater.inflate(R.layout.fragment_home_navigation_drawer, container, false);
+        ButterKnife.inject(this, view);
+        mFacebookNameTextView.setText(Preferences.controller().getBuyerName());
+        Log.d(TAG, "facebook name: " +mFacebookNameTextView.getText());
+        Picasso.with(view.getContext())
+                .load("https://graph.facebook.com/" + Preferences.controller().getFacebookUserId() + "/picture?type=large")
                 .placeholder(R.drawable.com_facebook_button_like_icon)
-                .into(profilePicture);
+                .into(mProfilePicture);
 
-        return  mDrawerLinearLayout;
+        return view;
+    }
+
+    @OnClick(R.id.homeButton)
+    public void homeClicked() {
+        mCallbacks.onNavigationDrawerItemSelected(0);
+        // TODO: setActivated:
     }
 
     public boolean isDrawerOpen() {
@@ -238,7 +246,6 @@ public class NavigationDrawerFragment extends Fragment {
         // If the drawer is open, show the global app actions in the action bar. See also
         // showGlobalContextActionBar, which controls the top-left area of the action bar.
         if (mDrawerLayout != null && isDrawerOpen()) {
-            inflater.inflate(R.menu.global, menu);
             showGlobalContextActionBar();
         }
         super.onCreateOptionsMenu(menu, inflater);
@@ -251,12 +258,6 @@ public class NavigationDrawerFragment extends Fragment {
         }
         if (item.getItemId() == R.id.action_sellers_list) {
             startActivity(new Intent(getActivity(), SellersActivity.class));
-        }
-
-        if (item.getItemId() == R.id.home_action_settings) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(getActivity(), ResultsActivity.class));
-            return true;
         }
 
         return super.onOptionsItemSelected(item);

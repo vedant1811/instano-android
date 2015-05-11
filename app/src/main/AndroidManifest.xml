@@ -67,7 +67,7 @@
         <service android:name=".application.GcmIntentService" />
 
         <activity
-            android:name=".sellers.StoreActivity"
+            android:name=".activities.LauncherActivity"
             android:label="@string/app_name"
             android:screenOrientation="nosensor" >
             <intent-filter>
@@ -123,19 +123,14 @@
             android:name=".activities.search.ResultsActivity"
             android:label="@string/title_activity_results"
             android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value="com.instano.retailer.instano.activities.search.ResultsActivity"/>
         </activity>
         <activity
             android:name=".activities.home.HomeActivity"
             android:label="@string/title_activity_home" >
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value="com.instano.retailer.instano.activities.search.ResultsActivity"/>
+        </activity>
+        <activity
+            android:name=".activities.SellerDetailActivity"
+            android:label="@string/title_activity_home" >
         </activity>
 
     </application>

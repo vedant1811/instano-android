@@ -1,27 +1,23 @@
-package com.instano.retailer.instano.sellers;
+package com.instano.retailer.instano.activities;
 
-import android.app.ActionBar;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.activities.GlobalMenuActivity;
+import com.instano.retailer.instano.application.BaseActivity;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 
 /**
  * Created by Dheeraj on 06-May-15.
  */
-public class StoreActivity extends GlobalMenuActivity {
+public class SellerDetailActivity extends BaseActivity {
 
      @InjectView(R.id.shop_details) TextView text;
 
@@ -36,5 +32,4 @@ public class StoreActivity extends GlobalMenuActivity {
         s1.setSpan(new ForegroundColorSpan(Color.BLACK),0,0,0);
         text.setText(s1);
    }
-
 }

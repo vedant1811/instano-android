@@ -53,7 +53,6 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
         if(true)
             Picasso.with(getContext())
                     .load(item.seller.image).fit().centerInside()
-                    .placeholder(R.drawable.img_nature5)
                     .into(viewHolder.productImage);
         Log.v(TAG, "dimensions of view : height = " + convertView.getHeight() + " width = " + convertView.getWidth());
 //        else
@@ -67,9 +66,9 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
     }
 
     public class ViewHolder{
-        @InjectView(R.id.mediumText) TextView headingTextView;
-        @InjectView(R.id.smallText) TextView distanceTextView;
-        @InjectView(R.id.largeText) TextView subheadingTextView;
+        @InjectView(R.id.dealHeading) TextView headingTextView;
+        @InjectView(R.id.sellerDetails) TextView distanceTextView;
+        @InjectView(R.id.dealSubheading) TextView subheadingTextView;
         @InjectView(R.id.dealProduct) ImageButton productImage;
 
         public ViewHolder(View view) {

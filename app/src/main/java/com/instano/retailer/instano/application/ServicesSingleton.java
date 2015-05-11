@@ -95,6 +95,7 @@ public class ServicesSingleton implements
         return locationErrorString;
     }
 
+    @Nullable
     public String getUserAddress() {
         return mUserAddress;
     }
@@ -241,14 +242,17 @@ public class ServicesSingleton implements
 
     @Nullable
     public static String readableAddress(@Nullable Address address) {
-        String text;
-        if (address == null)
-            text = null;
-        else
-            text = address.getMaxAddressLineIndex() > 0 ?
-                address.getAddressLine(0) : address.getLocality();
-
-        return text;
+        if (address != null) {
+            switch (address.getMaxAddressLineIndex()) {
+                case 0:
+                    return address.getLocality();
+                case 1:
+                    return address.getAddressLine(0) + ", " + address.getLocality();
+                case 2:
+                    return address.getAddressLine(0) + ", " + address.getAddressLine(1) + ", " + address.getLocality();
+            }
+        }
+        return null;
     }
 
     public int dpToPixels(int dp) {

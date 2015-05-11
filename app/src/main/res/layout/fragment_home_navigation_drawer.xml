@@ -8,38 +8,24 @@
     tools:context="com.instano.retailer.instano.activities.home.NavigationDrawerFragment"
     android:background="@android:color/white"
     android:weightSum="1">
-    <LinearLayout
-        android:id="@+id/drawer_profile_linear_layout"
-        android:layout_width="match_parent"
+
+    <com.pkmmte.view.CircularImageView
+        android:id="@+id/facebook_profile_picture"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/com_facebook_profile_default_icon"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <TextView
+        android:id="@+id/facebook_name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:gravity="center_vertical"
-        android:orientation="vertical"
-        android:layout_margin="10dp">
-
-        <ImageView
-            android:id="@+id/facebook_profile_picture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/com_facebook_profile_default_icon"
-            android:layout_gravity="center_horizontal"/>
-
-        <TextView
-            android:id="@+id/facebook_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Shohel Rana"
-            android:textSize="14sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:gravity="center"
-            android:text="test@gmail.com"
-            android:textSize="14sp" />
-    </LinearLayout>
+        android:gravity="center"
+        android:text="Shohel Rana"
+        android:textColor="@color/primary"
+        android:textSize="20sp"
+        android:layout_gravity="center_horizontal"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -49,30 +35,32 @@
 
         <Button
             style="@style/NavigationButton"
-            android:drawableLeft="@drawable/navigation_home_selector"
+            android:id="@+id/homeButton"
+            android:drawableLeft="@drawable/selector_navigation_home"
             android:text="Home"/>
 
         <Button
             style="@style/NavigationButton"
-            android:drawableLeft="@drawable/navigation_bestincity_selector"
+            android:id="@+id/bestInCityButton"
+            android:drawableLeft="@drawable/selector_navigation_bestincity"
             android:text="Best in City"/>
 
         <Button
             style="@style/NavigationButton"
-            android:drawableLeft="@drawable/navigation_chat_selector"
+            android:drawableLeft="@drawable/selector_navigation_chat"
             android:text="Chats"
         />
 
         <Button
             style="@style/NavigationButton"
-            android:drawableLeft="@drawable/navigation_booking_selector"
+            android:drawableLeft="@drawable/selector_navigation_booking"
             android:paddingLeft="26dp"
             android:drawablePadding="41dp"
             android:text="Booking"/>
 
         <Button
             style="@style/NavigationButton"
-            android:drawableLeft="@drawable/navigation_settings_selector"
+            android:drawableLeft="@drawable/selector_navigation_settings"
             android:paddingLeft="22dp"
             android:text="Settings" />
 
@@ -88,33 +76,25 @@
         android:padding="16dp">
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/NavigationImageButton"
             android:layout_weight="0.02"
-            android:padding="4dp"
-            android:src="@drawable/about_small"
-            android:background="@color/white"
-        />
+            android:src="@drawable/selector_about"
+            android:id="@+id/aboutButton" />
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/NavigationImageButton"
             android:layout_weight="0.02"
-            android:padding="4dp"
             android:gravity="center"
-            android:src="@drawable/rateus"
-            android:background="@color/white" />
+            android:src="@drawable/selector_rateus"
+            android:id="@+id/rateButton" />
 
         <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/NavigationImageButton"
             android:layout_weight="0.02"
-            android:padding="4dp"
-            android:src="@drawable/share"
-            android:background="@color/white"/>
+            android:src="@drawable/selector_share"
+            android:id="@+id/shareButton" />
 
-
-    </LinearLayout>
+        </LinearLayout>
 
 
 </LinearLayout>

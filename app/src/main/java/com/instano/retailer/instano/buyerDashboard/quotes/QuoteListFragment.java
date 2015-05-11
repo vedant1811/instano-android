@@ -196,7 +196,7 @@ public class QuoteListFragment extends ListFragment {
 
             Quote quote = getItem(position);
 
-            primaryTextView.setText(quote.searchString);
+//            primaryTextView.setText(quote.searchString);
             timeTextView.setText(quote.getPrettyTimeElapsed());
 
 //            int numResponses = 0;
@@ -205,7 +205,7 @@ public class QuoteListFragment extends ListFragment {
 //                if (quotation.quoteId == quote.id)
 //                    numResponses++;
 //            responsesTextView.setText(numResponses + " responses");
-            sentToTextView.setText(String.format("sent to %d retailers", quote.sellerIds.size()));
+//            sentToTextView.setText(String.format("sent to %d retailers", quote.sellerIds.size()));
 
             return view;
         }
