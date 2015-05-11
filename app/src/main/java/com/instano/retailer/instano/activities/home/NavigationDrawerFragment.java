@@ -26,6 +26,7 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.controller.Preferences;
 import com.instano.retailer.instano.sellers.SellersActivity;
 import com.instano.retailer.instano.utilities.library.Log;
+import com.pkmmte.view.CircularImageView;
 import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
@@ -38,7 +39,7 @@ import butterknife.OnClick;
  * design guidelines</a> for a complete explanation of the behaviors implemented here.
  */
 public class NavigationDrawerFragment extends Fragment {
-    @InjectView(R.id.facebook_profile_picture) ImageView mProfilePicture;
+    @InjectView(R.id.facebook_profile_picture) CircularImageView mProfilePicture;
     @InjectView(R.id.facebook_name) TextView mFacebookNameTextView;
     @InjectView(R.id.homeButton) Button mHomeButton;
 
@@ -105,6 +106,7 @@ public class NavigationDrawerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home_navigation_drawer, container, false);
         ButterKnife.inject(this, view);
         mFacebookNameTextView.setText(Preferences.controller().getBuyerName());
+        Log.d(TAG, "facebook name: " +mFacebookNameTextView.getText());
         Picasso.with(view.getContext())
                 .load("https://graph.facebook.com/" + Preferences.controller().getFacebookUserId() + "/picture?type=large")
                 .placeholder(R.drawable.com_facebook_button_like_icon)

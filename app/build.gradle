@@ -40,7 +40,7 @@ android {
                     "http://staging.instano.in/"
 //                    "http://192.168.0.5:3000//"
 //                    "http://10.0.0.9:3000/"
-//            minifyEnabled false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.debug
         }
@@ -92,4 +92,5 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.jakewharton:butterknife:6.1.0'
 
+    compile 'com.pkmmte.view:circularimageview:1.1'
 }

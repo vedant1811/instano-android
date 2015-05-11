@@ -2,6 +2,8 @@ package com.instano.retailer.instano.activities;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
@@ -125,35 +127,22 @@ public class SellerDetailActivity extends BaseActivity {
                     }
 
                     Intent intent = new Intent(android.content.Intent.ACTION_VIEW,uri);
-                    intent.setComponent(new ComponentName("com.google.android.apps.maps",
-                            "com.google.android.maps.MapsActivity"));
+                    if (packageExists("com.google.android.apps.maps"))
+                        intent.setComponent(new ComponentName("com.google.android.apps.maps",
+                                "com.google.android.maps.MapsActivity"));
                     startActivity(intent);
                 }
             });
         });
     }
-}
 
-// TODO : for checking whether Google MAp is installed or not
-//    public boolean isPackageExisted(String targetPackage){
-//        List<ApplicationInfo> packages;
-//        PackageManager pm;
-//
-//        pm = getPackageManager();
-//        packages = pm.getInstalledApplications(0);
-//        for (ApplicationInfo packageInfo : packages) {
-//            if(packageInfo.packageName.equals(targetPackage))
-//                return true;
-//        }
-//        return false;
-//    }
-//
-//    public boolean isPackageExisted(String targetPackage){
-//        PackageManager pm=getPackageManager();
-//        try {
-//            PackageInfo info=pm.getPackageInfo(targetPackage,PackageManager.GET_META_DATA);
-//        } catch (PackageManager.NameNotFoundException e) {
-//            return false;
-//        }
-//        return true;
-//    }
+    private boolean packageExists(String targetPackage){
+        PackageManager pm=getPackageManager();
+        try {
+            PackageInfo info=pm.getPackageInfo(targetPackage,PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+        return true;
+    }
+}

@@ -17,7 +17,9 @@
     android:layout_alignParentRight="true"
     android:layout_marginRight="20dp"
     android:layout_below="@id/shop_image"
-    android:layout_marginTop="20dp"/>
+    android:layout_marginTop="20dp"
+        android:background="@drawable/selector_navigation_background"
+        android:src="@drawable/selector_directionbutton"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -34,15 +36,12 @@
         android:layout_toLeftOf="@id/mapDirection"
         android:layout_toStartOf="@id/mapDirection" />
 
-
-    <ListView
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/specification_list"
         android:layout_below="@id/shop_details"
         android:background="@color/instano_grey"/>
-
-
 
     <include layout="@layout/store_footer_view"
         android:layout_alignParentBottom="true"
