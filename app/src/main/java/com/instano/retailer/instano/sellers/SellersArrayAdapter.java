@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Category;
 import com.instano.retailer.instano.utilities.model.Constraint;
@@ -61,11 +60,11 @@ public class SellersArrayAdapter extends BaseAdapter implements Filterable {
         mSellersListSubject = BehaviorSubject.create();
 
         Log.v(TAG, "NetworkRequestsManager.instance().getObservable(Seller.class)");
-        NetworkRequestsManager.instance().getObservable(Seller.class)
-                .subscribe(seller -> {
-                    mCompleteSet.put(seller.hashCode(), seller);
-                    filter();
-                }, throwable -> Log.fatalError(new RuntimeException(throwable)));
+//        NetworkRequestsManager.instance().getObservable(Seller.class)
+//                .subscribe(seller -> {
+//                    mCompleteSet.put(seller.hashCode(), seller);
+//                    filter();
+//                }, throwable -> Log.fatalError(new RuntimeException(throwable)));
     }
 
     public void setListener(ItemInteractionListener listener) {

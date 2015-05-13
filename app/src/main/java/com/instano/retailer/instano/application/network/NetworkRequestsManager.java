@@ -6,7 +6,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -26,7 +25,6 @@ import com.instano.retailer.instano.utilities.model.Seller;
 import com.instano.retailer.instano.utilities.model.SignIn;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 import retrofit.RestAdapter;
@@ -61,17 +59,6 @@ public class NetworkRequestsManager {
     private final UnregisteredBuyersApiService mUnregisteredBuyersApiService;
 
     /**
-     * stores the different observables based on class name.
-     * Do NOT access this directly, use the accessor {@link #getObservable(Class)}
-     * TODO: create a separate class to limit that possible keys and clear data on new buyer
-     */
-    private final HashMap<String, Observable> mObservableHashMap;
-
-    private EchoFunction<Quotation> mQuotationEchoFunction;
-    private EchoFunction<Seller> mSellerEchoFunction;
-    private EchoFunction<Quote> mQuoteEchoFunction;
-
-    /**
      * always adds a header ("Session-Id", getStoredSessionId())
      */
     public interface RegisteredBuyersApiService {
@@ -85,7 +72,7 @@ public class NetworkRequestsManager {
         Observable<Boolean> exists(@Body String phone);
 
         @GET("/buyers/sellers")
-        Observable<List<Seller>> getSellers();
+        Observable<List<Seller>> querySellers(@Query("p") int productId);
 
         @GET("/buyers/sellers/{sellerId}")
         Observable<Seller> getSeller(@Path("sellerId") int sellerId);
@@ -117,18 +104,6 @@ public class NetworkRequestsManager {
         Observable<Device> registerDevice(@Body Device device);
     }
 
-    public void newObject(Quote quote) {
-        mQuoteEchoFunction.newEventReceived(quote);
-    }
-
-    public void newObject(Quotation quotation) {
-        mQuotationEchoFunction.newEventReceived(quotation);
-    }
-
-    public void newObject(Seller seller) {
-//        mSellerEchoFunction.newEventReceived(seller);
-    }
-
     public Observable<Buyer> signIn(String facebookUserId) {
         SignIn signIn = new SignIn();
         signIn.setFacebookUserId(facebookUserId);
@@ -149,15 +124,15 @@ public class NetworkRequestsManager {
                 .retryWhen(new SessionErrorsHandlerFunction());
     }
 
-    /**
-     * also echo the retrofit returned quote so that observers will get this quote as well.
-     * @param quote
-     * @return observable that observers this quote response only
-     */
+    public Observable<Deal> getDeals() {
+        return mRegisteredBuyersApiService.getDeals()
+                .retryWhen(new SessionErrorsHandlerFunction())
+                .flatMap(Observable::from);
+    }
+
     public Observable<Quote> sendQuote(Quote quote) {
         return mRegisteredBuyersApiService.sendQuote(quote)
-                .retryWhen(new SessionErrorsHandlerFunction())
-                .doOnNext(this::newObject);
+                .retryWhen(new SessionErrorsHandlerFunction());
     }
 
     public Observable<Quotation> queryQuotations(int productId) {
@@ -167,7 +142,14 @@ public class NetworkRequestsManager {
     }
 
     public Observable<Seller> getSeller(int sellerId) {
-        return mRegisteredBuyersApiService.getSeller(sellerId);
+        return mRegisteredBuyersApiService.getSeller(sellerId)
+                .retryWhen(new SessionErrorsHandlerFunction());
+    }
+
+    public Observable<Seller> querySellers(int productId) {
+        return mRegisteredBuyersApiService.querySellers(productId)
+                .retryWhen(new SessionErrorsHandlerFunction())
+                .flatMap(Observable::from);
     }
 
     public Observable<List<Product>> queryProducts(String query) {
@@ -202,8 +184,6 @@ public class NetworkRequestsManager {
                 .build();
 
         mUnregisteredBuyersApiService = unregisteredRestAdapter.create(UnregisteredBuyersApiService.class);
-
-        mObservableHashMap = new HashMap<>(); // empty hashmap
     }
 
     /*package*/
@@ -239,28 +219,6 @@ public class NetworkRequestsManager {
                 observable = Observable.just(device);
             }
         }
-        return observable.doOnNext(
-                (device) -> {
-                        Log.d(TAG, "authorizeSession.doOnNext");
-                        mSellerEchoFunction = new EchoFunction<>();
-                        replaceAndCacheObservable(Seller.class,
-                                mRegisteredBuyersApiService.getSellers()
-                                        .retryWhen(new SessionErrorsHandlerFunction())
-                                        .flatMap((List<Seller> t1) -> {
-                                            return Observable.from(t1);
-                                        }))
-                                .doOnNext((Seller seller) -> Log.d(TAG, "new seller: " + seller));
-                        mergeCacheAndDistinctObservable(Seller.class,
-                                Observable.create(mSellerEchoFunction));
-        });
-    }
-
-    public <T> Observable<T> getObservable(@NonNull Class<T> modelClass) {
-        Observable<T> observable = mObservableHashMap.get(modelClass.getSimpleName());
-        if (observable == null) {
-            observable = Observable.never(); // a placeholder observable so that null isn't returned
-            mObservableHashMap.put(modelClass.getSimpleName(), observable);
-        }
         return observable;
     }
 
@@ -273,66 +231,6 @@ public class NetworkRequestsManager {
             return true;
         }
         return false;
-    }
-
-    /**
-     * used to keep previous values
-     * BEWARE: only future subscribers will get the new results! existing subscribers will have the old observable
-     */
-    private <T> Observable<T> mergeCacheAndDistinctObservable(@NonNull Class<T> modelClass, Observable<T> newObservable) {
-        Observable<T> observable = getObservable(modelClass)
-                .mergeWith(newObservable)// merge with existing observable
-                .cache()
-                .distinct();
-        mObservableHashMap.put(modelClass.getSimpleName(),
-                observable); // replace the old observable
-        return observable;
-    }
-
-    /**
-     * used to discard previous values
-     */
-    private <T> Observable<T> replaceAndCacheObservable(@NonNull Class<T> modelClass, Observable<T> newObservable) {
-        Observable<T> observable = newObservable
-                .cache();
-        mObservableHashMap.put(modelClass.getSimpleName(),
-                observable); // replace the old observable
-        return observable;
-    }
-
-    /**
-     * also called by SessionActivity
-     */
-    public void newBuyer() {
-        Log.d(TAG, "onNewBuyer");
-
-        replaceAndCacheObservable(Deal.class,
-                mRegisteredBuyersApiService.getDeals()
-                        .retryWhen(new SessionErrorsHandlerFunction())
-                        .flatMap(Observable::from)); // flatten returned List<Deal> into Deal
-
-        replaceAndCacheObservable(Quote.class,
-                mRegisteredBuyersApiService.getQuotes()
-                        .retryWhen(new SessionErrorsHandlerFunction())
-                        .flatMap(Observable::from)
-                        .distinct());
-
-        replaceAndCacheObservable(Quotation.class,
-                mRegisteredBuyersApiService.getQuotations()
-                        .retryWhen(new SessionErrorsHandlerFunction())
-                        .flatMap(Observable::from));
-
-        replaceAndCacheObservable(Categories.class,
-                mRegisteredBuyersApiService.getProductCategories()
-                        .retryWhen(new SessionErrorsHandlerFunction()));
-
-        mQuotationEchoFunction = new EchoFunction<>();
-        mQuoteEchoFunction = new EchoFunction<>();
-
-        mergeCacheAndDistinctObservable(Quotation.class,
-                Observable.create(mQuotationEchoFunction));
-        mergeCacheAndDistinctObservable(Quote.class,
-                Observable.create(mQuoteEchoFunction));
     }
 
     private class SessionErrorsHandlerFunction implements Func1<Observable<? extends Throwable>, Observable<?>> {

@@ -48,7 +48,7 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
 
         QuotationCard item = getItem(position);
         viewHolder.headingTextView.setText(item.seller.name_of_shop);
-        viewHolder.subheadingTextView.setText(String.valueOf(item.quotation.price));
+//        viewHolder.subheadingTextView.setText(String.valueOf(item.quotation.price));
 
         if(true)
             Picasso.with(getContext())

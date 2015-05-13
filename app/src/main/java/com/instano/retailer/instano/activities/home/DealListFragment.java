@@ -91,7 +91,7 @@ public class DealListFragment extends ListFragment{
         mShown = false;
         DealsAdapter dealsAdapter = new DealsAdapter(getActivity());
         setListAdapter(dealsAdapter);
-        AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Deal.class))
+        AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getDeals())
                 .subscribe((deal) -> {
                     setShown(true);
                     Log.d(TAG, "new deal:" + deal.id);
