@@ -14,8 +14,9 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.LauncherActivity;
+import com.instano.retailer.instano.activities.SearchableActivity;
+import com.instano.retailer.instano.activities.search.ResultsActivity;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
-import com.instano.retailer.instano.buyerDashboard.quotes.QuoteListActivity;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Quotation;
 import com.instano.retailer.instano.utilities.model.Seller;
@@ -75,7 +76,7 @@ public class GcmIntentService extends IntentService {
                             case "quotation":
                                 Quotation quotation = mapper.readValue(extras.getString("quotation"), Quotation.class);
                                 NetworkRequestsManager.instance().newObject(quotation);
-                                newQuotationsNotification();
+                                newQuotationsNotification(quotation, extras.getString("product_name"));
                                 break;
                         }
                     } catch (IOException e) {
@@ -88,7 +89,7 @@ public class GcmIntentService extends IntentService {
         GcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-    public void newQuotationsNotification() {
+    public void newQuotationsNotification(Quotation quotation, String productName) {
         Log.d(TAG, "new quotations received");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.instano_launcher)
@@ -97,13 +98,16 @@ public class GcmIntentService extends IntentService {
                 .setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL);
 
+        // TODO: make into a quote received and show the details of the new quote
+        Intent intent = new Intent(this, ResultsActivity.class);
+        intent.putExtra(SearchableActivity.KEY_PRODUCT, productName);
+        intent.putExtra(SearchableActivity.KEY_PRODUCT_ID, quotation.productId);
         PendingIntent resultPendingIntent = PendingIntent.getActivity(
                 this,
                 0,
-                new Intent(this, QuoteListActivity.class),
+                intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
-
         builder.setContentIntent(resultPendingIntent);
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
