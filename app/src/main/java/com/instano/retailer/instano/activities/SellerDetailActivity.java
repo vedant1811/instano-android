@@ -9,6 +9,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
@@ -34,12 +35,14 @@ import rx.Observable;
  */
 public class SellerDetailActivity extends BaseActivity {
 
+    private static final String TAG = "SellerDetailActivity";
     @InjectView(R.id.shop_details) TextView sellerDetail;
     @InjectView(R.id.shop_image) ImageView shopImage;
     @InjectView(R.id.dealHeadingStoreFooter) TextView dealHeading;
     @InjectView(R.id.dealSubheadingStoreFooter) TextView dealSubheading;
     @InjectView(R.id.contactButtonStoreFooter) ImageButton contactButton;
     @InjectView(R.id.mapDirection) ImageButton direction;
+    @InjectView(R.id.specification_list) TextView shopSpecification;
 
     private static final LatLng BANGALORE_LOCATION = new LatLng(12.9539974, 77.6309395);
 
@@ -59,14 +62,17 @@ public class SellerDetailActivity extends BaseActivity {
 
             String s = seller.name_of_shop;
             String s2 = seller.outlets.get(0).getPrettyDistanceFromLocation();
+            Log.v(TAG, "lat long of outlet : " + seller.outlets.get(0).latitude +" :::"+seller.outlets.get(0).longitude);
+            Log.v(TAG, "outlet id : " + seller.outlets.get(0).id);
+            Log.v(TAG, "pretty distance : " + s2);
             String s3 = seller.outlets.get(0).address;
 
             SpannableString s1 = null;
 
             if (s2 == null)
-                s1 = new SpannableString(s + "," + s3);
+                s1 = new SpannableString(s + ",\n" + s3);
             else
-                s1 = new SpannableString(s + "," + s2 + "," + s3);
+                s1 = new SpannableString(s + ", " + s2 + ",\n" + s3);
 
             s1.setSpan(new RelativeSizeSpan(1.3f), 0, s.length(), 0);  // 18 is the no. of character that is to be resized
             s1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, 0, 0);
@@ -75,12 +81,15 @@ public class SellerDetailActivity extends BaseActivity {
             Picasso.with(this)
                     .load(seller.image).fit().centerInside()
                     .into(shopImage);
+            shopSpecification.setText(Html.fromHtml("<font color='blue'>text</font>"));
+            shopSpecification.setText(Html.fromHtml("<p><font color='#60c6ea'><strong>Leading Mobile Retailer</strong></font></p>" +
+                    "\r\n\r\n<p>Any type of mobile phone, smartphone.</p>\r\n"));
 
             contactButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" +
-                            seller.outlets.get(0).phone));
+                            seller.outlets.get(0).getPhone()));
                     startActivity(callIntent);
                 }
             });

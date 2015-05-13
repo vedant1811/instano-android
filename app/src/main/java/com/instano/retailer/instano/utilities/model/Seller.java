@@ -29,6 +29,9 @@ public class Seller {
     @JsonProperty("brands")
     public ArrayList<Brand> brands;
 
+    @JsonProperty("description")
+    public String description;
+
     public Seller() {
     }
 
