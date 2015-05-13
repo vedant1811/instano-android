@@ -142,7 +142,14 @@ public class NetworkRequestsManager {
     }
 
     public Observable<Seller> getSeller(int sellerId) {
-        return mRegisteredBuyersApiService.getSeller(sellerId);
+        return mRegisteredBuyersApiService.getSeller(sellerId)
+                .retryWhen(new SessionErrorsHandlerFunction());
+    }
+
+    public Observable<Seller> querySellers(int productId) {
+        return mRegisteredBuyersApiService.querySellers(productId)
+                .retryWhen(new SessionErrorsHandlerFunction())
+                .flatMap(Observable::from);
     }
 
     public Observable<List<Product>> queryProducts(String query) {

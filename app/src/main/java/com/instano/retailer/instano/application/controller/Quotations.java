@@ -22,14 +22,32 @@ public class Quotations {
     public Observable<QuotationCard> fetchQuotationsForProduct(int productId) {
         ReplaySubject<QuotationCard> replaySubject = mQuotationSubjects.get(productId);
         if (replaySubject == null) {
+
+            // now create a new subject
             final ReplaySubject<QuotationCard> finalReplaySubject = ReplaySubject.create();
+
+            // fetch quotations
             NetworkRequestsManager.instance().queryQuotations(productId).subscribe(quotation -> {
                         Log.d(TAG, "new quotation " + quotation.hashCode());
+                        // fetch sellers for each quotation
                         Sellers.controller().getSeller(quotation.sellerId)
                                 .subscribe(seller -> finalReplaySubject.onNext(new QuotationCard(seller, quotation)),
                                         error -> Log.fatalError(new RuntimeException(error)));
                 },
                 error -> Log.fatalError(new RuntimeException(error)));
+
+            // TODO: make conditional
+            // fetch brand_name matching sellers without quotations
+            NetworkRequestsManager.instance().querySellers(productId).subscribe(partialSeller -> {
+                        Log.d(TAG, "new seller" + partialSeller.hashCode());
+                        // get the seller for the returned ID
+                        Sellers.controller().getSeller(partialSeller.id)
+                                .subscribe(seller -> finalReplaySubject.onNext(new QuotationCard(seller, null)),
+                                        error -> Log.fatalError(new RuntimeException(error)));
+                    },
+                    error -> Log.fatalError(new RuntimeException(error)));
+
+            // subject created, now add it to the array
             replaySubject = finalReplaySubject;
             mQuotationSubjects.put(productId, replaySubject);
         }
