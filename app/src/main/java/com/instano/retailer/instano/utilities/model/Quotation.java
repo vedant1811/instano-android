@@ -44,6 +44,10 @@ public class Quotation {
 
     }
 
+    public String getPrettyPrice() {
+        return String.format("₹%,d", price);
+    }
+
     public boolean isRead() {
         if (STATUS_READ.equals(mStatus))
             return true;
