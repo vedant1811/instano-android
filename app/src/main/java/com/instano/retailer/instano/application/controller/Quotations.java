@@ -59,7 +59,7 @@ public class Quotations {
                 .flatMap(quotationCard -> Observable.create(subscriber -> {
                     for (Outlet outlet : quotationCard.seller.outlets) {
                         if (!subscriber.isUnsubscribed() && outlet.latitude != null && outlet.longitude != null)
-                            subscriber.onNext(new QuotationMarker(outlet, quotationCard.quotation.price));
+                            subscriber.onNext(new QuotationMarker(outlet, quotationCard.quotation));
                     }
                 }));
 //                .doOnError(throwable -> Log.fatalError(new RuntimeException(

@@ -1,16 +1,27 @@
 package com.instano.retailer.instano.application.controller.model;
 
+import android.support.annotation.Nullable;
+
 import com.instano.retailer.instano.utilities.model.Outlet;
+import com.instano.retailer.instano.utilities.model.Quotation;
 
 /**
  * Created by vedant on 5/5/15.
  */
 public class QuotationMarker {
     public final Outlet outlet;
-    public final int price;
+    public final Integer price;
 
-    public QuotationMarker(Outlet outlet, int price) {
+    /**
+     *
+     * @param outlet
+     * @param quotation if null, price is set to null
+     */
+    public QuotationMarker(Outlet outlet, @Nullable Quotation quotation) {
         this.outlet = outlet;
-        this.price = price;
+        if (quotation == null)
+            price = null;
+        else
+            price = quotation.price;
     }
 }
