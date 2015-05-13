@@ -16,7 +16,6 @@ import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.LauncherActivity;
 import com.instano.retailer.instano.activities.SearchableActivity;
 import com.instano.retailer.instano.activities.search.ResultsActivity;
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Quotation;
 import com.instano.retailer.instano.utilities.model.Seller;
@@ -71,11 +70,11 @@ public class GcmIntentService extends IntentService {
                         switch (type) {
                             case "seller":
                                 Seller seller = mapper.readValue(extras.getString("seller"), Seller.class);
-                                NetworkRequestsManager.instance().newObject(seller);
+//                                NetworkRequestsManager.instance().newObject(seller);
                                 break;
                             case "quotation":
                                 Quotation quotation = mapper.readValue(extras.getString("quotation"), Quotation.class);
-                                NetworkRequestsManager.instance().newObject(quotation);
+//                                NetworkRequestsManager.instance().newObject(quotation);
                                 newQuotationsNotification(quotation, extras.getString("product_name"));
                                 break;
                         }

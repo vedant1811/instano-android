@@ -12,11 +12,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Quote;
-
-import rx.android.observables.AndroidObservable;
 
 /**
  * A list fragment representing a list of Quotes. This fragment
@@ -84,15 +81,15 @@ public class QuoteListFragment extends ListFragment {
 
         QuotesAdapter adapter = new QuotesAdapter(getActivity());
         mShown = false;
-        AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Quote.class))
-                .subscribe((t) -> {
-                    mShown = true;
-                    setListShown(mShown);
-                    adapter.add(t);
-                    adapter.sort((lhs, rhs) -> lhs.compareTo(rhs));
-                }, throwable -> Log.fatalError(new RuntimeException(
-                        "error response in subscribe to getObservable(Quote.class)",
-                        throwable)));
+//        AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Quote.class))
+//                .subscribe((t) -> {
+//                    mShown = true;
+//                    setListShown(mShown);
+//                    adapter.add(t);
+//                    adapter.sort((lhs, rhs) -> lhs.compareTo(rhs));
+//                }, throwable -> Log.fatalError(new RuntimeException(
+//                        "error response in subscribe to getObservable(Quote.class)",
+//                        throwable)));
         setListAdapter(adapter);
     }
 

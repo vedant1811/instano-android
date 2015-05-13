@@ -25,7 +25,7 @@ public class Quotations {
             final ReplaySubject<QuotationCard> finalReplaySubject = ReplaySubject.create();
             NetworkRequestsManager.instance().queryQuotations(productId).subscribe(quotation -> {
                         Log.d(TAG, "new quotation " + quotation.hashCode());
-                        NetworkRequestsManager.instance().getSeller(quotation.sellerId)
+                        Sellers.controller().getSeller(quotation.sellerId)
                                 .subscribe(seller -> finalReplaySubject.onNext(new QuotationCard(seller, quotation)),
                                         error -> Log.fatalError(new RuntimeException(error)));
                 },

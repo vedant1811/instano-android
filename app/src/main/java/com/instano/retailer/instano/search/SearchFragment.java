@@ -20,13 +20,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.ServicesSingleton;
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.library.Spinner;
-import com.instano.retailer.instano.utilities.model.Categories;
 import com.instano.retailer.instano.utilities.model.Category;
-
-import rx.android.observables.AndroidObservable;
 
 
 /**
@@ -122,19 +118,19 @@ public class SearchFragment extends Fragment
             }
         });
 
-        AndroidObservable.bindFragment(this,
-            NetworkRequestsManager.instance().getObservable(Categories.class))
-                .subscribe(categories -> {
-                    Log.d("product categories", categories.mCategories.toString());
-                    if (mCategoryAdapter != null) {
-                        mCategoryAdapter.clear();
-                        mCategoryAdapter.addAll(categories.mCategories);
-                        Log.d("product categories", "mUserSelectedCategory = false");
-                        mUserSelectedCategory = false;
-                    }
-                },
-                        Throwable::printStackTrace
-                );
+//        AndroidObservable.bindFragment(this,
+//            NetworkRequestsManager.instance().getObservable(Categories.class))
+//                .subscribe(categories -> {
+//                    Log.d("product categories", categories.mCategories.toString());
+//                    if (mCategoryAdapter != null) {
+//                        mCategoryAdapter.clear();
+//                        mCategoryAdapter.addAll(categories.mCategories);
+//                        Log.d("product categories", "mUserSelectedCategory = false");
+//                        mUserSelectedCategory = false;
+//                    }
+//                },
+//                        Throwable::printStackTrace
+//                );
 
         mSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
