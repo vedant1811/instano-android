@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Created by vedant on 4/29/15.
@@ -50,6 +52,8 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
         viewHolder.headingTextView.setText(item.seller.name_of_shop);
         viewHolder.subheadingTextView.setText(String.valueOf(item.quotation.price));
 
+
+
         if(true)
             Picasso.with(getContext())
                     .load(item.seller.image).fit().centerInside()
@@ -73,6 +77,7 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
 
         public ViewHolder(View view) {
             ButterKnife.inject(this,view);
+
         }
     }
 }

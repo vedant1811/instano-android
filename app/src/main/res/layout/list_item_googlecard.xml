@@ -21,13 +21,15 @@
         android:id="@+id/msgButton"
         android:layout_marginLeft="10dp"
         android:layout_alignParentLeft="true"
-        android:layout_below="@id/dealProduct"/>
+        android:layout_below="@id/dealProduct"
+        />
 
     <ImageButton
         style="@style/ContactButton"
         android:id="@+id/contactButton"
         android:layout_below="@+id/dealProduct"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        />
 
     <!-- TODO: fix layout_marginRight-->
     <Button
@@ -36,7 +38,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="200dp"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/dealProduct"/>
+        android:layout_below="@id/dealProduct"
+        />
 
     <TextView
         style="@style/SmallText"
@@ -60,6 +63,7 @@
         android:id="@+id/dealHeading"
         android:text="Medium Text"
         android:layout_above="@id/dealSubheading"
-        android:background="@color/translucent_white"/>
+        android:background="@color/translucent_white"
+        />
 
 </RelativeLayout>

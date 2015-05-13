@@ -1,27 +1,38 @@
 package com.instano.retailer.instano.activities.home;
 
 import android.app.Activity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.activities.BookingDialogFragment;
 import com.instano.retailer.instano.activities.SellerDetailActivity;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.deals.DealDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Deal;
+import com.instano.retailer.instano.utilities.model.Quotation;
+import com.instano.retailer.instano.utilities.model.Seller;
 import com.squareup.picasso.Picasso;
 
+import java.util.zip.Inflater;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import rx.android.observables.AndroidObservable;
 
 /**
@@ -179,7 +190,7 @@ public class DealListFragment extends ListFragment{
         mActivatedPosition = position;
     }
 
-    private class DealsAdapter extends ArrayAdapter<Deal> {
+    public class DealsAdapter extends ArrayAdapter<Deal> {
         private LayoutInflater mInflater;
 
         public DealsAdapter(Context context) {
@@ -190,23 +201,25 @@ public class DealListFragment extends ListFragment{
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View view = convertView;
-            if (view == null)
-                view = mInflater.inflate(R.layout.list_item_googlecard, parent, false);
+            ViewHolder viewHolder;
+            if (convertView == null) {
+                convertView = mInflater.inflate(R.layout.list_item_googlecard, parent, false);
+                viewHolder = new ViewHolder(convertView);
+                convertView.setTag(viewHolder);
+            }
+
+            else
+                viewHolder = (ViewHolder) convertView.getTag();
+
 
             Deal deal = getItem(position);
-
-            TextView headingTextView = (TextView) view.findViewById(R.id.dealHeading);
-            TextView subheadingTextView = (TextView) view.findViewById(R.id.dealSubheading);
-            TextView sellerDetailsTextView = (TextView) view.findViewById(R.id.sellerDetails);
-            ImageButton productImage = (ImageButton) view.findViewById(R.id.dealProduct);
             Log.v(TAG,"heading : "+deal.heading+" subheading : "+deal.subheading);
-            headingTextView.setText(deal.heading);
+            viewHolder.headingTextView.setText(deal.heading);
 
             if (TextUtils.isEmpty(deal.subheading))
-                subheadingTextView.setVisibility(View.GONE);
+                viewHolder.subheadingTextView.setVisibility(View.GONE);
             else
-                subheadingTextView.setText(deal.subheading);
+                viewHolder.subheadingTextView.setText(deal.subheading);
 
 
 
@@ -214,36 +227,45 @@ public class DealListFragment extends ListFragment{
                 Picasso.with(getContext())
                         .load(deal.product.image).fit().centerInside()
                         .error(R.drawable.instano_launcher)
-                        .into(productImage);
+                        .into(viewHolder.productImage);
             }
-//            else {
-//                Picasso.with(getContext())
-//                    .load(R.drawable.img_nature5).fit().centerInside()
-//                    .into(productImage);
-//            }
-//            if (seller != null)
-//                distanceTextView.setText(seller.getPrettyDistanceFromLocation());
-//            else
-//                throw new IllegalStateException("Invalid deal should have not entered the adapter");
-//            expiresAtTextView.setText(deal.expiresAt());
 
-            productImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//                    startActivity(new Intent(getActivity(), SellerDetailActivity.class));
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("seller_id", deal.sellerId);
-                    bundle.putString("heading", deal.heading);
-                    bundle.putString("subheading", deal.subheading);
-                    Intent intent = new Intent(getActivity(), SellerDetailActivity.class);
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                    //TODO: Send Deal details and fetch seller in SellerDeatailActivity through the sellerId in Deal
-                }
+
+            viewHolder.bookitButton.setOnClickListener(v1 -> {
+                FragmentManager fm = getFragmentManager();
+                BookingDialogFragment bookingDialogFragment = BookingDialogFragment.newInstance(deal,deal.product.image);
+                bookingDialogFragment.show(fm, "Book it Dialog");
             });
 
-            return view;
+            viewHolder.productImage.setOnClickListener(v -> {
+                Bundle bundle = new Bundle();
+                bundle.putInt("seller_id", deal.sellerId);
+                bundle.putString("heading", deal.heading);
+                bundle.putString("subheading", deal.subheading);
+                Intent intent = new Intent(getActivity(), SellerDetailActivity.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
+                //TODO: Send Deal details and fetch seller in SellerDeatailActivity through the sellerId in Deal
+            });
+
+
+            return convertView;
+        }
+    }
+
+    public class ViewHolder{
+        @InjectView(R.id.dealProduct) ImageButton productImage ;
+        @InjectView(R.id.dealHeading) TextView headingTextView;
+        @InjectView(R.id.dealSubheading) TextView subheadingTextView;
+        @InjectView(R.id.sellerDetails) TextView sellerDetailsTextView;
+        @InjectView(R.id.msgButton) ImageButton msgButton;
+        @InjectView(R.id.contactButton)ImageButton contactButton;
+        @InjectView(R.id.bookitButton)Button bookitButton;
+
+        public ViewHolder(View view){
+            ButterKnife.inject(this, view);
         }
 
     }
 }
+

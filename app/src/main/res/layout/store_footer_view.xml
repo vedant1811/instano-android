@@ -3,7 +3,6 @@
 <RelativeLayout
     android:layout_gravity="bottom"
     android:gravity="bottom"
-    android:id="@+id/mylayout"
     android:layout_alignParentBottom="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,7 +15,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:id="@+id/dealHeadingStoreFooter"
-        android:text="Medium Text"/>
+        android:text="Medium Text"
+        />
 
     <TextView
         style="@style/LargeText"
@@ -24,20 +24,20 @@
         android:text="Large Text"
         android:layout_below="@id/dealHeadingStoreFooter"
         android:layout_alignParentLeft="true"
-       />
+        />
 
     <ImageButton
         style="@style/MsgButton"
         android:layout_marginBottom="4dp"
         android:id="@+id/msgButton"
         android:layout_below="@id/dealSubheadingStoreFooter"
-
-       />
+        />
 
     <ImageButton
         style="@style/ContactButton"
         android:id="@+id/contactButton"
-        android:layout_alignBottom="@id/msgButton" />
+        android:layout_alignBottom="@id/msgButton"
+        />
 
     <Button
         style="@style/BookitButton"
@@ -45,7 +45,8 @@
         android:layout_alignBottom="@id/msgButton"
         android:id="@+id/bookitButton"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
+        android:layout_alignParentEnd="true"
+        >
 
         </Button>
 

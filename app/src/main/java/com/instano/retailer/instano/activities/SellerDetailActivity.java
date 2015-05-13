@@ -1,11 +1,13 @@
 package com.instano.retailer.instano.activities;
 
+import android.app.FragmentManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,6 +25,7 @@ import rx.Observable;
  */
 public class SellerDetailActivity extends BaseActivity {
 
+    @InjectView(R.id.bookitButton) Button bookIt;
     @InjectView(R.id.shop_details) TextView sellerDetail;
     @InjectView(R.id.shop_image) ImageView shopImage;
     @InjectView(R.id.dealHeadingStoreFooter) TextView dealHeading;
@@ -40,6 +43,11 @@ public class SellerDetailActivity extends BaseActivity {
         dealHeading.setText(bundle.getString("heading"));
         dealSubheading.setText(bundle.getString("subheading"));
 
+        bookIt.setOnClickListener(v -> {
+
+
+        });
+
         retryableError(seller, seller1 -> {
 
             String s = seller1.name_of_shop;
@@ -53,7 +61,7 @@ public class SellerDetailActivity extends BaseActivity {
             else
                 s1 = new SpannableString(s + "," + s2 + "," + s3);
 
-            s1.setSpan(new RelativeSizeSpan(1.3f), 0, s.length(), 0);  // 18 is the no. of character that is to be resized
+            s1.setSpan(new RelativeSizeSpan(1.3f), 0, s.length(), 0);
             s1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, 0, 0);
             sellerDetail.setText(s1);
 

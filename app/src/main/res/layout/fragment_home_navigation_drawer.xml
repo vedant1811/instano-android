@@ -6,7 +6,8 @@
     android:orientation="vertical"
     tools:context="com.instano.retailer.instano.activities.home.NavigationDrawerFragment"
     android:background="@android:color/white"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:clickable="true">
 
     <com.pkmmte.view.CircularImageView
         android:id="@+id/facebook_profile_picture"
