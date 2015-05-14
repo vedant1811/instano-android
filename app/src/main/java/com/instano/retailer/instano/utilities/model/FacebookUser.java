@@ -1,4 +1,4 @@
-package com.instano.retailer.instano.utilities.models;
+package com.instano.retailer.instano.utilities.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -9,14 +9,19 @@ public class FacebookUser {
 
     @JsonProperty("user_id")
     private String id;
+
     @JsonProperty("email")
     private String email;
+
     @JsonProperty("name")
     private String name;
+
     @JsonProperty("gender")
     private String gender;
+
     @JsonProperty("verified")
     private String verified;
+
     @JsonProperty("user_updated_at")
     private String userUpdatedAt;
 

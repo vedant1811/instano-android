@@ -2,7 +2,6 @@ package com.instano.retailer.instano.utilities.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
-import com.instano.retailer.instano.utilities.models.FacebookUser;
 
 /**
  * Created by vedant on 18/12/14.
