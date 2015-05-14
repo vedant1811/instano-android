@@ -58,6 +58,8 @@ public class NetworkRequestsManager {
     private final RegisteredBuyersApiService mRegisteredBuyersApiService;
     private final UnregisteredBuyersApiService mUnregisteredBuyersApiService;
 
+    private SessionErrorsHandlerFunction mSessionErrorsHandlerFunction;
+
     /**
      * always adds a header ("Session-Id", getStoredSessionId())
      */
@@ -109,7 +111,7 @@ public class NetworkRequestsManager {
         signIn.setFacebookUserId(facebookUserId);
 
         return mRegisteredBuyersApiService.signIn(signIn)
-                .retryWhen(new SessionErrorsHandlerFunction());
+                .retryWhen(getSessionErrorsHandlerFunction());
     }
 
     public Observable<Buyer> registerBuyer(Buyer buyer) {
@@ -121,46 +123,46 @@ public class NetworkRequestsManager {
                     else
                         return Observable.error(throwable);
                 })
-                .retryWhen(new SessionErrorsHandlerFunction());
+                .retryWhen(getSessionErrorsHandlerFunction());
     }
 
     public Observable<Deal> getDeals() {
         return mRegisteredBuyersApiService.getDeals()
-                .retryWhen(new SessionErrorsHandlerFunction())
+                .retryWhen(getSessionErrorsHandlerFunction())
                 .flatMap(Observable::from);
     }
 
     public Observable<Quote> sendQuote(Quote quote) {
         return mRegisteredBuyersApiService.sendQuote(quote)
-                .retryWhen(new SessionErrorsHandlerFunction());
+                .retryWhen(getSessionErrorsHandlerFunction());
     }
 
     public Observable<Quotation> queryQuotations(int productId) {
         return mRegisteredBuyersApiService.queryQuotations(productId)
-                .retryWhen(new SessionErrorsHandlerFunction())
+                .retryWhen(getSessionErrorsHandlerFunction())
                 .flatMap(Observable::from);
     }
 
     public Observable<Seller> getSeller(int sellerId) {
         return mRegisteredBuyersApiService.getSeller(sellerId)
-                .retryWhen(new SessionErrorsHandlerFunction());
+                .retryWhen(getSessionErrorsHandlerFunction());
     }
 
     public Observable<Seller> querySellers(int productId) {
         return mRegisteredBuyersApiService.querySellers(productId)
-                .retryWhen(new SessionErrorsHandlerFunction())
+                .retryWhen(getSessionErrorsHandlerFunction())
                 .flatMap(Observable::from);
     }
 
     public Observable<List<Product>> queryProducts(String query) {
         return mRegisteredBuyersApiService.queryProducts(query)
-                .retryWhen(new SessionErrorsHandlerFunction());
+                .retryWhen(getSessionErrorsHandlerFunction());
     }
 
     private NetworkRequestsManager(MyApplication application) {
         this.mApplication = application;
 
-        RestAdapter.LogLevel logLevel = BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE;
+        RestAdapter.LogLevel logLevel = BuildConfig.DEBUG ? RestAdapter.LogLevel.BASIC : RestAdapter.LogLevel.NONE;
 
         ObjectMapper objectMapper = ServicesSingleton.instance().getDefaultObjectMapper();
 
@@ -237,9 +239,10 @@ public class NetworkRequestsManager {
         private static final String TAG = "SessionErrorHandlerFunction";
         private final int maxRetries;
         private int retryCount;
+        private Observable<Device> mDeviceObservable;
 
         public SessionErrorsHandlerFunction() {
-            this(2);
+            this(3);
         }
 
         public SessionErrorsHandlerFunction(final int maxRetries) {
@@ -248,25 +251,38 @@ public class NetworkRequestsManager {
         }
 
         @Override
-        public Observable<?> call(Observable<? extends Throwable> observable) {
-            return observable
-                    .flatMap(error -> {
-                        if (++retryCount < maxRetries) {
-                            if (error instanceof ResponseError) {
-                                ResponseError responseError = (ResponseError) error;
-                                ResponseError.Type errorType = responseError.getErrorType();
-                                Log.d(TAG, "retrying " + errorType);
-                                if (errorType.shouldRefreshGcmId())
-                                    return registerAfterFetchingGcm();
-                                else if (errorType.shouldRefreshSessionId())
-                                    return registerDevice();
-                            }
-                            Log.d(TAG, "unknown error. failing");
+        public synchronized Observable<?> call(Observable<? extends Throwable> observable) {
+            if (mDeviceObservable == null) {
+                mDeviceObservable = observable.flatMap(error -> {
+                    Observable<Device> deviceObservable = Observable.error(error);
+                    if (++retryCount < maxRetries) {
+                        if (error instanceof ResponseError) {
+                            ResponseError responseError = (ResponseError) error;
+                            ResponseError.Type errorType = responseError.getErrorType();
+                            Log.d(TAG, "retrying " + errorType);
+                            if (errorType.shouldRefreshGcmId())
+                                deviceObservable = registerAfterFetchingGcm();
+                            else if (errorType.shouldRefreshSessionId())
+                                deviceObservable = registerDevice();
                         }
                         else
-                            Log.e(TAG, "max retires hit with error:", error);
-                        return Observable.error(error);
-                    });
+                            Log.d(TAG, "unknown error. failing");
+                    } else
+                        Log.e(TAG, "max retires hit with error:", error);
+                    return deviceObservable // reset the info
+                            .doOnNext(d -> resetInfo())
+                            .doOnError(e -> resetInfo());
+                });
+            }
+            else
+                Log.d(TAG, "returning old observable");
+            // if a device observable already exists, ignore the error and pass the existing observable
+            return mDeviceObservable;
+        }
+
+        private void resetInfo() {
+            mDeviceObservable = null;
+            retryCount = 0;
         }
     }
 
@@ -285,15 +301,19 @@ public class NetworkRequestsManager {
             }
         }).subscribeOn(Schedulers.io())
                 .retryWhen(new ExponentialBackoffFunction())
-                        // do not call registerDevice() as we do not want to re-run fetching of GCM in any case
+                // do not call registerDevice() as we do not want to re-run fetching of GCM in any case
                 .flatMap(mUnregisteredBuyersApiService::registerDevice)
                 .retryWhen(new ExponentialBackoffFunction())
                 .doOnNext(d -> storeSessionId(d.getSession_id()));
     }
 
     private Observable<Device> registerDevice() {
+        String storedGcmId = getStoredGcmId();
+        if (storedGcmId.isEmpty())
+            return registerAfterFetchingGcm();
+
         Device device = new Device();
-        device.setGcm_registration_id(getStoredGcmId());
+        device.setGcm_registration_id(storedGcmId);
         return mUnregisteredBuyersApiService.registerDevice(device)
                 .onErrorResumeNext(throwable -> {
                     if (throwable instanceof ResponseError) {
@@ -310,7 +330,7 @@ public class NetworkRequestsManager {
 
     private String getStoredSessionId(){
         String sessionId = mApplication.getSharedPreferences().getString(SESSION_ID, "");
-        Log.v(TAG, "Saved Session id: "+sessionId);
+        Log.v(TAG, "Saved Session id: " + sessionId);
         return sessionId;
     }
 
@@ -359,5 +379,11 @@ public class NetworkRequestsManager {
             Log.fatalError(e);
             return -1;
         }
+    }
+
+    private SessionErrorsHandlerFunction getSessionErrorsHandlerFunction() {
+        if (mSessionErrorsHandlerFunction == null)
+            mSessionErrorsHandlerFunction = new SessionErrorsHandlerFunction();
+        return mSessionErrorsHandlerFunction;
     }
 }

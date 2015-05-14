@@ -93,8 +93,6 @@ public class Sessions {
 //                                }
 //                        ).executeAsync();
 
-
-                subscriber.onNext(HomeActivity.class);
                 NetworkRequestsManager.instance().registerBuyer(newBuyer).subscribe(
                         buyer -> {
                             Log.d(TAG, "unsubscribed: " + subscriber.isUnsubscribed());
@@ -112,31 +110,35 @@ public class Sessions {
 
     public Observable<Class> doFacebookSignIn(Context context) {
         Observable<Class> observable = Observable.create(subscriber -> {
-            Session session = Session.getActiveSession();
-            Log.d(TAG, "getActiveSession(): " + session);
-            if (session == null) {
-                session = Session.openActiveSessionFromCache(context);
-                Log.d(TAG, "openActiveSessionFromCache(): " + session);
-            }
-            if (session == null) {
-                subscriber.onNext(SignUpActivity.class);
-                Log.d(TAG, "subject.onNext(SignUpActivity.class)");
-            } else {
-                Observable<Buyer> buyerObservable = signIn();
-                Log.d(TAG, "signing in");
-                if (buyerObservable == null)
-                    meRequest(subscriber, session);
-                else
-                    buyerObservable.subscribe(buyer -> {
-                                subscriber.onNext(HomeActivity.class);
-                            },
-                            (error) -> {
-                                if (ResponseError.Type.INCORRECT_FACEBOOK_ID.is(error))
-                                    subscriber.onNext(SignUpActivity.class);
-                                else // just pass the error along
-                                    subscriber.onError(error);
-                            });
-            }
+            NetworkRequestsManager.instance().authorizeSession()
+                    .subscribe(d -> {
+                        Session session = Session.getActiveSession();
+                        Log.d(TAG, "getActiveSession(): " + session);
+                        if (session == null) {
+                            session = Session.openActiveSessionFromCache(context);
+                            Log.d(TAG, "openActiveSessionFromCache(): " + session);
+                        }
+                        if (session == null) {
+                            subscriber.onNext(SignUpActivity.class);
+                            Log.d(TAG, "subject.onNext(SignUpActivity.class)");
+                        } else {
+                            Observable<Buyer> buyerObservable = signIn();
+                            Log.d(TAG, "signing in");
+                            if (buyerObservable == null)
+                                meRequest(subscriber, session);
+                            else
+                                buyerObservable.subscribe(buyer -> {
+                                            subscriber.onNext(HomeActivity.class);
+                                        },
+                                        error -> {
+                                            if (ResponseError.Type.INCORRECT_FACEBOOK_ID.is(error))
+                                                subscriber.onNext(SignUpActivity.class);
+                                            else // just pass the error along
+                                                subscriber.onError(error);
+                                        });
+                        }
+                    }, e -> subscriber.onError(new RuntimeException(e)));
+
         });
         return observable;
     }

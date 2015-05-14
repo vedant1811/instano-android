@@ -95,6 +95,8 @@ public abstract class SearchableActivity extends BaseActivity{
             public boolean onQueryTextChange(String s) {
                 Log.v(TAG, "Query text changed to " + s);
                 mSuggestionsSubscription.unsubscribe();
+                if (s.isEmpty())
+                    return true;
                 mSuggestionsSubscription = AndroidObservable.bindActivity(SearchableActivity.this, NetworkRequestsManager.instance().queryProducts(s))
                         .subscribe(products -> {
                             MatrixCursor cursor = new MatrixCursor(new String[]{BaseColumns._ID, PRODUCT_NAME});
