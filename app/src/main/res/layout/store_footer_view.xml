@@ -15,36 +15,29 @@
         style="@style/MediumText"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:id="@+id/dealHeading"
+        android:id="@+id/dealHeadingStoreFooter"
         android:text="Medium Text"/>
 
     <TextView
         style="@style/LargeText"
-        android:id="@+id/dealSubheading"
+        android:id="@+id/dealSubheadingStoreFooter"
         android:text="Large Text"
-        android:layout_below="@id/dealHeading"
+        android:layout_below="@id/dealHeadingStoreFooter"
         android:layout_alignParentLeft="true"
        />
-
-
-    <TextView
-        style="@style/SmallText"
-        android:id="@+id/sellerDetails"
-        android:layout_below="@id/dealSubheading"
-        android:text="Small Text"
-        />
 
     <ImageButton
         style="@style/MsgButton"
         android:layout_marginBottom="4dp"
         android:id="@+id/msgButton"
-        android:layout_below="@id/sellerDetails"
+        android:layout_below="@id/dealSubheadingStoreFooter"
+
 
        />
 
     <ImageButton
         style="@style/ContactButton"
-        android:id="@+id/contactButton"
+        android:id="@+id/contactButtonStoreFooter"
         android:layout_alignBottom="@id/msgButton" />
 
     <Button

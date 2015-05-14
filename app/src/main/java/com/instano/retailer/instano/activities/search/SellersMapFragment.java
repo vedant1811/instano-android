@@ -18,6 +18,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -39,11 +41,11 @@ import rx.subscriptions.BooleanSubscription;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongClickListener,
-        GetAddressTask.AddressCallback, GoogleMap.OnMarkerDragListener, GoogleMap.OnMarkerClickListener {
+public class SellersMapFragment extends Fragment implements
+        GetAddressTask.AddressCallback, GoogleMap.OnMarkerClickListener {
 
     private static final String TAG = "SellerMapFragment";
-//    private static BitmapDescriptor BLUE_MARKER;
+    private static BitmapDescriptor YELLOW_MARKER;
     private MapView mMapView;
 
     /* mMap variables */
@@ -56,7 +58,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
 
     /* seller's info included layout*/
     private Outlet mSelectedOutlet;
-    private View mTopmostSellerInfoView;
+//    private View mTopmostSellerInfoView;
     private TextView mShopName;
     private TextView mShopAddress;
     private TextView mDistanceTextView;
@@ -93,11 +95,21 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
                         .onBackpressureBuffer()
                         .subscribe(quotationMarker -> {
                             Log.d(TAG, "adding marker");
-                            mSelectedShopMarker = mMap.addMarker(new MarkerOptions()
-                                    .position(new LatLng(quotationMarker.outlet.latitude,quotationMarker.outlet.longitude))
-                                    .title(quotationMarker.outlet.seller_name)
-                                    .snippet(String.valueOf(String.format("₹%,d", quotationMarker.price)))
-                            );
+                            if (quotationMarker.price != null) {
+                                mSelectedShopMarker = mMap.addMarker(new MarkerOptions()
+                                                .position(new LatLng(quotationMarker.outlet.latitude,quotationMarker.outlet.longitude))
+                                                .title(quotationMarker.outlet.seller_name)
+                                                .snippet(String.format("₹%,d", quotationMarker.price))
+                                );
+                            }
+                            else {
+                                mSelectedShopMarker = mMap.addMarker(new MarkerOptions()
+                                                .position(new LatLng(quotationMarker.outlet.latitude, quotationMarker.outlet.longitude))
+                                                .title(quotationMarker.outlet.seller_name)
+                                                .snippet("Price Not Available")
+                                                .icon(YELLOW_MARKER)
+                                );
+                            }
                             mSelectedShopMarker.showInfoWindow();
                             mSellerMarkers.put(mSelectedShopMarker, quotationMarker);
                         }, throwable -> Log.fatalError(new RuntimeException(
@@ -120,7 +132,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-//        BLUE_MARKER = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
+        YELLOW_MARKER = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
 
         mSellerMarkers = new HashMap<>();
         mSellersSubscription = BooleanSubscription.create(); // just a place holder instead of null
@@ -140,7 +152,7 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
                 .build();
 
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(bangalore));
-        mMap.setOnMapLongClickListener(this);
+//        mMap.setOnMapLongClickListener(this);
         mMap.setOnMarkerClickListener(this);
 
 //        mSelectedLocationMarker = mMap.addMarker(new MarkerOptions()
@@ -150,26 +162,30 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
 //                .icon(BLUE_MARKER)
 //                .draggable(true));
 //        mSelectedLocationMarker.showInfoWindow();
-        mMap.setOnMarkerDragListener(this);
+//        mMap.setOnMarkerDragListener(this);
 
         Log.d(TAG, ".setUpMap setUpMap");
 
     }
 
-    @Override
-    public void onMapLongClick(LatLng latLng) {
+//    @Override
+//    public void onMapLongClick(LatLng latLng) {
 //        mSelectedLocationMarker.setPosition(latLng);
 //        refreshMarker();
-    }
+//    }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
         QuotationMarker quotationMarker = mSellerMarkers.get(marker);
         if (quotationMarker != null) { // can be another marker
             mSelectedOutlet = quotationMarker.outlet;
-            mTopmostSellerInfoView.setVisibility(View.VISIBLE);
-            mShopName.setText(String.valueOf(String.format("₹%,d", quotationMarker.price)));
+//            mTopmostSellerInfoView.setVisibility(View.VISIBLE);
+            if (quotationMarker.price != null)
+                mShopName.setText(String.format("₹%,d", quotationMarker.price));
+            else
+                mShopName.setText("Price NA");
             mDistanceTextView.setText(quotationMarker.outlet.getPrettyDistanceFromLocation());
+            Log.v(TAG, "distance = "+ quotationMarker.outlet.getPrettyDistanceFromLocation());
             mShopAddress.setText(quotationMarker.outlet.address);
         }
         return false;
@@ -200,21 +216,21 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
 //        sendLocation(address);
     }
 
-    @Override
-    public void onMarkerDragStart(Marker marker) {
+//    @Override
+//    public void onMarkerDragStart(Marker marker) {
 //        mSelectedLocationMarker.setSnippet(null);
-        resetInfoWindow();
-    }
-
-    @Override
-    public void onMarkerDrag(Marker marker) {
-
-    }
-
-    @Override
-    public void onMarkerDragEnd(Marker marker) {
+//        resetInfoWindow();
+//    }
+//
+//    @Override
+//    public void onMarkerDrag(Marker marker) {
+//
+//    }
+//
+//    @Override
+//    public void onMarkerDragEnd(Marker marker) {
 //        refreshMarker();
-    }
+//    }
 
     private void resetInfoWindow() {
 //        mSelectedLocationMarker.hideInfoWindow();
@@ -240,8 +256,8 @@ public class SellersMapFragment extends Fragment implements GoogleMap.OnMapLongC
         setUpMap();
 
         // set up seller info:
-        mTopmostSellerInfoView = view.findViewById(R.id.includedListItem);
-        mShopName = (TextView) view.findViewById(R.id.shopNameTextView);
+//        mTopmostSellerInfoView = view.findViewById(R.id.includedListItem);
+        mShopName = (TextView) view.findViewById(R.id.shopName);
         mShopAddress = (TextView) view.findViewById(R.id.addressTextView);
         mDistanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
 

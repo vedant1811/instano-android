@@ -10,4 +10,5 @@
     <color name="white">#ffffff</color>
     <color name="translucent_white">#e1ffffff</color>
     <color name="translucent_black">#7f000000</color>
+    <color name="transparent">#00ffffff</color>
 </resources>

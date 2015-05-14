@@ -4,6 +4,7 @@ import android.graphics.PointF;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.telephony.PhoneNumberUtils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.instano.retailer.instano.application.ServicesSingleton;
@@ -117,5 +118,9 @@ public class Outlet {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double distance = R * c;
         return (int) distance;
+    }
+
+    public String getPhone() {
+        return PhoneNumberUtils.formatNumber(phone,"91" );
     }
 }
