@@ -58,7 +58,7 @@ public class SellersMapFragment extends Fragment implements
 
     /* seller's info included layout*/
     private Outlet mSelectedOutlet;
-    private View mTopmostSellerInfoView;
+//    private View mTopmostSellerInfoView;
     private TextView mShopName;
     private TextView mShopAddress;
     private TextView mDistanceTextView;
@@ -179,12 +179,13 @@ public class SellersMapFragment extends Fragment implements
         QuotationMarker quotationMarker = mSellerMarkers.get(marker);
         if (quotationMarker != null) { // can be another marker
             mSelectedOutlet = quotationMarker.outlet;
-            mTopmostSellerInfoView.setVisibility(View.VISIBLE);
+//            mTopmostSellerInfoView.setVisibility(View.VISIBLE);
             if (quotationMarker.price != null)
                 mShopName.setText(String.format("₹%,d", quotationMarker.price));
             else
                 mShopName.setText("Price NA");
             mDistanceTextView.setText(quotationMarker.outlet.getPrettyDistanceFromLocation());
+            Log.v(TAG, "distance = "+ quotationMarker.outlet.getPrettyDistanceFromLocation());
             mShopAddress.setText(quotationMarker.outlet.address);
         }
         return false;
@@ -255,8 +256,8 @@ public class SellersMapFragment extends Fragment implements
         setUpMap();
 
         // set up seller info:
-        mTopmostSellerInfoView = view.findViewById(R.id.includedListItem);
-        mShopName = (TextView) view.findViewById(R.id.shopNameTextView);
+//        mTopmostSellerInfoView = view.findViewById(R.id.includedListItem);
+        mShopName = (TextView) view.findViewById(R.id.shopName);
         mShopAddress = (TextView) view.findViewById(R.id.addressTextView);
         mDistanceTextView = (TextView) view.findViewById(R.id.distanceTextView);
 

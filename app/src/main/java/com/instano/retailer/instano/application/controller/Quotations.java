@@ -51,7 +51,7 @@ public class Quotations {
             replaySubject = finalReplaySubject;
             mQuotationSubjects.put(productId, replaySubject);
         }
-        return replaySubject.asObservable();
+        return replaySubject.onBackpressureBuffer();
     }
 
     public Observable<QuotationMarker> fetchQuotationMarkersForProduct(int productId) {

@@ -10,16 +10,73 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/includedListItem" />
+        android:layout_above="@id/callImageButton"
+        android:background="@android:drawable/dialog_holo_light_frame"
+    />
 
-    <include
+
+    <TextView
+        android:id="@+id/shopName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        layout="@layout/list_item_shop"
-        android:layout_alignParentBottom="true"
+        android:text="Shop name"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/includedListItem"
-        android:visibility="invisible"/>
+        android:layout_below="@id/map"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingLeft="@dimen/general_min_padding"/>
+
+    <TextView
+        android:id="@+id/addressTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Address1\nAddress2"
+        android:lines="2"
+        android:layout_gravity="left"
+        android:layout_below="@+id/shopName"
+        android:layout_toStartOf="@+id/distanceTextView"
+        android:layout_toLeftOf="@+id/distanceTextView"
+        android:layout_alignParentLeft="true"
+        android:textColor="@color/instano_red"
+        android:layout_marginBottom="4dp"
+        android:paddingLeft="@dimen/general_min_padding"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2.40 km"
+        android:id="@+id/distanceTextView"
+        android:layout_alignBottom="@+id/addressTextView"
+        android:textColor="@android:color/black"
+        style="@style/TextAppearanceListItemTimeElapsed"
+        android:textStyle="normal"
+        android:layout_toLeftOf="@id/callImageButton"
+        android:layout_marginBottom="4dp"
+        android:paddingLeft="@dimen/general_min_padding"/>
+
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/callImageButton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:scaleType="centerInside"
+        android:clickable="true"
+        android:background="@drawable/selector_dial_image"
+        android:layout_marginLeft="@dimen/general_separator_margin"
+        android:layout_marginBottom="4dp"
+        />
+
+    <!--<include-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--layout="@layout/list_item_shop"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:id="@+id/includedListItem"-->
+        <!--android:visibility="invisible"/>-->
 
 </RelativeLayout>
