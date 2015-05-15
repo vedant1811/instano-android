@@ -128,7 +128,6 @@ public class Sessions {
                     meRequest(subscriber, session);
                 else
                     buyerObservable.subscribe(buyer -> {
-                                NetworkRequestsManager.instance().newBuyer();
                                 subscriber.onNext(HomeActivity.class);
                             },
                             (error) -> {
@@ -145,7 +144,6 @@ public class Sessions {
     public void newSignUp(Buyer buyer) {
         Log.d(TAG, "buyer ID: " + buyer);
         Preferences.controller().saveBuyer(buyer);
-        NetworkRequestsManager.instance().newBuyer();
     }
 
     /**

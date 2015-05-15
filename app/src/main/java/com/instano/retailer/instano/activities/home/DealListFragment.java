@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
@@ -20,19 +21,15 @@ import android.widget.TextView;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.BookingDialogFragment;
 import com.instano.retailer.instano.activities.SellerDetailActivity;
+import com.instano.retailer.instano.application.controller.Sellers;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.deals.DealDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Deal;
-import com.instano.retailer.instano.utilities.model.Quotation;
-import com.instano.retailer.instano.utilities.model.Seller;
 import com.squareup.picasso.Picasso;
-
-import java.util.zip.Inflater;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 import rx.android.observables.AndroidObservable;
 
 /**
@@ -102,7 +99,7 @@ public class DealListFragment extends ListFragment{
         mShown = false;
         DealsAdapter dealsAdapter = new DealsAdapter(getActivity());
         setListAdapter(dealsAdapter);
-        AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Deal.class))
+        AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getDeals())
                 .subscribe((deal) -> {
                     setShown(true);
                     Log.d(TAG, "new deal:" + deal.id);
@@ -211,7 +208,6 @@ public class DealListFragment extends ListFragment{
             else
                 viewHolder = (ViewHolder) convertView.getTag();
 
-
             Deal deal = getItem(position);
             Log.v(TAG,"heading : "+deal.heading+" subheading : "+deal.subheading);
             viewHolder.headingTextView.setText(deal.heading);
@@ -226,10 +222,10 @@ public class DealListFragment extends ListFragment{
             if (deal.product != null) {
                 Picasso.with(getContext())
                         .load(deal.product.image).fit().centerInside()
+                        .placeholder(R.drawable.no_image_available).fit().centerInside()
                         .error(R.drawable.instano_launcher)
                         .into(viewHolder.productImage);
             }
-
 
             viewHolder.bookitButton.setOnClickListener(v1 -> {
                 FragmentManager fm = getFragmentManager();
@@ -248,6 +244,32 @@ public class DealListFragment extends ListFragment{
                 //TODO: Send Deal details and fetch seller in SellerDeatailActivity through the sellerId in Deal
             });
 
+            viewHolder.msgButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Sellers.controller().getSeller(deal.sellerId).subscribe(seller -> {
+                                Intent msgIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" +
+                                        seller.outlets.get(0).getPhone()));
+                                msgIntent.putExtra("sms_body",deal.heading + "\n" + deal.subheading);
+                                startActivity(msgIntent);
+                            },
+                            error -> Log.fatalError(new RuntimeException(error)));
+
+                }
+            });
+
+            viewHolder.contactButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Sellers.controller().getSeller(deal.sellerId).subscribe(seller -> {
+                                Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" +
+                                        seller.outlets.get(0).getPhone()));
+                                startActivity(callIntent);
+                            },
+                            error -> Log.fatalError(new RuntimeException(error)));
+
+                }
+            });
 
             return convertView;
         }
@@ -257,10 +279,9 @@ public class DealListFragment extends ListFragment{
         @InjectView(R.id.dealProduct) ImageButton productImage ;
         @InjectView(R.id.dealHeading) TextView headingTextView;
         @InjectView(R.id.dealSubheading) TextView subheadingTextView;
-        @InjectView(R.id.sellerDetails) TextView sellerDetailsTextView;
         @InjectView(R.id.msgButton) ImageButton msgButton;
         @InjectView(R.id.contactButton)ImageButton contactButton;
-        @InjectView(R.id.bookitButton)Button bookitButton;
+        @InjectView(R.id.bookitButtonStoreFooter)Button bookitButton;
 
         public ViewHolder(View view){
             ButterKnife.inject(this, view);

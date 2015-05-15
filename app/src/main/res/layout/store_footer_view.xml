@@ -31,24 +31,21 @@
         android:layout_marginBottom="4dp"
         android:id="@+id/msgButton"
         android:layout_below="@id/dealSubheadingStoreFooter"
-        />
+    />
 
     <ImageButton
         style="@style/ContactButton"
-        android:id="@+id/contactButton"
-        android:layout_alignBottom="@id/msgButton"
-        />
+        android:id="@+id/contactButtonStoreFooter"
+        android:layout_alignBottom="@id/msgButton" />
+    />
 
     <Button
         style="@style/BookitButton"
         android:layout_margin="10dp"
         android:layout_alignBottom="@id/msgButton"
-        android:id="@+id/bookitButton"
+        android:id="@+id/bookitButtonStoreFooter"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        >
-
-        </Button>
+        android:layout_alignParentEnd="true" />
 
 
 </RelativeLayout>

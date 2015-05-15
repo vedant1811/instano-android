@@ -72,6 +72,12 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
             @Override
             public void onPageSelected(int position) {
                 actionBar.setSelectedNavigationItem(position);
+//                if (position == 1) {
+//                    actionBar.hide();
+//                }
+//                else {
+//                    actionBar.show();
+//                }
             }
         });
 

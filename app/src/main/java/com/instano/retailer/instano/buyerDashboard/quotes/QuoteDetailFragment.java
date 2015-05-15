@@ -15,7 +15,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.buyerDashboard.QuotationDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Quotation;
@@ -25,8 +24,6 @@ import com.instano.retailer.instano.utilities.model.Seller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import rx.android.observables.AndroidObservable;
 
 /**
  * A fragment representing a single Quote detail screen.
@@ -122,15 +119,15 @@ public class QuoteDetailFragment extends Fragment {
 
         mAdapter = new Adapter(getActivity());
         expandableListView.setAdapter(mAdapter);
-        AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Quote.class)
-                .filter(quote -> quote.id == getArguments().getInt(ARG_QUOTE_ID)))
-                        .subscribe(quote -> {
-                            mItem = quote;
-                            Log.v(TAG, "quote received: " +quote );
-//                            mHeadingTextView.setText(String.format("\"%s\"", mItem.searchString));
-                            // initialize adapter only after quote has been fetched
-                            mAdapter.refresh();
-                        });
+//        AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getObservable(Quote.class)
+//                .filter(quote -> quote.id == getArguments().getInt(ARG_QUOTE_ID)))
+//                        .subscribe(quote -> {
+//                            mItem = quote;
+//                            Log.v(TAG, "quote received: " +quote );
+////                            mHeadingTextView.setText(String.format("\"%s\"", mItem.searchString));
+//                            // initialize adapter only after quote has been fetched
+//                            mAdapter.refresh();
+//                        });
 
         return rootView;
     }
@@ -173,19 +170,19 @@ public class QuoteDetailFragment extends Fragment {
          * main initializer
          */
         private void refresh() {
-            AndroidObservable.bindFragment(QuoteDetailFragment.this, NetworkRequestsManager.instance().getObservable(Seller.class))
-//                    .filter(seller -> mItem.sellerIds.contains(seller.id)))
-                            .subscribe(seller -> {
-                                mSellers.put(seller.id, seller);
-                                dataUpdated();
-                            });
-            AndroidObservable.bindFragment(QuoteDetailFragment.this, NetworkRequestsManager.instance().getObservable(Quotation.class))
-//                    .filter(quotation -> mItem.sellerIds.contains(quotation.sellerId)))
-                            .subscribe(quotation -> {
-                                Log.d(TAG, "new quotation, id: " + quotation.id);
-                                mQuotations.put(quotation.id, quotation);
-                                dataUpdated();
-                            });
+//            AndroidObservable.bindFragment(QuoteDetailFragment.this, NetworkRequestsManager.instance().getObservable(Seller.class))
+////                    .filter(seller -> mItem.sellerIds.contains(seller.id)))
+//                            .subscribe(seller -> {
+//                                mSellers.put(seller.id, seller);
+//                                dataUpdated();
+//                            });
+//            AndroidObservable.bindFragment(QuoteDetailFragment.this, NetworkRequestsManager.instance().getObservable(Quotation.class))
+////                    .filter(quotation -> mItem.sellerIds.contains(quotation.sellerId)))
+//                            .subscribe(quotation -> {
+//                                Log.d(TAG, "new quotation, id: " + quotation.id);
+//                                mQuotations.put(quotation.id, quotation);
+//                                dataUpdated();
+//                            });
         }
 
         public void dataUpdated() {

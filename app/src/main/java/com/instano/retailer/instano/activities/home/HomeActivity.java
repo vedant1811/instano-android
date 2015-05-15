@@ -88,6 +88,7 @@ public class HomeActivity extends SearchableActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = null;
         switch(position) {
+            default:
             case R.id.homeButton:
                 fragment = new DealListFragment();
                 break;
@@ -126,7 +127,6 @@ public class HomeActivity extends SearchableActivity
             fragmentManager.beginTransaction()
                     .replace(R.id.container, fragment)
                     .commit();
-
         }
     }
 
