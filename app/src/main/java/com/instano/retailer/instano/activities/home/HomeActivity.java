@@ -86,12 +86,10 @@ public class HomeActivity extends SearchableActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = null;
         switch(position) {
             case R.id.homeButton:
-                Fragment fragment = new Fragment();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.container, fragment)
-                        .commit();
+                fragment = new DealListFragment();
                 break;
             case R.id.bestInCityButton:
                 break;
@@ -124,6 +122,12 @@ public class HomeActivity extends SearchableActivity
                 break;
         }
 
+        if(fragment!=null) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.container, fragment)
+                    .commit();
+
+        }
     }
 
     public void onSectionAttached(int number) {

@@ -15,17 +15,17 @@
         android:src="@drawable/signup"
         android:layout_weight="8.4"/>
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1.6"
-            android:background="@color/com_facebook_blue"
-            android:paddingLeft="50dp"
-            android:id="@+id/connectWithFacebook"
-            android:text="Connect with Facebook"
-            android:drawableStart="@drawable/facebook"
-            android:drawableLeft="@drawable/facebook"
-            android:drawablePadding="16dp"
-            android:gravity="left|center_vertical"
-            />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.6"
+        android:background="@drawable/selector_signup"
+        android:paddingLeft="50dp"
+        android:id="@+id/connectWithFacebook"
+        android:text="Connect with Facebook"
+        android:drawableStart="@drawable/facebook"
+        android:drawableLeft="@drawable/facebook"
+        android:drawablePadding="16dp"
+        android:gravity="left|center_vertical"
+        />
 </LinearLayout>

@@ -12,4 +12,5 @@
     <color name="translucent_black">#7f000000</color>
     <color name="transparent">#00ffffff</color>
     <color name="black">#000000</color>
+    <color name="fb_dark">#355088</color>
 </resources>
