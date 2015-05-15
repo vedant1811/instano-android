@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
+import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Deal;
 import com.squareup.picasso.Picasso;
 
@@ -24,6 +26,7 @@ public class BookingDialogFragment extends DialogFragment {
 
     public static final String ITEM_DETAILS = "Item_Details";
     public static final String ITEM_IMAGE = "Item Image";
+    private static final String TAG = "BookingDialogFragment";
     private CharSequence mDetails;
     private String imageUrl;
 
@@ -37,11 +40,29 @@ public class BookingDialogFragment extends DialogFragment {
     }
 
     public static BookingDialogFragment newInstance(Deal deal,String dealImage){
-        String Details = deal.heading;
+        String details = deal.heading;
         String productImage = dealImage ;
         Bundle arguments = new Bundle();
-        arguments.putString(ITEM_DETAILS, Details);
+        arguments.putString(ITEM_DETAILS, details);
         arguments.putString(ITEM_IMAGE, productImage);
+        BookingDialogFragment fragment = new BookingDialogFragment();
+        fragment.setArguments(arguments);
+
+        return fragment;
+    }
+    //TODO get Product details
+    public static BookingDialogFragment newInstance(int productId){
+
+        Bundle arguments = new Bundle();
+        NetworkRequestsManager.instance().getProduct(productId)
+                .subscribe(product -> {
+                    Log.v(TAG, "productID : "+ productId);
+                    String details = product.name;
+                    String productImage = product.image;
+
+                    arguments.putString(ITEM_DETAILS, details);
+                    arguments.putString(ITEM_IMAGE, productImage);
+                }, throwable -> Log.fatalError(new RuntimeException(throwable)));
         BookingDialogFragment fragment = new BookingDialogFragment();
         fragment.setArguments(arguments);
 

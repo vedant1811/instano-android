@@ -43,7 +43,7 @@
         style="@style/BookitButton"
         android:layout_margin="10dp"
         android:layout_alignBottom="@id/msgButton"
-        android:id="@+id/bookitButton"
+        android:id="@+id/bookitButtonStoreFooter"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 

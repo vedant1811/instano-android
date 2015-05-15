@@ -17,7 +17,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.BookingDialogFragment;
@@ -27,19 +26,10 @@ import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.deals.DealDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Deal;
-import com.instano.retailer.instano.utilities.model.Seller;
 import com.squareup.picasso.Picasso;
-
-import rx.Observable;
-import com.instano.retailer.instano.utilities.model.Quotation;
-import com.instano.retailer.instano.utilities.model.Seller;
-import com.squareup.picasso.Picasso;
-
-import java.util.zip.Inflater;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 import rx.android.observables.AndroidObservable;
 
 /**
@@ -275,8 +265,8 @@ public class DealListFragment extends ListFragment{
                                 Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" +
                                         seller.outlets.get(0).getPhone()));
                                 startActivity(callIntent);
-                    },
-                    error -> Log.fatalError(new RuntimeException(error)));
+                            },
+                            error -> Log.fatalError(new RuntimeException(error)));
 
                 }
             });
@@ -291,7 +281,7 @@ public class DealListFragment extends ListFragment{
         @InjectView(R.id.dealSubheading) TextView subheadingTextView;
         @InjectView(R.id.msgButton) ImageButton msgButton;
         @InjectView(R.id.contactButton)ImageButton contactButton;
-        @InjectView(R.id.bookitButton)Button bookitButton;
+        @InjectView(R.id.bookitButtonStoreFooter)Button bookitButton;
 
         public ViewHolder(View view){
             ButterKnife.inject(this, view);

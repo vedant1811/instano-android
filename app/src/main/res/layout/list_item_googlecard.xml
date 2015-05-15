@@ -34,7 +34,7 @@
     <!-- TODO: fix layout_marginRight-->
     <Button
         style="@style/BookitButton"
-        android:id="@+id/bookitButton"
+        android:id="@+id/bookitButtonStoreFooter"
         android:layout_marginTop="10dp"
         android:layout_marginRight="200dp"
         android:layout_alignParentRight="true"
