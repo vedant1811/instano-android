@@ -3,6 +3,7 @@ package com.instano.retailer.instano.activities.home;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.text.TextUtils;
@@ -10,18 +11,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.SellerDetailActivity;
+import com.instano.retailer.instano.application.controller.Sellers;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.deals.DealDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Deal;
+import com.instano.retailer.instano.utilities.model.Seller;
 import com.squareup.picasso.Picasso;
 
+import rx.Observable;
 import rx.android.observables.AndroidObservable;
 
 /**
@@ -200,6 +206,10 @@ public class DealListFragment extends ListFragment{
             TextView subheadingTextView = (TextView) view.findViewById(R.id.dealSubheading);
             TextView sellerDetailsTextView = (TextView) view.findViewById(R.id.sellerDetails);
             ImageButton productImage = (ImageButton) view.findViewById(R.id.dealProduct);
+            ImageButton msgButton = (ImageButton) view.findViewById(R.id.msgButton);
+            ImageButton callButton = (ImageButton) view.findViewById(R.id.contactButton);
+            Button bookItButton = (Button) view.findViewById(R.id.bookitButton);
+            Observable<Seller> sellerObservable = NetworkRequestsManager.instance().getSeller(deal.sellerId);
             Log.v(TAG,"heading : "+deal.heading+" subheading : "+deal.subheading);
             headingTextView.setText(deal.heading);
 
@@ -213,6 +223,7 @@ public class DealListFragment extends ListFragment{
             if (deal.product != null) {
                 Picasso.with(getContext())
                         .load(deal.product.image).fit().centerInside()
+                        .placeholder(R.drawable.no_image_available).fit().centerInside()
                         .error(R.drawable.instano_launcher)
                         .into(productImage);
             }
@@ -239,6 +250,40 @@ public class DealListFragment extends ListFragment{
                     intent.putExtras(bundle);
                     startActivity(intent);
                     //TODO: Send Deal details and fetch seller in SellerDeatailActivity through the sellerId in Deal
+                }
+            });
+
+            msgButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Sellers.controller().getSeller(deal.sellerId).subscribe(seller -> {
+                                Intent msgIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" +
+                                        seller.outlets.get(0).getPhone()));
+                                msgIntent.putExtra("sms_body",deal.heading + "\n" + deal.subheading);
+                                startActivity(msgIntent);
+                            },
+                            error -> Log.fatalError(new RuntimeException(error)));
+
+                }
+            });
+
+            callButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Sellers.controller().getSeller(deal.sellerId).subscribe(seller -> {
+                                Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" +
+                                        seller.outlets.get(0).getPhone()));
+                                startActivity(callIntent);
+                    },
+                    error -> Log.fatalError(new RuntimeException(error)));
+
+                }
+            });
+
+            bookItButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getActivity(), "Book it CLICKED !!!", Toast.LENGTH_SHORT).show();
                 }
             });
 
