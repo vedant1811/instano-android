@@ -204,7 +204,6 @@ public class DealListFragment extends ListFragment{
 
             TextView headingTextView = (TextView) view.findViewById(R.id.dealHeading);
             TextView subheadingTextView = (TextView) view.findViewById(R.id.dealSubheading);
-            TextView sellerDetailsTextView = (TextView) view.findViewById(R.id.sellerDetails);
             ImageButton productImage = (ImageButton) view.findViewById(R.id.dealProduct);
             ImageButton msgButton = (ImageButton) view.findViewById(R.id.msgButton);
             ImageButton callButton = (ImageButton) view.findViewById(R.id.contactButton);

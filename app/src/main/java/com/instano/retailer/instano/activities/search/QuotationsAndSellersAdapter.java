@@ -120,7 +120,6 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
 
     public class ViewHolder{
         @InjectView(R.id.dealHeading) TextView headingTextView;
-        @InjectView(R.id.sellerDetails) TextView distanceTextView;
         @InjectView(R.id.dealSubheading) TextView subheadingTextView;
         @InjectView(R.id.dealProduct) ImageButton productImage;
         @InjectView(R.id.msgButton) ImageButton msgButton;

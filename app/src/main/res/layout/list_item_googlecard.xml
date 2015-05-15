@@ -39,19 +39,11 @@
         android:layout_below="@id/dealProduct"/>
 
     <TextView
-        style="@style/SmallText"
-        android:id="@+id/sellerDetails"
-        android:text="Small Text"
-        android:layout_above="@id/msgButton"
-        android:background="@color/translucent_white"
-        />
-
-    <TextView
         style="@style/LargeText"
         android:id="@+id/dealSubheading"
         android:text="Large Text"
         android:layout_alignParentLeft="true"
-        android:layout_above="@id/sellerDetails"
+        android:layout_above="@id/msgButton"
         android:background="@color/translucent_white"
         />
 
