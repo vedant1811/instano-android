@@ -2,10 +2,9 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
-
         <item name="colorPrimary">@color/primary</item>
         <item name="android:textColorPrimary">@android:color/white</item>
-
+        <item name="android:dialogTheme">@style/DialogTheme</item>
     </style>
 
     <style name="titleTextStyle" parent="@style/Theme.AppCompat.Light" >
@@ -151,8 +150,13 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">240dp</item>
         <item name="android:scaleType">center</item>
-        <item name="android:src">@android:drawable/ic_menu_report_image</item>
+        <item name="android:src">@drawable/no_image_available</item>
         <item name="android:background">@drawable/selector_image_button</item>
     </style>
+
+    <style name="DialogTheme" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
 
 </resources>

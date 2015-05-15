@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.app.FragmentManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
@@ -14,9 +15,12 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.instano.retailer.instano.R;
@@ -35,14 +39,18 @@ import rx.Observable;
  */
 public class SellerDetailActivity extends BaseActivity {
 
+
     private static final String TAG = "SellerDetailActivity";
+    @InjectView(R.id.bookitButton) Button bookIt;
     @InjectView(R.id.shop_details) TextView sellerDetail;
     @InjectView(R.id.shop_image) ImageView shopImage;
     @InjectView(R.id.dealHeadingStoreFooter) TextView dealHeading;
     @InjectView(R.id.dealSubheadingStoreFooter) TextView dealSubheading;
     @InjectView(R.id.contactButtonStoreFooter) ImageButton contactButton;
+    @InjectView(R.id.msgButton) ImageButton msgButton;
     @InjectView(R.id.mapDirection) ImageButton direction;
     @InjectView(R.id.specification_list) TextView shopSpecification;
+
 
     private static final LatLng BANGALORE_LOCATION = new LatLng(12.9539974, 77.6309395);
 
@@ -59,6 +67,12 @@ public class SellerDetailActivity extends BaseActivity {
         dealSubheading.setText(bundle.getString("subheading"));
 
         retryableError(sellerObservable, seller -> {
+        bookIt.setOnClickListener(v -> {
+            //TODO : Book IT
+            Toast.makeText(this, "Book it clicked !!", Toast.LENGTH_SHORT);
+        });
+
+        retryableError(sellerObservable, seller1 -> {
 
             String s = seller.name_of_shop;
             String s2 = seller.outlets.get(0).getPrettyDistanceFromLocation();
@@ -74,16 +88,19 @@ public class SellerDetailActivity extends BaseActivity {
             else
                 s1 = new SpannableString(s + ", " + s2 + ",\n" + s3);
 
-            s1.setSpan(new RelativeSizeSpan(1.3f), 0, s.length(), 0);  // 18 is the no. of character that is to be resized
+            s1.setSpan(new RelativeSizeSpan(1.3f), 0, s.length(), 0);
             s1.setSpan(new ForegroundColorSpan(Color.BLACK), 0, 0, 0);
             sellerDetail.setText(s1);
 
             Picasso.with(this)
                     .load(seller.image).fit().centerInside()
+                    .placeholder(R.drawable.no_image_available).fit().centerInside()
                     .into(shopImage);
-            shopSpecification.setText(Html.fromHtml("<font color='blue'>text</font>"));
-            shopSpecification.setText(Html.fromHtml("<p><font color='#60c6ea'><strong>Leading Mobile Retailer</strong></font></p>" +
-                    "\r\n\r\n<p>Any type of mobile phone, smartphone.</p>\r\n"));
+
+            if(seller.description != null)
+                shopSpecification.setText(Html.fromHtml(seller.description));
+            else
+                shopSpecification.setText("Shop Specification");
 
             contactButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -91,6 +108,16 @@ public class SellerDetailActivity extends BaseActivity {
                     Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" +
                             seller.outlets.get(0).getPhone()));
                     startActivity(callIntent);
+                }
+            });
+
+            msgButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent msgIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" +
+                            seller.outlets.get(0).getPhone()));
+                    msgIntent.putExtra("sms_body", bundle.getString("heading") + "\n" + bundle.getString("subheading"));
+                    startActivity(msgIntent);
                 }
             });
 
@@ -143,6 +170,7 @@ public class SellerDetailActivity extends BaseActivity {
                 }
             });
         });
+    });
     }
 
     private boolean packageExists(String targetPackage){

@@ -1,4 +1,3 @@
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_linear_layout"
@@ -7,13 +6,15 @@
     android:orientation="vertical"
     tools:context="com.instano.retailer.instano.activities.home.NavigationDrawerFragment"
     android:background="@android:color/white"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:clickable="true">
 
     <com.pkmmte.view.CircularImageView
         android:id="@+id/facebook_profile_picture"
+        android:layout_marginTop="20dp"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/com_facebook_profile_default_icon"
+        android:src="@drawable/fb_user"
         android:layout_gravity="center_horizontal"
         />
 
@@ -36,6 +37,7 @@
         <Button
             style="@style/NavigationButton"
             android:id="@+id/homeButton"
+            android:layout_marginTop="10dp"
             android:drawableLeft="@drawable/selector_navigation_home"
             android:text="Home"/>
 
@@ -47,18 +49,21 @@
 
         <Button
             style="@style/NavigationButton"
+            android:id="@+id/chatButton"
             android:drawableLeft="@drawable/selector_navigation_chat"
             android:text="Chats"
         />
 
         <Button
             style="@style/NavigationButton"
+            android:id="@+id/bookingButton"
             android:drawableLeft="@drawable/selector_navigation_booking"
             android:paddingLeft="26dp"
             android:drawablePadding="41dp"
             android:text="Booking"/>
 
         <Button
+            android:id="@+id/settingButton"
             style="@style/NavigationButton"
             android:drawableLeft="@drawable/selector_navigation_settings"
             android:paddingLeft="22dp"
