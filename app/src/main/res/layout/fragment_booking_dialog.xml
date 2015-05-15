@@ -1,26 +1,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:layout_marginTop="30dp"
+    android:layout_marginBottom="60dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
     >
 
     <ImageView
-
-        android:layout_height="400dp"
         style="@style/image_view_card"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_weight="1"
         android:id="@+id/productImage"
         />
 
     <TextView
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAlignment="center"
-        android:layout_weight="0.8"
         android:layout_gravity="center|center_horizontal"
         android:gravity="center"
         android:textSize="16sp"
         android:text="Sony Xperia M for Rs 10,200 \n at Croma Retail Store \n Booking will be valid till 21:00 PM, Wednesday,23rd July"
-        android:textColor="@color/instano_red"
         android:id="@+id/item_details"
         />
 

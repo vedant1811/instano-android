@@ -14,7 +14,7 @@
         android:layout_marginTop="20dp"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/com_facebook_profile_default_icon"
+        android:src="@drawable/fb_user"
         android:layout_gravity="center_horizontal"
         />
 
@@ -49,18 +49,21 @@
 
         <Button
             style="@style/NavigationButton"
+            android:id="@+id/chatButton"
             android:drawableLeft="@drawable/selector_navigation_chat"
             android:text="Chats"
         />
 
         <Button
             style="@style/NavigationButton"
+            android:id="@+id/bookingButton"
             android:drawableLeft="@drawable/selector_navigation_booking"
             android:paddingLeft="26dp"
             android:drawablePadding="41dp"
             android:text="Booking"/>
 
         <Button
+            android:id="@+id/settingButton"
             style="@style/NavigationButton"
             android:drawableLeft="@drawable/selector_navigation_settings"
             android:paddingLeft="22dp"

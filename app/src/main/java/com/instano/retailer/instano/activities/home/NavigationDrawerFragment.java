@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.controller.Preferences;
@@ -63,6 +64,7 @@ public class NavigationDrawerFragment extends Fragment {
     /**
      * Helper component that ties the action bar to the navigation drawer.
      */
+
     private ActionBarDrawerToggle mDrawerToggle;
 
     private DrawerLayout mDrawerLayout;
@@ -106,18 +108,18 @@ public class NavigationDrawerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home_navigation_drawer, container, false);
         ButterKnife.inject(this, view);
         mFacebookNameTextView.setText(Preferences.controller().getBuyerName());
-        Log.d(TAG, "facebook name: " +mFacebookNameTextView.getText());
+        Log.d(TAG, "facebook name: " + mFacebookNameTextView.getText());
         Picasso.with(view.getContext())
                 .load("https://graph.facebook.com/" + Preferences.controller().getFacebookUserId() + "/picture?type=large")
-                .placeholder(R.drawable.com_facebook_button_like_icon)
+                .placeholder(R.drawable.fb_user)
                 .into(mProfilePicture);
 
         return view;
     }
 
-    @OnClick(R.id.homeButton)
-    public void homeClicked() {
-        selectItem(0);
+    @OnClick({R.id.homeButton, R.id.bestInCityButton, R.id.chatButton, R.id.bookingButton, R.id.settingButton, R.id.aboutButton, R.id.rateButton, R.id.shareButton})
+    public void itemClicked(View view) {
+        selectItem(view.getId());
     }
 
     public boolean isDrawerOpen() {

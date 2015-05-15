@@ -7,7 +7,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.instano.retailer.instano.AboutUsDialogFragment;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.SearchableActivity;
 import com.instano.retailer.instano.deals.DealDetailActivity;
@@ -26,6 +28,9 @@ public class HomeActivity extends SearchableActivity
      */
     private CharSequence mTitle;
     private boolean mTwoPane;
+
+    public static final String PLAY_STORE_LINK = "http://play.google.com/StoreActivity/apps/details?id=com.instano.buyer";
+    private static final int SHARE_REQUEST_CODE = 998;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,16 +86,44 @@ public class HomeActivity extends SearchableActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment; // For AppCompat use getSupportFragmentManager
         switch(position) {
-            default:
-            case 2:
-                fragment = new DealListFragment();
+            case R.id.homeButton:
+                Fragment fragment = new Fragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, fragment)
+                        .commit();
+                break;
+            case R.id.bestInCityButton:
+                break;
+            case R.id.chatButton:
+                break;
+            case R.id.bookingButton:
+                break;
+            case R.id.settingButton:
+                break;
+            case R.id.aboutButton:
+                AboutUsDialogFragment about = AboutUsDialogFragment.newInstnace();
+                about.show(fragmentManager,"About Fragment");
+                break;
+            case R.id.rateButton:
+                break;
+            case R.id.shareButton:
+                Intent intent;
+                intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Instano");
+                String sAux = "Let me recommend you this application\n";
+                sAux = sAux + PLAY_STORE_LINK;
+                intent.putExtra(Intent.EXTRA_TEXT, sAux);
+                intent = Intent.createChooser(intent, "choose one");
+                try {
+                    startActivityForResult(intent, SHARE_REQUEST_CODE);
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(this, "There are no clients to share links", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
-                .commit();
+
     }
 
     public void onSectionAttached(int number) {

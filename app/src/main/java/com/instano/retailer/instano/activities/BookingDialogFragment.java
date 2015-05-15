@@ -1,23 +1,17 @@
 package com.instano.retailer.instano.activities;
 
-import android.app.ActionBar;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.utilities.model.Deal;
-import com.instano.retailer.instano.utilities.model.Quotation;
-import com.instano.retailer.instano.utilities.model.Seller;
 import com.squareup.picasso.Picasso;
-
-import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -47,9 +41,10 @@ public class BookingDialogFragment extends DialogFragment {
         String productImage = dealImage ;
         Bundle arguments = new Bundle();
         arguments.putString(ITEM_DETAILS, Details);
-        arguments.putString(ITEM_IMAGE,productImage);
+        arguments.putString(ITEM_IMAGE, productImage);
         BookingDialogFragment fragment = new BookingDialogFragment();
         fragment.setArguments(arguments);
+
         return fragment;
     }
 
@@ -58,7 +53,6 @@ public class BookingDialogFragment extends DialogFragment {
         super.onCreate(savedInstanceStates);
         mDetails = getArguments().getString(ITEM_DETAILS);
         imageUrl = getArguments().getString(ITEM_IMAGE);
-        setCancelable(false);
    }
 
     @OnClick(R.id.bookButton)
@@ -73,7 +67,7 @@ public class BookingDialogFragment extends DialogFragment {
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View rootview = inflater.inflate(R.layout.fragment_booking,container,false);
+        View rootview = inflater.inflate(R.layout.fragment_booking_dialog,container,false);
         ButterKnife.inject(this, rootview);
         details.setText(mDetails);
         Picasso.with(getActivity())
