@@ -4,12 +4,12 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.app.FragmentManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -17,7 +17,6 @@ import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,7 +40,7 @@ public class SellerDetailActivity extends BaseActivity {
 
 
     private static final String TAG = "SellerDetailActivity";
-    @InjectView(R.id.bookitButton) Button bookIt;
+    @InjectView(R.id.bookitButtonStoreFooter) Button bookIt;
     @InjectView(R.id.shop_details) TextView sellerDetail;
     @InjectView(R.id.shop_image) ImageView shopImage;
     @InjectView(R.id.dealHeadingStoreFooter) TextView dealHeading;
@@ -67,12 +66,6 @@ public class SellerDetailActivity extends BaseActivity {
         dealSubheading.setText(bundle.getString("subheading"));
 
         retryableError(sellerObservable, seller -> {
-        bookIt.setOnClickListener(v -> {
-            //TODO : Book IT
-            Toast.makeText(this, "Book it clicked !!", Toast.LENGTH_SHORT);
-        });
-
-        retryableError(sellerObservable, seller1 -> {
 
             String s = seller.name_of_shop;
             String s2 = seller.outlets.get(0).getPrettyDistanceFromLocation();
@@ -101,6 +94,19 @@ public class SellerDetailActivity extends BaseActivity {
                 shopSpecification.setText(Html.fromHtml(seller.description));
             else
                 shopSpecification.setText("Shop Specification");
+
+            Log.v(TAG, "productId in SellerDetailActivity : "+ bundle.getInt("productId"));
+
+            bookIt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(SellerDetailActivity.this, "Book it clicked !!"+bundle.getInt("productId"), Toast.LENGTH_SHORT).show();
+                    FragmentManager fm = getSupportFragmentManager();
+                    BookingDialogFragment bookingDialogFragment = BookingDialogFragment.newInstance
+                            (bundle.getInt("productId"));
+                    bookingDialogFragment.show(fm, "Book it Dialog");
+                }
+            });
 
             contactButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -170,7 +176,6 @@ public class SellerDetailActivity extends BaseActivity {
                 }
             });
         });
-    });
     }
 
     private boolean packageExists(String targetPackage){

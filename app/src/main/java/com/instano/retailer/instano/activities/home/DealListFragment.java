@@ -264,8 +264,8 @@ public class DealListFragment extends ListFragment{
                                 Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" +
                                         seller.outlets.get(0).getPhone()));
                                 startActivity(callIntent);
-                    },
-                    error -> Log.fatalError(new RuntimeException(error)));
+                            },
+                            error -> Log.fatalError(new RuntimeException(error)));
 
                 }
             });
@@ -280,7 +280,7 @@ public class DealListFragment extends ListFragment{
         @InjectView(R.id.dealSubheading) TextView subheadingTextView;
         @InjectView(R.id.msgButton) ImageButton msgButton;
         @InjectView(R.id.contactButton)ImageButton contactButton;
-        @InjectView(R.id.bookitButton)Button bookitButton;
+        @InjectView(R.id.bookitButtonStoreFooter)Button bookitButton;
 
         public ViewHolder(View view){
             ButterKnife.inject(this, view);

@@ -99,6 +99,9 @@ public class NetworkRequestsManager {
 
         @GET("/products")
         Observable<List<Product>> queryProducts(@Query("q") String query);
+
+        @GET("/products/{productId}")
+        Observable<Product> getProduct(@Path("productId") int productId);
     }
 
     public interface UnregisteredBuyersApiService {
@@ -146,6 +149,11 @@ public class NetworkRequestsManager {
     public Observable<Seller> getSeller(int sellerId) {
         return mRegisteredBuyersApiService.getSeller(sellerId)
                 .retryWhen(getSessionErrorsHandlerFunction());
+    }
+
+    public Observable<Product> getProduct(int productId) {
+        return mRegisteredBuyersApiService.getProduct(productId)
+                .retryWhen(new SessionErrorsHandlerFunction());
     }
 
     public Observable<Seller> querySellers(int productId) {

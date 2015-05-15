@@ -21,7 +21,6 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 
 /**
  * Created by vedant on 4/29/15.
@@ -81,10 +80,16 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
                 Bundle bundle = new Bundle();
                 bundle.putInt("seller_id", item.seller.id);
                 bundle.putString("heading", item.seller.name_of_shop);
-                if (item.quotation != null)
+                if (item.quotation != null) {
                     bundle.putString("subheading", item.quotation.getPrettyPrice());
-                else
+                    bundle.putInt("productId", item.quotation.productId);
+                    Log.v(TAG, "productId: " + item.quotation.productId);
+                }
+                else {
                     bundle.putString("subheading", "Price NA");
+                    bundle.putInt("productId", 0);
+                    Log.v(TAG, "productId: 0 Zero" );
+                }
                 Intent intent = new Intent(getContext(), SellerDetailActivity.class);
                 intent.putExtras(bundle);
                 getContext().startActivity(intent);
@@ -127,7 +132,7 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
         @InjectView(R.id.dealProduct) ImageButton productImage;
         @InjectView(R.id.msgButton) ImageButton msgButton;
         @InjectView(R.id.contactButton) ImageButton callButton;
-        @InjectView(R.id.bookitButton) Button bookItButton;
+        @InjectView(R.id.bookitButtonStoreFooter) Button bookItButton;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this,view);
