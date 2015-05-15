@@ -15,7 +15,7 @@ import com.instano.retailer.instano.application.MyApplication;
 import com.instano.retailer.instano.application.ServicesSingleton;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Buyer;
-import com.instano.retailer.instano.utilities.model.Categories;
+import com.instano.retailer.instano.utilities.model.Category;
 import com.instano.retailer.instano.utilities.model.Deal;
 import com.instano.retailer.instano.utilities.model.Device;
 import com.instano.retailer.instano.utilities.model.Product;
@@ -94,8 +94,8 @@ public class NetworkRequestsManager {
         @GET("/buyers/quotations")
         Observable<List<Quotation>> queryQuotations(@Query("p") int productId);
 
-        @GET("/brands_categories")
-        Observable<Categories> getProductCategories();
+        @GET("/brands_categories?short=1")
+        Observable<List<Category>> getCategories();
 
         @GET("/products")
         Observable<List<Product>> queryProducts(@Query("q") String query);
@@ -152,6 +152,11 @@ public class NetworkRequestsManager {
         return mRegisteredBuyersApiService.querySellers(productId)
                 .retryWhen(getSessionErrorsHandlerFunction())
                 .flatMap(Observable::from);
+    }
+
+    public Observable<List<Category>> getCategories() {
+        return mRegisteredBuyersApiService.getCategories()
+                .retryWhen(getSessionErrorsHandlerFunction());
     }
 
     public Observable<List<Product>> queryProducts(String query) {
@@ -367,6 +372,7 @@ public class NetworkRequestsManager {
         editor.putInt(PROPERTY_APP_VERSION, appVersion);
         editor.apply();
     }
+
     /**
      * @return Application's version code from the {@code PackageManager}.
      */

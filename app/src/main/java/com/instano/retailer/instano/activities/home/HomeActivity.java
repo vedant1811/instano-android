@@ -90,9 +90,20 @@ public class HomeActivity extends SearchableActivity
         switch(position) {
             default:
             case R.id.homeButton:
-                fragment = new DealListFragment();
+                fragment = fragmentManager.findFragmentByTag(CategoriesGridFragment.TAG);
+                if (fragment == null)
+                    fragment = new CategoriesGridFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, fragment, CategoriesGridFragment.TAG)
+                        .commit();
                 break;
             case R.id.bestInCityButton:
+                fragment = fragmentManager.findFragmentByTag(DealListFragment.TAG);
+                if (fragment == null)
+                    fragment = new DealListFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.container, fragment, DealListFragment.TAG)
+                        .commit();
                 break;
             case R.id.chatButton:
                 break;
@@ -121,11 +132,6 @@ public class HomeActivity extends SearchableActivity
                     Toast.makeText(this, "There are no clients to share links", Toast.LENGTH_SHORT).show();
                 }
                 break;
-        }
-        if (fragment != null) {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.container, fragment)
-                    .commit();
         }
     }
 

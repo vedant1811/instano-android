@@ -1,7 +1,6 @@
 package com.instano.retailer.instano.activities.home;
 
 import android.app.Activity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -17,7 +16,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.BookingDialogFragment;
@@ -27,19 +25,10 @@ import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.deals.DealDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Deal;
-import com.instano.retailer.instano.utilities.model.Seller;
 import com.squareup.picasso.Picasso;
-
-import rx.Observable;
-import com.instano.retailer.instano.utilities.model.Quotation;
-import com.instano.retailer.instano.utilities.model.Seller;
-import com.squareup.picasso.Picasso;
-
-import java.util.zip.Inflater;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 import rx.android.observables.AndroidObservable;
 
 /**
@@ -52,13 +41,13 @@ import rx.android.observables.AndroidObservable;
  * interface.
  */
 public class DealListFragment extends ListFragment{
+    public static final String TAG = "DealListFragment";
 
     /**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
-    private static final String TAG = "DealListFragment";
 
     /**
      * The fragment's current callback object, which is notified of list item
