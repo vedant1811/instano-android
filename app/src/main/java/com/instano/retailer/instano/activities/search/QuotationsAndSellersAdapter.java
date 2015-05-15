@@ -21,6 +21,7 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Created by vedant on 4/29/15.
@@ -58,6 +59,8 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
             viewHolder.subheadingTextView.setText(item.quotation.getPrettyPrice());
         else
             viewHolder.subheadingTextView.setText("Price NA");
+
+
 
         if(true)
             Picasso.with(getContext())
@@ -128,6 +131,7 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
 
         public ViewHolder(View view) {
             ButterKnife.inject(this,view);
+
         }
     }
 }

@@ -8,7 +8,8 @@
 
     <ImageView
         android:id="@+id/shop_image"
-        style="@style/image_view_card" />
+        style="@style/image_view_card"
+        />
 
     <ImageButton
     android:id="@+id/mapDirection"
