@@ -39,8 +39,7 @@ public class BookingDialogFragment extends DialogFragment {
 
     }
 
-    public static BookingDialogFragment newInstance(Deal deal,String dealImage){
-        String details = deal.heading;
+    public static BookingDialogFragment newInstance(String details,String dealImage){
         String productImage = dealImage ;
         Bundle arguments = new Bundle();
         arguments.putString(ITEM_DETAILS, details);

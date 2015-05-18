@@ -43,7 +43,7 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
-    private QuotationsAndSellersAdapter mAdapter;
+    private SellersListFragment.QuotationsAndSellersAdapter mAdapter;
     private SellersListFragment mSellersListFragment;
     private SellersMapFragment mSellersMapFragment;
     private SellersListFragment mTab3;
@@ -178,10 +178,10 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
-    /*package private*/ QuotationsAndSellersAdapter getAdapter() {
+    /*package private*/SellersListFragment.QuotationsAndSellersAdapter getAdapter() {
         // make sure adapter exists before any fragment may be created
         if (mAdapter == null)
-            mAdapter = new QuotationsAndSellersAdapter(this);
+            mAdapter = new SellersListFragment().getQuotationsAndSellersAdapter(this);
         return mAdapter;
     }
 
