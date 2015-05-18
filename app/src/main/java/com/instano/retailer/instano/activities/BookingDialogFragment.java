@@ -83,7 +83,7 @@ public class BookingDialogFragment extends DialogFragment {
 
     @OnClick(R.id.cancelButton)
     public void cancelClicked() {
-
+        this.dismiss();
     }
 
     @Override

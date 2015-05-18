@@ -1,6 +1,7 @@
 package com.instano.retailer.instano.activities.home;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -105,6 +106,11 @@ public class HomeActivity extends SearchableActivity
                 about.show(fragmentManager,"About Fragment");
                 break;
             case R.id.rateButton:
+                try{
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.instano.buyer")));
+                }catch(android.content.ActivityNotFoundException anfe){
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.instano.buyer")));
+                }
                 break;
             case R.id.shareButton:
                 Intent intent;

@@ -18,6 +18,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -139,6 +140,7 @@ public class SellersMapFragment extends Fragment implements
 
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.getUiSettings().setZoomControlsEnabled(false);
 
         LatLng startLatLng;
         Location userLocation = ServicesSingleton.instance().getUserLocation();
@@ -186,7 +188,7 @@ public class SellersMapFragment extends Fragment implements
                 mShopName.setText("Price NA");
             mDistanceTextView.setText(quotationMarker.outlet.getPrettyDistanceFromLocation());
             Log.v(TAG, "distance = "+ quotationMarker.outlet.getPrettyDistanceFromLocation());
-            mShopAddress.setText(quotationMarker.outlet.address);
+//            mShopAddress.setText(quotationMarker.outlet.address);
         }
         return false;
     }

@@ -36,8 +36,9 @@
     <ImageButton
         style="@style/ContactButton"
         android:id="@+id/contactButtonStoreFooter"
-        android:layout_alignBottom="@id/msgButton" />
-    />
+        android:layout_alignBottom="@id/msgButton"
+        />
+
 
     <Button
         style="@style/BookitButton"
