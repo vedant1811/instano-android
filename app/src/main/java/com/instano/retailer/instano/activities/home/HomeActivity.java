@@ -145,7 +145,7 @@ public class HomeActivity extends SearchableActivity
                 break;
             case 3:
                 mTitle = getString(R.string.title_section3);
-                onNavigationDrawerItemSelected(1);
+                onNavigationDrawerItemSelected(R.id.homeButton);
                 break;
         }
     }

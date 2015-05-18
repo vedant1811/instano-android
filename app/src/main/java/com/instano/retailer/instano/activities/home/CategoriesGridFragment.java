@@ -1,6 +1,8 @@
 package com.instano.retailer.instano.activities.home;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,12 +13,14 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
 import com.instano.retailer.instano.R;
+import com.instano.retailer.instano.activities.search.ResultsActivity;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Category;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnItemClick;
 import rx.android.observables.AndroidObservable;
 
 /**
@@ -31,26 +35,24 @@ public class CategoriesGridFragment extends Fragment {
     @InjectView(R.id.gridView) GridView mGridView;
 
     private OnFragmentInteractionListener mListener;
-    private ArrayAdapter<Category> mCategoryAdapter;
+    private CategoriesAdapter mCategoriesAdapter;
 
     public CategoriesGridFragment() {
         // Required empty public constructor
     }
 
+    @OnItemClick(R.id.gridView)
+    public void gridViewItemClicked(int pos) {
+        getActivity().startActivity(new Intent(getActivity(), ResultsActivity.class));
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_categories_grid, container, false);
         ButterKnife.inject(this, view);
-        mCategoryAdapter = new ArrayAdapter<>(
-                getActivity(),
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1
-        );
-        mGridView.setAdapter(mCategoryAdapter);
-        AndroidObservable.bindFragment(this, NetworkRequestsManager.instance().getCategories())
-                .subscribe(mCategoryAdapter::addAll, e -> Log.fatalError(new RuntimeException(e)));
+        mCategoriesAdapter = new CategoriesAdapter(getActivity());
+        mGridView.setAdapter(mCategoriesAdapter);
         return view;
     }
 
@@ -86,4 +88,37 @@ public class CategoriesGridFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
+    private class CategoriesAdapter extends ArrayAdapter<Category> {
+
+        /**
+         * Constructor
+         *
+         * @param context  The current context.
+         */
+        public CategoriesAdapter(Context context) {
+            super(context, android.R.layout.simple_list_item_1, android.R.id.text1);
+            AndroidObservable.bindFragment(CategoriesGridFragment.this, NetworkRequestsManager.instance().getCategories())
+                    .subscribe(this::addAll, e -> Log.fatalError(new RuntimeException(e)));
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+//            ViewHolder viewHolder = new ViewHolder(view);
+//            viewHolder.textView.setOnClickListener(v -> {
+//                getActivity().startActivity(new Intent(getActivity(), ResultsActivity.class));
+//            });
+            return view;
+        }
+    }
+
+//    public class ViewHolder {
+//        @InjectView(android.R.id.text1) TextView textView;
+//
+//        public ViewHolder(View view) {
+//            ButterKnife.inject(this, view);
+//        }
+//
+//        @Oncl
+//    }
 }
