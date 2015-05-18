@@ -96,21 +96,14 @@ public class SellersMapFragment extends Fragment implements
                         .onBackpressureBuffer()
                         .subscribe(quotationMarker -> {
                             Log.d(TAG, "adding marker");
-                            if (quotationMarker.price != null) {
-                                mSelectedShopMarker = mMap.addMarker(new MarkerOptions()
-                                                .position(new LatLng(quotationMarker.outlet.latitude,quotationMarker.outlet.longitude))
-                                                .title(quotationMarker.outlet.seller_name)
-                                                .snippet(String.format("₹%,d", quotationMarker.price))
-                                );
-                            }
-                            else {
-                                mSelectedShopMarker = mMap.addMarker(new MarkerOptions()
-                                                .position(new LatLng(quotationMarker.outlet.latitude, quotationMarker.outlet.longitude))
-                                                .title(quotationMarker.outlet.seller_name)
-                                                .snippet("Price Not Available")
-                                                .icon(YELLOW_MARKER)
-                                );
-                            }
+
+                            mSelectedShopMarker = mMap.addMarker(new MarkerOptions()
+                                            .position(new LatLng(quotationMarker.outlet.latitude, quotationMarker.outlet.longitude))
+                                            .title(quotationMarker.outlet.seller_name)
+                                            .snippet(quotationMarker.outlet.address)
+                                            .icon(YELLOW_MARKER)
+                            );
+
                             mSelectedShopMarker.showInfoWindow();
                             mSellerMarkers.put(mSelectedShopMarker, quotationMarker);
                         }, throwable -> Log.fatalError(new RuntimeException(
@@ -188,7 +181,6 @@ public class SellersMapFragment extends Fragment implements
                 mShopName.setText("Price NA");
             mDistanceTextView.setText(quotationMarker.outlet.getPrettyDistanceFromLocation());
             Log.v(TAG, "distance = "+ quotationMarker.outlet.getPrettyDistanceFromLocation());
-//            mShopAddress.setText(quotationMarker.outlet.address);
         }
         return false;
     }
