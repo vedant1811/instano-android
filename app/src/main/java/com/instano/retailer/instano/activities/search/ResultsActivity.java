@@ -202,13 +202,13 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
 
             switch (position) {
                 case 0 :
-                    return getDealListFragment();
+                    return getmTab3();
 
                 case 1 :
                     return getSellersMapFragment();
 
                 case 2 :
-                    return getmTab3();
+                    return getDealListFragment();
             }
             throw new RuntimeException("Item not found") ;
         }

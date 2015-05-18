@@ -139,6 +139,7 @@ public class NetworkRequestsManager {
     }
 
     public Observable<Quotation> queryQuotations(int productId) {
+        Log.d(TAG, "queryQuotations");
         return mRegisteredBuyersApiService.queryQuotations(productId)
                 .retryWhen(new SessionErrorsHandlerFunction())
                 .flatMap(Observable::from);
