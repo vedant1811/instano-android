@@ -16,11 +16,14 @@ import android.widget.Toast;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.SellerDetailActivity;
 import com.instano.retailer.instano.application.controller.model.QuotationCard;
+import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
+import com.instano.retailer.instano.utilities.model.Seller;
 import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import rx.android.observables.AndroidObservable;
 
 /**
  * Created by vedant on 4/29/15.
@@ -53,7 +56,10 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
             viewHolder = (ViewHolder) convertView.getTag();
 
         QuotationCard item = getItem(position);
+        viewHolder.headingTextView.setVisibility(View.VISIBLE);
         viewHolder.headingTextView.setText(item.seller.name_of_shop);
+        viewHolder.shopDetailsTextView.setText(item.seller.outlets.get(0).getPrettyDistanceFromLocation());
+
         if (item.quotation != null)
             viewHolder.subheadingTextView.setText(item.quotation.getPrettyPrice());
         else
@@ -84,11 +90,10 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
                     bundle.putString("subheading", item.quotation.getPrettyPrice());
                     bundle.putInt("productId", item.quotation.productId);
                     Log.v(TAG, "productId: " + item.quotation.productId);
-                }
-                else {
+                } else {
                     bundle.putString("subheading", "Price NA");
                     bundle.putInt("productId", 0);
-                    Log.v(TAG, "productId: 0 Zero" );
+                    Log.v(TAG, "productId: 0 Zero");
                 }
                 Intent intent = new Intent(getContext(), SellerDetailActivity.class);
                 intent.putExtras(bundle);
@@ -133,6 +138,8 @@ public class QuotationsAndSellersAdapter extends ArrayAdapter<QuotationCard> {
         @InjectView(R.id.msgButton) ImageButton msgButton;
         @InjectView(R.id.contactButton) ImageButton callButton;
         @InjectView(R.id.bookitButtonStoreFooter) Button bookItButton;
+        @InjectView(R.id.shopDetails) TextView shopDetailsTextView;
+
 
         public ViewHolder(View view) {
             ButterKnife.inject(this,view);

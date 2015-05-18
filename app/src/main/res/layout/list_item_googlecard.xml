@@ -42,11 +42,19 @@
         />
 
     <TextView
+        style="@style/SmallText"
+        android:id="@+id/shopDetails"
+        android:text="Small Text"
+        android:layout_above="@id/msgButton"
+        android:background="@color/translucent_white"
+        android:visibility="visible" />
+
+    <TextView
         style="@style/LargeText"
         android:id="@+id/dealSubheading"
         android:text="Large Text"
         android:layout_alignParentLeft="true"
-        android:layout_above="@id/msgButton"
+        android:layout_above="@id/shopDetails"
         android:background="@color/translucent_white"
         />
 
@@ -56,6 +64,6 @@
         android:text="Medium Text"
         android:layout_above="@id/dealSubheading"
         android:background="@color/translucent_white"
-        />
+        android:visibility="gone" />
 
 </RelativeLayout>

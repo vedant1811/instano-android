@@ -106,6 +106,7 @@ public class SellersMapFragment extends Fragment implements
 
                             mSelectedShopMarker.showInfoWindow();
                             mSellerMarkers.put(mSelectedShopMarker, quotationMarker);
+                            onMarkerClick(mSelectedShopMarker);
                         }, throwable -> Log.fatalError(new RuntimeException(
                                         "error response in subscribe to getFilteredSellersObservable",
                                         throwable)
@@ -174,7 +175,7 @@ public class SellersMapFragment extends Fragment implements
         QuotationMarker quotationMarker = mSellerMarkers.get(marker);
         if (quotationMarker != null) { // can be another marker
             mSelectedOutlet = quotationMarker.outlet;
-//            mTopmostSellerInfoView.setVisibility(View.VISIBLE);
+   //        mTopmostSellerInfoView.setVisibility(View.VISIBLE);
             if (quotationMarker.price != null)
                 mShopName.setText(String.format("₹%,d", quotationMarker.price));
             else

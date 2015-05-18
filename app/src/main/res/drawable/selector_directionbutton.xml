@@ -5,5 +5,5 @@
         android:drawable="@drawable/get_directions_" />
     <item
         android:state_pressed="true"
-        android:drawable="@drawable/get_directions_selected" />
+        android:drawable="@drawable/get_directions_select" />
 </selector>

@@ -15,7 +15,10 @@ import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.activities.SearchableActivity;
+import com.instano.retailer.instano.activities.home.DealListFragment;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
+import com.instano.retailer.instano.deals.DealDetailActivity;
+import com.instano.retailer.instano.deals.DealDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Quote;
 
@@ -23,7 +26,7 @@ import java.util.Locale;
 
 import rx.android.observables.AndroidObservable;
 
-public class ResultsActivity extends SearchableActivity implements ActionBar.TabListener {
+public class ResultsActivity extends SearchableActivity implements ActionBar.TabListener, DealListFragment.Callbacks {
 
     private static final String TAG = "ResultsActivity";
     /**
@@ -46,6 +49,7 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
     private SellersListFragment mTab3;
     private SearchView mSearchView;
     private int mProductId;
+    private DealListFragment mDealListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +126,20 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
         getSellersMapFragment().setProduct(mProductId);
         getmTab3().setProduct(mProductId);
     }
+    /**
+     * Callback method from {@link DealListFragment.Callbacks}
+     * indicating that the item with the given ID was selected.
+     */
+    @Override
+    public void onItemSelected(int id) {
+            // In single-pane mode, simply start the detail activity
+            // for the selected item ID.
+            Intent detailIntent = new Intent(this, DealDetailActivity.class);
+            detailIntent.putExtra(DealDetailFragment.ARG_ITEM_ID, id);
+            startActivity(detailIntent);
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -184,7 +202,7 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
 
             switch (position) {
                 case 0 :
-                    return getSellersListFragment();
+                    return getDealListFragment();
 
                 case 1 :
                     return getSellersMapFragment();
@@ -214,6 +232,12 @@ public class ResultsActivity extends SearchableActivity implements ActionBar.Tab
             }
             return null;
         }
+    }
+
+    private DealListFragment getDealListFragment(){
+        if(mDealListFragment == null)
+            mDealListFragment = new DealListFragment();
+        return mDealListFragment;
     }
 
     private SellersListFragment getSellersListFragment() {

@@ -18,17 +18,17 @@
     android:layout_alignParentRight="true"
     android:layout_marginRight="20dp"
     android:layout_below="@id/shop_image"
-    android:layout_marginTop="20dp"
     android:background="@drawable/selector_navigation_background"
     android:src="@drawable/selector_directionbutton"
     android:padding="12dp"
+    android:layout_above="@+id/specification_list"
         />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/shop_image"
-        android:text="Croma Retail Store , 500 mts \n 269 ,18th D main, Koramangla 6th Block "
+        android:text="Croma Retail Store , 500 mts \n 269 ,18th D main,Koramangla 6th Block "
         android:layout_alignParentLeft="true"
         android:padding="10dp"
         android:textSize="15dp"

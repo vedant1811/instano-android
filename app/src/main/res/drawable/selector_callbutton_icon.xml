@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_pressed="true"
-        android:drawable="@drawable/call_store_selected2" />
+        android:drawable="@drawable/call_store_select" />
 
     <item
         android:state_pressed="false"

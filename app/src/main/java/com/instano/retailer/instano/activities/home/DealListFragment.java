@@ -26,6 +26,7 @@ import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.deals.DealDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Deal;
+import com.instano.retailer.instano.utilities.model.Seller;
 import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
@@ -211,6 +212,10 @@ public class DealListFragment extends ListFragment{
             Deal deal = getItem(position);
             Log.v(TAG,"heading : "+deal.heading+" subheading : "+deal.subheading);
             viewHolder.headingTextView.setText(deal.heading);
+            AndroidObservable.bindFragment(DealListFragment.this , NetworkRequestsManager.instance().getSeller(deal.sellerId))
+                    .subscribe(seller -> {
+                        viewHolder.shopDetailsTextView.setText(seller.name_of_shop);
+                    }, Throwable::printStackTrace);
 
             if (TextUtils.isEmpty(deal.subheading))
                 viewHolder.subheadingTextView.setVisibility(View.GONE);
@@ -250,7 +255,7 @@ public class DealListFragment extends ListFragment{
                     Sellers.controller().getSeller(deal.sellerId).subscribe(seller -> {
                                 Intent msgIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:" +
                                         seller.outlets.get(0).getPhone()));
-                                msgIntent.putExtra("sms_body",deal.heading + "\n" + deal.subheading);
+                                msgIntent.putExtra("sms_body", deal.heading + "\n" + deal.subheading);
                                 startActivity(msgIntent);
                             },
                             error -> Log.fatalError(new RuntimeException(error)));
@@ -282,6 +287,7 @@ public class DealListFragment extends ListFragment{
         @InjectView(R.id.msgButton) ImageButton msgButton;
         @InjectView(R.id.contactButton)ImageButton contactButton;
         @InjectView(R.id.bookitButtonStoreFooter)Button bookitButton;
+        @InjectView(R.id.shopDetails) TextView shopDetailsTextView;
 
         public ViewHolder(View view){
             ButterKnife.inject(this, view);

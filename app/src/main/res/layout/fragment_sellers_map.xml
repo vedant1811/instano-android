@@ -21,6 +21,7 @@
         android:padding="8dp"
         style="@style/MediumText"
         android:layout_alignParentBottom="true"
+        android:text="Medium Text"
         android:layout_marginBottom="70dp"
         android:layout_alignParentLeft="true"
         android:id="@+id/shopName"
@@ -29,6 +30,7 @@
     <TextView
         style="@style/SmallText"
         android:padding="8dp"
+        android:text="Small Text"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="40dp"
         android:id="@+id/distanceTextView"
