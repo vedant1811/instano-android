@@ -234,7 +234,7 @@ public class DealListFragment extends ListFragment{
 
             viewHolder.bookitButton.setOnClickListener(v1 -> {
                 FragmentManager fm = getFragmentManager();
-                BookingDialogFragment bookingDialogFragment = BookingDialogFragment.newInstance(deal,deal.product.image);
+                BookingDialogFragment bookingDialogFragment = BookingDialogFragment.newInstance(deal.heading,deal.product.image);
                 bookingDialogFragment.show(fm, "Book it Dialog");
             });
 
