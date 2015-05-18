@@ -18,7 +18,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -97,12 +96,17 @@ public class SellersMapFragment extends Fragment implements
                         .subscribe(quotationMarker -> {
                             Log.d(TAG, "adding marker");
 
-                            mSelectedShopMarker = mMap.addMarker(new MarkerOptions()
-                                            .position(new LatLng(quotationMarker.outlet.latitude, quotationMarker.outlet.longitude))
-                                            .title(quotationMarker.outlet.seller_name)
-                                            .snippet(quotationMarker.outlet.address)
-                                            .icon(YELLOW_MARKER)
-                            );
+                            if (quotationMarker.price == null)
+                                mSelectedShopMarker = mMap.addMarker(new MarkerOptions()
+                                                .position(new LatLng(quotationMarker.outlet.latitude, quotationMarker.outlet.longitude))
+                                                .title(quotationMarker.outlet.seller_name)
+                                                .snippet(quotationMarker.outlet.address)
+                                                .icon(YELLOW_MARKER));
+                            else
+                                mSelectedShopMarker = mMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(quotationMarker.outlet.latitude, quotationMarker.outlet.longitude))
+                                        .title(quotationMarker.outlet.seller_name)
+                                        .snippet(quotationMarker.outlet.address)); // red otherwise
 
                             mSelectedShopMarker.showInfoWindow();
                             mSellerMarkers.put(mSelectedShopMarker, quotationMarker);

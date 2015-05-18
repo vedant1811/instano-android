@@ -1,7 +1,7 @@
 package com.instano.retailer.instano.activities;
 
-import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +12,6 @@ import android.widget.TextView;
 import com.instano.retailer.instano.R;
 import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.utilities.library.Log;
-import com.instano.retailer.instano.utilities.model.Deal;
 import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
@@ -39,11 +38,10 @@ public class BookingDialogFragment extends DialogFragment {
 
     }
 
-    public static BookingDialogFragment newInstance(String details,String dealImage){
-        String productImage = dealImage ;
+    public static BookingDialogFragment newInstance(String details, String dealImage){
         Bundle arguments = new Bundle();
         arguments.putString(ITEM_DETAILS, details);
-        arguments.putString(ITEM_IMAGE, productImage);
+        arguments.putString(ITEM_IMAGE, dealImage);
         BookingDialogFragment fragment = new BookingDialogFragment();
         fragment.setArguments(arguments);
 

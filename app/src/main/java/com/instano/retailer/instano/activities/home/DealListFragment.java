@@ -1,7 +1,6 @@
 package com.instano.retailer.instano.activities.home;
 
 import android.app.Activity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -26,7 +25,6 @@ import com.instano.retailer.instano.application.network.NetworkRequestsManager;
 import com.instano.retailer.instano.deals.DealDetailFragment;
 import com.instano.retailer.instano.utilities.library.Log;
 import com.instano.retailer.instano.utilities.model.Deal;
-import com.instano.retailer.instano.utilities.model.Seller;
 import com.squareup.picasso.Picasso;
 
 import butterknife.ButterKnife;
@@ -234,7 +232,7 @@ public class DealListFragment extends ListFragment{
 
             viewHolder.bookitButton.setOnClickListener(v1 -> {
                 FragmentManager fm = getFragmentManager();
-                BookingDialogFragment bookingDialogFragment = BookingDialogFragment.newInstance(deal.heading,deal.product.image);
+                BookingDialogFragment bookingDialogFragment = BookingDialogFragment.newInstance(deal.heading, deal.product.image);
                 bookingDialogFragment.show(fm, "Book it Dialog");
             });
 

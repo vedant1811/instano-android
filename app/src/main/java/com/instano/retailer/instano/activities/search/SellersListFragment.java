@@ -1,7 +1,6 @@
 package com.instano.retailer.instano.activities.search;
 
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,10 +13,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.activities.BookingDialogFragment;
 import com.instano.retailer.instano.activities.SellerDetailActivity;
 import com.instano.retailer.instano.application.controller.Quotations;
 import com.instano.retailer.instano.application.controller.model.QuotationCard;
@@ -177,7 +174,6 @@ public class SellersListFragment extends ListFragment {
                         bundle.putString("subheading", "Price NA");
                         bundle.putInt("productId", 0);
                         Log.v(TAG, "productId: 0 Zero");
-                        viewHolder.bookItButton.setVisibility(View.INVISIBLE);
                     }
                     Intent intent = new Intent(getContext(), SellerDetailActivity.class);
                     intent.putExtras(bundle);
@@ -185,14 +181,16 @@ public class SellersListFragment extends ListFragment {
                 }
             });
 
-            viewHolder.bookItButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    android.support.v4.app.FragmentManager fm = getFragmentManager();
-                    BookingDialogFragment bookingDialogFragment = BookingDialogFragment.newInstance(item.quotation.getPrettyPrice(),item.seller.name_of_shop);
-                    bookingDialogFragment.show(fm,"Booking dialog");
-                }
-            });
+            // TODO: fix. getFragmentManager was returning NULL and app was crashing on button click
+            viewHolder.bookItButton.setVisibility(View.INVISIBLE);
+//            viewHolder.bookItButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    FragmentManager fm = getFragmentManager();
+//                    BookingDialogFragment bookingDialogFragment = BookingDialogFragment.newInstance(item.quotation.getPrettyPrice(),item.seller.name_of_shop);
+//                    bookingDialogFragment.show(fm, "Booking dialog");
+//                }
+//            });
 
             viewHolder.callButton.setOnClickListener(new View.OnClickListener() {
                 @Override

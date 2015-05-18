@@ -11,9 +11,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.instano.retailer.instano.BuildConfig;
 import com.instano.retailer.instano.R;
-import com.instano.retailer.instano.activities.LauncherActivity;
 import com.instano.retailer.instano.activities.SearchableActivity;
 import com.instano.retailer.instano.activities.search.ResultsActivity;
 import com.instano.retailer.instano.utilities.library.Log;
@@ -21,7 +19,6 @@ import com.instano.retailer.instano.utilities.model.Quotation;
 import com.instano.retailer.instano.utilities.model.Seller;
 
 import java.io.IOException;
-import java.util.Random;
 
 /**
  * Created by ROHIT on 09-Mar-15.
@@ -117,28 +114,28 @@ public class GcmIntentService extends IntentService {
      * create a notification. Used for debugging only
      */
     private void sendNotification(String msg) {
-        if (!BuildConfig.DEBUG)
-            return;
-        NotificationManager notificationManager = (NotificationManager)
-                this.getSystemService(Context.NOTIFICATION_SERVICE);
-        Log.v(TAG,"sendNotification");
-        PendingIntent contentIntent = PendingIntent.getActivity(
-                this,
-                0,
-                new Intent(this, LauncherActivity.class),
-                0
-        );
-
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.com_facebook_button_like_icon_selected)
-                        .setContentTitle("GCM Notification")
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(msg))
-                        .setContentText(msg);
-
-        builder.setContentIntent(contentIntent);
-        // preserve all notifications
-        notificationManager.notify(new Random().nextInt(), builder.build());
+//        if (!BuildConfig.DEBUG)
+//            return;
+//        NotificationManager notificationManager = (NotificationManager)
+//                this.getSystemService(Context.NOTIFICATION_SERVICE);
+//        Log.v(TAG,"sendNotification");
+//        PendingIntent contentIntent = PendingIntent.getActivity(
+//                this,
+//                0,
+//                new Intent(this, LauncherActivity.class),
+//                0
+//        );
+//
+//        NotificationCompat.Builder builder =
+//                new NotificationCompat.Builder(this)
+//                        .setSmallIcon(R.drawable.com_facebook_button_like_icon_selected)
+//                        .setContentTitle("GCM Notification")
+//                        .setStyle(new NotificationCompat.BigTextStyle()
+//                                .bigText(msg))
+//                        .setContentText(msg);
+//
+//        builder.setContentIntent(contentIntent);
+//        // preserve all notifications
+//        notificationManager.notify(new Random().nextInt(), builder.build());
     }
 }
